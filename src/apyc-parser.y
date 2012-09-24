@@ -1,5 +1,5 @@
 /* -*-C++-*- */
-/* Generated from apyc.hn at Mon Sep 24 03:52:31 2012 GMT. */
+/* Generated from apyc.hn at Mon Sep 24 03:58:51 2012 GMT. */
 
 %code top {
 
@@ -90,7 +90,6 @@
 %token EXPR_LIST "@expr_list"
 %token MODULE "@module"
 
-%token LITERAL "@literal"
 %token IF_STMT "@if_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
@@ -114,7 +113,8 @@
 %token DICT
 %token FUNCTION_NAME
 %token LIST
-%token NUM_LITERAL
+%token NUMERIC_LITERAL
+%token STRING_LITERAL
 %token TUPLE
 
 #line 121 "apyc-parser.y"
@@ -165,11 +165,12 @@ static yyvar yyv_ID;
 static yyvar yyv_IN;
 static yyvar yyv_INDENT;
 static yyvar yyv_ITERABLE;
-static yyvar yyv_LITERAL;
 static yyvar yyv_LPAREN;
 static yyvar yyv_LT;
 static yyvar yyv_LTE;
+static yyvar yyv_NUMERIC_LITERAL;
 static yyvar yyv_RPAREN;
+static yyvar yyv_STRING_LITERAL;
 static yyvar yyv_WHILE;
 static yyvar yyv_bool_stmt;
 static yyvar yyv_def_stmt;
@@ -182,7 +183,7 @@ static yyvar yyv_file;
 static yyvar yyv_for_stmt;
 static yyvar yyv_if_stmt;
 static yyvar yyv_list;
-static yyvar yyv_numeric_literal;
+static yyvar yyv_literal;
 static yyvar yyv_parameter;
 static yyvar yyv_parameter_list;
 static yyvar yyv_print_stmt;
@@ -332,7 +333,7 @@ literal :
  string_literal { YYCTLPA($$,0,1,&$1);  yyv_string_literal = $1; }
  | 
 #line 128 "apyc.hn"
- numeric_literal { YYCTLPA($$,0,1,&$1);  yyv_numeric_literal = $1; }
+ NUMERIC_LITERAL { YYCTLPA($$,0,1,&$1);  yyv_NUMERIC_LITERAL = $1; }
 ;
 
 
@@ -355,7 +356,12 @@ list : /* empty */  { YYCTLPA($$,0,0);  }
 ;
 
 
-numeric_literal : /* empty */  { YYCTLPA($$,0,0);  }
+literal : 
+#line 134 "apyc.hn"
+ NUMERIC_LITERAL { YYCTLPA($$,0,1,&$1);  yyv_NUMERIC_LITERAL = $1; }
+ | 
+#line 134 "apyc.hn"
+ STRING_LITERAL { YYCTLPA($$,0,1,&$1);  yyv_STRING_LITERAL = $1; }
 ;
 
 
@@ -377,7 +383,7 @@ iterable :
 expression : 
 #line 140 "apyc.hn"
 
-	LITERAL { YYCTLPA($$,0,1,&$1);  yyv_LITERAL = $1; }
+	literal { YYCTLPA($$,0,1,&$1);  yyv_literal = $1; }
  | 
 #line 141 "apyc.hn"
  FUNCTION_NAME expression_list { YYCTLPA($$,0,2,&$1,&$2);  yyv_FUNCTION_NAME = $1; yyv_expression_list = $2; }
@@ -449,7 +455,7 @@ print_stmt :
 
 
 
-#line 453 "apyc-parser.y"
+#line 459 "apyc-parser.y"
 
 %%
 
@@ -479,7 +485,7 @@ parse (FILE* f, const string& name)
 }
 
 
-#line 483 "apyc-parser.y"
+#line 489 "apyc-parser.y"
 
 const char* 
 yyexternal_token_name (int syntax)
