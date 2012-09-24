@@ -72,7 +72,6 @@
 %token EXPR_LIST "@expr_list"
 %token MODULE "@module"
 
-%token LITERAL "@literal"
 %token IF_STMT "@if_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
@@ -96,7 +95,8 @@
 %token DICT
 %token FUNCTION_NAME
 %token LIST
-%token NUM_LITERAL
+%token NUMERIC_LITERAL
+%token STRING_LITERAL
 %token TUPLE
 
 /* FIXME: MORE... */
@@ -125,13 +125,13 @@ parameter       : ID | ID ASSIGN expression;
 
 compare         : EQUALS | LTE | GTE | LT | GT;
 
-literal : string_literal | numeric_literal;
+literal : string_literal | NUMERIC_LITERAL;
 string_literal : string;
 
 expr_list : ;
 file : ;
 list : ;
-numeric_literal : ;
+literal : NUMERIC_LITERAL | STRING_LITERAL ;
 string : ;
 tuple : ;
 iterable : expr_list 
@@ -153,10 +153,7 @@ expression_list :
 
 iterable : list | string | tuple | dict | file
 ;
-	
 
-
-/* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
 stmt_list : print_stmt '\n'!
     ;
 
