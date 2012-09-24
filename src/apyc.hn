@@ -71,15 +71,45 @@
 %token EMPTY 
 %token EXPR_LIST "@expr_list"
 %token MODULE "@module"
+%token LITERAL "@literal"
+%token IF_STMT "@if_stmt"
+%token BOOLEAN_STMT "@boolean_stmt"
+%token ITERABLE "@iterable"
 /* FIXME: MORE... */
 
 %%
 
+
 program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
         ;
 
-/* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
 
+
+literal : string_literal |
+	numeric_literal 
+	;
+string_literal : string
+	;
+
+for_stmt : "for" ID "in" ITERABLE ":"! INDENT stmt_list DEDENT
+	;
+
+iterable : expr_list 
+	;
+
+expression :
+	LITERAL |
+	FUNCTION expression_list
+    ;
+
+expression_list :
+      expression (","! expression)* { $$ = $^(EXPR_LIST, $*); } |
+      /*empty*/       { $$ = $^(EXPR_LIST); }
+    ;
+
+	
+
+/* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
 stmt_list : print_stmt '\n'!
     ;
 
@@ -87,15 +117,7 @@ print_stmt : "print"  expression_list
                       { $$ = $^(PRINTLN, $^(EMPTY), $expression_list); }
     ;
 
-expression_list :
-      expression (","! expression)*
-                      { $$ = $^(EXPR_LIST, $*); }
-    | /*empty*/       { $$ = $^(EXPR_LIST); }
-    ;
 
-expression :
-      INT_LITERAL
-    ;
 
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
