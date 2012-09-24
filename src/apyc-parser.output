@@ -1,13 +1,93 @@
+Nonterminals useless in grammar
+
+   dict
+   compare
+   expr_list
+   file
+   list
+   tuple
+   iterable
+   function
+
+
 Terminals unused in grammar
 
    INT
    STRING
-   ID
    "@println"
-   EMPTY
    "@expr_list"
    "@module"
+   "@literal"
+   "@if_stmt"
+   "@boolean_stmt"
+   "@=="
+   "@>"
+   "@<"
+   "@>="
+   "@<="
+   DICT
+   LIST
+   NUM_LITERAL
+   TUPLE
    RAWSTRING
+
+
+Rules useless in grammar
+
+   38 dict: /* empty */
+
+   39 compare: "@=="
+   40        | "@<="
+   41        | "@>="
+   42        | "@<"
+   43        | "@>"
+
+   44 expr_list: /* empty */
+
+   45 file: /* empty */
+
+   46 list: /* empty */
+
+   47 tuple: /* empty */
+
+   48 iterable: expr_list
+
+   49 function: /* empty */
+
+   50 iterable: list
+   51         | string
+   52         | tuple
+   53         | dict
+   54         | file
+
+
+Rules useless in parser due to conflicts
+
+   27 string: /* empty */
+
+   33 expression_list: /* empty */
+
+
+State 0 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 5 conflicts: 2 reduce/reduce
+State 6 conflicts: 3 shift/reduce, 16 reduce/reduce
+State 7 conflicts: 2 reduce/reduce
+State 8 conflicts: 2 reduce/reduce
+State 12 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 23 conflicts: 3 shift/reduce, 16 reduce/reduce
+State 26 conflicts: 2 reduce/reduce
+State 41 conflicts: 4 reduce/reduce
+State 42 conflicts: 1 shift/reduce
+State 49 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 51 conflicts: 3 shift/reduce, 16 reduce/reduce
+State 52 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 53 conflicts: 2 reduce/reduce
+State 63 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 66 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 69 conflicts: 2 reduce/reduce
+State 70 conflicts: 2 reduce/reduce
+State 79 conflicts: 9 shift/reduce, 9 reduce/reduce
+State 80 conflicts: 9 shift/reduce, 9 reduce/reduce
 
 
 Grammar
@@ -16,157 +96,1376 @@ Grammar
 
     1 program: stmt_list
 
-    2 stmt_list: print_stmt "\n"
+    2 stmt_list: stmt stmt_list
+    3          | EMPTY
 
-    3 print_stmt: "print" expression_list
+    4 stmt: if_stmt
+    5     | while_stmt
+    6     | def_stmt
+    7     | for_stmt
+    8     | expression
 
-    4 expression_list: expression __0
-    5                | /* empty */
+    9 if_stmt: "if" bool_stmt ":" INDENT stmt_list DEDENT elif_stmt
 
-    6 expression: INT_LITERAL
+   10 elif_stmt: "elif" bool_stmt ":" INDENT stmt_list DEDENT elif_stmt
+   11          | EMPTY
+   12          | "else" bool_stmt ":" INDENT stmt_list DEDENT
 
-    7 __0: /* empty */
-    8    | __0 "," expression
+   13 bool_stmt: expression "@compare" bool_stmt
+   14          | "(" bool_stmt ")"
+   15          | expression
+
+   16 while_stmt: WHILE bool_stmt "@:" INDENT stmt_list DEDENT
+
+   17 for_stmt: FOR ID IN "@iterable" "@:" INDENT stmt_list DEDENT
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list "@)" "@:" INDENT stmt_list DEDENT
+
+   19 parameter_list: parameter "," parameter_list
+   20               | parameter
+
+   21 parameter: ID
+   22          | ID "@=" expression
+
+   23 literal: string_literal
+   24        | numeric_literal
+
+   25 string_literal: string
+
+   26 numeric_literal: /* empty */
+
+   27 string: /* empty */
+
+   28 expression: literal
+   29           | FUNCTION_NAME expression_list
+   30           | ID "@=" expression
+
+   31 literal: INTS_LITERAL
+
+   32 expression_list: expression __0
+   33                | /* empty */
+
+   34 stmt_list: print_stmt "\n"
+
+   35 print_stmt: "print" expression_list
+
+   36 __0: /* empty */
+   37    | __0 "," expression
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-"\n" (10) 2
-"," (44) 8
+"\n" (10) 34
+"(" (40) 14
+")" (41) 14
+":" (58) 9 10 12
 error (256)
 INT (258)
 STRING (259)
-ID (260)
+ID (260) 17 21 22 30
 "@println" (261)
-EMPTY (262)
+EMPTY (262) 3 11
 "@expr_list" (263)
 "@module" (264)
-"print" (265) 3
-INT_LITERAL (266) 6
-RAWSTRING (267)
+"@literal" (265)
+"@if_stmt" (266)
+"@boolean_stmt" (267)
+"@iterable" (268) 17
+"@(" (269) 18
+"@)" (270) 18
+"@:" (271) 16 17 18
+"@compare" (272) 13
+"@=" (273) 22 30
+"@==" (274)
+"@>" (275)
+"@<" (276)
+"@>=" (277)
+"@<=" (278)
+"," (279) 19 37
+DEDENT (280) 9 10 12 16 17 18
+DEF (281) 18
+FOR (282) 17
+IN (283) 17
+INDENT (284) 9 10 12 16 17 18
+WHILE (285) 16
+DICT (286)
+FUNCTION_NAME (287) 18 29
+LIST (288)
+NUM_LITERAL (289)
+TUPLE (290)
+"elif" (291) 10
+"else" (292) 12
+"if" (293) 9
+"print" (294) 35
+INTS_LITERAL (295) 31
+RAWSTRING (296)
 
 
 Nonterminals, with rules where they appear
 
-$accept (15)
+$accept (46)
     on left: 0
-program (16)
+program (47)
     on left: 1, on right: 0
-stmt_list (17)
-    on left: 2, on right: 1
-print_stmt (18)
-    on left: 3, on right: 2
-expression_list (19)
-    on left: 4 5, on right: 3
-expression (20)
-    on left: 6, on right: 4 8
-__0 (21)
-    on left: 7 8, on right: 4 8
+stmt_list (48)
+    on left: 2 3 34, on right: 1 2 9 10 12 16 17 18
+stmt (49)
+    on left: 4 5 6 7 8, on right: 2
+if_stmt (50)
+    on left: 9, on right: 4
+elif_stmt (51)
+    on left: 10 11 12, on right: 9 10
+bool_stmt (52)
+    on left: 13 14 15, on right: 9 10 12 13 14 16
+while_stmt (53)
+    on left: 16, on right: 5
+for_stmt (54)
+    on left: 17, on right: 7
+def_stmt (55)
+    on left: 18, on right: 6
+parameter_list (56)
+    on left: 19 20, on right: 18 19
+parameter (57)
+    on left: 21 22, on right: 19 20
+literal (58)
+    on left: 23 24 31, on right: 28
+string_literal (59)
+    on left: 25, on right: 23
+numeric_literal (60)
+    on left: 26, on right: 24
+string (61)
+    on left: 27, on right: 25
+expression (62)
+    on left: 28 29 30, on right: 8 13 15 22 30 32 37
+expression_list (63)
+    on left: 32 33, on right: 29 35
+print_stmt (64)
+    on left: 35, on right: 34
+__0 (65)
+    on left: 36 37, on right: 32 37
 
 
 state 0
 
     0 $accept: . program $end
 
-    "print"  shift, and go to state 1
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
 
-    program     go to state 2
-    stmt_list   go to state 3
-    print_stmt  go to state 4
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    program          go to state 10
+    stmt_list        go to state 11
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
 
 
 state 1
 
-    3 print_stmt: "print" . expression_list
+   30 expression: ID . "@=" expression
 
-    INT_LITERAL  shift, and go to state 5
-
-    $default  reduce using rule 5 (expression_list)
-
-    expression_list  go to state 6
-    expression       go to state 7
+    "@="  shift, and go to state 23
 
 
 state 2
 
-    0 $accept: program . $end
+    3 stmt_list: EMPTY .
 
-    $end  shift, and go to state 8
+    $default  reduce using rule 3 (stmt_list)
 
 
 state 3
+
+   18 def_stmt: DEF . FUNCTION_NAME "@(" parameter_list "@)" "@:" INDENT stmt_list DEDENT
+
+    FUNCTION_NAME  shift, and go to state 24
+
+
+state 4
+
+   17 for_stmt: FOR . ID IN "@iterable" "@:" INDENT stmt_list DEDENT
+
+    ID  shift, and go to state 25
+
+
+state 5
+
+   16 while_stmt: WHILE . bool_stmt "@:" INDENT stmt_list DEDENT
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    "("            shift, and go to state 26
+    INTS_LITERAL   shift, and go to state 9
+
+    "@:"        reduce using rule 26 (numeric_literal)
+    "@:"        [reduce using rule 27 (string)]
+    "@compare"  reduce using rule 26 (numeric_literal)
+    "@compare"  [reduce using rule 27 (string)]
+    $default    reduce using rule 26 (numeric_literal)
+
+    bool_stmt        go to state 27
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 28
+
+
+state 6
+
+   29 expression: FUNCTION_NAME . expression_list
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    ID             [reduce using rule 33 (expression_list)]
+    EMPTY          reduce using rule 26 (numeric_literal)
+    EMPTY          [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 33 (expression_list)]
+    "@)"           reduce using rule 26 (numeric_literal)
+    "@)"           [reduce using rule 27 (string)]
+    "@)"           [reduce using rule 33 (expression_list)]
+    "@:"           reduce using rule 26 (numeric_literal)
+    "@:"           [reduce using rule 27 (string)]
+    "@:"           [reduce using rule 33 (expression_list)]
+    "@compare"     reduce using rule 26 (numeric_literal)
+    "@compare"     [reduce using rule 27 (string)]
+    "@compare"     [reduce using rule 33 (expression_list)]
+    ","            reduce using rule 26 (numeric_literal)
+    ","            [reduce using rule 27 (string)]
+    ","            [reduce using rule 33 (expression_list)]
+    DEF            reduce using rule 26 (numeric_literal)
+    DEF            [reduce using rule 27 (string)]
+    DEF            [reduce using rule 33 (expression_list)]
+    FOR            reduce using rule 26 (numeric_literal)
+    FOR            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 33 (expression_list)]
+    WHILE          reduce using rule 26 (numeric_literal)
+    WHILE          [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 33 (expression_list)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 33 (expression_list)]
+    ")"            reduce using rule 26 (numeric_literal)
+    ")"            [reduce using rule 27 (string)]
+    ")"            [reduce using rule 33 (expression_list)]
+    ":"            reduce using rule 26 (numeric_literal)
+    ":"            [reduce using rule 27 (string)]
+    ":"            [reduce using rule 33 (expression_list)]
+    "\n"           reduce using rule 26 (numeric_literal)
+    "\n"           [reduce using rule 27 (string)]
+    "\n"           [reduce using rule 33 (expression_list)]
+    "if"           reduce using rule 26 (numeric_literal)
+    "if"           [reduce using rule 27 (string)]
+    "if"           [reduce using rule 33 (expression_list)]
+    "print"        reduce using rule 26 (numeric_literal)
+    "print"        [reduce using rule 27 (string)]
+    "print"        [reduce using rule 33 (expression_list)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 33 (expression_list)]
+    $default       reduce using rule 26 (numeric_literal)
+
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 29
+    expression_list  go to state 30
+
+
+state 7
+
+    9 if_stmt: "if" . bool_stmt ":" INDENT stmt_list DEDENT elif_stmt
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    "("            shift, and go to state 26
+    INTS_LITERAL   shift, and go to state 9
+
+    "@compare"  reduce using rule 26 (numeric_literal)
+    "@compare"  [reduce using rule 27 (string)]
+    ":"         reduce using rule 26 (numeric_literal)
+    ":"         [reduce using rule 27 (string)]
+    $default    reduce using rule 26 (numeric_literal)
+
+    bool_stmt        go to state 31
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 28
+
+
+state 8
+
+   35 print_stmt: "print" . expression_list
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    INTS_LITERAL   shift, and go to state 9
+
+    ","       reduce using rule 26 (numeric_literal)
+    ","       [reduce using rule 27 (string)]
+    "\n"      reduce using rule 26 (numeric_literal)
+    "\n"      [reduce using rule 27 (string)]
+    "\n"      [reduce using rule 33 (expression_list)]
+    $default  reduce using rule 26 (numeric_literal)
+
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 29
+    expression_list  go to state 32
+
+
+state 9
+
+   31 literal: INTS_LITERAL .
+
+    $default  reduce using rule 31 (literal)
+
+
+state 10
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 33
+
+
+state 11
 
     1 program: stmt_list .
 
     $default  reduce using rule 1 (program)
 
 
-state 4
+state 12
 
-    2 stmt_list: print_stmt . "\n"
+    2 stmt_list: stmt . stmt_list
 
-    "\n"  shift, and go to state 9
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 34
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
 
 
-state 5
+state 13
 
-    6 expression: INT_LITERAL .
+    4 stmt: if_stmt .
 
-    $default  reduce using rule 6 (expression)
-
-
-state 6
-
-    3 print_stmt: "print" expression_list .
-
-    $default  reduce using rule 3 (print_stmt)
+    $default  reduce using rule 4 (stmt)
 
 
-state 7
+state 14
 
-    4 expression_list: expression . __0
+    5 stmt: while_stmt .
 
-    $default  reduce using rule 7 (__0)
-
-    __0  go to state 10
+    $default  reduce using rule 5 (stmt)
 
 
-state 8
+state 15
+
+    7 stmt: for_stmt .
+
+    $default  reduce using rule 7 (stmt)
+
+
+state 16
+
+    6 stmt: def_stmt .
+
+    $default  reduce using rule 6 (stmt)
+
+
+state 17
+
+   28 expression: literal .
+
+    $default  reduce using rule 28 (expression)
+
+
+state 18
+
+   23 literal: string_literal .
+
+    $default  reduce using rule 23 (literal)
+
+
+state 19
+
+   24 literal: numeric_literal .
+
+    $default  reduce using rule 24 (literal)
+
+
+state 20
+
+   25 string_literal: string .
+
+    $default  reduce using rule 25 (string_literal)
+
+
+state 21
+
+    8 stmt: expression .
+
+    $default  reduce using rule 8 (stmt)
+
+
+state 22
+
+   34 stmt_list: print_stmt . "\n"
+
+    "\n"  shift, and go to state 35
+
+
+state 23
+
+   30 expression: ID "@=" . expression
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          reduce using rule 26 (numeric_literal)
+    EMPTY          [reduce using rule 27 (string)]
+    "@)"           reduce using rule 26 (numeric_literal)
+    "@)"           [reduce using rule 27 (string)]
+    "@:"           reduce using rule 26 (numeric_literal)
+    "@:"           [reduce using rule 27 (string)]
+    "@compare"     reduce using rule 26 (numeric_literal)
+    "@compare"     [reduce using rule 27 (string)]
+    ","            reduce using rule 26 (numeric_literal)
+    ","            [reduce using rule 27 (string)]
+    DEF            reduce using rule 26 (numeric_literal)
+    DEF            [reduce using rule 27 (string)]
+    FOR            reduce using rule 26 (numeric_literal)
+    FOR            [reduce using rule 27 (string)]
+    WHILE          reduce using rule 26 (numeric_literal)
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    ")"            reduce using rule 26 (numeric_literal)
+    ")"            [reduce using rule 27 (string)]
+    ":"            reduce using rule 26 (numeric_literal)
+    ":"            [reduce using rule 27 (string)]
+    "\n"           reduce using rule 26 (numeric_literal)
+    "\n"           [reduce using rule 27 (string)]
+    "if"           reduce using rule 26 (numeric_literal)
+    "if"           [reduce using rule 27 (string)]
+    "print"        reduce using rule 26 (numeric_literal)
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+    $default       reduce using rule 26 (numeric_literal)
+
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 36
+
+
+state 24
+
+   18 def_stmt: DEF FUNCTION_NAME . "@(" parameter_list "@)" "@:" INDENT stmt_list DEDENT
+
+    "@("  shift, and go to state 37
+
+
+state 25
+
+   17 for_stmt: FOR ID . IN "@iterable" "@:" INDENT stmt_list DEDENT
+
+    IN  shift, and go to state 38
+
+
+state 26
+
+   14 bool_stmt: "(" . bool_stmt ")"
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    "("            shift, and go to state 26
+    INTS_LITERAL   shift, and go to state 9
+
+    "@compare"  reduce using rule 26 (numeric_literal)
+    "@compare"  [reduce using rule 27 (string)]
+    ")"         reduce using rule 26 (numeric_literal)
+    ")"         [reduce using rule 27 (string)]
+    $default    reduce using rule 26 (numeric_literal)
+
+    bool_stmt        go to state 39
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 28
+
+
+state 27
+
+   16 while_stmt: WHILE bool_stmt . "@:" INDENT stmt_list DEDENT
+
+    "@:"  shift, and go to state 40
+
+
+state 28
+
+   13 bool_stmt: expression . "@compare" bool_stmt
+   15          | expression .
+
+    "@compare"  shift, and go to state 41
+
+    $default  reduce using rule 15 (bool_stmt)
+
+
+state 29
+
+   32 expression_list: expression . __0
+
+    $default  reduce using rule 36 (__0)
+
+    __0  go to state 42
+
+
+state 30
+
+   29 expression: FUNCTION_NAME expression_list .
+
+    $default  reduce using rule 29 (expression)
+
+
+state 31
+
+    9 if_stmt: "if" bool_stmt . ":" INDENT stmt_list DEDENT elif_stmt
+
+    ":"  shift, and go to state 43
+
+
+state 32
+
+   35 print_stmt: "print" expression_list .
+
+    $default  reduce using rule 35 (print_stmt)
+
+
+state 33
 
     0 $accept: program $end .
 
     $default  accept
 
 
-state 9
+state 34
 
-    2 stmt_list: print_stmt "\n" .
+    2 stmt_list: stmt stmt_list .
 
     $default  reduce using rule 2 (stmt_list)
 
 
-state 10
+state 35
 
-    4 expression_list: expression __0 .
-    8 __0: __0 . "," expression
+   34 stmt_list: print_stmt "\n" .
 
-    ","  shift, and go to state 11
-
-    $default  reduce using rule 4 (expression_list)
+    $default  reduce using rule 34 (stmt_list)
 
 
-state 11
+state 36
 
-    8 __0: __0 "," . expression
+   30 expression: ID "@=" expression .
 
-    INT_LITERAL  shift, and go to state 5
-
-    expression  go to state 12
+    $default  reduce using rule 30 (expression)
 
 
-state 12
+state 37
 
-    8 __0: __0 "," expression .
+   18 def_stmt: DEF FUNCTION_NAME "@(" . parameter_list "@)" "@:" INDENT stmt_list DEDENT
 
-    $default  reduce using rule 8 (__0)
+    ID  shift, and go to state 44
+
+    parameter_list  go to state 45
+    parameter       go to state 46
+
+
+state 38
+
+   17 for_stmt: FOR ID IN . "@iterable" "@:" INDENT stmt_list DEDENT
+
+    "@iterable"  shift, and go to state 47
+
+
+state 39
+
+   14 bool_stmt: "(" bool_stmt . ")"
+
+    ")"  shift, and go to state 48
+
+
+state 40
+
+   16 while_stmt: WHILE bool_stmt "@:" . INDENT stmt_list DEDENT
+
+    INDENT  shift, and go to state 49
+
+
+state 41
+
+   13 bool_stmt: expression "@compare" . bool_stmt
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    "("            shift, and go to state 26
+    INTS_LITERAL   shift, and go to state 9
+
+    "@:"        reduce using rule 26 (numeric_literal)
+    "@:"        [reduce using rule 27 (string)]
+    "@compare"  reduce using rule 26 (numeric_literal)
+    "@compare"  [reduce using rule 27 (string)]
+    ")"         reduce using rule 26 (numeric_literal)
+    ")"         [reduce using rule 27 (string)]
+    ":"         reduce using rule 26 (numeric_literal)
+    ":"         [reduce using rule 27 (string)]
+    $default    reduce using rule 26 (numeric_literal)
+
+    bool_stmt        go to state 50
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 28
+
+
+state 42
+
+   32 expression_list: expression __0 .
+   37 __0: __0 . "," expression
+
+    ","  shift, and go to state 51
+
+    ","       [reduce using rule 32 (expression_list)]
+    $default  reduce using rule 32 (expression_list)
+
+
+state 43
+
+    9 if_stmt: "if" bool_stmt ":" . INDENT stmt_list DEDENT elif_stmt
+
+    INDENT  shift, and go to state 52
+
+
+state 44
+
+   21 parameter: ID .
+   22          | ID . "@=" expression
+
+    "@="  shift, and go to state 53
+
+    $default  reduce using rule 21 (parameter)
+
+
+state 45
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list . "@)" "@:" INDENT stmt_list DEDENT
+
+    "@)"  shift, and go to state 54
+
+
+state 46
+
+   19 parameter_list: parameter . "," parameter_list
+   20               | parameter .
+
+    ","  shift, and go to state 55
+
+    $default  reduce using rule 20 (parameter_list)
+
+
+state 47
+
+   17 for_stmt: FOR ID IN "@iterable" . "@:" INDENT stmt_list DEDENT
+
+    "@:"  shift, and go to state 56
+
+
+state 48
+
+   14 bool_stmt: "(" bool_stmt ")" .
+
+    $default  reduce using rule 14 (bool_stmt)
+
+
+state 49
+
+   16 while_stmt: WHILE bool_stmt "@:" INDENT . stmt_list DEDENT
+
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 57
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
+
+
+state 50
+
+   13 bool_stmt: expression "@compare" bool_stmt .
+
+    $default  reduce using rule 13 (bool_stmt)
+
+
+state 51
+
+   37 __0: __0 "," . expression
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          reduce using rule 26 (numeric_literal)
+    EMPTY          [reduce using rule 27 (string)]
+    "@)"           reduce using rule 26 (numeric_literal)
+    "@)"           [reduce using rule 27 (string)]
+    "@:"           reduce using rule 26 (numeric_literal)
+    "@:"           [reduce using rule 27 (string)]
+    "@compare"     reduce using rule 26 (numeric_literal)
+    "@compare"     [reduce using rule 27 (string)]
+    ","            reduce using rule 26 (numeric_literal)
+    ","            [reduce using rule 27 (string)]
+    DEF            reduce using rule 26 (numeric_literal)
+    DEF            [reduce using rule 27 (string)]
+    FOR            reduce using rule 26 (numeric_literal)
+    FOR            [reduce using rule 27 (string)]
+    WHILE          reduce using rule 26 (numeric_literal)
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    ")"            reduce using rule 26 (numeric_literal)
+    ")"            [reduce using rule 27 (string)]
+    ":"            reduce using rule 26 (numeric_literal)
+    ":"            [reduce using rule 27 (string)]
+    "\n"           reduce using rule 26 (numeric_literal)
+    "\n"           [reduce using rule 27 (string)]
+    "if"           reduce using rule 26 (numeric_literal)
+    "if"           [reduce using rule 27 (string)]
+    "print"        reduce using rule 26 (numeric_literal)
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+    $default       reduce using rule 26 (numeric_literal)
+
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 58
+
+
+state 52
+
+    9 if_stmt: "if" bool_stmt ":" INDENT . stmt_list DEDENT elif_stmt
+
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 59
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
+
+
+state 53
+
+   22 parameter: ID "@=" . expression
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    INTS_LITERAL   shift, and go to state 9
+
+    "@)"      reduce using rule 26 (numeric_literal)
+    "@)"      [reduce using rule 27 (string)]
+    ","       reduce using rule 26 (numeric_literal)
+    ","       [reduce using rule 27 (string)]
+    $default  reduce using rule 26 (numeric_literal)
+
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 60
+
+
+state 54
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list "@)" . "@:" INDENT stmt_list DEDENT
+
+    "@:"  shift, and go to state 61
+
+
+state 55
+
+   19 parameter_list: parameter "," . parameter_list
+
+    ID  shift, and go to state 44
+
+    parameter_list  go to state 62
+    parameter       go to state 46
+
+
+state 56
+
+   17 for_stmt: FOR ID IN "@iterable" "@:" . INDENT stmt_list DEDENT
+
+    INDENT  shift, and go to state 63
+
+
+state 57
+
+   16 while_stmt: WHILE bool_stmt "@:" INDENT stmt_list . DEDENT
+
+    DEDENT  shift, and go to state 64
+
+
+state 58
+
+   37 __0: __0 "," expression .
+
+    $default  reduce using rule 37 (__0)
+
+
+state 59
+
+    9 if_stmt: "if" bool_stmt ":" INDENT stmt_list . DEDENT elif_stmt
+
+    DEDENT  shift, and go to state 65
+
+
+state 60
+
+   22 parameter: ID "@=" expression .
+
+    $default  reduce using rule 22 (parameter)
+
+
+state 61
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list "@)" "@:" . INDENT stmt_list DEDENT
+
+    INDENT  shift, and go to state 66
+
+
+state 62
+
+   19 parameter_list: parameter "," parameter_list .
+
+    $default  reduce using rule 19 (parameter_list)
+
+
+state 63
+
+   17 for_stmt: FOR ID IN "@iterable" "@:" INDENT . stmt_list DEDENT
+
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 67
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
+
+
+state 64
+
+   16 while_stmt: WHILE bool_stmt "@:" INDENT stmt_list DEDENT .
+
+    $default  reduce using rule 16 (while_stmt)
+
+
+state 65
+
+    9 if_stmt: "if" bool_stmt ":" INDENT stmt_list DEDENT . elif_stmt
+
+    EMPTY   shift, and go to state 68
+    "elif"  shift, and go to state 69
+    "else"  shift, and go to state 70
+
+    elif_stmt  go to state 71
+
+
+state 66
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list "@)" "@:" INDENT . stmt_list DEDENT
+
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 72
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
+
+
+state 67
+
+   17 for_stmt: FOR ID IN "@iterable" "@:" INDENT stmt_list . DEDENT
+
+    DEDENT  shift, and go to state 73
+
+
+state 68
+
+   11 elif_stmt: EMPTY .
+
+    $default  reduce using rule 11 (elif_stmt)
+
+
+state 69
+
+   10 elif_stmt: "elif" . bool_stmt ":" INDENT stmt_list DEDENT elif_stmt
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    "("            shift, and go to state 26
+    INTS_LITERAL   shift, and go to state 9
+
+    "@compare"  reduce using rule 26 (numeric_literal)
+    "@compare"  [reduce using rule 27 (string)]
+    ":"         reduce using rule 26 (numeric_literal)
+    ":"         [reduce using rule 27 (string)]
+    $default    reduce using rule 26 (numeric_literal)
+
+    bool_stmt        go to state 74
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 28
+
+
+state 70
+
+   12 elif_stmt: "else" . bool_stmt ":" INDENT stmt_list DEDENT
+
+    ID             shift, and go to state 1
+    FUNCTION_NAME  shift, and go to state 6
+    "("            shift, and go to state 26
+    INTS_LITERAL   shift, and go to state 9
+
+    "@compare"  reduce using rule 26 (numeric_literal)
+    "@compare"  [reduce using rule 27 (string)]
+    ":"         reduce using rule 26 (numeric_literal)
+    ":"         [reduce using rule 27 (string)]
+    $default    reduce using rule 26 (numeric_literal)
+
+    bool_stmt        go to state 75
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 28
+
+
+state 71
+
+    9 if_stmt: "if" bool_stmt ":" INDENT stmt_list DEDENT elif_stmt .
+
+    $default  reduce using rule 9 (if_stmt)
+
+
+state 72
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list "@)" "@:" INDENT stmt_list . DEDENT
+
+    DEDENT  shift, and go to state 76
+
+
+state 73
+
+   17 for_stmt: FOR ID IN "@iterable" "@:" INDENT stmt_list DEDENT .
+
+    $default  reduce using rule 17 (for_stmt)
+
+
+state 74
+
+   10 elif_stmt: "elif" bool_stmt . ":" INDENT stmt_list DEDENT elif_stmt
+
+    ":"  shift, and go to state 77
+
+
+state 75
+
+   12 elif_stmt: "else" bool_stmt . ":" INDENT stmt_list DEDENT
+
+    ":"  shift, and go to state 78
+
+
+state 76
+
+   18 def_stmt: DEF FUNCTION_NAME "@(" parameter_list "@)" "@:" INDENT stmt_list DEDENT .
+
+    $default  reduce using rule 18 (def_stmt)
+
+
+state 77
+
+   10 elif_stmt: "elif" bool_stmt ":" . INDENT stmt_list DEDENT elif_stmt
+
+    INDENT  shift, and go to state 79
+
+
+state 78
+
+   12 elif_stmt: "else" bool_stmt ":" . INDENT stmt_list DEDENT
+
+    INDENT  shift, and go to state 80
+
+
+state 79
+
+   10 elif_stmt: "elif" bool_stmt ":" INDENT . stmt_list DEDENT elif_stmt
+
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 81
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
+
+
+state 80
+
+   12 elif_stmt: "else" bool_stmt ":" INDENT . stmt_list DEDENT
+
+    ID             shift, and go to state 1
+    EMPTY          shift, and go to state 2
+    DEF            shift, and go to state 3
+    FOR            shift, and go to state 4
+    WHILE          shift, and go to state 5
+    FUNCTION_NAME  shift, and go to state 6
+    "if"           shift, and go to state 7
+    "print"        shift, and go to state 8
+    INTS_LITERAL   shift, and go to state 9
+
+    ID             [reduce using rule 26 (numeric_literal)]
+    ID             [reduce using rule 27 (string)]
+    EMPTY          [reduce using rule 26 (numeric_literal)]
+    EMPTY          [reduce using rule 27 (string)]
+    DEF            [reduce using rule 26 (numeric_literal)]
+    DEF            [reduce using rule 27 (string)]
+    FOR            [reduce using rule 26 (numeric_literal)]
+    FOR            [reduce using rule 27 (string)]
+    WHILE          [reduce using rule 26 (numeric_literal)]
+    WHILE          [reduce using rule 27 (string)]
+    FUNCTION_NAME  [reduce using rule 26 (numeric_literal)]
+    FUNCTION_NAME  [reduce using rule 27 (string)]
+    "if"           [reduce using rule 26 (numeric_literal)]
+    "if"           [reduce using rule 27 (string)]
+    "print"        [reduce using rule 26 (numeric_literal)]
+    "print"        [reduce using rule 27 (string)]
+    INTS_LITERAL   [reduce using rule 26 (numeric_literal)]
+    INTS_LITERAL   [reduce using rule 27 (string)]
+
+    stmt_list        go to state 82
+    stmt             go to state 12
+    if_stmt          go to state 13
+    while_stmt       go to state 14
+    for_stmt         go to state 15
+    def_stmt         go to state 16
+    literal          go to state 17
+    string_literal   go to state 18
+    numeric_literal  go to state 19
+    string           go to state 20
+    expression       go to state 21
+    print_stmt       go to state 22
+
+
+state 81
+
+   10 elif_stmt: "elif" bool_stmt ":" INDENT stmt_list . DEDENT elif_stmt
+
+    DEDENT  shift, and go to state 83
+
+
+state 82
+
+   12 elif_stmt: "else" bool_stmt ":" INDENT stmt_list . DEDENT
+
+    DEDENT  shift, and go to state 84
+
+
+state 83
+
+   10 elif_stmt: "elif" bool_stmt ":" INDENT stmt_list DEDENT . elif_stmt
+
+    EMPTY   shift, and go to state 68
+    "elif"  shift, and go to state 69
+    "else"  shift, and go to state 70
+
+    elif_stmt  go to state 85
+
+
+state 84
+
+   12 elif_stmt: "else" bool_stmt ":" INDENT stmt_list DEDENT .
+
+    $default  reduce using rule 12 (elif_stmt)
+
+
+state 85
+
+   10 elif_stmt: "elif" bool_stmt ":" INDENT stmt_list DEDENT elif_stmt .
+
+    $default  reduce using rule 10 (elif_stmt)

@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.2.  */
+/* A Bison parser, made by GNU Bison 2.6.  */
 
 /* Bison interface for Yacc-like parsers in C
    
@@ -53,9 +53,38 @@ extern int yydebug;
      EMPTY = 262,
      EXPR_LIST = 263,
      MODULE = 264,
-     _TOK_0 = 265,
-     INT_LITERAL = 266,
-     RAWSTRING = 267
+     LITERAL = 265,
+     IF_STMT = 266,
+     BOOLEAN_STMT = 267,
+     ITERABLE = 268,
+     LPAREN = 269,
+     RPAREN = 270,
+     COLON = 271,
+     COMPARE = 272,
+     ASSIGN = 273,
+     EQUALS = 274,
+     GT = 275,
+     LT = 276,
+     GTE = 277,
+     LTE = 278,
+     COMMA = 279,
+     DEDENT = 280,
+     DEF = 281,
+     FOR = 282,
+     IN = 283,
+     INDENT = 284,
+     WHILE = 285,
+     DICT = 286,
+     FUNCTION_NAME = 287,
+     LIST = 288,
+     NUM_LITERAL = 289,
+     TUPLE = 290,
+     _TOK_1 = 291,
+     _TOK_2 = 292,
+     _TOK_0 = 293,
+     _TOK_3 = 294,
+     INTS_LITERAL = 295,
+     RAWSTRING = 296
    };
 #endif
 
