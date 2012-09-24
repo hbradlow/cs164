@@ -1,4 +1,4 @@
-/* Generated from apyc.hn at Sun Sep 23 10:42:17 2012 GMT. */
+/* Generated from apyc.hn at Mon Sep 24 03:46:51 2012 GMT. */
 
 %option 8bit nodefault noinput nounput noyywrap
 
@@ -16,11 +16,26 @@ _EOF  "\377"
 
 %%
 
+@\(	{ { YY_LEXLHS(LPAREN); YYLEXRET; } } 
+@\)	{ { YY_LEXLHS(RPAREN); YYLEXRET; } } 
+@:	{ { YY_LEXLHS(COLON); YYLEXRET; } } 
+@\<	{ { YY_LEXLHS(LT); YYLEXRET; } } 
+@\<=	{ { YY_LEXLHS(LTE); YYLEXRET; } } 
+@=	{ { YY_LEXLHS(ASSIGN); YYLEXRET; } } 
+@==	{ { YY_LEXLHS(EQUALS); YYLEXRET; } } 
+@\>	{ { YY_LEXLHS(GT); YYLEXRET; } } 
+@\>=	{ { YY_LEXLHS(GTE); YYLEXRET; } } 
+@boolean_stmt	{ { YY_LEXLHS(BOOLEAN_STMT); YYLEXRET; } } 
+@compare	{ { YY_LEXLHS(COMPARE); YYLEXRET; } } 
 @expr_list	{ { YY_LEXLHS(EXPR_LIST); YYLEXRET; } } 
+@id	{ { YY_LEXLHS(ID); YYLEXRET; } } 
+@if_stmt	{ { YY_LEXLHS(IF_STMT); YYLEXRET; } } 
+@iterable	{ { YY_LEXLHS(ITERABLE); YYLEXRET; } } 
+@literal	{ { YY_LEXLHS(LITERAL); YYLEXRET; } } 
 @module	{ { YY_LEXLHS(MODULE); YYLEXRET; } } 
 @println	{ { YY_LEXLHS(PRINTLN); YYLEXRET; } } 
 print	{ { YY_LEXLHS(_TOK_0); YYLEXRET; } } 
-[\012,]	{ { YYSIMPLELEXRET; } } 
+[\012,:]	{ { YYSIMPLELEXRET; } } 
 [\011\015 ]+	{ { YY_LEXLHS;  YYLEXRET; } } 
 [1-9][0-9]*	{ { YY_LEXLHS(INT_LITERAL); YYLEXRET; } } 
 \"\"	{ { YY_LEXLHS(STRING); YYLEXRET; } } 

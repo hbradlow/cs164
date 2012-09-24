@@ -113,7 +113,7 @@ def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT
 parameter_list  : parameter COMMA! parameter_list | parameter;
 parameter       : ID | ID ASSIGN expression;
 
-COMPARE         : EQUALS | LTE | GTE | LT | GT;
+compare         : EQUALS | LTE | GTE | LT | GT;
 
 literal : string_literal | numeric_literal;
 string_literal : string;
