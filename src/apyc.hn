@@ -90,6 +90,7 @@ stmt            : if_stmt | bool_stmt | while_stmt | def_stmt | for_stmt;
 
 if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt;
 elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt | EMPTY | "else" bool_stmt ":"! INDENT stmt_list DEDENT
+;
 bool_stmt       : expression COMPARE bool_stmt | "(" bool_stmt ")" | expression;
 
 while_stmt      : "while" bool_stmt ":"! INDENT stmt_list DEDENT;
@@ -113,15 +114,19 @@ iterable : expr_list
 	;
 
 expression :
-	LITERAL |
-	FUNCTION expression_list
+	LITERAL | function_name expression_list | ID ASSIGN expression 
     ;
+
+function :
+;	
 
 expression_list :
       expression (","! expression)* { $$ = $^(EXPR_LIST, $*); } |
       /*empty*/       { $$ = $^(EXPR_LIST); }
     ;
 
+iterable : list | string | tuple | dict | file
+;
 	
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
