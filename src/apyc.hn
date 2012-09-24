@@ -76,6 +76,20 @@
 %token IF_STMT "@if_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
+
+%token LPAREN "@("
+%token RPAREN "@)"
+%token COLON "@:"
+%token COMPARE "@compare"
+
+%token ASSIGN "@="
+%token ID "@id"
+
+%token EQUALS "@=="
+%token GT "@>"
+%token LT "@<"
+%token GTE "@>="
+%token LTE "@<="
 /* FIXME: MORE... */
 
 %%
@@ -85,30 +99,25 @@ program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
         ;
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
-stmt_list       : stmt stmt_list | ; 
-stmt            : if_stmt | bool_stmt | while_stmt | def_stmt | for_stmt;
+stmt_list       : stmt stmt_list | EMPTY; 
+stmt            : if_stmt | while_stmt | def_stmt | for_stmt | expression;
 
 if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt;
 elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt | EMPTY | "else" bool_stmt ":"! INDENT stmt_list DEDENT
 ;
 bool_stmt       : expression COMPARE bool_stmt | "(" bool_stmt ")" | expression;
+while_stmt      : WHILE bool_stmt COLON! INDENT stmt_list DEDENT;
+for_stmt        : FOR ID IN ITERABLE COLON! INDENT stmt_list DEDENT;
 
-while_stmt      : "while" bool_stmt ":"! INDENT stmt_list DEDENT;
-def_stmt        : "def" FUNCTION_NAME "("! parameter_list ")"! ":"! INDENT stmt_list DEDENT;
-parameter_list  : parameter ","! parameter_list | parameter;
-parameter       : ID | ID "=" expression;
+def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT stmt_list DEDENT;
+parameter_list  : parameter COMMA! parameter_list | parameter;
+parameter       : ID | ID ASSIGN expression;
 
-COMPARE     : "==" | "<=" | ">=" | "<" | ">";
+COMPARE         : EQUALS | LTE | GTE | LT | GT;
 
+literal : string_literal | numeric_literal;
+string_literal : string;
 
-literal : string_literal |
-	numeric_literal 
-	;
-string_literal : string
-	;
-
-for_stmt : "for" ID "in" ITERABLE ":"! INDENT stmt_list DEDENT
-	;
 
 iterable : expr_list 
 	;
@@ -128,6 +137,7 @@ expression_list :
 iterable : list | string | tuple | dict | file
 ;
 	
+
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
 stmt_list : print_stmt '\n'!
