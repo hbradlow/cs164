@@ -76,20 +76,29 @@
 %token IF_STMT "@if_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
-
 %token LPAREN "@("
 %token RPAREN "@)"
 %token COLON "@:"
 %token COMPARE "@compare"
-
 %token ASSIGN "@="
-%token ID "@id"
-
 %token EQUALS "@=="
 %token GT "@>"
 %token LT "@<"
 %token GTE "@>="
 %token LTE "@<="
+%token COMMA ","
+%token DEDENT 
+%token DEF
+%token FOR
+%token IN
+%token INDENT
+%token WHILE
+%token DICT
+%token FUNCTION_NAME
+%token LIST
+%token NUM_LITERAL
+%token TUPLE
+
 /* FIXME: MORE... */
 
 %%
@@ -99,6 +108,7 @@ program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
         ;
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
+dict : ;
 stmt_list       : stmt stmt_list | EMPTY; 
 stmt            : if_stmt | while_stmt | def_stmt | for_stmt | expression;
 
@@ -111,19 +121,24 @@ for_stmt        : FOR ID IN ITERABLE COLON! INDENT stmt_list DEDENT;
 
 def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT stmt_list DEDENT;
 parameter_list  : parameter COMMA! parameter_list | parameter;
-parameter       : ID | ID ASSIGN expression;
+parameter       : ID | ID ASSIGN expression; 
 
-COMPARE         : EQUALS | LTE | GTE | LT | GT;
+compare		: EQUALS | LTE | GTE | LT | GT;
 
 literal : string_literal | numeric_literal;
 string_literal : string;
 
-
+expr_list : ;
+file : ;
+list : ;
+numeric_literal : ;
+string : ;
+tuple : ;
 iterable : expr_list 
 	;
 
 expression :
-	LITERAL | function_name expression_list | ID ASSIGN expression 
+	LITERAL | FUNCTION_NAME expression_list | ID ASSIGN expression 
     ;
 
 function :
