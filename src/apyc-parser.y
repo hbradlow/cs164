@@ -1,10 +1,27 @@
-/* -*- mode: fundamental; c-file-style: "stroustrup"; indent-tabs-mode: nil -*- */
+/* -*-C++-*- */
+/* Generated from apyc.hn at Sun Sep 23 10:42:17 2012 GMT. */
 
-/* apyc: Bison Parser */
+%code top {
 
-/* Authors: YOUR NAMES HERE */
+#define YYPARAM Tree_Semantics< AST >
+#define YYPRODUCING_TREES
+#define YYERROR_FUNCTION_NAME error
 
-%define semantic_tree_type "AST"
+# define YY_PARSER_1
+# include "horn-parse-lex.cc"
+}
+
+%{
+
+    YYNAMESPACE_OPEN
+
+%}
+
+/* User prologue code */
+
+
+#line 7 "apyc.hn"
+
 
 %token INT
 %token STRING
@@ -22,7 +39,8 @@
 %}
 
 %debug
-%define error_function error
+#line 25 "apyc.hn"
+
 
 /* A token declaration such as
  *   %token INDENT
@@ -72,78 +90,103 @@
 %token EXPR_LIST "@expr_list"
 %token MODULE "@module"
 
-%token LITERAL "@literal"
-%token IF_STMT "@if_stmt"
-%token BOOLEAN_STMT "@boolean_stmt"
-%token ITERABLE "@iterable"
-/* FIXME: MORE... */
+#line 94 "apyc-parser.y"
+
+/* Horn prologue */
+
+%defines
+%token-table
+
+%{
+
+#define YY_PARSER_2
+#include "horn-parse-lex.cc"
+
+%}
+
+/* Token definitions */
+
+%token ',' ","
+%token '\n' "\n"
+%token _TOK_0 "print"
+%token  INT_LITERAL
+%token  RAWSTRING
+
+
+/* Destroying discarded semantic values. */
+%destructor { $$._destructor (); } <>
+
+%{
+static yyvar yyv_INT_LITERAL;
+static yyvar yyv_expression;
+static yyvar yyv_expression_list;
+static yyvar yyv_print_stmt;
+static yyvar yyv_stmt_list;
+
+%}
 
 %%
 
 
-program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
-        ;
+
+program : 
+#line 78 "apyc.hn"
+ stmt_list   { YYCTLPA($$,0,1,&$1);  yyv_stmt_list = $1;theTree = YYMAKE_TREE(MODULE, yylhs.all_values ()); yylhs = NULL; } 
+;
+
+
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
-stmt_list       : stmt stmt_list | ; 
-stmt            : if_stmt | bool_stmt | while_stmt | def_stmt | for_stmt;
 
-if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt;
-elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt | EMPTY | "else" bool_stmt ":"! INDENT stmt_list DEDENT
-bool_stmt       : expression COMPARE bool_stmt | "(" bool_stmt ")" | expression;
-
-while_stmt      : "while" bool_stmt ":"! INDENT stmt_list DEDENT;
-def_stmt        : "def" FUNCTION_NAME "("! parameter_list ")"! ":"! INDENT stmt_list DEDENT;
-parameter_list  : parameter ","! parameter_list | parameter;
-parameter       : ID | ID "=" expression;
-
-COMPARE     : "==" | "<=" | ">=" | "<" | ">";
-
-
-literal : string_literal |
-	numeric_literal 
-	;
-string_literal : string
-	;
-
-for_stmt : "for" ID "in" ITERABLE ":"! INDENT stmt_list DEDENT
-	;
-
-iterable : expr_list 
-	;
-
-expression :
-	LITERAL |
-	FUNCTION expression_list
-    ;
-
-expression_list :
-      expression (","! expression)* { $$ = $^(EXPR_LIST, $*); } |
-      /*empty*/       { $$ = $^(EXPR_LIST); }
-    ;
-
-	
-
-/* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
-stmt_list : print_stmt '\n'!
-    ;
-
-print_stmt : "print"  expression_list 
-                      { $$ = $^(PRINTLN, $^(EMPTY), $expression_list); }
-    ;
+stmt_list : 
+#line 83 "apyc.hn"
+ print_stmt '\n' { YYCTLPA($$,0,2,&$1,&$2);  $2.ignore(); yyv_print_stmt = $1; }
+;
 
 
 
-/* Normally, throw away whitespace other than newline. */
-* : (' ' | '\t' | '\r')+ ;
+print_stmt : 
+#line 86 "apyc.hn"
+ "print"  expression_list 
+                      { YYCTLPA($$,0,2,&$1,&$2);  yyv_expression_list = $2;yylhs = YYMAKE_TREE(PRINTLN, YYMAKE_TREE(EMPTY), yyv_expression_list); } 
+;
 
-INT_LITERAL : ('1' .. '9') ('0' .. '9')* /* FIXME */;
 
-STRING : "\"\"" /* FIXME */ ;
 
-RAWSTRING : "r\"\"" /* FIXME */ ;
+expression_list : 
+#line 90 "apyc.hn"
+
+      expression __0
+                      { YYCTLA($$,0,2,&$1,&$2); yylhs = YYMAKE_TREE(EXPR_LIST, yylhs.all_values ()); } 
+ | 
+#line 93 "apyc.hn"
+/* empty */  /*empty*/       { YYCTLPA($$,0,0); yylhs = YYMAKE_TREE(EXPR_LIST); } 
+;
+
+
+
+expression : 
+#line 96 "apyc.hn"
+
+      INT_LITERAL { YYCTLPA($$,0,1,&$1);  yyv_INT_LITERAL = $1; }
+;
+
+ __0 : /* empty */  { YYCTLPC($$,1,1,&$0);  yyv_expression = $0; }
+ | 
+#line 91 "apyc.hn"
+ __0 "," expression { YYCTLC($$,1,4,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_expression = $3; }
+;
+
+
+
+
+#line 184 "apyc-parser.y"
 
 %%
+
+
+#line 109 "apyc.hn"
+
 
 bool debugParser;
 
@@ -165,3 +208,17 @@ parse (FILE* f, const string& name)
         theTree->print (cout, 0);
     }
 }
+
+
+#line 214 "apyc-parser.y"
+
+const char* 
+yyexternal_token_name (int syntax)
+{
+    int internal_num = YYTRANSLATE (syntax);
+    return yytname[internal_num];
+}
+
+#include "apyc-lexer.cc"
+
+YYNAMESPACE_CLOSE
