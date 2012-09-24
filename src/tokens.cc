@@ -2,7 +2,7 @@
 
 /* tokens.cc: Definitions related to AST_Token and its subclasses. */
 
-/* Authors:  YOUR NAMES HERE */
+/* Authors:  Henry Bradlow, Will Skinner, Kevin Lindkvist */
 
 #include <iostream>
 #include "apyc.h"

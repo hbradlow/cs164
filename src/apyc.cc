@@ -2,7 +2,7 @@
 
 /* apyc: A PYthon Compiler. */
 
-/* Authors:  YOUR NAMES HERE */
+/* Authors:  Henry Bradlow, Will Skinner, Kevin Lindkvist */
 
 #include <cstdio>
 #include <cstdlib>

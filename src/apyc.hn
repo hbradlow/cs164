@@ -71,6 +71,7 @@
 %token EMPTY 
 %token EXPR_LIST "@expr_list"
 %token MODULE "@module"
+
 /* FIXME: MORE... */
 
 %%
@@ -79,6 +80,19 @@ program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
         ;
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
+stmt_list       : stmt stmt_list | ; 
+stmt            : if_stmt | bool_stmt | while_stmt | def_stmt | for_stmt;
+
+if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt;
+elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt | EMPTY | "else" bool_stmt ":"! INDENT stmt_list DEDENT
+bool_stmt       : expression COMPARE bool_stmt | "(" bool_stmt ")" | expression;
+
+while_stmt      : "while" bool_stmt ":"! INDENT stmt_list DEDENT;
+def_stmt        : "def" FUNCTION_NAME "("! parameter_list ")"! ":"! INDENT stmt_list DEDENT;
+parameter_list  : parameter ","! parameter_list | parameter;
+parameter       : ID | ID "=" expression;
+
+COMPARE     : "==" | "<=" | ">=" | "<" | ">";
 
 stmt_list : print_stmt '\n'!
     ;
