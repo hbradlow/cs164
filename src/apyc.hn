@@ -14,6 +14,9 @@
   #include <string>
   #include "apyc.h"
   #include "ast.h"
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
   using namespace std;
 
@@ -70,6 +73,7 @@
 %token PRINTLN "@println"
 %token EMPTY 
 %token EXPR_LIST "@expr_list"
+%token LITERAL "@literal"
 %token MODULE "@module"
 
 %token IF_STMT "@if_stmt"
@@ -99,6 +103,8 @@
 %token STRING_LITERAL
 %token TUPLE
 
+%token INT_LITERAL
+
 /* FIXME: MORE... */
 
 %%
@@ -123,22 +129,18 @@ def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT
 parameter_list  : parameter COMMA! parameter_list | parameter;
 parameter       : ID | ID ASSIGN expression; 
 
-compare		: EQUALS | LTE | GTE | LT | GT;
-
-literal : string_literal | NUMERIC_LITERAL;
-string_literal : string;
+compare         : EQUALS | LTE | GTE | LT | GT;
 
 expr_list : ;
 file : ;
 list : ;
-literal : NUMERIC_LITERAL | STRING_LITERAL ;
-string : ;
+literal : INT_LITERAL {$$=$INT_LITERAL;} | STRING_LITERAL {$$ = $^(STRING_LITERAL, $STRING_LITERAL);};
 tuple : ;
 iterable : expr_list 
 	;
 
 expression :
-	literal | FUNCTION_NAME expression_list | ID ASSIGN expression 
+	literal {$$=$literal;}| FUNCTION_NAME expression_list | ID ASSIGN expression 
     ;
 
 function :
@@ -149,6 +151,7 @@ expression_list :
       /*empty*/       { $$ = $^(EXPR_LIST); }
     ;
 
+string : STRING_LITERAL;
 iterable : list | string | tuple | dict | file
 ;
 
@@ -164,9 +167,9 @@ print_stmt : "print"  expression_list
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
 
-INT_LITERAL : ('1' .. '9') ('0' .. '9')* /* FIXME */;
+INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
 
-STRING : "\"\"" /* FIXME */ ;
+STRING_LITERAL : "\"" ('1' .. '9')* "\"" /* FIXME */ ;
 
 RAWSTRING : "r\"\"" /* FIXME */ ;
 
