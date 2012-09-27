@@ -7,7 +7,6 @@
 %define semantic_tree_type "AST"
 
 %token INT
-%token STRING
 %token ID
 
 %{
@@ -85,6 +84,7 @@
 %token COMPARE "@compare"
 %token ASSIGN "@="
 %token EQUALS "@=="
+%token ADD "@+"
 %token GT "@>"
 %token LT "@<"
 %token GTE "@>="
@@ -114,9 +114,21 @@ program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
         ;
 
 /* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
+ID : ('a' .. 'z')('a' .. 'z')* ;
+assignment : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);};
+add : expression "+"! expression {$$=$^(ADD,$*);};
+
 dict : ;
-stmt_list       : stmt stmt_list | EMPTY; 
-stmt            : if_stmt | while_stmt | def_stmt | for_stmt | expression;
+stmt_list       : stmt stmt_list 
+                | ; 
+stmt            : if_stmt 
+                | while_stmt 
+                | def_stmt 
+                | for_stmt 
+                | expression 
+                | assignment
+                | print_stmt
+                ;
 
 if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt;
 elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt | EMPTY | "else" bool_stmt ":"! INDENT stmt_list DEDENT
@@ -134,13 +146,16 @@ compare         : EQUALS | LTE | GTE | LT | GT;
 expr_list : ;
 file : ;
 list : ;
-literal : INT_LITERAL {$$=$INT_LITERAL;} | STRING_LITERAL {$$ = $^(STRING_LITERAL, $STRING_LITERAL);};
+literal : INT_LITERAL {$$=$INT_LITERAL;} | STRING_LITERAL {$$ = $STRING_LITERAL;};
 tuple : ;
 iterable : expr_list 
 	;
 
 expression :
-	literal {$$=$literal;}| FUNCTION_NAME expression_list | ID ASSIGN expression 
+	literal {$$=$literal;}
+    | ID
+    | FUNCTION_NAME expression_list 
+    | add
     ;
 
 function :
@@ -155,10 +170,8 @@ string : STRING_LITERAL;
 iterable : list | string | tuple | dict | file
 ;
 
-stmt_list : print_stmt '\n'!
-    ;
 
-print_stmt : "print"  expression_list 
+print_stmt : "print"  expression_list "\n"
                       { $$ = $^(PRINTLN, $^(EMPTY), $expression_list); }
     ;
 
@@ -167,8 +180,8 @@ print_stmt : "print"  expression_list
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
 
-INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
 
+INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
 STRING_LITERAL : "\"" ('1' .. '9')* "\"" /* FIXME */ ;
 
 RAWSTRING : "r\"\"" /* FIXME */ ;
