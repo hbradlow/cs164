@@ -3,5 +3,6 @@
         ()
         (expr_list 1
             (int_literal 1 0)
-            (int_literal 1 0)
+            (STRING_LITERAL 1
+                (<Token>))
             (int_literal 1 0))))

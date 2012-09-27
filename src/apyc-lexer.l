@@ -1,4 +1,4 @@
-/* Generated from apyc.hn at Mon Sep 24 04:00:59 2012 GMT. */
+/* Generated from apyc.hn at Mon Sep 24 17:11:45 2012 GMT. */
 
 %option 8bit nodefault noinput nounput noyywrap
 
@@ -30,6 +30,7 @@ _EOF  "\377"
 @expr_list	{ { YY_LEXLHS(EXPR_LIST); YYLEXRET; } } 
 @if_stmt	{ { YY_LEXLHS(IF_STMT); YYLEXRET; } } 
 @iterable	{ { YY_LEXLHS(ITERABLE); YYLEXRET; } } 
+@literal	{ { YY_LEXLHS(LITERAL); YYLEXRET; } } 
 @module	{ { YY_LEXLHS(MODULE); YYLEXRET; } } 
 @println	{ { YY_LEXLHS(PRINTLN); YYLEXRET; } } 
 elif	{ { YY_LEXLHS(_TOK_1); YYLEXRET; } } 
@@ -40,7 +41,7 @@ print	{ { YY_LEXLHS(_TOK_3); YYLEXRET; } }
 [\012(-):]	{ { YYSIMPLELEXRET; } } 
 [\011\015 ]+	{ { YY_LEXLHS;  YYLEXRET; } } 
 [1-9][0-9]*	{ { YY_LEXLHS(INT_LITERAL); YYLEXRET; } } 
-\"\"	{ { YY_LEXLHS(STRING); YYLEXRET; } } 
+\"[1-9]*\"	{ { YY_LEXLHS(STRING_LITERAL); YYLEXRET; } } 
 r\"\"	{ { YY_LEXLHS(RAWSTRING); YYLEXRET; } } 
 
 
