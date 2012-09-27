@@ -46,7 +46,7 @@ private:
      *  overridden to provide additional processing during the
      *  construction of a node or token.] */
     Int_Token* post_make () {
-        // FIXME
+        value = atoi(as_chars());
         return this;
     }
 
