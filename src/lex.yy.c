@@ -709,7 +709,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 6 "lexer.flex"
+#line 9 "lexer.flex"
 
  /* Multiline comments */ 
 #line 716 "lex.yy.c"
@@ -798,50 +798,50 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 8 "lexer.flex"
+#line 11 "lexer.flex"
 {printf( "COMMENT: %s", yytext);}
 	YY_BREAK
 /* One line comments */
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 10 "lexer.flex"
+#line 13 "lexer.flex"
 {printf( "COMMENT: %s", yytext);} 
 	YY_BREAK
 /* KEYWORDS */
 case 3:
 YY_RULE_SETUP
-#line 13 "lexer.flex"
+#line 16 "lexer.flex"
 {printf( "KEYWORD: %s\n", yytext);}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 15 "lexer.flex"
+#line 18 "lexer.flex"
 {printf( "INTEGER: %i\n", atoi(yytext));}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "lexer.flex"
+#line 20 "lexer.flex"
 {printf( "FLOAT: %f\n", atof(yytext));}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 19 "lexer.flex"
+#line 22 "lexer.flex"
 {printf( "ID: %s\n", yytext);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "lexer.flex"
+#line 24 "lexer.flex"
 {printf ( "OPERATOR: %s", yytext);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 23 "lexer.flex"
+#line 26 "lexer.flex"
 {printf ("DOT: %s", yytext);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 26 "lexer.flex"
+#line 29 "lexer.flex"
 ECHO;
 	YY_BREAK
 #line 848 "lex.yy.c"
@@ -1841,7 +1841,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 26 "lexer.flex"
+#line 29 "lexer.flex"
 
 
 
