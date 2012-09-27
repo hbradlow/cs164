@@ -566,7 +566,7 @@ static const yytype_uint8 yyrline[] =
        0,   107,   107,   112,   112,   113,   113,   113,   113,   113,
      115,   116,   116,   116,   118,   118,   118,   119,   120,   122,
      123,   123,   124,   124,   128,   128,   129,   134,   134,   138,
-     141,   141,   141,   148,   149,   158,   161,   165,   148
+     141,   141,   141,   148,   149,   155,   158,   162,   148
 };
 #endif
 
@@ -2165,19 +2165,19 @@ yyreduce:
 
   case 35:
 /* Line 1787 of yacc.c  */
-#line 158 "apyc.hn"
+#line 155 "apyc.hn"
     { YYCTLPA((yyval),0,2,&(yyvsp[(1) - (2)]),&(yyvsp[(2) - (2)]));  (yyvsp[(2) - (2)]).ignore(); yyv_print_stmt = (yyvsp[(1) - (2)]); }
     break;
 
   case 36:
 /* Line 1787 of yacc.c  */
-#line 162 "apyc.hn"
+#line 159 "apyc.hn"
     { YYCTLPA((yyval),0,2,&(yyvsp[(1) - (2)]),&(yyvsp[(2) - (2)]));  yyv_expression_list = (yyvsp[(2) - (2)]);yylhs = YYMAKE_TREE(PRINTLN, YYMAKE_TREE(EMPTY), yyv_expression_list); }
     break;
 
   case 37:
 /* Line 1787 of yacc.c  */
-#line 165 "apyc.hn"
+#line 162 "apyc.hn"
     { YYCTLPC((yyval),1,1,&(yyvsp[(0) - (0)]));  yyv_expression = (yyvsp[(0) - (0)]); }
     break;
 
@@ -2419,11 +2419,11 @@ yyreturn:
 
 
 /* Line 2048 of yacc.c  */
-#line 460 "apyc-parser.y"
+#line 457 "apyc-parser.y"
 
 
 
-#line 176 "apyc.hn"
+#line 173 "apyc.hn"
 
 
 bool debugParser;
@@ -2448,7 +2448,7 @@ parse (FILE* f, const string& name)
 }
 
 
-#line 489 "apyc-parser.y"
+#line 486 "apyc-parser.y"
 
 const char* 
 yyexternal_token_name (int syntax)

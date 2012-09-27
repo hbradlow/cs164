@@ -1,5 +1,5 @@
 /* -*-C++-*- */
-/* Generated from apyc.hn at Mon Sep 24 03:58:51 2012 GMT. */
+/* Generated from apyc.hn at Thu Sep 27 05:55:38 2012 GMT. */
 
 %code top {
 
@@ -429,19 +429,16 @@ iterable :
 ;
 
 
-	
 
-
-/* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
 stmt_list : 
-#line 158 "apyc.hn"
+#line 155 "apyc.hn"
  print_stmt '\n' { YYCTLPA($$,0,2,&$1,&$2);  $2.ignore(); yyv_print_stmt = $1; }
 ;
 
 
 
 print_stmt : 
-#line 161 "apyc.hn"
+#line 158 "apyc.hn"
  "print"  expression_list 
                       { YYCTLPA($$,0,2,&$1,&$2);  yyv_expression_list = $2;yylhs = YYMAKE_TREE(PRINTLN, YYMAKE_TREE(EMPTY), yyv_expression_list); } 
 ;
@@ -455,12 +452,12 @@ print_stmt :
 
 
 
-#line 459 "apyc-parser.y"
+#line 456 "apyc-parser.y"
 
 %%
 
 
-#line 176 "apyc.hn"
+#line 173 "apyc.hn"
 
 
 bool debugParser;
@@ -485,7 +482,7 @@ parse (FILE* f, const string& name)
 }
 
 
-#line 489 "apyc-parser.y"
+#line 486 "apyc-parser.y"
 
 const char* 
 yyexternal_token_name (int syntax)
