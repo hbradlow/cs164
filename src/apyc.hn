@@ -74,7 +74,6 @@
 %token EXPR_LIST "@expr_list"
 %token LITERAL "@literal"
 %token MODULE "@module"
-
 %token IF_STMT "@if_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
@@ -102,7 +101,6 @@
 %token NUMERIC_LITERAL
 %token STRING_LITERAL
 %token TUPLE
-
 %token INT_LITERAL
 
 %%
@@ -120,13 +118,8 @@ RAWSTRING : "r\"\"";
 
 program         : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
                 ;
-assignment :    ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
-                ;
-add             : expression "+"! expression {$$=$^(ADD,$*);}
-                ;
-dict            :   ;
 stmt_list       : stmt stmt_list 
-                | 
+                | /*empty*/
                 ;
 stmt            : if_stmt 
                 | while_stmt 
@@ -136,11 +129,17 @@ stmt            : if_stmt
                 | assignment
                 | print_stmt
                 ;
+assignment      : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
+                ;
+add             : expression "+"! expression {$$=$^(ADD,$*);}
+                ;
+dict            : /*empty*/   
+                ;
 if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt
                 ;
 elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt 
-                | EMPTY 
                 | "else" bool_stmt ":"! INDENT stmt_list DEDENT
+                | /*empty*/
                 ;
 bool_stmt       : expression COMPARE bool_stmt 
                 | "(" bool_stmt ")" 
@@ -154,7 +153,8 @@ def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT
                 ;
 parameter_list  : parameter COMMA! parameter_list | parameter
                 ;
-parameter       : ID | ID ASSIGN expression
+parameter       : ID 
+                | ID ASSIGN expression
                 ;
 compare         : EQUALS 
                 | LTE 
@@ -162,16 +162,16 @@ compare         : EQUALS
                 | LT 
                 | GT
                 ;
-expr_list       :
+expr_list       : /*empty*/ 
                 ;
-file            :
+file            : /*empty*/
                 ;
-list            :
+list            : /*empty*/
                 ;
 literal         : INT_LITERAL {$$=$INT_LITERAL;} 
                 | STRING_LITERAL {$$ = $STRING_LITERAL;}
                 ;
-tuple           :   
+tuple           : /*empty*/   
                 ;
 iterable        : expr_list 
 	            ;
@@ -180,7 +180,7 @@ expression      : literal {$$=$literal;}
                 | FUNCTION_NAME expression_list 
                 | add
                 ;
-function        :
+function        : /*empty*/
                 ;	
 expression_list : expression (","! expression)* { $$ = $^(EXPR_LIST, $*); }
                 | /*empty*/ { $$ = $^(EXPR_LIST); }
