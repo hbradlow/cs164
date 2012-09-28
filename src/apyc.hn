@@ -1,4 +1,21 @@
 /* -*- mode: fundamental; c-file-style: "stroustrup"; indent-tabs-mode: nil -*- */
+/*
+Responsibilities:
+
+Henry:
+Types
+Datastructures
+Static typing
+
+Kevin:
+Function defs
+class
+indentation
+ID
+
+Will:
+If/while/try - control
+*/
 
 /* apyc: Bison Parser */
 
@@ -82,12 +99,21 @@
 %token COLON "@:"
 %token COMPARE "@compare"
 %token ASSIGN "@="
+
+%token KEY_VALUE_PAIR "@key_value_pair"
+%token DICTIONARY "@dict"
+
+%token ADD "@add"
+%token SUB "@sub"
+%token DIV "@div"
+%token MUL "@mul"
+
 %token EQUALS "@=="
-%token ADD "@+"
 %token GT "@>"
 %token LT "@<"
 %token GTE "@>="
 %token LTE "@<="
+
 %token COMMA ","
 %token DEDENT 
 %token DEF
@@ -110,7 +136,7 @@
 * : (' ' | '\t' | '\r')+ ;
 
 INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
-STRING_LITERAL : "\"" ('1' .. '9')* "\"" 
+STRING_LITERAL : "\"" ('1' .. '9')* "\""; 
 ID : ('a' .. 'z')('a' .. 'z')* ;
 RAWSTRING : "r\"\"";
 
@@ -129,12 +155,25 @@ stmt            : if_stmt
                 | assignment
                 | print_stmt
                 ;
+
 assignment      : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
                 ;
-add             : expression "+"! expression {$$=$^(ADD,$*);}
+arithmetic      : expression "+"! expression {$$=$^(ADD,$*);}
+                | expression "-"! expression {$$=$^(SUB,$*);}
+                | expression "/"! expression {$$=$^(DIV,$*);}
+                | expression "*"! expression {$$=$^(MUL,$*);}
                 ;
-dict            : /*empty*/   
+
+dict            : "{"! key_value_list "}"! {$$=$^(DICTIONARY,$*);}
                 ;
+key_value_pair  : hashable ":"! expression {$$=$^(KEY_VALUE_PAIR,$*);}
+                ;
+key_value_list  : key_value_list ","! key_value_pair {$$=$^(KEY_VALUE_PAIR,$*);}
+                | key_value_pair {$$=$^(KEY_VALUE_PAIR,$*);}
+                ;
+hashable        : STRING_LITERAL 
+                ;
+                
 if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt
                 ;
 elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt 
@@ -178,7 +217,8 @@ iterable        : expr_list
 expression      : literal {$$=$literal;}
                 | ID
                 | FUNCTION_NAME expression_list 
-                | add
+                | arithmetic
+                | dict
                 ;
 function        : /*empty*/
                 ;	
