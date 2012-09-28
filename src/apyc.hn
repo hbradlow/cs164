@@ -99,7 +99,8 @@ If/while/try - control
 %token COLON "@:"
 %token COMPARE "@compare"
 %token ASSIGN "@="
-
+%token DEF "@def"
+%token ARGLIST "@args"
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
 
@@ -116,7 +117,6 @@ If/while/try - control
 
 %token COMMA ","
 %token DEDENT 
-%token DEF
 %token FOR
 %token IN
 %token INDENT
@@ -136,8 +136,8 @@ If/while/try - control
 * : (' ' | '\t' | '\r')+ ;
 
 INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
-STRING_LITERAL : "\"" ('1' .. '9')* "\""; 
-ID : ('a' .. 'z')('a' .. 'z')* ;
+STRING_LITERAL : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
+ID : ('a' .. 'z' | '_')('a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"\"";
 
 /*---------- NON-TERMINALS -----------*/
@@ -148,6 +148,7 @@ stmt_list       : stmt stmt_list
                 | /*empty*/
                 ;
 stmt            : if_stmt 
+                | define
                 | while_stmt 
                 | def_stmt 
                 | for_stmt 
@@ -157,6 +158,13 @@ stmt            : if_stmt
                 ;
 
 assignment      : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
+                | ID "="! ID "\n"! {$$ = $^(ASSIGN, $*)}
+                ;
+
+define          : DEF! ID "(" ")" ":" "\n" {$$=$^(DEF,$*);}
+                ;
+arglist         : /*empty*/
+                | ID ("," ID)*    {$$=$^(ARGLIST, $*);}
                 ;
 arithmetic      : expression "+"! expression {$$=$^(ADD,$*);}
                 | expression "-"! expression {$$=$^(SUB,$*);}

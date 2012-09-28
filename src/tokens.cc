@@ -31,6 +31,48 @@ AST_Token::append_text(const string& s)
 {
     throw logic_error ("unimplemented operation: append_text");
 }
+class Define_Token : public AST_Token {
+private:
+
+    void print (ostream& out, int indent) {
+        out << "(define " << lineNumber () << " " << text << ")";
+    }
+
+    Define_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+
+    string text;
+
+    TOKEN_CONSTRUCTORS(Define_Token, AST_Token);
+
+};
+
+TOKEN_FACTORY(Define_Token, DEF);
+
+
+
+class Arglist_Token : public AST_Token {
+private:
+
+    void print (ostream& out, int indent) {
+        out << "(arglist " << lineNumber () << " " << text << ")";
+    }
+
+    Arglist_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+
+    string text;
+
+    TOKEN_CONSTRUCTORS(Arglist_Token, AST_Token);
+
+};
+
+TOKEN_FACTORY(Arglist_Token, ARGLIST);
+
 
 
 class ID_Token : public AST_Token {
