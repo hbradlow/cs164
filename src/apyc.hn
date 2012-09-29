@@ -115,8 +115,6 @@ If/while/try - control
 %token GTE "@>="
 %token LTE "@<="
 
-%token COMMA ","
-%token DEDENT 
 %token FOR
 %token IN
 %token INDENT
@@ -134,118 +132,229 @@ If/while/try - control
 
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
-
-INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
-STRING_LITERAL : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
-ID : ('a' .. 'z' | '_')('a' .. 'z' | '0' .. '9' | '_')* ;
+IDENT : "indent"; 
+DEDENT : "dedent";
+NUMBER : "-"*('1' .. '9') ('0' .. '9')*;
+STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
+ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"\"";
-
+LINEBREAK : '\n';
 /*---------- NON-TERMINALS -----------*/
-
-program         : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
+program         : input_simple+
+                |
                 ;
-stmt_list       : stmt stmt_list 
+/* INPUTS */
+input_simple    : LINEBREAK+ 
+                | stmt
+                ;
+/* FUNCTION DEFS */
+definefunc      : "def" ID params ("::" ID)? ":" codeblock
+                ;
+params          : "(" arglist ")"
+                ;
+arglist         : argument  
+                | argument ("," argument ","?)*
                 | /*empty*/
                 ;
-stmt            : if_stmt 
-                | define
-                | while_stmt 
-                | def_stmt 
-                | for_stmt 
-                | expression 
-                | assignment
-                | print_stmt
+defineclass     : "class" ID ":" codeblock
+                ;
+/* STATEMENTS */
+stmt            : stmt_simple 
+                | stmt_comp
+                ;
+stmtnoclass     : stmt_simple
+                | stmtcompnoclass
+                ;
+stmtnodef       : stmt_simple
+                | stmtcompnodef
+                ;
+stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
+                ;
+stmt_small      : stmt_expr
+                | stmt_print
+                | stmt_del
+                | stmt_pass 
+                | stmt_flow 
+                | stmt_global
+                | stmt_exec
+                | stmt_assert
+                ;
+stmt_expr       : testlist "=" (expr_yield | testlist)*
+                | ID "::" ID "=" (expr_yield | testlist)*
+                | exprlist
+                ;
+stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
+                ;
+stmt_del        : "del" exprlist
+                ;
+stmt_pass       : "pass" 
+                ;
+stmt_flow       : stmt_break
+                | stmt_continue
+                | stmt_return
+                | stmt_raise
+                | stmt_yield
+                ;
+stmt_break      : "break"
+                ;
+stmt_continue   : "continue"
+                ;
+stmt_return     : "return" testlist?
+                ;
+stmt_yield      : expr_yield
+                ;
+stmt_raise      : "raise" (test ("," test (","test)?)?)?
+                ;
+stmt_global     : "global" ID ("," ID)*
+                ;
+stmt_exec       : "exec" expr ("in" test ("," test)?)?
+                ;
+stmt_assert     : "assert" test ("," test)?
+                ;
+stmt_comp       : stmt_if
+                | stmt_while
+                | stmt_for 
+                | stmt_try
+                | stmt_with
+                | definefunc
+                | defineclass 
+                ;
+stmtcompnoclass : stmt_if
+                | stmt_while
+                | stmt_for
+                | stmt_try
+                | stmt_with
+                | definefunc
+                ;
+stmtcompnodef   : stmt_if
+                | stmt_while
+                | stmt_for
+                | stmt_try
+                | stmt_with
+                ;
+stmt_if         : "if" test ":" flowblock ("elif" test ":" flowblock)* ("else" ":" flowblock)?
+                ;
+stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)?
+                ;
+stmt_for        : "for" exprlist "in" testlist ":" flowblock ("else" ":" flowblock)?
+                ;
+stmt_try        : "try" ":" flowblock ((except_clause ":" flowblock)+ ("else" ":" flowblock)? ("finally" ":" flowblock)? | "finally" ":" flowblock)
+                ;
+stmt_with       : "with" with_item ("," with_item)* ":" flowblock
+                ;
+with_item       : test ("as" expr)?
+                ;
+except_clause   : "except" (test (("as" | ",") test)?)?
+                ;
+codeblock       : stmt_simple 
+                | LINEBREAK+ IDENT stmtnoclass+ LINEBREAK* DEDENT LINEBREAK*
+                ;
+flowblock       : stmt_simple
+                | LINEBREAK+ IDENT stmtnodef+ LINEBREAK* DEDENT LINEBREAK*
+                ;
+testlist_safe   : old_test (("," old_test)+ ","?)?
+                ;
+old_test        : or_test 
+                | old_lambdef
+                ;
+old_lambdef     : "lambda" arglist? ":" old_test
                 ;
 
-assignment      : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
-                | ID "="! ID "\n"! {$$ = $^(ASSIGN, $*)}
+test            : or_test ("if" or_test "else" test)?
+                | lambdef
                 ;
-
-define          : "def"! ID "("! arglist ")"! ":"! "\n"! codeblock {$$=$^(DEF,$*);}
+or_test         : and_test ("or" and_test)*
                 ;
-codeblock       : program 
+and_test        : not_test ("and" not_test)*
                 ;
-arglist         : /*empty*/
-                | ID ("," ID)*    {$$=$^(ARGLIST, $*);}
+not_test        : "not" not_test
+                | comparison
                 ;
-arithmetic      : expression "+"! expression {$$=$^(ADD,$*);}
-                | expression "-"! expression {$$=$^(SUB,$*);}
-                | expression "/"! expression {$$=$^(DIV,$*);}
-                | expression "*"! expression {$$=$^(MUL,$*);}
+comparison      : expr (comp_op expr)*
                 ;
-
-dict            : "{"! key_value_list "}"! {$$=$^(DICTIONARY,$*);}
+comp_op         : "<"
+                | ">"
+                | "=="
+                | "<="
+                | ">="
+                | "!="
+                | "in"
+                | "not" "in"
+                | "is" 
+                | "is" "not" 
                 ;
-key_value_pair  : hashable ":"! expression {$$=$^(KEY_VALUE_PAIR,$*);}
+expr            : expr_xor ("|" expr_xor)*
                 ;
-key_value_list  : key_value_list ","! key_value_pair {$$=$^(KEY_VALUE_PAIR,$*);}
-                | key_value_pair {$$=$^(KEY_VALUE_PAIR,$*);}
+expr_xor        : expr_and ("^" expr_and)*
                 ;
-hashable        : STRING_LITERAL 
+expr_and        : expr_shift ("&" expr_shift)*
                 ;
-                
-if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt
+expr_shift      : expr_arith (("<<"|">>") expr_arith)*
                 ;
-elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt 
-                | "else" bool_stmt ":"! INDENT stmt_list DEDENT
-                | /*empty*/
+expr_arith      : term (("+"|"-") term)*
                 ;
-bool_stmt       : expression COMPARE bool_stmt 
-                | "(" bool_stmt ")" 
-                | expression
+term            : factor (("*"|"/"|"%"|"//") factor)*
                 ;
-while_stmt      : WHILE bool_stmt COLON! INDENT stmt_list DEDENT
+factor          : ("+" | "-" | "~") factor
+                | power
                 ;
-for_stmt        : FOR ID IN ITERABLE COLON! INDENT stmt_list DEDENT
+power           : atom trailer* ("**" factor)?
                 ;
-def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT stmt_list DEDENT
+atom            : "(" (expr_yield | testlist_comp)? ")"
+                | "[" (listmaker)? "]"
+                | "{" (dictorsetmaker)? "}"
+                | "`" testlist1 "`"
+                | ID 
+                | NUMBER+
+                | STRING+
                 ;
-parameter_list  : parameter COMMA! parameter_list | parameter
+listmaker       : test (list_for | ("," test)* ","?)
                 ;
-parameter       : ID 
-                | ID ASSIGN expression
+testlist_comp   : test (comp_for | ("," test)* ","?)
                 ;
-compare         : EQUALS 
-                | LTE 
-                | GTE 
-                | LT 
-                | GT
+lambdef         : "lambda" arglist? ":" test
                 ;
-expr_list       : /*empty*/ 
+trailer         : "(" arglist? ")"
+                | "[" subscriptlist "]"
+                | "." ID
                 ;
-file            : /*empty*/
+subscriptlist   : subscript ("," subscript)* ","?
                 ;
-list            : /*empty*/
+subscript       : "." "." "." 
+                | test
+                | test? ":" test? sliceop?
                 ;
-literal         : INT_LITERAL {$$=$INT_LITERAL;} 
-                | STRING_LITERAL {$$ = $STRING_LITERAL;}
+sliceop         : ":" test
                 ;
-tuple           : /*empty*/   
+exprlist        : expr ("," expr)* ","?
                 ;
-iterable        : expr_list 
-	            ;
-expression      : literal {$$=$literal;}
-                | ID
-                | FUNCTION_NAME expression_list 
-                | arithmetic
-                | dict
+testlist        : test ("," test)* ","?
                 ;
-function        : /*empty*/
-                ;	
-expression_list : expression (","! expression)* { $$ = $^(EXPR_LIST, $*); }
-                | /*empty*/ { $$ = $^(EXPR_LIST); }
+dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
+                | test (comp_for | ("," test)* ","?)
                 ;
-string          : STRING_LITERAL
+argument        : test comp_for? 
+                | test "=" test
+                | ID "::" ID
                 ;
-iterable        : list 
-                | string 
-                | tuple
-                | dict 
-                | file
+list_iter       : list_for 
+                | list_if 
                 ;
-print_stmt      : "print"  expression_list "\n" { $$ = $^(PRINTLN, $^(EMPTY), $expression_list); }
+list_for        : "for" exprlist "in" testlist_safe list_iter? 
                 ;
-
+list_if         : "if" old_test list_iter? 
+                ;
+comp_iter       : comp_for 
+                | comp_if
+                ;
+comp_for        : "for" exprlist "in" or_test comp_iter? 
+                ;
+comp_if         : "if" old_test comp_iter?
+                ;
+testlist1       : test ("," test)*
+                ;
+expr_yield      : "yield" testlist?
+                ;
 %%
 
 bool debugParser;
