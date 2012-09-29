@@ -6,5 +6,4 @@ e = d * 7
 f = e - 10
 f += 7
 f = -f
-
-print a,b,c,d,e,f
+z = 5 % 3

@@ -1,4 +1,21 @@
 /* -*- mode: fundamental; c-file-style: "stroustrup"; indent-tabs-mode: nil -*- */
+/*
+Responsibilities:
+
+Henry:
+Types
+Datastructures
+Static typing
+
+Kevin:
+Function defs
+class
+indentation
+ID
+
+Will:
+If/while/try - control
+*/
 
 /* apyc: Bison Parser */
 
@@ -7,16 +24,15 @@
 %define semantic_tree_type "AST"
 
 %token INT
-%token STRING
 %token ID
 
 %{
   #include <string>
   #include "apyc.h"
   #include "ast.h"
-#include <cstdio>
-#include <cstdlib>
-#include <string>
+  #include <cstdio>
+  #include <cstdlib>
+  #include <string>
 
   using namespace std;
 
@@ -75,7 +91,6 @@
 %token EXPR_LIST "@expr_list"
 %token LITERAL "@literal"
 %token MODULE "@module"
-
 %token IF_STMT "@if_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
@@ -84,14 +99,24 @@
 %token COLON "@:"
 %token COMPARE "@compare"
 %token ASSIGN "@="
+%token DEF "@def"
+%token ARGLIST "@args"
+%token KEY_VALUE_PAIR "@key_value_pair"
+%token DICTIONARY "@dict"
+
+%token ADD "@add"
+%token SUB "@sub"
+%token DIV "@div"
+%token MUL "@mul"
+
 %token EQUALS "@=="
 %token GT "@>"
 %token LT "@<"
 %token GTE "@>="
 %token LTE "@<="
+
 %token COMMA ","
 %token DEDENT 
-%token DEF
 %token FOR
 %token IN
 %token INDENT
@@ -102,76 +127,124 @@
 %token NUMERIC_LITERAL
 %token STRING_LITERAL
 %token TUPLE
-
 %token INT_LITERAL
 
-/* FIXME: MORE... */
-
 %%
-
-
-program : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
-        ;
-
-/* REPLACE THE FOLLOWING WITH SOMETHING REAL. */
-dict : ;
-stmt_list       : stmt stmt_list | EMPTY; 
-stmt            : if_stmt | while_stmt | def_stmt | for_stmt | expression;
-
-if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt;
-elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt | EMPTY | "else" bool_stmt ":"! INDENT stmt_list DEDENT
-;
-bool_stmt       : expression COMPARE bool_stmt | "(" bool_stmt ")" | expression;
-while_stmt      : WHILE bool_stmt COLON! INDENT stmt_list DEDENT;
-for_stmt        : FOR ID IN ITERABLE COLON! INDENT stmt_list DEDENT;
-
-def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT stmt_list DEDENT;
-parameter_list  : parameter COMMA! parameter_list | parameter;
-parameter       : ID | ID ASSIGN expression; 
-
-compare         : EQUALS | LTE | GTE | LT | GT;
-
-expr_list : ;
-file : ;
-list : ;
-literal : INT_LITERAL {$$=$INT_LITERAL;} | STRING_LITERAL {$$ = $^(STRING_LITERAL, $STRING_LITERAL);};
-tuple : ;
-iterable : expr_list 
-	;
-
-expression :
-	literal {$$=$literal;}| FUNCTION_NAME expression_list | ID ASSIGN expression 
-    ;
-
-function :
-;	
-
-expression_list :
-      expression (","! expression)* { $$ = $^(EXPR_LIST, $*); } |
-      /*empty*/       { $$ = $^(EXPR_LIST); }
-    ;
-
-string : STRING_LITERAL;
-iterable : list | string | tuple | dict | file
-;
-
-stmt_list : print_stmt '\n'!
-    ;
-
-print_stmt : "print"  expression_list 
-                      { $$ = $^(PRINTLN, $^(EMPTY), $expression_list); }
-    ;
-
-
+/*---------- TERMINALS -----------*/
 
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
 
 INT_LITERAL : ('1' .. '9') ('0' .. '9')*;
+STRING_LITERAL : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
+ID : ('a' .. 'z' | '_')('a' .. 'z' | '0' .. '9' | '_')* ;
+RAWSTRING : "r\"\"";
 
-STRING_LITERAL : "\"" ('1' .. '9')* "\"" /* FIXME */ ;
+/*---------- NON-TERMINALS -----------*/
 
-RAWSTRING : "r\"\"" /* FIXME */ ;
+program         : stmt_list   { theTree = $^(MODULE, $*); $$ = NULL; }
+                ;
+stmt_list       : stmt stmt_list 
+                | /*empty*/
+                ;
+stmt            : if_stmt 
+                | define
+                | while_stmt 
+                | def_stmt 
+                | for_stmt 
+                | expression 
+                | assignment
+                | print_stmt
+                ;
+
+assignment      : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
+                | ID "="! ID "\n"! {$$ = $^(ASSIGN, $*)}
+                ;
+
+define          : "def"! ID "("! arglist ")"! ":"! "\n"! codeblock {$$=$^(DEF,$*);}
+                ;
+codeblock       : program 
+                ;
+arglist         : /*empty*/
+                | ID ("," ID)*    {$$=$^(ARGLIST, $*);}
+                ;
+arithmetic      : expression "+"! expression {$$=$^(ADD,$*);}
+                | expression "-"! expression {$$=$^(SUB,$*);}
+                | expression "/"! expression {$$=$^(DIV,$*);}
+                | expression "*"! expression {$$=$^(MUL,$*);}
+                ;
+
+dict            : "{"! key_value_list "}"! {$$=$^(DICTIONARY,$*);}
+                ;
+key_value_pair  : hashable ":"! expression {$$=$^(KEY_VALUE_PAIR,$*);}
+                ;
+key_value_list  : key_value_list ","! key_value_pair {$$=$^(KEY_VALUE_PAIR,$*);}
+                | key_value_pair {$$=$^(KEY_VALUE_PAIR,$*);}
+                ;
+hashable        : STRING_LITERAL 
+                ;
+                
+if_stmt         : "if" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt
+                ;
+elif_stmt       : "elif" bool_stmt ":"! INDENT stmt_list DEDENT elif_stmt 
+                | "else" bool_stmt ":"! INDENT stmt_list DEDENT
+                | /*empty*/
+                ;
+bool_stmt       : expression COMPARE bool_stmt 
+                | "(" bool_stmt ")" 
+                | expression
+                ;
+while_stmt      : WHILE bool_stmt COLON! INDENT stmt_list DEDENT
+                ;
+for_stmt        : FOR ID IN ITERABLE COLON! INDENT stmt_list DEDENT
+                ;
+def_stmt        : DEF FUNCTION_NAME LPAREN! parameter_list RPAREN! COLON! INDENT stmt_list DEDENT
+                ;
+parameter_list  : parameter COMMA! parameter_list | parameter
+                ;
+parameter       : ID 
+                | ID ASSIGN expression
+                ;
+compare         : EQUALS 
+                | LTE 
+                | GTE 
+                | LT 
+                | GT
+                ;
+expr_list       : /*empty*/ 
+                ;
+file            : /*empty*/
+                ;
+list            : /*empty*/
+                ;
+literal         : INT_LITERAL {$$=$INT_LITERAL;} 
+                | STRING_LITERAL {$$ = $STRING_LITERAL;}
+                ;
+tuple           : /*empty*/   
+                ;
+iterable        : expr_list 
+	            ;
+expression      : literal {$$=$literal;}
+                | ID
+                | FUNCTION_NAME expression_list 
+                | arithmetic
+                | dict
+                ;
+function        : /*empty*/
+                ;	
+expression_list : expression (","! expression)* { $$ = $^(EXPR_LIST, $*); }
+                | /*empty*/ { $$ = $^(EXPR_LIST); }
+                ;
+string          : STRING_LITERAL
+                ;
+iterable        : list 
+                | string 
+                | tuple
+                | dict 
+                | file
+                ;
+print_stmt      : "print"  expression_list "\n" { $$ = $^(PRINTLN, $^(EMPTY), $expression_list); }
+                ;
 
 %%
 

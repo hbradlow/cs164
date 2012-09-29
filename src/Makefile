@@ -17,7 +17,7 @@ APYC = $(shell echo `pwd`/../apyc)
 CXXFLAGS = -g -Wall
 
 # List of normal C++ sources.  Add any new ones here
-SRCS = apyc.cc ast.cc tokens.cc stmts.cc exprs.cc
+SRCS = apyc.cc ast.cc tokens.cc stmts.cc exprs.cc 
 
 # C++ top-level (i.e., as opposed to #included) sources that are generated
 # by other rules in this Makefile.
@@ -30,7 +30,8 @@ OBJS = $(SRCS:.cc=.o) $(GENERATED_SRCS:.cc=.o)
 OTHER_SRCS = $(GENERATED_SRCS) \
 	     apyc-lexer.l apyc-lexer.cc apyc-lexer.hh \
              apyc-parser.y apyc-parser.hh \
-             horn-common.h horn-parse-lex.cc
+             horn-common.h horn-parse-lex.cc \
+			 lex.yy.cc
 
 .PHONY: default compile check clean really-clean depend
 

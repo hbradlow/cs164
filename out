@@ -1,0 +1,3 @@
+(module 0
+    (def 1
+        (id 1 hello)))

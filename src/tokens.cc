@@ -31,9 +31,71 @@ AST_Token::append_text(const string& s)
 {
     throw logic_error ("unimplemented operation: append_text");
 }
+class Define_Token : public AST_Token {
+private:
+
+    void print (ostream& out, int indent) {
+        out << "(define " << lineNumber () << " " << text << ")";
+    }
+
+    Define_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+
+    string text;
+
+    TOKEN_CONSTRUCTORS(Define_Token, AST_Token);
+
+};
+
+TOKEN_FACTORY(Define_Token, DEF);
 
 
-/** Represents an integer literal. */
+
+class Arglist_Token : public AST_Token {
+private:
+
+    void print (ostream& out, int indent) {
+        out << "(arglist " << lineNumber () << " " << text << ")";
+    }
+
+    Arglist_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+
+    string text;
+
+    TOKEN_CONSTRUCTORS(Arglist_Token, AST_Token);
+
+};
+
+TOKEN_FACTORY(Arglist_Token, ARGLIST);
+
+
+
+class ID_Token : public AST_Token {
+private:
+
+    void print (ostream& out, int indent) {
+        out << "(id " << lineNumber () << " " << text << ")";
+    }
+
+    ID_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+
+    string text;
+
+    TOKEN_CONSTRUCTORS(ID_Token, AST_Token);
+
+};
+
+TOKEN_FACTORY(ID_Token, ID);
+
+/** represents an integer literal. */
 class Int_Token : public AST_Token {
 private:
 
@@ -41,8 +103,8 @@ private:
         out << "(int_literal " << lineNumber () << " " << value << ")";
     }
 
-    /** Initialize value from the text of the lexeme, checking that
-     *  the literal is in range.  [The post_make method may be
+    /** initialize value from the text of the lexeme, checking that
+     *  the literal is in range.  [the post_make method may be
      *  overridden to provide additional processing during the
      *  construction of a node or token.] */
     Int_Token* post_make () {
@@ -152,7 +214,7 @@ private:
     string literal_text;
 };
 
-TOKEN_FACTORY(String_Token, STRING);
+TOKEN_FACTORY(String_Token, STRING_LITERAL);
 
 /** A dummy token whose creation registers String_Token as the class
  *  to use for RAWSTRING tokens produced by the lexer.  (The
