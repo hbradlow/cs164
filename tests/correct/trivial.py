@@ -1,1 +1,2 @@
-def hello(): continue
+hello = "hello"
+ihel = "test"
