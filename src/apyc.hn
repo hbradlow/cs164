@@ -161,7 +161,9 @@ assignment      : ID "="! expression "\n"! {$$ = $^(ASSIGN,$*);}
                 | ID "="! ID "\n"! {$$ = $^(ASSIGN, $*)}
                 ;
 
-define          : "def"! ID "(" ")" ":" "\n" {$$=$^(DEF,$*);}
+define          : "def"! ID "("! arglist ")"! ":"! "\n"! codeblock {$$=$^(DEF,$*);}
+                ;
+codeblock       : program 
                 ;
 arglist         : /*empty*/
                 | ID ("," ID)*    {$$=$^(ARGLIST, $*);}
