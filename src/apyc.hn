@@ -139,6 +139,8 @@ STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\"";
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"\"";
 LINEBREAK : '\n';
+COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
+MULTILINE_COMMENT : "\"\"\"" ( 'A' .. 'Z' | 'a' .. 'z' | '_' | ' ' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+
                 |
@@ -146,6 +148,8 @@ program         : input_simple+
 /* INPUTS */
 input_simple    : LINEBREAK+ 
                 | stmt
+                | COMMENT+
+                | MULTILINE_COMMENT+
                 ;
 /* FUNCTION DEFS */
 definefunc      : "def" ID params ("::" ID)? ":" codeblock
