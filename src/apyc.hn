@@ -153,8 +153,8 @@ definefunc      : "def" ID params ":" codeblock
                 ;
 params          : "(" arglist ")"
                 ;
-arglist         : argument ","? 
-                | (argument ",")*
+arglist         : argument  
+                | argument ("," argument ","?)*
                 | /*empty*/
                 ;
 /* STATEMENTS */

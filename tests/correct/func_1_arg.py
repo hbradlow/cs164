@@ -1,1 +1,3 @@
-def hello(test): continue
+def hello(test): 
+indent a = 10 
+dedent

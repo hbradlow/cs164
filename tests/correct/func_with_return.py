@@ -1,2 +1,4 @@
 def hello(one):
-    return one
+indent    return one
+dedent
+a = 10

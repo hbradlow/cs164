@@ -1,2 +1,3 @@
-def hello(one, two, three): 
-    print one, two, three
+def hello(one,testing,): 
+indent hello = "a"    
+dedent
