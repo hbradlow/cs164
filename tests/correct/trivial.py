@@ -1,2 +1,1 @@
-hello = "hello"
-ihel = "test"
+print 1,2,3

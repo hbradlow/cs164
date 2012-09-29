@@ -136,7 +136,7 @@ IDENT : "indent";
 DEDENT : "dedent";
 NUMBER : "-"*('1' .. '9') ('0' .. '9')*;
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
-ID : ('a' .. 'z' | '_')('a' .. 'z' | '0' .. '9' | '_')* ;
+ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"\"";
 LINEBREAK : '\n';
 /*---------- NON-TERMINALS -----------*/
@@ -144,9 +144,8 @@ program         : input_simple+
                 |
                 ;
 /* INPUTS */
-input_simple    : LINEBREAK 
-                | stmt_simple
-                | stmt_comp LINEBREAK
+input_simple    : LINEBREAK+ 
+                | stmt
                 ;
 /* FUNCTION DEFS */
 definefunc      : "def" ID params ":" codeblock
@@ -157,11 +156,13 @@ arglist         : argument
                 | argument ("," argument ","?)*
                 | /*empty*/
                 ;
+defineclass     : "class" ID ":" codeblock
+                ;
 /* STATEMENTS */
 stmt            : stmt_simple 
                 | stmt_comp
                 ;
-stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK
+stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
                 ;
 stmt_small      : stmt_expr
                 | stmt_print
@@ -226,7 +227,7 @@ with_item       : test ("as" expr)?
 except_clause   : "except" (test (("as" | ",") test)?)?
                 ;
 codeblock       : stmt_simple 
-                | LINEBREAK IDENT stmt+ DEDENT
+                | LINEBREAK+ IDENT stmt+ LINEBREAK* DEDENT LINEBREAK*
                 ;
 
 testlist_safe   : old_test (("," old_test)+ ","?)?
@@ -309,8 +310,6 @@ testlist        : test ("," test)* ","?
                 ;
 dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
                 | test (comp_for | ("," test)* ","?)
-                ;
-defineclass     : "class" ID ("(" testlist? ")")? ":" codeblock
                 ;
 argument        : test comp_for? 
                 | test "=" test
