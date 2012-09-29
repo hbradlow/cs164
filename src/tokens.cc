@@ -108,10 +108,6 @@ private:
      *  overridden to provide additional processing during the
      *  construction of a node or token.] */
     Int_Token* post_make () {
-<<<<<<< HEAD
-        // FIXME
-=======
->>>>>>> e42dd43ea0197ce3b5ac24edba37c739fd822d7e
         value = atoi(as_chars());
         return this;
     }
