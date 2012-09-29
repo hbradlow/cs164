@@ -162,6 +162,9 @@ defineclass     : "class" ID ":" codeblock
 stmt            : stmt_simple 
                 | stmt_comp
                 ;
+stmtnoclass     : stmt_simple
+                | stmtcompnoclass
+                ;
 stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
                 ;
 stmt_small      : stmt_expr
@@ -212,6 +215,13 @@ stmt_comp       : stmt_if
                 | definefunc
                 | defineclass 
                 ;
+stmtcompnoclass : stmt_if
+                | stmt_while
+                | stmt_for
+                | stmt_try
+                | stmt_with
+                | definefunc
+                ;
 stmt_if         : "if" test ":" codeblock ("elif" test ":" codeblock)* ("else" ":" codeblock)?
                 ;
 stmt_while      : "while" test ":" codeblock ("else" ":" codeblock)?
@@ -227,7 +237,7 @@ with_item       : test ("as" expr)?
 except_clause   : "except" (test (("as" | ",") test)?)?
                 ;
 codeblock       : stmt_simple 
-                | LINEBREAK+ IDENT stmt+ LINEBREAK* DEDENT LINEBREAK*
+                | LINEBREAK+ IDENT stmtnoclass+ LINEBREAK* DEDENT LINEBREAK*
                 ;
 
 testlist_safe   : old_test (("," old_test)+ ","?)?
