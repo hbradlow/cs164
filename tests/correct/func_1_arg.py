@@ -1,2 +1,1 @@
-def hello(test):
-    test = 1
+def hello(test): continue

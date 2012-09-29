@@ -134,7 +134,7 @@ If/while/try - control
 * : (' ' | '\t' | '\r')+ ;
 IDENT : "indent"; 
 DEDENT : "dedent";
-NUMBER : ('1' .. '9') ('0' .. '9')*;
+NUMBER : "-"*('1' .. '9') ('0' .. '9')*;
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_')('a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"\"";
@@ -173,6 +173,7 @@ stmt_small      : stmt_expr
                 | stmt_assert
                 ;
 stmt_expr       : testlist "=" (expr_yield | testlist)*
+                | exprlist
                 ;
 stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
                 ;
