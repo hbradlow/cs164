@@ -4,9 +4,15 @@
     (<Token>)
     (<Token>)
     (<Token>)
+<<<<<<< HEAD
     (assignment 2
         (id 2 a)
         (string_literal 2 "\042b\042"))
+=======
+    (id 2 a)
+    (<Token>)
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>)
     (<Token>)
     (<Token>)
@@ -15,9 +21,15 @@
     (<Token>)
     (<Token>)
     (<Token>)
+<<<<<<< HEAD
     (assignment 5
         (id 5 b)
         (string_literal 5 "\042c\042"))
+=======
+    (id 5 b)
+    (<Token>)
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>)
     (<Token>)
     (<Token>))

@@ -1,6 +1,10 @@
 (module 0
     (<Token>)
+<<<<<<< HEAD
     (string_literal 1 "\042hello\042")
+=======
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>)
     (id 1 hello)
     (<Token>)

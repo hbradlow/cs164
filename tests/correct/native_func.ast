@@ -4,7 +4,11 @@
         (<Token>)
         (<Token>)
         (<Token>)
+<<<<<<< HEAD
         (string_literal 1 "\042TEST\042"))
+=======
+        (<Token>))
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>)
     (<Token>)
     (def 3
@@ -14,7 +18,11 @@
         (<Token>)
         (<Token>)
         (<Token>)
+<<<<<<< HEAD
         (string_literal 4 "\042test\042")
+=======
+        (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
         (<Token>)
         (<Token>)
         (<Token>)))

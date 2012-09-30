@@ -11,7 +11,13 @@
         (<Token>)
         (<Token>)
         (<Token>))
+<<<<<<< HEAD
     (assignment 4
         (id 4 a)
         (int_literal 4 10))
+=======
+    (id 4 a)
+    (<Token>)
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>))

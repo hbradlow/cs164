@@ -3,9 +3,16 @@
     (<Token>)
     (<Token>)
     (<Token>)
+<<<<<<< HEAD
     (assignment 2
         (id 2 a)
         (id 2 b))
+=======
+    (id 2 a)
+    (<Token>)
+    (id 2 b)
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>)
     (<Token>)
     (<Token>)
@@ -14,7 +21,10 @@
     (<Token>)
     (<Token>)
     (<Token>)
+<<<<<<< HEAD
     (string_literal 5 "\042error\042")
+=======
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>)
     (<Token>)
     (<Token>))

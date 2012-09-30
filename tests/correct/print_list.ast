@@ -1,5 +1,6 @@
 (module 0
     (<Token>)
+<<<<<<< HEAD
     (int_literal 1 1)
     (<Token>)
     (int_literal 1 2)
@@ -11,4 +12,17 @@
     (int_literal 1 1)
     (<Token>)
     (int_literal 1 2)
+=======
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>))

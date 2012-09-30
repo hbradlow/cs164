@@ -1,7 +1,15 @@
 (module 0
+<<<<<<< HEAD
     (assignment 1
         (id 1 at)
         (<Token>)
         (id 1 test)
         (int_literal 1 10))
+=======
+    (id 1 at)
+    (<Token>)
+    (id 1 test)
+    (<Token>)
+    (<Token>)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
     (<Token>))

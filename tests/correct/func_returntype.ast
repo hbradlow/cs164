@@ -12,9 +12,15 @@
         (id 1 int)
         (<Token>)
         (<Token>)
+<<<<<<< HEAD
         (assignment 2
             (id 2 a)
             (id 2 b))
+=======
+        (id 2 a)
+        (<Token>)
+        (id 2 b)
+>>>>>>> 2b47a6449f3a0a54ebba1805263976ea6087598b
         (<Token>)
         (<Token>)
         (<Token>)))
