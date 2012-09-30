@@ -1,0 +1,20 @@
+(module 0
+    (def 1
+        (id 1 hello)
+        (<Token>)
+        (id 1 test)
+        (<Token>)
+        (id 1 int)
+        (<Token>)
+        (id 1 hello)
+        (<Token>)
+        (<Token>)
+        (id 1 int)
+        (<Token>)
+        (<Token>)
+        (assignment 2
+            (id 2 a)
+            (id 2 b))
+        (<Token>)
+        (<Token>)
+        (<Token>)))

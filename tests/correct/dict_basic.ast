@@ -1,0 +1,7 @@
+(module 0
+    (<Token>)
+    (string_literal 1 "\042hello\042")
+    (<Token>)
+    (id 1 hello)
+    (<Token>)
+    (<Token>))

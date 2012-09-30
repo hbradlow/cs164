@@ -6,9 +6,9 @@
         (<Token>)
         (<Token>)
         (<Token>)
-        (id 3 assign)
-        (<Token>)
-        (<Token>)
+        (assignment 3
+            (id 3 assign)
+            (string_literal 3 "\042test\042"))
         (<Token>)
         (<Token>)
         (<Token>)))

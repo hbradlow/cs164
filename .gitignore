@@ -4,3 +4,4 @@ apyc-*
 lex.yy.c
 *.swp
 apyc
+*.ast

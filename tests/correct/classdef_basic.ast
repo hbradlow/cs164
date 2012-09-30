@@ -1,0 +1,12 @@
+(module 0
+    (<Token>)
+    (id 1 rest)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (assignment 2
+        (id 2 a)
+        (string_literal 2 "\042b\042"))
+    (<Token>)
+    (<Token>)
+    (<Token>))

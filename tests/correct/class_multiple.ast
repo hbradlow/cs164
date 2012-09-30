@@ -1,0 +1,23 @@
+(module 0
+    (<Token>)
+    (id 1 Test)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (assignment 2
+        (id 2 a)
+        (string_literal 2 "\042b\042"))
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (id 4 Test2)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (assignment 5
+        (id 5 b)
+        (string_literal 5 "\042c\042"))
+    (<Token>)
+    (<Token>)
+    (<Token>))

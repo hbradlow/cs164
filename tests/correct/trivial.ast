@@ -1,0 +1,8 @@
+(module 0
+    (<Token>)
+    (int_literal 1 1)
+    (<Token>)
+    (int_literal 1 2)
+    (<Token>)
+    (int_literal 1 3)
+    (<Token>))

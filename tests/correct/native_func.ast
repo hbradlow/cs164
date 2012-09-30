@@ -1,0 +1,20 @@
+(module 0
+    (def 1
+        (id 1 hello)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (string_literal 1 "\042TEST\042"))
+    (<Token>)
+    (<Token>)
+    (def 3
+        (id 3 hello)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (string_literal 4 "\042test\042")
+        (<Token>)
+        (<Token>)
+        (<Token>)))

@@ -103,11 +103,16 @@ If/while/try - control
 %token ARGLIST "@args"
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
+%token ASSIGNMENT "@assignment"
 
 %token ADD "@add"
 %token SUB "@sub"
 %token DIV "@div"
 %token MUL "@mul"
+
+%token XOR "@xor"
+%token AND "@and"
+%token OR "@or"
 
 %token EQUALS "@=="
 %token GT "@>"
@@ -172,7 +177,7 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
+stmt_simple     : stmt_small (";" stmt_small)* ";"? (LINEBREAK!)*
                 ;
 stmt_small      : stmt_expr
                 | stmt_assign
@@ -189,10 +194,10 @@ stmt_native     : "native" STRING
                 ;
 stmt_expr       : exprlist
                 ;
-stmt_assign     : assignment assignment* testlist 
+stmt_assign     : assignment assignment* testlist {$$=$^(ASSIGNMENT,$*);}
                 ;
-assignment      : ID "=" 
-                | ID "::" ID "="
+assignment      : ID "="! 
+                | ID "::" ID "="! 
                 ;
 stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
                 | "print"
@@ -275,7 +280,7 @@ old_lambdef     : "lambda" arglist? ":" old_test
 test            : or_test ("if" or_test "else" test)?
                 | lambdef
                 ;
-or_test         : and_test ("or" and_test)*
+or_test         : and_test ("or" and_test)* 
                 ;
 and_test        : not_test ("and" not_test)*
                 ;
@@ -295,15 +300,14 @@ comp_op         : "<"
                 | "is" 
                 | "is" "not" 
                 ;
-expr            : expr_xor ("|" expr_xor)*
+expr            : expr_arith ("|"! expr_arith)*
                 ;
-expr_xor        : expr_and ("^" expr_and)*
+expr_arith      : expr_add
+                | expr_sub
                 ;
-expr_and        : expr_shift ("&" expr_shift)*
+expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
                 ;
-expr_shift      : expr_arith (("<<"|">>") expr_arith)*
-                ;
-expr_arith      : term (("+"|"-") term)*
+expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
 term            : factor (("*"|"/"|"%"|"//") factor)*
                 ;

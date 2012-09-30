@@ -1,0 +1,11 @@
+(module 0
+    (int_literal 1 10)
+    (<Token>)
+    (int_literal 1 5)
+    (<Token>)
+    (assignment 2
+        (id 2 a)
+        (int_literal 2 7)
+        (<Token>)
+        (int_literal 2 8))
+    (<Token>))

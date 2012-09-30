@@ -1,0 +1,6 @@
+(module 0
+    (assignment 1
+        (id 1 hello)
+        (id 1 r))
+    (string_literal 1 "\042rawstring\042")
+    (<Token>))

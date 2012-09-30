@@ -1,0 +1,4 @@
+(module 0
+    (<Token>)
+    (string_literal 1 "\042string\042")
+    (<Token>))

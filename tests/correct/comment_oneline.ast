@@ -1,0 +1,6 @@
+(module 0
+    (<Token>)
+    (assignment 2
+        (id 2 assign)
+        (int_literal 2 10))
+    (<Token>))

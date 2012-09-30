@@ -1,0 +1,14 @@
+(module 0
+    (def 1
+        (id 1 hello)
+        (<Token>)
+        (id 1 test)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (assignment 2
+            (id 2 a)
+            (int_literal 2 10))
+        (<Token>)
+        (<Token>)
+        (<Token>)))
