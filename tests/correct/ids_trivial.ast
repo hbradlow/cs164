@@ -1,0 +1,13 @@
+(module 0
+    (= 1
+        (id 1 someid)
+        (string_literal 1 "\0421\042"))
+    (= 2
+        (id 2 _someid)
+        (string_literal 2 "\042hello\042"))
+    (= 3
+        (id 3 _asd110sa)
+        (string_literal 3 "\042test\042"))
+    (= 4
+        (id 4 asdfs)
+        (id 4 someid)))
