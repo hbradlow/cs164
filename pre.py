@@ -78,8 +78,7 @@ def process(in_file):
 if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
-    print process(arg)
-    with open(arg.split('.')[0] + '.out', 'w') as f:
+    with open(arg.split('.')[0] + '_processed.py', 'w') as f:
         f.write(process(arg))
 
     
