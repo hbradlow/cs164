@@ -1,2 +1,2 @@
-#This is a comment
-thisisnot = 2
+# This is a comment
+assign = 10

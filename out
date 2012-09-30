@@ -1,3 +1,14 @@
 (module 0
-    (def 1
-        (id 1 hello)))
+    (add 1
+        (int_literal 1 10)
+        (int_literal 1 5))
+    (assignment 2
+        (id 2 a)
+        (add 2
+            (int_literal 2 7)
+            (int_literal 2 8)))
+    (assignment 3
+        (id 3 b)
+        (int_literal 3 3)
+        (<Token>)
+        (int_literal 3 5)))

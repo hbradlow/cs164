@@ -118,7 +118,7 @@ private:
 
 };
 
-TOKEN_FACTORY(Int_Token, INT_LITERAL);
+TOKEN_FACTORY(Int_Token, NUMBER);
 
     
 /** Represents a string. */
@@ -210,7 +210,7 @@ private:
     string literal_text;
 };
 
-TOKEN_FACTORY(String_Token, STRING_LITERAL);
+TOKEN_FACTORY(String_Token, STRING);
 
 /** A dummy token whose creation registers String_Token as the class
  *  to use for RAWSTRING tokens produced by the lexer.  (The

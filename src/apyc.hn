@@ -92,6 +92,8 @@ If/while/try - control
 %token LITERAL "@literal"
 %token MODULE "@module"
 %token IF_STMT "@if_stmt"
+%token ELIF_STMT "@elif_stmt"
+%token ELSE_STMT "@else_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
 %token LPAREN "@("
@@ -103,11 +105,18 @@ If/while/try - control
 %token ARGLIST "@args"
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
+%token ASSIGNMENT "@assignment"
 
 %token ADD "@add"
 %token SUB "@sub"
 %token DIV "@div"
 %token MUL "@mul"
+%token FLDIV "@fldiv"
+%token MOD "@mod"
+
+%token XOR "@xor"
+%token AND "@and"
+%token OR "@or"
 
 %token EQUALS "@=="
 %token GT "@>"
@@ -134,26 +143,30 @@ If/while/try - control
 * : (' ' | '\t' | '\r')+ ;
 IDENT : "indent"; 
 DEDENT : "dedent";
-NUMBER : "-"*('1' .. '9') ('0' .. '9')*;
+NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-RAWSTRING : "r\"\"";
+RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 LINEBREAK : '\n';
+COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
+MULTILINE_COMMENT : "\"\"\"" ( 'A' .. 'Z' | 'a' .. 'z' | '_' | ' ' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
-program         : input_simple+
+program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
                 ;
 /* INPUTS */
 input_simple    : LINEBREAK+ 
-                | stmt
+                | stmt                 
+                | COMMENT+
+                | MULTILINE_COMMENT+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def" ID params ("::" ID)? ":" codeblock
+definefunc      : "def"! ID params ("::" ID)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
                 ;
-params          : "(" arglist ")"
+params          : "(" arglist ")"   
                 ;
-arglist         : argument  
-                | argument ("," argument ","?)*
+arglist         : argument      
+                | argument ("," argument ","?)* 
                 | /*empty*/
                 ;
 defineclass     : "class" ID ":" codeblock
@@ -168,9 +181,10 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
+stmt_simple     : stmt_small (";" stmt_small)* ";"? (LINEBREAK!)+
                 ;
 stmt_small      : stmt_expr
+                | stmt_assign
                 | stmt_print
                 | stmt_del
                 | stmt_pass 
@@ -179,11 +193,18 @@ stmt_small      : stmt_expr
                 | stmt_exec
                 | stmt_assert
                 ;
-stmt_expr       : testlist "=" (expr_yield | testlist)*
-                | ID "::" ID "=" (expr_yield | testlist)*
-                | exprlist
+stmt_native     : "native" STRING 
+                | LINEBREAK+ IDENT "native" STRING LINEBREAK* DEDENT LINEBREAK*
+                ;
+stmt_expr       : exprlist
+                ;
+stmt_assign     : assignment assignment* (testlist | exprlist | atom) {$$=$^(ASSIGNMENT,$*);}
+                ;
+assignment      : ID "="! 
+                | ID "::" ID "="! 
                 ;
 stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
+                | "print"
                 ;
 stmt_del        : "del" exprlist
                 ;
@@ -232,7 +253,11 @@ stmtcompnodef   : stmt_if
                 | stmt_try
                 | stmt_with
                 ;
-stmt_if         : "if" test ":" flowblock ("elif" test ":" flowblock)* ("else" ":" flowblock)?
+stmt_if         : "if" test ":" flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
+                ;
+stmt_elif       : "elif" test ":" flowblock {$$=$^(ELIF_STMT, $*);}
+                ;
+stmt_else       : "else" ":" flowblock {$$=$^(ELSE_STMT, $*);}
                 ;
 stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)?
                 ;
@@ -263,7 +288,7 @@ old_lambdef     : "lambda" arglist? ":" old_test
 test            : or_test ("if" or_test "else" test)?
                 | lambdef
                 ;
-or_test         : and_test ("or" and_test)*
+or_test         : and_test ("or" and_test)* 
                 ;
 and_test        : not_test ("and" not_test)*
                 ;
@@ -283,17 +308,19 @@ comp_op         : "<"
                 | "is" 
                 | "is" "not" 
                 ;
-expr            : expr_xor ("|" expr_xor)*
+expr            : expr_arith ("|"! expr_arith)*
                 ;
-expr_xor        : expr_and ("^" expr_and)*
+expr_arith      : expr_add
+                | expr_sub
                 ;
-expr_and        : expr_shift ("&" expr_shift)*
+expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
                 ;
-expr_shift      : expr_arith (("<<"|">>") expr_arith)*
+expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
-expr_arith      : term (("+"|"-") term)*
-                ;
-term            : factor (("*"|"/"|"%"|"//") factor)*
+term            : factor (M+="*"! factor)* {if(!$M.missing()){$$=$^(MUL,$*);}}
+                | factor (D+="/"! factor)* {if(!$D.missing()){$$=$^(DIV, $*);}}
+                | factor (M+="%"! factor)* {if(!$M.missing()){$$=$^(MOD, $*);}}
+                | factor (D+="//"! factor)* {if(!$D.missing()){$$=$^(FLDIV, $*);}}
                 ;
 factor          : ("+" | "-" | "~") factor
                 | power
@@ -305,8 +332,9 @@ atom            : "(" (expr_yield | testlist_comp)? ")"
                 | "{" (dictorsetmaker)? "}"
                 | "`" testlist1 "`"
                 | ID 
-                | NUMBER+
-                | STRING+
+                | NUMBER
+                | STRING
+                | RAWSTRING
                 ;
 listmaker       : test (list_for | ("," test)* ","?)
                 ;
@@ -334,7 +362,6 @@ dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
                 | test (comp_for | ("," test)* ","?)
                 ;
 argument        : test comp_for? 
-                | test "=" test
                 | ID "::" ID
                 ;
 list_iter       : list_for 
