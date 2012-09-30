@@ -134,10 +134,10 @@ If/while/try - control
 * : (' ' | '\t' | '\r')+ ;
 IDENT : "indent"; 
 DEDENT : "dedent";
-NUMBER : "-"*('1' .. '9') ('0' .. '9')*;
+NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-RAWSTRING : "r\"\"";
+RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 LINEBREAK : '\n';
 COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( 'A' .. 'Z' | 'a' .. 'z' | '_' | ' ' | '\n')* "\"\"\"" '\n'? ;
@@ -154,10 +154,10 @@ input_simple    : LINEBREAK+
 /* FUNCTION DEFS */
 definefunc      : "def"! ID params ("::" ID)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
                 ;
-params          : "(" arglist ")"
+params          : "(" arglist ")"   
                 ;
-arglist         : argument  
-                | argument ("," argument ","?)*
+arglist         : argument      
+                | argument ("," argument ","?)* 
                 | /*empty*/
                 ;
 defineclass     : "class" ID ":" codeblock
@@ -172,7 +172,7 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
+stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK+
                 ;
 stmt_small      : stmt_expr
                 | stmt_assign
@@ -189,7 +189,7 @@ stmt_native     : "native" STRING
                 ;
 stmt_expr       : exprlist
                 ;
-stmt_assign     : assignment assignment* testlist 
+stmt_assign     : assignment assignment* (testlist | exprlist | atom)
                 ;
 assignment      : ID "=" 
                 | ID "::" ID "="
@@ -317,8 +317,9 @@ atom            : "(" (expr_yield | testlist_comp)? ")"
                 | "{" (dictorsetmaker)? "}"
                 | "`" testlist1 "`"
                 | ID 
-                | NUMBER+
-                | STRING+
+                | NUMBER
+                | STRING
+                | RAWSTRING
                 ;
 listmaker       : test (list_for | ("," test)* ","?)
                 ;

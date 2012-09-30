@@ -1,0 +1,20 @@
+(module 0
+    (def 1
+        (id 1 hello)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>))
+    (<Token>)
+    (<Token>)
+    (def 3
+        (id 3 hello)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)
+        (<Token>)))

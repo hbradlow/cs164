@@ -1,0 +1,12 @@
+(module 0
+    (<Token>)
+    (id 1 True)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (id 2 a)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>)
+    (<Token>))

@@ -1,0 +1,5 @@
+(module 0
+    (id 1 hello)
+    (<Token>)
+    (string_literal 1 "r\042rawstring\042")
+    (<Token>))
