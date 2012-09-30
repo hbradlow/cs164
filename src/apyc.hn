@@ -152,7 +152,7 @@ input_simple    : LINEBREAK+
                 | MULTILINE_COMMENT+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def" ID params ("::" ID)? ":" codeblock
+definefunc      : "def" ID params ("::" ID)? ":" (codeblock | stmt_native)
                 ;
 params          : "(" arglist ")"
                 ;
@@ -182,6 +182,9 @@ stmt_small      : stmt_expr
                 | stmt_global
                 | stmt_exec
                 | stmt_assert
+                ;
+stmt_native     : "native" STRING 
+                | LINEBREAK+ IDENT "native" STRING LINEBREAK* DEDENT LINEBREAK*
                 ;
 stmt_expr       : testlist "=" (expr_yield | testlist)*
                 | ID "::" ID "=" (expr_yield | testlist)*
