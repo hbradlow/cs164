@@ -127,6 +127,10 @@ If/while/try - control
 %token LTE "@<="
 
 %token FOR
+%token RETURN_TYPE "@return_type"
+%token TYPE "@type"
+%token TYPED_ID "@typed_id"
+%token TYPE_LIST "@typed_list"
 %token IN
 %token INDENT
 %token DEDENT
@@ -144,8 +148,8 @@ If/while/try - control
 
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
-IDENT  : "71684aa3418631a412d6105e160131b9"; 
-DEDENT : "d2b3009662c463c2ab96d1a73872c6f1";
+IDENT  : "@71684aa3418631a412d6105e160131b9"; 
+DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
 NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
@@ -164,7 +168,9 @@ input_simple    : LINEBREAK+
                 | MULTILINE_COMMENT+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def"! ID params ("::" ID)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
+definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
+                ;
+return_type     : type {$$=$^(RETURN_TYPE,$*);}
                 ;
 params          : "(" arglist ")"   
                 ;
@@ -172,7 +178,7 @@ arglist         : argument
                 | argument ("," argument ","?)* 
                 | /*empty*/
                 ;
-defineclass     : "class" ID ":" codeblock
+defineclass     : "class" type ":" codeblock
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -204,7 +210,7 @@ stmt_expr       : exprlist
 stmt_assign     : assignment assignment* (testlist | exprlist | atom) {$$=$^(ASSIGNMENT,$*);}
                 ;
 assignment      : ID "="! 
-                | ID "::" ID "="! 
+                | typed_id "="! 
                 ;
 stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
                 | "print"
@@ -339,6 +345,15 @@ atom            : "(" (expr_yield | testlist_comp)? ")"
                 | STRING
                 | RAWSTRING
                 ;
+type            : ID {$$=$^(TYPE,$*);}
+                | "$"! ID {$$=$^(TYPE,$*);}
+                | ID "of"! "["! type_list "]"! {$$=$^(TYPE,$ID,$^(TYPE_LIST,$type_list));}
+                ;
+type_list       : type ","! type_list
+                | type
+                ;
+typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
+                ;
 listmaker       : test (list_for | ("," test)* ","?)
                 ;
 testlist_comp   : test (comp_for | ("," test)* ","?)
@@ -365,7 +380,7 @@ dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
                 | test (comp_for | ("," test)* ","?)
                 ;
 argument        : test comp_for? 
-                | ID "::" ID
+                | typed_id
                 ;
 list_iter       : list_for 
                 | list_if 

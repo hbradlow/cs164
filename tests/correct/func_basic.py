@@ -1,3 +1,2 @@
 def hello():
-indent    assign = "test"
-dedent
+    assign = "test"
