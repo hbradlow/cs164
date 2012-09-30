@@ -6,6 +6,7 @@ Henry:
 Types
 Datastructures
 Static typing
+arithmetic
 
 Kevin:
 Function defs
@@ -15,6 +16,7 @@ ID
 
 Will:
 If/while/try - control
+
 */
 
 /* apyc: Bison Parser */
