@@ -94,6 +94,8 @@ If/while/try - control
 %token LITERAL "@literal"
 %token MODULE "@module"
 %token IF_STMT "@if_stmt"
+%token ELIF_STMT "@elif_stmt"
+%token ELSE_STMT "@else_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
 %token ITERABLE "@iterable"
 %token LPAREN "@("
@@ -111,6 +113,8 @@ If/while/try - control
 %token SUB "@sub"
 %token DIV "@div"
 %token MUL "@mul"
+%token FLDIV "@fldiv"
+%token MOD "@mod"
 
 %token XOR "@xor"
 %token AND "@and"
@@ -251,7 +255,11 @@ stmtcompnodef   : stmt_if
                 | stmt_try
                 | stmt_with
                 ;
-stmt_if         : "if" test ":" flowblock ("elif" test ":" flowblock)* ("else" ":" flowblock)?
+stmt_if         : "if" test ":" flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
+                ;
+stmt_elif       : "elif" test ":" flowblock {$$=$^(ELIF_STMT, $*);}
+                ;
+stmt_else       : "else" ":" flowblock {$$=$^(ELSE_STMT, $*);}
                 ;
 stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)?
                 ;
@@ -311,7 +319,10 @@ expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
                 ;
 expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
-term            : factor (("*"|"/"|"%"|"//") factor)*
+term            : factor (M+="*"! factor)* {if(!$M.missing()){$$=$^(MUL,$*);}}
+                | factor (D+="/"! factor)* {if(!$D.missing()){$$=$^(DIV, $*);}}
+                | factor (M+="%"! factor)* {if(!$M.missing()){$$=$^(MOD, $*);}}
+                | factor (D+="//"! factor)* {if(!$D.missing()){$$=$^(FLDIV, $*);}}
                 ;
 factor          : ("+" | "-" | "~") factor
                 | power
