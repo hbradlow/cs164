@@ -142,17 +142,17 @@ LINEBREAK : '\n';
 COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( 'A' .. 'Z' | 'a' .. 'z' | '_' | ' ' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
-program         : input_simple+
+program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
                 ;
 /* INPUTS */
 input_simple    : LINEBREAK+ 
-                | stmt
+                | stmt                 
                 | COMMENT+
                 | MULTILINE_COMMENT+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def" ID params ("::" ID)? ":" (codeblock | stmt_native)
+definefunc      : "def"! ID params ("::" ID)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
                 ;
 params          : "(" arglist ")"
                 ;
@@ -175,6 +175,7 @@ stmtnodef       : stmt_simple
 stmt_simple     : stmt_small (";" stmt_small)* ";"? LINEBREAK*
                 ;
 stmt_small      : stmt_expr
+                | stmt_assign
                 | stmt_print
                 | stmt_del
                 | stmt_pass 
@@ -186,11 +187,15 @@ stmt_small      : stmt_expr
 stmt_native     : "native" STRING 
                 | LINEBREAK+ IDENT "native" STRING LINEBREAK* DEDENT LINEBREAK*
                 ;
-stmt_expr       : testlist "=" (expr_yield | testlist)*
-                | ID "::" ID "=" (expr_yield | testlist)*
-                | exprlist
+stmt_expr       : exprlist
+                ;
+stmt_assign     : assignment assignment* testlist 
+                ;
+assignment      : ID "=" 
+                | ID "::" ID "="
                 ;
 stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
+                | "print"
                 ;
 stmt_del        : "del" exprlist
                 ;
@@ -341,7 +346,6 @@ dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
                 | test (comp_for | ("," test)* ","?)
                 ;
 argument        : test comp_for? 
-                | test "=" test
                 | ID "::" ID
                 ;
 list_iter       : list_for 
