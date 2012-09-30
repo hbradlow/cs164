@@ -1,6 +1,0 @@
-(module 0
-    (int_literal 1 2)
-    (assignment 1
-        (id 1 ad)
-        (string_literal 1 "\042hello\042"))
-    (<Token>))
