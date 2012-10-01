@@ -6,12 +6,13 @@ if [ -z $1 ]
 then
 	for f in tests/indentation/indent*.py
 	do
+		echo "Preprocessing $f"
 		python pre.py $f
 	done
 else
 	if [ $1 = "clean" ]
 	then
-		for f in tests/indentation/indent*.out
+		for f in tests/indentation/*.processed
 		do
 			rm $f
 		done
