@@ -148,8 +148,8 @@ If/while/try - control
 
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
-IDENT  : "@71684aa3418631a412d6105e160131b9"; 
-DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
+IDENT  : "indent" /* "@71684aa3418631a412d6105e160131b9"; */;
+DEDENT : "dedent" ; /*"@d2b3009662c463c2ab96d1a73872c6f1";*/
 NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
@@ -207,7 +207,7 @@ stmt_native     : "native" STRING
                 ;
 stmt_expr       : exprlist
                 ;
-stmt_assign     : assignment assignment* (testlist | exprlist | atom) {$$=$^(ASSIGNMENT,$*);}
+stmt_assign     : assignment assignment* (test | expr | atom) {$$=$^(ASSIGNMENT,$*);}
                 ;
 assignment      : ID "="! 
                 | typed_id "="! 

@@ -1,7 +1,7 @@
 def foo(bar):
-    return bar**3
-
+indent    return bar**3
+dedent
 def baz(x):
-    return x + 1
-
+indent    return x + 1
+dedent
 print baz(foo(100))

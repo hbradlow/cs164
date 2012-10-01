@@ -1,2 +1,3 @@
 def hello():
-    assign = "test"
+indent    assign = "test"
+dedent
