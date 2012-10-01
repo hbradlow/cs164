@@ -1,9 +1,6 @@
 if True: 
-indent a = 10
-dedent 
+    a = 10
 elif False:
-indent b = 10
-dedent
+    b = 10
 else: 
-indent c = 0
-dedent
+    c = 0

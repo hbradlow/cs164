@@ -10,6 +10,7 @@
 #include <cstring>
 #include <cstdarg>
 #include "apyc.h"
+#include <iostream>
 
 using namespace std;
 
@@ -56,13 +57,19 @@ compile (const string& input, const string& output)
         return; 
     }
     file_name = input;
-    FILE* inFile = fopen (input.c_str (), "r");
+    std::string command = std::string("python pre.py ") + std::string(input.c_str());
+    system(command.c_str());
+    std::string filename = std::string(input.c_str()) + std::string(".processed");
+    FILE* inFile = fopen (filename.c_str(), "r");
     if (inFile == NULL) {
         error_no_file ("Could not open %s", input.c_str ());
         return; 
     }
+
     parse (inFile, input);
     fclose (inFile);
+    command = std::string("rm ") + filename;
+    //system(command.c_str());
     fclose (stdout);
 }
 

@@ -109,6 +109,29 @@ If/while/try - control
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
 %token ASSIGNMENT "@assignment"
+%token LISTACC "@listacc" 
+%token FUNCCALL "@funccall" 
+%token DOTNOTATION "@dot_notation"
+%token CODEBLOCK "@codeblock"
+%token RETURN "@return"
+%token POWER "@power"
+%token TEST "@test"
+%token NATIVE "@native"
+%token CLASS "@class"
+%token DEL "@del"
+%token PASS "@pass" 
+%token BREAK "@break" 
+%token CONTINUE "@continue" 
+%token RAISE "@raise" 
+%token GLOBAL "@global" 
+%token EXEC "@exec" 
+%token ASSERT "@assert" 
+%token TRY "@try" 
+%token WITH "@with" 
+%token EXCEPT "@except"
+%token LIST_FOR "@list_for" 
+%token COMP_FOR "@comp_for" 
+%token YIELD "@yield"
 
 %token ADD "@add"
 %token SUB "@sub"
@@ -120,23 +143,28 @@ If/while/try - control
 %token XOR "@xor"
 %token AND "@and"
 %token OR "@or"
+%token NOT "@not"
 
 %token EQUALS "@=="
+%token NE "@!="
 %token GT "@>"
 %token LT "@<"
 %token GTE "@>="
 %token LTE "@<="
+%token IS "@is" 
+%token ISNOT "@isnot" 
+%token ISIN "@isin" 
+%token IN "@in"
+%token NOTIN "@NOTIN"
 
 %token FOR
 %token RETURN_TYPE "@return_type"
 %token TYPE "@type"
 %token TYPED_ID "@typed_id"
 %token TYPE_LIST "@typed_list"
-%token IN
 %token INDENT
 %token DEDENT
 %token WHILE
-%token DICT
 %token FUNCTION_NAME
 %token LIST
 %token NUMERIC_LITERAL
@@ -163,21 +191,23 @@ program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
                 ;
 /* INPUTS */
-input_simple    : LINEBREAK+ 
+input_simple    : (LINEBREAK!)+ 
                 | stmt                 
-                | COMMENT+
-                | MULTILINE_COMMENT+
+                | (COMMENT!)+
+                | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
 definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
                 ;
-params          : "(" arglist ")"   
+return_type     : type {$$=$^(RETURN_TYPE,$*);}
+                ;
+params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
 arglist         : argument      
-                | argument ("," argument ","?)* 
+                | argument (","! argument ","!?)* 
                 | /*empty*/
                 ;
-defineclass     : "class" type ":" codeblock {$$=$^(CLASS,$*);}
+defineclass     : "class"! type ":"! codeblock {$$=$^(CLASS, $*);}
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -189,7 +219,7 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";" stmt_small)* ";"? (LINEBREAK!)+
+stmt_simple     : stmt_small (";"! stmt_small)* ";"!? (LINEBREAK!)+
                 ;
 stmt_small      : stmt_expr
                 | stmt_assign
@@ -201,22 +231,22 @@ stmt_small      : stmt_expr
                 | stmt_exec
                 | stmt_assert
                 ;
-stmt_native     : "native" STRING 
-                | LINEBREAK+ IDENT "native" STRING LINEBREAK* DEDENT LINEBREAK*
+stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
+                | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : exprlist
                 ;
-stmt_assign     : assignment assignment* (testlist | exprlist | atom) {$$=$^(ASSIGNMENT,$*);}
+stmt_assign     : assignment assignment* (test | expr | atom) {$$=$^(ASSIGNMENT,$*);}
                 ;
 assignment      : ID "="! 
                 | typed_id "="! 
                 ;
-stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?) {$$=$^(PRINT,
-                | "print"
+stmt_print      : "print"! (test (","! test)* ","!? | ">>"! test (","! test)+ ","!?) {$$=$^(PRINTLN, $*);}
+                | "print"!  {$$=$^(PRINTLN, $*);}
                 ;
-stmt_del        : "del" exprlist
+stmt_del        : "del"! exprlist {$$=$^(DEL, $*);}
                 ;
-stmt_pass       : "pass" 
+stmt_pass       : "pass"! {$$=$^(PASS, $*);} 
                 ;
 stmt_flow       : stmt_break
                 | stmt_continue
@@ -224,21 +254,21 @@ stmt_flow       : stmt_break
                 | stmt_raise
                 | stmt_yield
                 ;
-stmt_break      : "break"
+stmt_break      : "break"! {$$=$^(BREAK, $*);}
                 ;
-stmt_continue   : "continue"
+stmt_continue   : "continue"! {$$=$^(CONTINUE, $*);}
                 ;
-stmt_return     : "return" testlist?
+stmt_return     : "return"! testlist? {$$=$^(RETURN, $*);}
                 ;
 stmt_yield      : expr_yield
                 ;
-stmt_raise      : "raise" (test ("," test (","test)?)?)?
+stmt_raise      : "raise"! (test (","! test (","!test)?)?)? {$$=$^(RAISE, $*);}
                 ;
-stmt_global     : "global" ID ("," ID)*
+stmt_global     : "global"! ID (","! ID)* {$$=$^(GLOBAL, $*);}
                 ;
-stmt_exec       : "exec" expr ("in" test ("," test)?)?
+stmt_exec       : "exec"! expr ("in"! test (","! test)?)? {$$=$^(EXEC, $*);}
                 ;
-stmt_assert     : "assert" test ("," test)?
+stmt_assert     : "assert"! test (","! test)? {$$=$^(ASSERT, $*);}
                 ;
 stmt_comp       : stmt_if
                 | stmt_while
@@ -261,29 +291,29 @@ stmtcompnodef   : stmt_if
                 | stmt_try
                 | stmt_with
                 ;
-stmt_if         : "if" test ":" flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
+stmt_if         : "if"! test ":"! flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
                 ;
-stmt_elif       : "elif" test ":" flowblock {$$=$^(ELIF_STMT, $*);}
+stmt_elif       : "elif"! test ":"! flowblock {$$=$^(ELIF_STMT, $*);}
                 ;
-stmt_else       : "else" ":" flowblock {$$=$^(ELSE_STMT, $*);}
+stmt_else       : "else"! ":"! flowblock {$$=$^(ELSE_STMT, $*);}
                 ;
-stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)?
+stmt_while      : "while"! test ":"! flowblock ("else"! ":"! flowblock)? {$$=$^(WHILE, $*);}
                 ;
-stmt_for        : "for" exprlist "in" testlist ":" flowblock ("else" ":" flowblock)?
+stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock ("else"! ":"! flowblock)? {$$=$^(FOR, $*);}
                 ;
-stmt_try        : "try" ":" flowblock ((except_clause ":" flowblock)+ ("else" ":" flowblock)? ("finally" ":" flowblock)? | "finally" ":" flowblock)
+stmt_try        : "try"! ":"! flowblock ((except_clause ":"! flowblock)+ ("else"! ":"! flowblock)? ("finally"! ":"! flowblock)? | "finally"! ":"! flowblock) {$$=$^(TRY, $*);}
                 ;
-stmt_with       : "with" with_item ("," with_item)* ":" flowblock
+stmt_with       : "with"! with_item (","! with_item)* ":"! flowblock {$$=$^(WITH, $*);}
                 ;
-with_item       : test ("as" expr)?
+with_item       : test ("as"! expr)?
                 ;
-except_clause   : "except" (test (("as" | ",") test)?)?
+except_clause   : "except"! (test (("as"! | ","!) test)?)? {$$=$^(EXCEPT, $*);}
                 ;
 codeblock       : stmt_simple 
-                | LINEBREAK+ IDENT stmtnoclass+ LINEBREAK* DEDENT LINEBREAK*
+                | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(CODEBLOCK, $M);}
                 ;
 flowblock       : stmt_simple
-                | LINEBREAK+ IDENT stmtnodef+ LINEBREAK* DEDENT LINEBREAK*
+                | LINEBREAK+ IDENT M+=stmtnodef+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(CODEBLOCK, $M);}
                 ;
 testlist_safe   : old_test (("," old_test)+ ","?)?
                 ;
@@ -293,48 +323,49 @@ old_test        : or_test
 old_lambdef     : "lambda" arglist? ":" old_test
                 ;
 
-test            : or_test ("if" or_test "else" test)?
+test            : or_test ("if" or_test "else" test)? 
                 | lambdef
                 ;
-or_test         : and_test ("or" and_test)* 
+or_test         : and_test (M+="or"! and_test)* {if(!$M.missing()){$$=$^(OR, $*);}}
                 ;
-and_test        : not_test ("and" not_test)*
+and_test        : not_test (M+="and"! not_test)* {if(!$M.missing()){$$=$^(AND, $*);}}
                 ;
-not_test        : "not" not_test
+not_test        : M+="not"! not_test {if(!$M.missing()){$$=$^(NOT, $*);}}
                 | comparison
                 ;
-comparison      : expr (comp_op expr)*
-                ;
-comp_op         : "<"
-                | ">"
-                | "=="
-                | "<="
-                | ">="
-                | "!="
-                | "in"
-                | "not" "in"
-                | "is" 
-                | "is" "not" 
+comparison      : expr ("<"! expr)+ {$$=$^(LT, $*);}
+                | expr (">"! expr)+ {$$=$^(GT, $*);}
+                | expr ("=="! expr)+ {$$=$^(EQUALS, $*);}
+                | expr ("<="! expr)+ {$$=$^(LTE, $*);}
+                | expr (">="! expr)+ {$$=$^(GTE, $*);}
+                | expr ("!="! expr)+ {$$=$^(NE, $*);}
+                | expr ("in"! expr)+ {$$=$^(IN, $*);}
+                | expr ("not"! "in"! expr)+ {$$=$^(NOTIN, $*);}
+                | expr ("is"! expr)+ {$$=$^(IS, $*);}
+                | expr ("is"! "not"! expr)+ {$$=$^(ISNOT, $*);}
+                | expr
                 ;
 expr            : expr_arith ("|"! expr_arith)*
                 ;
 expr_arith      : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
                 | term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
-term            : factor (M+="*"! factor)* {if(!$M.missing()){$$=$^(MUL,$*);}}
-                | factor (D+="/"! factor)* {if(!$D.missing()){$$=$^(DIV, $*);}}
-                | factor (M+="%"! factor)* {if(!$M.missing()){$$=$^(MOD, $*);}}
-                | factor (D+="//"! factor)* {if(!$D.missing()){$$=$^(FLDIV, $*);}}
+term            : factor (M+="*"! factor)+ {if(!$M.missing()){$$=$^(MUL,$*);}}
+                | factor (D+="/"! factor)+ {if(!$D.missing()){$$=$^(DIV, $*);}}
+                | factor (M+="%"! factor)+ {if(!$M.missing()){$$=$^(MOD, $*);}}
+                | factor (D+="//"! factor)+ {if(!$D.missing()){$$=$^(FLDIV, $*);}}
+                | factor 
                 ;
-factor          : ("+" | "-" | "~") factor
-                | power
-                ;
-power           : atom trailer* ("**" factor)?
-                ;
-atom            : "(" (expr_yield | testlist_comp)? ")"
-                | "[" (listmaker)? "]"
-                | "{" (dictorsetmaker)? "}"
-                | "`" testlist1 "`"
+factor          : ("+"! | "-"! | "~"!) factor
+                | atom (D+="("! arglist? ")"!)* ("**"! factor)? {if(!$D.missing()){$$=$^(FUNCCALL, $*);}}
+                | atom (D+="["! subscriptlist "]"!)*  ("**"! factor)?  {if(!$D.missing()){$$=$^(LISTACC, $*);}}
+                | atom (D+="."! ID)* ("**"! factor)?   {if(!$D.missing()){$$=$^(DOTNOTATION, $*);}}
+                | atom ("**"! factor) {$$=$^(POWER, $*);}
+                ; 
+atom            : "("! (expr_yield | testlist_comp)? ")"! 
+                | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
+                | "{"! (dictorsetmaker)? "}"! {$$=$^(DICTIONARY, $*);}
+                | "`"! testlist1 "`"!
                 | ID 
                 | NUMBER
                 | STRING
@@ -351,30 +382,26 @@ typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
                 ;
 return_type     : type {$$=$^(RETURN_TYPE,$*);}
                 ;
-listmaker       : test (list_for | ("," test)* ","?)
-                ;
 testlist_comp   : test (comp_for | ("," test)* ","?)
                 ;
-lambdef         : "lambda" arglist? ":" test
+testlist_comp   : test (comp_for | (","! test)* ","!?)
                 ;
-trailer         : "(" arglist? ")"
-                | "[" subscriptlist "]"
-                | "." ID
+lambdef         : "lambda"! arglist? ":"! test
                 ;
-subscriptlist   : subscript ("," subscript)* ","?
+subscriptlist   : subscript (","! subscript)* ","!?
                 ;
-subscript       : "." "." "." 
+subscript       : "."! "."! "."! 
                 | test
-                | test? ":" test? sliceop?
+                | test? ":"! test? sliceop?
                 ;
-sliceop         : ":" test
+sliceop         : ":"! test
                 ;
-exprlist        : expr ("," expr)* ","?
+exprlist        : expr (","! expr)* ","!?
                 ;
-testlist        : test ("," test)* ","?
+testlist        : test (","! test)* ","!?
                 ;
-dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
-                | test (comp_for | ("," test)* ","?)
+dictorsetmaker  : test ":"! test (comp_for | (","! test ":"! test)* ","!?)
+                | test (comp_for | (","! test)* ","!?)
                 ;
 argument        : test comp_for? 
                 | typed_id
@@ -382,20 +409,20 @@ argument        : test comp_for?
 list_iter       : list_for 
                 | list_if 
                 ;
-list_for        : "for" exprlist "in" testlist_safe list_iter? 
+list_for        : "for"! exprlist "in"! testlist_safe list_iter? {$$=$^(LIST_FOR, $*);}
                 ;
-list_if         : "if" old_test list_iter? 
+list_if         : "if"! old_test list_iter? 
                 ;
 comp_iter       : comp_for 
                 | comp_if
                 ;
-comp_for        : "for" exprlist "in" or_test comp_iter? 
+comp_for        : "for"! exprlist "in"! or_test comp_iter? {$$=$^(COMP_FOR, $*);}
                 ;
-comp_if         : "if" old_test comp_iter?
+comp_if         : "if"! old_test comp_iter?
                 ;
-testlist1       : test ("," test)*
+testlist1       : test (","! test)*
                 ;
-expr_yield      : "yield" testlist?
+expr_yield      : "yield"! testlist? {$$=$^(YIELD, $*);}
                 ;
 %%
 

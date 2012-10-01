@@ -1,6 +1,4 @@
 class Test:
-indent a = "b" 
-dedent 
+    a = "b" 
 class Test2: 
-indent b = "c" 
-dedent
+    b = "c" 
