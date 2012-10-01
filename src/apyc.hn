@@ -5,7 +5,7 @@ Responsibilities:
 Henry:
 Types
 Datastructures
-Static typing
+Static typing   -   Done
 arithmetic
 
 Kevin:
@@ -88,7 +88,7 @@ If/while/try - control
  * node operators to printable strings.
  */
 
-%token PRINTLN "@println"
+%token PRINT "@print"
 %token EMPTY 
 %token EXPR_LIST "@expr_list"
 %token LITERAL "@literal"
@@ -104,6 +104,7 @@ If/while/try - control
 %token COMPARE "@compare"
 %token ASSIGN "@="
 %token DEF "@def"
+%token CLASS "@class"
 %token ARGLIST "@args"
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
@@ -350,12 +351,8 @@ comp_op         : "<"
                 ;
 expr            : expr_arith ("|"! expr_arith)*
                 ;
-expr_arith      : expr_add
-                | expr_sub
-                ;
-expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
-                ;
-expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
+expr_arith      : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
+                | term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
 term            : factor (M+="*"! factor)+ {if(!$M.missing()){$$=$^(MUL,$*);}}
                 | factor (D+="/"! factor)+ {if(!$D.missing()){$$=$^(DIV, $*);}}
@@ -387,7 +384,9 @@ type_list       : type ","! type_list
                 ;
 typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
                 ;
-listmaker       : test (list_for | (","! test)* ","!?)
+return_type     : type {$$=$^(RETURN_TYPE,$*);}
+                ;
+testlist_comp   : test (comp_for | ("," test)* ","?)
                 ;
 testlist_comp   : test (comp_for | (","! test)* ","!?)
                 ;
