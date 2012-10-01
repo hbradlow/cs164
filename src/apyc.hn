@@ -115,6 +115,8 @@ If/while/try - control
 %token RETURN "@return"
 %token POWER "@power"
 %token TEST "@test"
+%token NATIVE "@native"
+%token CLASS "@class"
 
 %token ADD "@add"
 %token SUB "@sub"
@@ -126,23 +128,28 @@ If/while/try - control
 %token XOR "@xor"
 %token AND "@and"
 %token OR "@or"
+%token NOT "@not"
 
 %token EQUALS "@=="
+%token NE "@!="
 %token GT "@>"
 %token LT "@<"
 %token GTE "@>="
 %token LTE "@<="
+%token IS "@is" 
+%token ISNOT "@isnot" 
+%token ISIN "@isin" 
+%token IN "@in"
+%token NOTIN "@NOTIN"
 
 %token FOR
 %token RETURN_TYPE "@return_type"
 %token TYPE "@type"
 %token TYPED_ID "@typed_id"
 %token TYPE_LIST "@typed_list"
-%token IN
 %token INDENT
 %token DEDENT
 %token WHILE
-%token DICT
 %token FUNCTION_NAME
 %token LIST
 %token NUMERIC_LITERAL
@@ -169,10 +176,10 @@ program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
                 ;
 /* INPUTS */
-input_simple    : LINEBREAK+ 
+input_simple    : (LINEBREAK!)+ 
                 | stmt                 
-                | COMMENT+
-                | MULTILINE_COMMENT+
+                | (COMMENT!)+
+                | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
 definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
@@ -182,10 +189,10 @@ return_type     : type {$$=$^(RETURN_TYPE,$*);}
 params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
 arglist         : argument      
-                | argument ("," argument ","?)* 
+                | argument (","! argument ","!?)* 
                 | /*empty*/
                 ;
-defineclass     : "class" type ":" codeblock
+defineclass     : "class"! type ":"! codeblock {$$=$^(CLASS, $*);}
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -197,7 +204,7 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";" stmt_small)* ";"? (LINEBREAK!)+
+stmt_simple     : stmt_small (";"! stmt_small)* ";"!? (LINEBREAK!)+
                 ;
 stmt_small      : stmt_expr
                 | stmt_assign
@@ -209,8 +216,8 @@ stmt_small      : stmt_expr
                 | stmt_exec
                 | stmt_assert
                 ;
-stmt_native     : "native" STRING 
-                | LINEBREAK+ IDENT "native" STRING LINEBREAK* DEDENT LINEBREAK*
+stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
+                | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : exprlist
                 ;
@@ -219,7 +226,7 @@ stmt_assign     : assignment assignment* (test | expr | atom) {$$=$^(ASSIGNMENT,
 assignment      : ID "="! 
                 | typed_id "="! 
                 ;
-stmt_print      : "print"! (test ("," test)* ","? | ">>" test ("," test)+ ","?) {$$=$^(PRINTLN, $*);}
+stmt_print      : "print"! (test (","! test)* ","!? | ">>"! test (","! test)+ ","!?) {$$=$^(PRINTLN, $*);}
                 | "print"!  {$$=$^(PRINTLN, $*);}
                 ;
 stmt_del        : "del" exprlist
@@ -269,26 +276,26 @@ stmtcompnodef   : stmt_if
                 | stmt_try
                 | stmt_with
                 ;
-stmt_if         : "if" test ":" flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
+stmt_if         : "if"! test ":"! flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
                 ;
-stmt_elif       : "elif" test ":" flowblock {$$=$^(ELIF_STMT, $*);}
+stmt_elif       : "elif"! test ":"! flowblock {$$=$^(ELIF_STMT, $*);}
                 ;
-stmt_else       : "else" ":" flowblock {$$=$^(ELSE_STMT, $*);}
+stmt_else       : "else"! ":"! flowblock {$$=$^(ELSE_STMT, $*);}
                 ;
-stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)?
+stmt_while      : "while"! test ":"! flowblock ("else"! ":"! flowblock)?
                 ;
-stmt_for        : "for" exprlist "in" testlist ":" flowblock ("else" ":" flowblock)?
+stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock ("else"! ":"! flowblock)?
                 ;
-stmt_try        : "try" ":" flowblock ((except_clause ":" flowblock)+ ("else" ":" flowblock)? ("finally" ":" flowblock)? | "finally" ":" flowblock)
+stmt_try        : "try"! ":"! flowblock ((except_clause ":"! flowblock)+ ("else"! ":"! flowblock)? ("finally"! ":"! flowblock)? | "finally"! ":"! flowblock)
                 ;
-stmt_with       : "with" with_item ("," with_item)* ":" flowblock
+stmt_with       : "with"! with_item (","! with_item)* ":"! flowblock
                 ;
-with_item       : test ("as" expr)?
+with_item       : test ("as"! expr)?
                 ;
-except_clause   : "except" (test (("as" | ",") test)?)?
+except_clause   : "except"! (test (("as"! | ","!) test)?)?
                 ;
 codeblock       : stmt_simple 
-                | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(CODEBLOCK, $M);}
+                | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(CODEBLOCK, $M);}
                 ;
 flowblock       : stmt_simple
                 | LINEBREAK+ IDENT M+=stmtnodef+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(CODEBLOCK, $M);}
@@ -304,25 +311,24 @@ old_lambdef     : "lambda" arglist? ":" old_test
 test            : or_test ("if" or_test "else" test)? 
                 | lambdef
                 ;
-or_test         : and_test ("or" and_test)* 
+or_test         : and_test (M+="or"! and_test)* {if(!$M.missing()){$$=$^(OR, $*);}}
                 ;
-and_test        : not_test ("and" not_test)*
+and_test        : not_test (M+="and"! not_test)* {if(!$M.missing()){$$=$^(AND, $*);}}
                 ;
-not_test        : "not" not_test
+not_test        : M+="not"! not_test {if(!$M.missing()){$$=$^(NOT, $*);}}
                 | comparison
                 ;
-comparison      : expr (comp_op expr)*
-                ;
-comp_op         : "<"
-                | ">"
-                | "=="
-                | "<="
-                | ">="
-                | "!="
-                | "in"
-                | "not" "in"
-                | "is" 
-                | "is" "not" 
+comparison      : expr ("<"! expr)+ {$$=$^(LT, $*);}
+                | expr (">"! expr)+ {$$=$^(GT, $*);}
+                | expr ("=="! expr)+ {$$=$^(EQUALS, $*);}
+                | expr ("<="! expr)+ {$$=$^(LTE, $*);}
+                | expr (">="! expr)+ {$$=$^(GTE, $*);}
+                | expr ("!="! expr)+ {$$=$^(NE, $*);}
+                | expr ("in"! expr)+ {$$=$^(IN, $*);}
+                | expr ("not"! "in"! expr)+ {$$=$^(NOTIN, $*);}
+                | expr ("is"! expr)+ {$$=$^(IS, $*);}
+                | expr ("is"! "not"! expr)+ {$$=$^(ISNOT, $*);}
+                | expr
                 ;
 expr            : expr_arith ("|"! expr_arith)*
                 ;
@@ -345,10 +351,10 @@ factor          : ("+" | "-" | "~") factor
                 | atom (D+="."! ID)* ("**"! factor)?   {if(!$D.missing()){$$=$^(DOTNOTATION, $*);}}
                 | atom ("**"! factor) {$$=$^(POWER, $*);}
                 ; 
-atom            : "(" (expr_yield | testlist_comp)? ")"
-                | "[" (listmaker)? "]"
-                | "{" (dictorsetmaker)? "}"
-                | "`" testlist1 "`"
+atom            : "("! (expr_yield | testlist_comp)? ")"!
+                | "["! (listmaker)? "]"!
+                | "{"! (dictorsetmaker)? "}"! {$$=$^(DICTIONARY, $*);}
+                | "`"! testlist1 "`"!
                 | ID 
                 | NUMBER
                 | STRING
@@ -363,9 +369,9 @@ type_list       : type ","! type_list
                 ;
 typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
                 ;
-listmaker       : test (list_for | ("," test)* ","?)
+listmaker       : test (list_for | (","! test)* ","!?)
                 ;
-testlist_comp   : test (comp_for | ("," test)* ","?)
+testlist_comp   : test (comp_for | (","! test)* ","!?)
                 ;
 lambdef         : "lambda" arglist? ":" test
                 ;
@@ -381,7 +387,7 @@ exprlist        : expr ("," expr)* ","?
                 ;
 testlist        : test ("," test)* ","?
                 ;
-dictorsetmaker  : test ":" test (comp_for | ("," test ":" test)* ","?)
+dictorsetmaker  : test ":"! test (comp_for | (","! test ":"! test)* ","!?)
                 | test (comp_for | ("," test)* ","?)
                 ;
 argument        : test comp_for? 

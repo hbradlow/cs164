@@ -23,11 +23,9 @@
         (id 5 e)
         (power 5
             (id 5 a)
-            (<Token>)
             (add 5
                 (int_literal 5 2)
-                (int_literal 5 1))
-            (<Token>)))
+                (int_literal 5 1))))
     (assignment 6
         (id 6 f)
         (add 6
