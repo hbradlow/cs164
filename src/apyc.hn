@@ -5,7 +5,7 @@ Responsibilities:
 Henry:
 Types
 Datastructures
-Static typing
+Static typing   -   Done
 arithmetic
 
 Kevin:
@@ -88,7 +88,7 @@ If/while/try - control
  * node operators to printable strings.
  */
 
-%token PRINTLN "@println"
+%token PRINT "@print"
 %token EMPTY 
 %token EXPR_LIST "@expr_list"
 %token LITERAL "@literal"
@@ -104,6 +104,7 @@ If/while/try - control
 %token COMPARE "@compare"
 %token ASSIGN "@="
 %token DEF "@def"
+%token CLASS "@class"
 %token ARGLIST "@args"
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
@@ -170,15 +171,13 @@ input_simple    : LINEBREAK+
 /* FUNCTION DEFS */
 definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
                 ;
-return_type     : type {$$=$^(RETURN_TYPE,$*);}
-                ;
 params          : "(" arglist ")"   
                 ;
 arglist         : argument      
                 | argument ("," argument ","?)* 
                 | /*empty*/
                 ;
-defineclass     : "class" type ":" codeblock
+defineclass     : "class" type ":" codeblock {$$=$^(CLASS,$*);}
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -212,7 +211,7 @@ stmt_assign     : assignment assignment* (testlist | exprlist | atom) {$$=$^(ASS
 assignment      : ID "="! 
                 | typed_id "="! 
                 ;
-stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
+stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?) {$$=$^(PRINT,
                 | "print"
                 ;
 stmt_del        : "del" exprlist
@@ -319,12 +318,8 @@ comp_op         : "<"
                 ;
 expr            : expr_arith ("|"! expr_arith)*
                 ;
-expr_arith      : expr_add
-                | expr_sub
-                ;
-expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
-                ;
-expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
+expr_arith      : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
+                | term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
 term            : factor (M+="*"! factor)* {if(!$M.missing()){$$=$^(MUL,$*);}}
                 | factor (D+="/"! factor)* {if(!$D.missing()){$$=$^(DIV, $*);}}
@@ -353,6 +348,8 @@ type_list       : type ","! type_list
                 | type
                 ;
 typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
+                ;
+return_type     : type {$$=$^(RETURN_TYPE,$*);}
                 ;
 listmaker       : test (list_for | ("," test)* ","?)
                 ;
