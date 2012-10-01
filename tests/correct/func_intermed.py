@@ -1,6 +1,5 @@
 def foo(bar, baz):
-indent    print "bar"
-return baz
-dedent
+    print "bar"
+    return baz
 x = foo(1, 2)
 print x

@@ -8,18 +8,18 @@
                 (power 2
                     (id 2 bar)
                     (int_literal 2 3)))))
-    (def 4
-        (id 4 baz)
-        (args 4
-            (id 4 x))
-        (codeblock 5
-            (return 5
-                (add 5
-                    (id 5 x)
-                    (int_literal 5 1)))))
-    (println 7
-        (funccall 7
-            (id 7 baz)
-            (funccall 7
-                (id 7 foo)
-                (int_literal 7 100)))))
+    (def 3
+        (id 3 baz)
+        (args 3
+            (id 3 x))
+        (codeblock 4
+            (return 4
+                (add 4
+                    (id 4 x)
+                    (int_literal 4 1)))))
+    (println 5
+        (funccall 5
+            (id 5 baz)
+            (funccall 5
+                (id 5 foo)
+                (int_literal 5 100)))))

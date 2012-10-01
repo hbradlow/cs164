@@ -1,13 +1,13 @@
 (module 0
     (assignment 1
         (id 1 someid)
-        (string_literal 1 "\0421\042"))
+        (int_literal 1 1))
     (assignment 2
         (id 2 _someid)
-        (string_literal 2 "\042hello\042"))
+        (id 2 hello))
     (assignment 3
         (id 3 _asd110sa)
-        (string_literal 3 "\042test\042"))
+        (id 3 test))
     (assignment 4
         (id 4 asdfs)
         (id 4 someid)))

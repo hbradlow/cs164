@@ -1,4 +1,3 @@
 def hello(one):
-indent    return one
-dedent
+    return one
 a = 10

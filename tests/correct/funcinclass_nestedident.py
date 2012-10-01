@@ -1,6 +1,4 @@
 class Test: 
-indent def hello(): 
-indent a = "b" 
-dedent
-b = "c"
-dedent
+    def hello(): 
+        a = "b" 
+    b = "c"

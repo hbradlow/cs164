@@ -1,7 +1,5 @@
 def foo(bar):
-indent    return bar**3
-dedent
+    return bar**3
 def baz(x):
-indent    return x + 1
-dedent
+    return x + 1
 print baz(foo(100))
