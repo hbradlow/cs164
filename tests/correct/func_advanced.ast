@@ -25,11 +25,9 @@
             (int_literal 5 1))
         (<Token>)
         (<Token>))
-    (<Token>)
-    (id 7 baz)
-    (<Token>)
-    (id 7 foo)
-    (<Token>)
-    (int_literal 7 100)
-    (<Token>)
-    (<Token>))
+    (println 7
+        (funccall 7
+            (id 7 baz)
+            (funccall 7
+                (id 7 foo)
+                (int_literal 7 100)))))

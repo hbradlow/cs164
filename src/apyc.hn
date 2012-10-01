@@ -108,6 +108,9 @@ If/while/try - control
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
 %token ASSIGNMENT "@assignment"
+%token LISTACC "@listacc" 
+%token FUNCCALL "@funccall" 
+%token DOTNOTATION "@dot_notation"
 
 %token ADD "@add"
 %token SUB "@sub"
@@ -212,8 +215,8 @@ stmt_assign     : assignment assignment* (test | expr | atom) {$$=$^(ASSIGNMENT,
 assignment      : ID "="! 
                 | typed_id "="! 
                 ;
-stmt_print      : "print" (test ("," test)* ","? | ">>" test ("," test)+ ","?)
-                | "print"
+stmt_print      : "print"! (test ("," test)* ","? | ">>" test ("," test)+ ","?) {$$=$^(PRINTLN, $*);}
+                | "print"!  {$$=$^(PRINTLN, $*);}
                 ;
 stmt_del        : "del" exprlist
                 ;
@@ -334,8 +337,10 @@ term            : factor (M+="*"! factor)* {if(!$M.missing()){$$=$^(MUL,$*);}}
 factor          : ("+" | "-" | "~") factor
                 | power
                 ;
-power           : atom trailer* ("**" factor)?
-                ;
+power           : atom (D+="("! arglist? ")"!)* ("**" factor)? {if(!$D.missing()){$$=$^(FUNCCALL, $*);}}
+                | atom (D+="["! subscriptlist "]"!)*  ("**" factor)?  {if(!$D.missing()){$$=$^(LISTACC, $*);}}
+                | atom (D+="."! ID)* ("**"! factor)?   {if(!$D.missing()){$$=$^(DOTNOTATION, $*);}}
+                ; 
 atom            : "(" (expr_yield | testlist_comp)? ")"
                 | "[" (listmaker)? "]"
                 | "{" (dictorsetmaker)? "}"
@@ -359,10 +364,6 @@ listmaker       : test (list_for | ("," test)* ","?)
 testlist_comp   : test (comp_for | ("," test)* ","?)
                 ;
 lambdef         : "lambda" arglist? ":" test
-                ;
-trailer         : "(" arglist? ")"
-                | "[" subscriptlist "]"
-                | "." ID
                 ;
 subscriptlist   : subscript ("," subscript)* ","?
                 ;
