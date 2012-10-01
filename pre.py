@@ -2,8 +2,8 @@
 # the text. 
 import re
 
-INDENT = '71684aa3418631a412d6105e160131b9'
-DEDENT = 'd2b3009662c463c2ab96d1a73872c6f1'
+INDENT = '@71684aa3418631a412d6105e160131b9'
+DEDENT = '@d2b3009662c463c2ab96d1a73872c6f1'
 
 def process(in_file):
     result_file = ""

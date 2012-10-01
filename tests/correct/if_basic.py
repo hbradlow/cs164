@@ -1,3 +1,6 @@
-if hello == 10:
-indent a = "b"
-dedent
+if 'hello' == 10:
+    a = "b"
+elif 1 == 1:
+    print goodbye
+
+

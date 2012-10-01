@@ -1,3 +1,3 @@
 while True:
-indent a = "b"
-dedent
+    a = "b"
+    dedent

@@ -136,14 +136,17 @@ If/while/try - control
 %token STRING_LITERAL
 %token TUPLE
 %token INT_LITERAL
+%token WHILE_STMT "while"
+%token TEST "test"
+%token NOT "not"
 
 %%
 /*---------- TERMINALS -----------*/
 
 /* Normally, throw away whitespace other than newline. */
 * : (' ' | '\t' | '\r')+ ;
-IDENT  : "71684aa3418631a412d6105e160131b9"; 
-DEDENT : "d2b3009662c463c2ab96d1a73872c6f1";
+IDENT  : "@71684aa3418631a412d6105e160131b9"; 
+DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
 NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
@@ -260,7 +263,7 @@ stmt_elif       : "elif" test ":" flowblock {$$=$^(ELIF_STMT, $*);}
                 ;
 stmt_else       : "else" ":" flowblock {$$=$^(ELSE_STMT, $*);}
                 ;
-stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)?
+stmt_while      : "while" test ":" flowblock ("else" ":" flowblock)? {$$=$^(WHILE_STMT, $*);}
                 ;
 stmt_for        : "for" exprlist "in" testlist ":" flowblock ("else" ":" flowblock)?
                 ;
@@ -286,17 +289,17 @@ old_test        : or_test
 old_lambdef     : "lambda" arglist? ":" old_test
                 ;
 
-test            : or_test ("if" or_test "else" test)?
+test            : or_test ("if" or_test "else" test)? /*{$$=$^($or_test, $* );}*/
                 | lambdef
                 ;
-or_test         : and_test ("or" and_test)* 
+or_test         : and_test ("or" and_test)* /*{$$=$^(OR, $*);}*/
                 ;
-and_test        : not_test ("and" not_test)*
+and_test        : not_test ("and" not_test)* /*{$$=$^(AND, $*);}*/
                 ;
-not_test        : "not" not_test
-                | comparison
+not_test        : "not" not_test /*{$$=$^(NOT, $not_test);}*/
+                | comparison /*{$$=$^(NOT, $comparison);}*/
                 ;
-comparison      : expr (comp_op expr)*
+comparison      : e1=expr (comp_op e2=expr)* /*{$$=$^($comp_op, $e1, $e2);}*/
                 ;
 comp_op         : "<"
                 | ">"
