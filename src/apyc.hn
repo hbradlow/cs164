@@ -111,6 +111,10 @@ If/while/try - control
 %token LISTACC "@listacc" 
 %token FUNCCALL "@funccall" 
 %token DOTNOTATION "@dot_notation"
+%token CODEBLOCK "@codeblock"
+%token RETURN "@return"
+%token POWER "@power"
+%token TEST "@test"
 
 %token ADD "@add"
 %token SUB "@sub"
@@ -175,7 +179,7 @@ definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_n
                 ;
 return_type     : type {$$=$^(RETURN_TYPE,$*);}
                 ;
-params          : "(" arglist ")"   
+params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
 arglist         : argument      
                 | argument ("," argument ","?)* 
@@ -232,7 +236,7 @@ stmt_break      : "break"
                 ;
 stmt_continue   : "continue"
                 ;
-stmt_return     : "return" testlist?
+stmt_return     : "return"! testlist? {$$=$^(RETURN, $*);}
                 ;
 stmt_yield      : expr_yield
                 ;
@@ -284,10 +288,10 @@ with_item       : test ("as" expr)?
 except_clause   : "except" (test (("as" | ",") test)?)?
                 ;
 codeblock       : stmt_simple 
-                | LINEBREAK+ IDENT stmtnoclass+ LINEBREAK* DEDENT LINEBREAK*
+                | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(CODEBLOCK, $M);}
                 ;
 flowblock       : stmt_simple
-                | LINEBREAK+ IDENT stmtnodef+ LINEBREAK* DEDENT LINEBREAK*
+                | LINEBREAK+ IDENT M+=stmtnodef+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(CODEBLOCK, $M);}
                 ;
 testlist_safe   : old_test (("," old_test)+ ","?)?
                 ;
@@ -297,7 +301,7 @@ old_test        : or_test
 old_lambdef     : "lambda" arglist? ":" old_test
                 ;
 
-test            : or_test ("if" or_test "else" test)?
+test            : or_test ("if" or_test "else" test)? 
                 | lambdef
                 ;
 or_test         : and_test ("or" and_test)* 
@@ -329,17 +333,17 @@ expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
                 ;
 expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
                 ;
-term            : factor (M+="*"! factor)* {if(!$M.missing()){$$=$^(MUL,$*);}}
-                | factor (D+="/"! factor)* {if(!$D.missing()){$$=$^(DIV, $*);}}
-                | factor (M+="%"! factor)* {if(!$M.missing()){$$=$^(MOD, $*);}}
-                | factor (D+="//"! factor)* {if(!$D.missing()){$$=$^(FLDIV, $*);}}
+term            : factor (M+="*"! factor)+ {if(!$M.missing()){$$=$^(MUL,$*);}}
+                | factor (D+="/"! factor)+ {if(!$D.missing()){$$=$^(DIV, $*);}}
+                | factor (M+="%"! factor)+ {if(!$M.missing()){$$=$^(MOD, $*);}}
+                | factor (D+="//"! factor)+ {if(!$D.missing()){$$=$^(FLDIV, $*);}}
+                | factor 
                 ;
 factor          : ("+" | "-" | "~") factor
-                | power
-                ;
-power           : atom (D+="("! arglist? ")"!)* ("**" factor)? {if(!$D.missing()){$$=$^(FUNCCALL, $*);}}
+                | atom (D+="("! arglist? ")"!)* ("**" factor)? {if(!$D.missing()){$$=$^(FUNCCALL, $*);}}
                 | atom (D+="["! subscriptlist "]"!)*  ("**" factor)?  {if(!$D.missing()){$$=$^(LISTACC, $*);}}
                 | atom (D+="."! ID)* ("**"! factor)?   {if(!$D.missing()){$$=$^(DOTNOTATION, $*);}}
+                | atom ("**"! factor) {$$=$^(POWER, $*);}
                 ; 
 atom            : "(" (expr_yield | testlist_comp)? ")"
                 | "[" (listmaker)? "]"

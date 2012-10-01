@@ -8,9 +8,9 @@
     (assignment 3
         (id 3 c)
         (add 3
-            (id 3 a)
-            (<Token>)
-            (id 3 b)
+            (power 3
+                (id 3 a)
+                (id 3 b))
             (id 3 b)))
     (assignment 4
         (id 4 d)
@@ -21,13 +21,13 @@
             (id 4 a)))
     (assignment 5
         (id 5 e)
-        (id 5 a)
-        (<Token>)
-        (<Token>)
-        (add 5
-            (int_literal 5 2)
-            (int_literal 5 1))
-        (<Token>))
+        (power 5
+            (id 5 a)
+            (<Token>)
+            (add 5
+                (int_literal 5 2)
+                (int_literal 5 1))
+            (<Token>)))
     (assignment 6
         (id 6 f)
         (add 6

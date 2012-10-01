@@ -1,30 +1,22 @@
 (module 0
     (def 1
         (id 1 foo)
-        (<Token>)
-        (id 1 bar)
-        (<Token>)
-        (<Token>)
-        (<Token>)
-        (<Token>)
-        (id 2 bar)
-        (<Token>)
-        (int_literal 2 3)
-        (<Token>)
-        (<Token>))
+        (args 1
+            (id 1 bar))
+        (codeblock 2
+            (return 2
+                (power 2
+                    (id 2 bar)
+                    (int_literal 2 3)))))
     (def 4
         (id 4 baz)
-        (<Token>)
-        (id 4 x)
-        (<Token>)
-        (<Token>)
-        (<Token>)
-        (<Token>)
-        (add 5
-            (id 5 x)
-            (int_literal 5 1))
-        (<Token>)
-        (<Token>))
+        (args 4
+            (id 4 x))
+        (codeblock 5
+            (return 5
+                (add 5
+                    (id 5 x)
+                    (int_literal 5 1)))))
     (println 7
         (funccall 7
             (id 7 baz)
