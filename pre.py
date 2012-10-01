@@ -58,6 +58,7 @@ def process(in_file):
             if single_quote_stack % 6 == 0:
                 in_docstring = False
         elif ch == "'":
+            write_buffer += "'"
             single_quote_toggle = not single_quote_toggle
             single_quote_stack = 0
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
@@ -78,7 +79,7 @@ def process(in_file):
 if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
-    with open(arg.split('.')[0] + '_processed.py', 'w') as f:
+    with open(arg.split('.')[0] + '.py.processed', 'w') as f:
         f.write(process(arg))
 
     

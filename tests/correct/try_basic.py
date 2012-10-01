@@ -1,6 +1,4 @@
 try:
-    indent a = b
-    dedent
+    a = b
 except:
-    indent print "error"
-    dedent
+    print "error"

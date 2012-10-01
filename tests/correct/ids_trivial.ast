@@ -1,6 +1,7 @@
 (module 0
     (assignment 1
         (id 1 someid)
+<<<<<<< HEAD
         (string_literal 1 "\0421\042"))
     (assignment 2
         (id 2 _someid)
@@ -8,6 +9,15 @@
     (assignment 3
         (id 3 _asd110sa)
         (string_literal 3 "\042test\042"))
+=======
+        (int_literal 1 1))
+    (assignment 2
+        (id 2 _someid)
+        (id 2 hello))
+    (assignment 3
+        (id 3 _asd110sa)
+        (id 3 test))
+>>>>>>> a34dcf4735a7a4db44f00562392dcc0629268996
     (assignment 4
         (id 4 asdfs)
         (id 4 someid)))
