@@ -203,8 +203,6 @@ defparams       : "("! defarglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
 return_type     : type {$$=$^(RETURN_TYPE,$*);}
                 ;
-params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
-                ;
 arglist         : argument      
                 | argument (","! argument ","!?)* 
                 | /*empty*/
