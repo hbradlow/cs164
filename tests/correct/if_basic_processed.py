@@ -1,6 +1,5 @@
 if hello == 10:
- @71684aa3418631a412d6105e160131b9 a = b
- @d2b3009662c463c2ab96d1a73872c6f1 elif 1 == 1:
- @71684aa3418631a412d6105e160131b9 print goodbye
- @d2b3009662c463c2ab96d1a73872c6f1 
+    a = b
+elif 1 == 1:
+    print goodbye
 

@@ -8,15 +8,9 @@
     (assignment 3
         (id 3 c)
         (add 3
-<<<<<<< HEAD
-            (id 3 a)
-            (<Token>)
-            (id 3 b)
-=======
             (power 3
                 (id 3 a)
                 (id 3 b))
->>>>>>> a34dcf4735a7a4db44f00562392dcc0629268996
             (id 3 b)))
     (assignment 4
         (id 4 d)
@@ -27,21 +21,11 @@
             (id 4 a)))
     (assignment 5
         (id 5 e)
-<<<<<<< HEAD
-        (id 5 a)
-        (<Token>)
-        (<Token>)
-        (add 5
-            (int_literal 5 2)
-            (int_literal 5 1))
-        (<Token>))
-=======
         (power 5
             (id 5 a)
             (add 5
                 (int_literal 5 2)
                 (int_literal 5 1))))
->>>>>>> a34dcf4735a7a4db44f00562392dcc0629268996
     (assignment 6
         (id 6 f)
         (add 6

@@ -88,7 +88,7 @@ If/while/try - control
  * node operators to printable strings.
  */
 
-%token PRINT "@print"
+%token PRINTLN "@print"
 %token EMPTY 
 %token EXPR_LIST "@expr_list"
 %token LITERAL "@literal"
@@ -104,7 +104,6 @@ If/while/try - control
 %token COMPARE "@compare"
 %token ASSIGN "@="
 %token DEF "@def"
-%token CLASS "@class"
 %token ARGLIST "@args"
 %token KEY_VALUE_PAIR "@key_value_pair"
 %token DICTIONARY "@dict"
@@ -143,7 +142,6 @@ If/while/try - control
 %token XOR "@xor"
 %token AND "@and"
 %token OR "@or"
-%token NOT "@not"
 
 %token EQUALS "@=="
 %token NE "@!="
@@ -172,7 +170,6 @@ If/while/try - control
 %token TUPLE
 %token INT_LITERAL
 %token WHILE_STMT "while"
-%token TEST "test"
 %token NOT "not"
 
 %%
@@ -312,7 +309,7 @@ with_item       : test ("as"! expr)?
                 ;
 except_clause   : "except"! (test (("as"! | ","!) test)?)? {$$=$^(EXCEPT, $*);}
                 ;
-codeblock       : stmt_simple 
+codeblock       : stmt_simple
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(CODEBLOCK, $M);}
                 ;
 flowblock       : stmt_simple
@@ -367,8 +364,8 @@ factor          : ("+"! | "-"! | "~"!) factor
                 | atom ("**"! factor) {$$=$^(POWER, $*);}
                 ; 
 atom            : "("! (expr_yield | testlist_comp)? ")"! 
-                | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
-                | "{"! (dictorsetmaker)? "}"! {$$=$^(DICTIONARY, $*);}
+                | "["! listmaker? "]"! {$$=$^(LIST, $*);}
+                | "{"! dictorsetmaker? "}"! {$$=$^(DICTIONARY, $*);}
                 | "`"! testlist1 "`"!
                 | ID 
                 | NUMBER
@@ -406,6 +403,8 @@ testlist        : test (","! test)* ","!?
                 ;
 dictorsetmaker  : test ":"! test (comp_for | (","! test ":"! test)* ","!?)
                 | test (comp_for | (","! test)* ","!?)
+                ;
+listmaker       : test ( list_for | (","! test)* ","! )
                 ;
 argument        : test comp_for? 
                 | typed_id

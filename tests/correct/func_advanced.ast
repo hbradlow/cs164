@@ -17,7 +17,7 @@
                 (add 4
                     (id 4 x)
                     (int_literal 4 1)))))
-    (println 5
+    (print 5
         (funccall 5
             (id 5 baz)
             (funccall 5
