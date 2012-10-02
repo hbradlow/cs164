@@ -1,6 +1,6 @@
 def method1():
     print "hello" 
-class Testing():
+class Testing:
     name = ""
     def name():
         name = "kevin"
