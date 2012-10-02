@@ -197,7 +197,9 @@ input_simple    : (LINEBREAK!)+
                 | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
+definefunc      : "def"! ID defparams ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
+                ;
+defparams       : "("! defarglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
 return_type     : type {$$=$^(RETURN_TYPE,$*);}
                 ;
@@ -205,6 +207,10 @@ params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
 arglist         : argument      
                 | argument (","! argument ","!?)* 
+                | /*empty*/
+                ;
+defarglist      : argdef
+                | argdef (","! argdef ","!?)*
                 | /*empty*/
                 ;
 defineclass     : "class"! type ":"! codeblock {$$=$^(CLASS, $*);}
@@ -407,6 +413,9 @@ dictorsetmaker  : test ":"! test (comp_for | (","! test ":"! test)* ","!?)
 listmaker       : test ( list_for | (","! test)* ","! )
                 ;
 argument        : test comp_for? 
+                | typed_id
+                ;
+argdef          : ID
                 | typed_id
                 ;
 list_iter       : list_for 
