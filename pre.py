@@ -82,6 +82,3 @@ if __name__ == '__main__':
     arg = sys.argv[1]
     with open(arg.split('.')[0] + '.py.processed', 'w') as f:
         f.write(process(arg))
-
-    
-

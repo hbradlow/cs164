@@ -12,6 +12,6 @@ do
 ./apyc --phase=1 $f &> /dev/null
 rc=$?
 if [[ $rc != 1 ]] ; then
-        echo "Did not fail on $f"
+    echo "Did not fail on $f"
 fi
 done
