@@ -1,5 +1,5 @@
-def hello(): native TEST
+def hello(): native "TEST"
 
 def hello(): 
- @71684aa3418631a412d6105e160131b9 native test 
+ @71684aa3418631a412d6105e160131b9 native "test" 
  @d2b3009662c463c2ab96d1a73872c6f1 

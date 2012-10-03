@@ -16,11 +16,11 @@ def process(in_file):
     indent_stack = 0
     write_buffer = ""
     single_quote_stack = 0
-    in_docstring = False
+    # in_docstring = False
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
     for ch in input_text:
-        if whitespace_left and not re.match(r'(\ |\t)', ch) and not in_docstring:
+        if whitespace_left and not re.match(r'(\ |\t)', ch): #and not in_docstring:
             whitespace_left = False
             # No indentation on current line
             if equivalent_blanks_cur == 0:
@@ -43,7 +43,7 @@ def process(in_file):
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
                 indent_stack -= 1
-        elif whitespace_left and not in_docstring:
+        elif whitespace_left: #and not in_docstring:
             if ch == ' ':
                 equivalent_blanks_cur += 1
                 continue
@@ -51,24 +51,26 @@ def process(in_file):
                 equivalent_blanks_cur += 8
                 continue
         if ch == '"':
+            write_buffer += ch
             double_quote_toggle = not double_quote_toggle
-            single_quote_stack += 1
-            if single_quote_stack % 3 == 0:
-                in_docstring = True
-            if single_quote_stack % 6 == 0:
-                in_docstring = False
+            #single_quote_stack += 1
+            #if single_quote_stack % 3 == 0:
+                #in_docstring = True
+            #if single_quote_stack % 6 == 0:
+                #in_docstring = False
         elif ch == "'":
+            write_buffer += ch
             single_quote_toggle = not single_quote_toggle
-            single_quote_stack = 0
+            #single_quote_stack = 0
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
             write_buffer += ch
             result_file += write_buffer 
             write_buffer = ""
             whitespace_left = True
-            single_quote_stack = 0
+            #single_quote_stack = 0
         else:
             write_buffer += ch
-            single_quote_stack = 0
+            #single_quote_stack = 0
     result_file += write_buffer
     while indent_stack > 0:
         indent_stack -= 1
@@ -80,6 +82,3 @@ if __name__ == '__main__':
     arg = sys.argv[1]
     with open(arg.split('.')[0] + '.py.processed', 'w') as f:
         f.write(process(arg))
-
-    
-
