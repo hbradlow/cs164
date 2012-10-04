@@ -328,6 +328,7 @@ atom            : "("! (testlist_comp)? ")"!
                 ;
 atomnostring    : "("! (testlist_comp)? ")"! 
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
+                | ID (","! ID)+ ","!?
                 | ID 
                 | typed_id
                 ;

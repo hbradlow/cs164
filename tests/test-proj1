@@ -110,6 +110,7 @@ for f in tests:
         prog2 = base + "-2.py"
         inp = os.path.join(dir, base + ".in")
         std = Contents (os.path.join(dir, base + ".std"))
+        print "Compiling: " + str(f) + " " + str(ast)
         if not Compile(f, ast):
             msg = "FAIL (wrong exit code)"
         elif Stderr:

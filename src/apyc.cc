@@ -120,5 +120,6 @@ main (int argc, char* argv[])
         }
         compile (infile, outfile);
     }
+    fprintf(stdout, "Error %i\n", err_count);
     exit (err_count == 0 ? 0 : 1);
 }
