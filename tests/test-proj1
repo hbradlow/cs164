@@ -56,7 +56,7 @@ def Compile(prog, ast):
     return code == 0
 
 def Unparse(ast, python):
-    code, out, err = Run("pyunparse -o %s --remove-extensions %s", python, ast)
+    code, out, err = Run("../pyunparse -o %s --remove-extensions %s", python, ast)
     return code == 0
 
 def Execute(prog, inp):
