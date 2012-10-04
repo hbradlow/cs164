@@ -40,6 +40,22 @@ If/while/- control
 
   static AST_Ptr theTree;
 
+    /* Utilities */
+    /** Return a new unop node corresponding to OPERANDS, which is the list of
+    *  right-hand-side semantic values of a unop production (consisting of a
+    *  token for the operator, followed by the AST for the operand). */
+    static AST_Ptr make_unop (const List_Ptr& operands);
+
+    /** Return a new binop node corresponding to OPERANDS, which is the list of
+    *  right-hand-side semantic values of a binop production (consisting of an
+    *  AST for the first operand, a token for the operator, and an AST for the
+    *  second operand). */
+    static AST_Ptr make_binop (const List_Ptr& operands);
+
+    /** Return a new ID node, where the text of the identifier is given by
+    *  TOKEN. */
+    static AST_Ptr make_id (AST_Ptr& token);
+
 %}
 
 %debug
@@ -88,81 +104,62 @@ If/while/- control
  * node operators to printable strings.
  */
 
-%token PRINTLN "@println"
-%token EMPTY 
-%token EXPR_LIST "@expr_list"
-%token LITERAL "@literal"
+%token PLUS "@+"
+%token NOT "@not"
+%token LT "@<"
+%token GT "@>"
+%token EQUALS "@=="
+%token LTE "@<="
+%token GTE "@>="
+%token NE "@!="
+
+%token IS "@is"
+%token NIS "@isnot"
+%token IN "@in"
+%token NIN "@notin"
+
+%token EMPTY
 %token MODULE "@module"
-%token IF_STMT "@if_expr"
-%token ELIF_STMT "@elif_stmt"
-%token ELSE_STMT "@else_stmt"
-%token BOOLEAN_STMT "@boolean_stmt"
-%token ITERABLE "@iterable"
-%token LPAREN "@("
-%token RPAREN "@)"
-%token COLON "@:"
-%token COMPARE "@compare"
-%token ASSIGN "@assign"
-%token DEF "@def"
 %token ARGLIST "@formals_list"
-%token KEY_VALUE_PAIR "@key_value_pair"
-%token DICTIONARY "@dict_display"
-%token LISTACC "@listacc" 
-%token FUNCCALL "@call" 
-%token DOTNOTATION "@dot_notation"
-%token CODEBLOCK "@block"
-%token RETURN "@return"
-%token POWER "@power"
-%token TEST "@test"
-%token NATIVE "@native"
-%token CLASS "@class"
-%token PASS "@pass" 
-%token RHS "@rhside" 
-%token LHS "@lhside"
-%token TARGET_LST "@target_list"
-%token BREAK "@break" 
-%token CONTINUE "@continue" 
-%token LIST_FOR "@list_for" 
-%token COMP_FOR "@comp_for" 
-
-%token ADD "@add"
-%token SUB "@sub"
-%token DIV "@div"
-%token MUL "@mul"
-%token FLDIV "@fldiv"
-%token MOD "@mod"
-
-%token XOR "@xor"
+%token BINOP "@binop"
+%token LCOMPARE "@left_compare"
+%token COMPARE "@compare"
+%token UNOP "@unop"
+%token IF_EXPR "@if_expr"
 %token AND "@and"
 %token OR "@or"
-%token NOT "@not"
-
-%token EQUALS "@=="
-%token NE "@!="
-%token GT "@>"
-%token LT "@<"
-%token GTE "@>="
-%token LTE "@<="
-%token IS "@is" 
-%token ISNOT "@isnot" 
-%token ISIN "@isin" 
-%token IN "@in"
-%token NOTIN "@NOTIN"
-
-%token FOR "@for"
-%token RETURN_TYPE "@function_type"
-%token TYPE "@type"
-%token TYPED_ID "@typed_id"
-%token TYPE_LIST "@type_list"
-%token INDENT
-%token DEDENT
+%token TUPLE "@tuple" 
+%token LIST "@list_display"
+%token CALL "@call" 
+%token DICT "@dict_display"
+%token INT "@int_literal" 
+%token EXPR_LIST "@expr_list"
+%token PRINT "@print" 
+%token PRINTLN "@println"
+%token RETURN "@return"
+%token BREAK "@break" 
+%token CONT "@continue"
+%token IF "@if" 
 %token WHILE "@while"
-%token FUNCTION_NAME
-%token TUPLE "tuple"
-%token LIST "list_display"
-%token NUMERIC_LITERAL
-%token STRING_LITERAL "@string_literal"
-%token INT_LITERAL "@int_literal"
+%token FOR "@for"
+%token DEF "@def" 
+%token CLASS "@class" 
+%token NATIVE "@native" 
+%token STMT_LIST "@stmt_list"
+%token BLOCK "@block" 
+%token ASSIGN "@assign" 
+%token TYPED_ID "@typed_id" 
+%token FUNC_TYPE "@function_type"
+%token TYPE "@type"
+%token TYPE_VAR "@type_var"
+%token TYPE_LIST "@type_list"
+%token FORMALS "@formals_list"
+%token TYPE_FORMALS "@type_formals_list"
+%token PAIR "@pair"
+%token ATTRIBUTEREF "@attributeref"
+%token SUBSCRIPT "@subscription"
+%token SLICING "@slicing"
+%token TARGET_LIST "@target_list"
 
 %%
 /*---------- TERMINALS -----------*/
@@ -189,9 +186,9 @@ input_simple    : (LINEBREAK!)+
                 | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def"! ID params ("::"! return_type)? ":"! (codeblock | stmt_native) {$$=$^(DEF, $*);}
+definefunc      : "def"! ID params ("::"! RT+=return_type)? ":"! (LAST+=codeblock | LAST+=stmt_native) {if($RT.missing()){$$=$^(DEF, $ID,$params,$^(EMPTY),$LAST);}else{$$=$^(DEF,$*);}}
                 ;
-return_type     : type {$$=$^(RETURN_TYPE,$*);}
+return_type     : type {$$=$^(FUNC_TYPE,$*);}
                 ;
 params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
                 ;
@@ -234,7 +231,7 @@ stmt_flow       : stmt_break
                 ;
 stmt_break      : "break"! {$$=$^(BREAK, $*);}
                 ;
-stmt_continue   : "continue"! {$$=$^(CONTINUE, $*);}
+stmt_continue   : "continue"! {$$=$^(CONT, $*);}
                 ;
 stmt_return     : "return"! testlist? {$$=$^(RETURN, $*);}
                 ;
@@ -253,21 +250,22 @@ stmtcompnodef   : stmt_if
                 | stmt_while
                 | stmt_for
                 ;
-stmt_if         : "if"! test ":"! flowblock stmt_elif* stmt_else? {$$=$^(IF_STMT, $*);}
+stmt_if         : "if"! test ":"! flowblock stmt_elif {$$=$^(IF_EXPR, $*);}
                 ;
-stmt_elif       : "elif"! test ":"! flowblock {$$=$^(ELIF_STMT, $*);}
+stmt_elif       : "elif"! test ":"! flowblock stmt_elif? {$$=$^(IF_EXPR, $*);}
+                | ("elif"! T+=test ":"! flowblock)? stmt_else? {if(!$T.missing()){$$=$^(IF_EXPR, $*);}}
                 ;
-stmt_else       : "else"! ":"! flowblock {$$=$^(ELSE_STMT, $*);}
+stmt_else       : "else"! ":"! flowblock 
                 ;
 stmt_while      : "while"! test ":"! flowblock ("else"! ":"! flowblock)? {$$=$^(WHILE, $*);}
                 ;
 stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock ("else"! ":"! flowblock)? {$$=$^(FOR, $*);}
                 ;
 codeblock       : stmt_simple 
-                | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(CODEBLOCK, $M);}
+                | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
                 ;
 flowblock       : stmt_simple
-                | LINEBREAK+ IDENT M+=stmtnodef+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(CODEBLOCK, $M);}
+                | LINEBREAK+ IDENT M+=stmtnodef+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(BLOCK, $M);}
                 ;
 test            : or_test ("if" or_test "else" test)? 
                 ;
@@ -275,19 +273,20 @@ or_test         : and_test (M+="or"! and_test)* {if(!$M.missing()){$$=$^(OR, $*)
                 ;
 and_test        : not_test (M+="and"! not_test)* {if(!$M.missing()){$$=$^(AND, $*);}}
                 ;
-not_test        : M+="not"! not_test {if(!$M.missing()){$$=$^(NOT, $*);}}
+not_test        : M+="not"! not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
                 ;
-comparison      : expr ("<"! expr)+ {$$=$^(LT, $*);}
-                | expr (">"! expr)+ {$$=$^(GT, $*);}
-                | expr ("=="! expr)+ {$$=$^(COMPARE,EQUALS, $*);}
-                | expr ("<="! expr)+ {$$=$^(LTE, $*);}
-                | expr (">="! expr)+ {$$=$^(GTE, $*);}
-                | expr ("!="! expr)+ {$$=$^(NE, $*);}
-                | expr ("in"! expr)+ {$$=$^(IN, $*);}
-                | expr ("not"! "in"! expr)+ {$$=$^(NOTIN, $*);}
-                | expr ("is"! expr)+ {$$=$^(IS, $*);}
-                | expr ("is"! "not"! expr)+ {$$=$^(ISNOT, $*);}
+comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr (">" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("==" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("<=" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr (">=" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("!=" E2+=expr)+ {$$=make_binop($*);}
+
+                | E1+=expr ("in" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("not" "in"! E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("is" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("is" "not"! E2+=expr)+ {$$=make_binop($*);}
                 | expr
                 ;
 expr            : expr_arith ("|"! expr_arith)*
@@ -295,30 +294,30 @@ expr            : expr_arith ("|"! expr_arith)*
 expr_arith      : expr_add
                 | expr_sub
                 ;
-expr_add        : term (A+="+"! term)* {if(!$A.missing()){$$=$^(ADD,$*);}}
+expr_add        : T1+=term (A+="+"! T2+=term)* {if(!$A.missing()){$$=make_binop($*);}}
                 ;
-expr_sub        : term (S+="-"! term)* {if(!$S.missing()){$$=$^(SUB,$*);}}
+expr_sub        : term (O+="-" term)* {if(!$O.missing()){$$=make_binop($*);}}
                 ;
-term            : factor (M+="*"! factor)+ {if(!$M.missing()){$$=$^(MUL,$*);}}
-                | factor (D+="/"! factor)+ {if(!$D.missing()){$$=$^(DIV, $*);}}
-                | factor (M+="%"! factor)+ {if(!$M.missing()){$$=$^(MOD, $*);}}
-                | factor (D+="//"! factor)+ {if(!$D.missing()){$$=$^(FLDIV, $*);}}
+term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
+                | factor (O+="/" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
+                | factor (O+="%" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
+                | factor (O+="//" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor 
                 ;
 factor          : ("+"! | "-"! | "~"!) atom
-                | atom ("("! L+=arglist? ")"!)+ ("**"! F+=atom)? {if($F.missing()){$$=$^(FUNCCALL, $*);}else{$$=$^(POWER, $^(FUNCCALL,$L), $F);}} 
-                | atom (L+="["! subscriptlist "]"!)+  ("**"! atom)?  {if($L.missing()){$$=$^(LISTACC, $*);}}
-                | ID ("."! L+=ID)+ ("**"! atom)?   {if(!$L.missing()){$$=$^(DOTNOTATION, $*);}}
-                | atom ("**"! atom) {$$=$^(POWER, $*);}
+                | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $*);} 
+                | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
+                | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
+                | expr ("**" atom) {$$=make_binop($*);}
                 | atom
                 ; 
-lefthand        : atom (L+="["! subscriptlist "]"!)+  ("**"! atom)?  {if($L.missing()){$$=$^(LISTACC, $*);}}
-                | ID ("."! L+=ID)+ ("**"! atom)?   {if(!$L.missing()){$$=$^(DOTNOTATION, $*);}} 
+lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
+                | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);} 
                 | atomnostring 
                 ; 
 atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
-                | "{"! (dictorsetmaker)? "}"! {$$=$^(DICTIONARY, $*);}
+                | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | ID 
                 | NUMBER
                 | STRING
@@ -362,6 +361,28 @@ argument        : test
 %%
 
 bool debugParser;
+
+static AST_Ptr
+make_unop (const List_Ptr& operands)
+{
+    return YYMAKE_TREE (UNOP, make_id (operands->at (0)), operands->at (1));
+}
+
+static AST_Ptr
+make_binop (const List_Ptr& operands)
+{
+    return YYMAKE_TREE (BINOP, operands->at (0), make_id (operands->at (1)),
+    operands->at (2));
+}
+
+static AST_Ptr
+make_id (AST_Ptr& token)
+{
+    AST_Ptr result = AST::make_token (ID, token->text_size (),
+        token->as_chars (), false);
+    result->set_loc (token->loc ());
+    return result;
+}
 
 int
 AST::lineNumber ()

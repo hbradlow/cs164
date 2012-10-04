@@ -21,6 +21,7 @@ class Type;
 
 typedef Pointer<AST> AST_Ptr;
 typedef Pointer<Type> Type_Ptr;
+YYDEFINE_LIST_TYPE(List_Ptr, AST_Ptr);
 
 /** The base type of all nodes in the abstract syntax tree. */
 class AST : public CommonNode<AST, AST_Token, AST_Tree> {

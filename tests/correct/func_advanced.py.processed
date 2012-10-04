@@ -1,0 +1,5 @@
+def foo(bar):
+ @71684aa3418631a412d6105e160131b9 return bar**3
+ @d2b3009662c463c2ab96d1a73872c6f1 def baz(x):
+ @71684aa3418631a412d6105e160131b9 return x + 1
+ @d2b3009662c463c2ab96d1a73872c6f1 print baz(foo(100))
