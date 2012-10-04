@@ -223,7 +223,7 @@ stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : testlist 
-                | lefthand ("="! testlist)+
+                | lefthand ("="! testlist)+ {$$=$^(ASSIGN, $*);}
                 ;
 stmt_print      : "print"! (test (","! test)* ","!? | ">>"! test (","! test)+ ","!?)? {$$=$^(PRINTLN, $*);}
                 ;
@@ -279,16 +279,16 @@ and_test        : not_test (M+="and"! not_test)* {if(!$M.missing()){$$=$^(AND, $
 not_test        : M+="not"! not_test {if(!$M.missing()){$$=$^(NOT, $*);}}
                 | comparison
                 ;
-comparison      : expr ("<"! expr)+ {$$=$^(LT, $*);}
-                | expr (">"! expr)+ {$$=$^(GT, $*);}
-                | expr ("=="! expr)+ {$$=$^(EQUALS, $*);}
-                | expr ("<="! expr)+ {$$=$^(LTE, $*);}
-                | expr (">="! expr)+ {$$=$^(GTE, $*);}
-                | expr ("!="! expr)+ {$$=$^(NE, $*);}
-                | expr ("in"! expr)+ {$$=$^(IN, $*);}
-                | expr ("not"! "in"! expr)+ {$$=$^(NOTIN, $*);}
-                | expr ("is"! expr)+ {$$=$^(IS, $*);}
-                | expr ("is"! "not"! expr)+ {$$=$^(ISNOT, $*);}
+comparison      : expr ("<"! test)+ {$$=$^(LT, $*);}
+                | expr (">"! test)+ {$$=$^(GT, $*);}
+                | expr ("=="! test)+ {$$=$^(EQUALS, $*);}
+                | expr ("<="! test)+ {$$=$^(LTE, $*);}
+                | expr (">="! test)+ {$$=$^(GTE, $*);}
+                | expr ("!="! test)+ {$$=$^(NE, $*);}
+                | expr ("in"! test)+ {$$=$^(IN, $*);}
+                | expr ("not"! "in"! test)+ {$$=$^(NOTIN, $*);}
+                | expr ("is"! test)+ {$$=$^(IS, $*);}
+                | expr ("is"! "not"! test)+ {$$=$^(ISNOT, $*);}
                 | expr
                 ;
 expr            : expr_arith ("|"! expr_arith)*
