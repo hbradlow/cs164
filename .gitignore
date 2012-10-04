@@ -6,3 +6,4 @@ lex.yy.c
 apyc
 *.ast
 *.out
+out
