@@ -93,7 +93,7 @@ If/while/- control
 %token EXPR_LIST "@expr_list"
 %token LITERAL "@literal"
 %token MODULE "@module"
-%token IF_STMT "@if_stmt"
+%token IF_STMT "@if_expr"
 %token ELIF_STMT "@elif_stmt"
 %token ELSE_STMT "@else_stmt"
 %token BOOLEAN_STMT "@boolean_stmt"
@@ -102,16 +102,15 @@ If/while/- control
 %token RPAREN "@)"
 %token COLON "@:"
 %token COMPARE "@compare"
-%token ASSIGN "@="
+%token ASSIGN "@assign"
 %token DEF "@def"
-%token ARGLIST "@args"
+%token ARGLIST "@formals_list"
 %token KEY_VALUE_PAIR "@key_value_pair"
-%token DICTIONARY "@dict"
-%token ASSIGNMENT "@assignment"
+%token DICTIONARY "@dict_display"
 %token LISTACC "@listacc" 
-%token FUNCCALL "@funccall" 
+%token FUNCCALL "@call" 
 %token DOTNOTATION "@dot_notation"
-%token CODEBLOCK "@codeblock"
+%token CODEBLOCK "@block"
 %token RETURN "@return"
 %token POWER "@power"
 %token TEST "@test"
@@ -150,20 +149,20 @@ If/while/- control
 %token IN "@in"
 %token NOTIN "@NOTIN"
 
-%token FOR
-%token RETURN_TYPE "@return_type"
+%token FOR "@for"
+%token RETURN_TYPE "@function_type"
 %token TYPE "@type"
 %token TYPED_ID "@typed_id"
-%token TYPE_LIST "@typed_list"
+%token TYPE_LIST "@type_list"
 %token INDENT
 %token DEDENT
-%token WHILE
+%token WHILE "@while"
 %token FUNCTION_NAME
-%token LIST
+%token TUPLE "tuple"
+%token LIST "list_display"
 %token NUMERIC_LITERAL
-%token STRING_LITERAL
-%token TUPLE
-%token INT_LITERAL
+%token STRING_LITERAL "@string_literal"
+%token INT_LITERAL "@int_literal"
 
 %%
 /*---------- TERMINALS -----------*/
@@ -223,7 +222,7 @@ stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : testlist 
-                | lefthand ("="! testlist)+
+                | lefthand ("="! testlist)+ {$$=$^(ASSIGN,$*);}
                 ;
 stmt_print      : "print"! (test (","! test)* ","!? | ">>"! test (","! test)+ ","!?)? {$$=$^(PRINTLN, $*);}
                 ;
@@ -281,7 +280,7 @@ not_test        : M+="not"! not_test {if(!$M.missing()){$$=$^(NOT, $*);}}
                 ;
 comparison      : expr ("<"! expr)+ {$$=$^(LT, $*);}
                 | expr (">"! expr)+ {$$=$^(GT, $*);}
-                | expr ("=="! expr)+ {$$=$^(EQUALS, $*);}
+                | expr ("=="! expr)+ {$$=$^(COMPARE,EQUALS, $*);}
                 | expr ("<="! expr)+ {$$=$^(LTE, $*);}
                 | expr (">="! expr)+ {$$=$^(GTE, $*);}
                 | expr ("!="! expr)+ {$$=$^(NE, $*);}
@@ -317,7 +316,7 @@ lefthand        : atom (L+="["! subscriptlist "]"!)+  ("**"! atom)?  {if($L.miss
                 | ID ("."! L+=ID)+ ("**"! atom)?   {if(!$L.missing()){$$=$^(DOTNOTATION, $*);}} 
                 | atomnostring 
                 ; 
-atom            : "("! (testlist_comp)? ")"! 
+atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICTIONARY, $*);}
                 | ID 
@@ -326,7 +325,7 @@ atom            : "("! (testlist_comp)? ")"!
                 | RAWSTRING
                 | typed_id
                 ;
-atomnostring    : "("! (testlist_comp)? ")"! 
+atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
                 | ID (","! ID)+ ","!?
                 | ID 
