@@ -339,15 +339,12 @@ atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | TYPE_ID 
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 ;
-atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
-                | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
-                | ID (","! ID)+ ","!?
-                | ID 
+atomnostring    : ID 
                 | TYPE_ID 
                 ;
 type            : TYPE_ID 
                 | "$"! ID {$$=$^(TYPE_VAR,$*);}
-                | ID "of"! "["! type_list "]"! {$$=$^(TYPE,$ID,$^(TYPE_LIST,$type_list));}
+                | TYPE_ID "of"! "["! type_list "]"! {$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$type_list));}
                 ;
 type_formals_list: "["! type_list "]"! {$$=$^(TYPE_FORMALS,$*);}
                 | type_list {$$=$^(TYPE_FORMALS,$*);}
@@ -369,9 +366,11 @@ exprlist        : expr (","! expr)* ","!?
                 ;
 testlist        : test (","! test)* ","!?
                 ;
-dictorsetmaker  : kvpair ","!?
+dictorsetmaker  : kvpairlist ","!?
                 ;
-kvpair          : test ":"! test (","! kvpair)* {$$=$^(PAIR, $*);}
+kvpairlist      : kvpair (","! kvpair)* 
+                ;
+kvpair          : test ":"! test {$$=$^(PAIR, $*);}
                 ;
 argument        : test  
                 ;
