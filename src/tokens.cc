@@ -74,25 +74,32 @@ private:
 TOKEN_FACTORY(Arglist_Token, ARGLIST);
 
 
+class ID_Raw : public AST_Token{
+private:
+    void print (ostream& out, int indent) {
+        out << "(type_var " << lineNumber () << " " << text << ")";
+    }
+    ID_Raw* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+    string text;
+    TOKEN_CONSTRUCTORS(ID_Raw, AST_Token);
+};
+TOKEN_FACTORY(ID_Raw, TYPE_VAR);
 
 class ID_Token : public AST_Token {
 private:
-
     void print (ostream& out, int indent) {
         out << "(id " << lineNumber () << " " << text << ")";
     }
-
     ID_Token* post_make () {
         text = string (as_chars (), text_size ());
         return this;
     }
-
     string text;
-
     TOKEN_CONSTRUCTORS(ID_Token, AST_Token);
-
 };
-
 TOKEN_FACTORY(ID_Token, ID);
 
 /** represents an integer literal. */
