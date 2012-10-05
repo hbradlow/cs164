@@ -28,7 +28,6 @@ If/while/- control
 %token ID
 %token ID_R
 %token TYPE_ID
-
 %{
   #include <string>
   #include "apyc.h"
@@ -57,9 +56,8 @@ If/while/- control
     /** Return a new ID node, where the text of the identifier is given by
     *  TOKEN. */
     static AST_Ptr make_id (AST_Ptr& token);
-//    static string raw_val(AST_Ptr token);
 
-
+    static bool check_assign(AST_Ptr& token);
 %}
 
 %debug
@@ -382,6 +380,12 @@ make_binop (const List_Ptr& operands)
 {
     return YYMAKE_TREE (BINOP, operands->at (0), make_id (operands->at (1)),
     operands->at (2));
+}
+
+static bool
+check_assign (const List_Ptr& operands)
+{
+   return 1; 
 }
 
 /*

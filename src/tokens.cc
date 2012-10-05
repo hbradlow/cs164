@@ -94,6 +94,7 @@ private:
 };
 
 TOKEN_FACTORY(ID_Token, ID);
+
 class Type_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
