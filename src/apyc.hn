@@ -170,7 +170,7 @@ If/while/- control
 IDENT  : "@71684aa3418631a412d6105e160131b9"; 
 DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
 NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
-STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
+STRING : ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')*; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | '$') ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
@@ -227,8 +227,8 @@ stmt_small      : stmt_expr
                 | stmt_pass 
                 | stmt_flow 
                 ;
-stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
-                | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
+stmt_native     : "native"! M+=string {$$=$^(NATIVE, $M);}
+                | LINEBREAK+ IDENT "native"! M+=string LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : testlist 
                 | assignment
@@ -334,10 +334,13 @@ atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "("! expr ")"!
                 | ID 
                 | NUMBER
-                | STRING
+                | string 
                 | RAWSTRING
                 | TYPE_ID 
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
+                ;
+string          : "\""! STRING "\""!
+                | "'"! STRING "'"!
                 ;
 atomnostring    : ID 
                 | TYPE_ID 
