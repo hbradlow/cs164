@@ -1,0 +1,4 @@
+{'hello': 1, 'goodbye': 3}
+{'int': 9, 'list': [1, 2, 3], 'string': 'this', 'tuple': (4, 5, 6)}
+FUNCTION
+True

@@ -323,8 +323,9 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
 factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 | power
                 ;
-power           : atom ("**" factor) {$$=make_binop($*);}
-                | A+=atom "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! T+=trailer* 
+power           : power ("**" factor) {$$=make_binop($*);}
+                | power "("! L+=arglist ")"! {$$=$^(CALL, $power,$^(EXPR_LIST,$L.list_value()));} 
+                | A+=power "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! T+=trailer* 
                                 {if(!$S.missing() || !$R.missing())
                                     {if($R.missing())
                                         {$$=$^(SLICING, $A, $S, $^(EMPTY));}
@@ -333,14 +334,14 @@ power           : atom ("**" factor) {$$=make_binop($*);}
                                     else 
                                         {$$=$^(SLICING, $A, $S,$R);}}
                                 else{$$=$^(SUBSCRIPT, $A, $C);}}
-                | atom "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
+                | power "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
 atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
-                | atom "("! L+=arglist ")"! {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
+                | ID
                 | idlist
                 | NUMBER
                 | STRING
@@ -352,8 +353,7 @@ idlist          : type ","! L+=idlist {if(!$L.missing()){
                                                 }}
                 | type
                 ;
-trailer         : "("! arglist ")"!
-                | "["! ((S+=test? ":" test?) | C+=test)? "]"! {if(!$S.missing()){$$=$^(SLICING, $*);}else{$$=$^(SUBSCRIPT, $*);}}
+trailer         : "["! ((S+=test? ":" test?) | C+=test)? "]"! {if(!$S.missing()){$$=$^(SLICING, $*);}else{$$=$^(SUBSCRIPT, $*);}}
                 | "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
 type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){
@@ -375,7 +375,8 @@ subscript       : "."! "."! "."!
                 | test
                 | test? ":"! test?  
                 ;
-dictorsetmaker  : kvpair (","! kvpair)* ","!? 
+dictorsetmaker  : kvpair (","! kvpair)+ ","!? 
+                | kvpair ","!?
                 ;
 kvpair          : test ":"! test {$$=$^(PAIR, $*);}
                 ;
