@@ -169,7 +169,7 @@ If/while/- control
 * : (' ' | '\t' | '\r')+ ;
 IDENT  : "@71684aa3418631a412d6105e160131b9"; 
 DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
-NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
+NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | '$') ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
@@ -304,12 +304,8 @@ comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_binop($*);}
                 ;
 expr            : expr_arith ("|"! expr_arith)*
                 ;
-expr_arith      : expr_add
-                | expr_sub
-                ;
-expr_add        : term (A+="+" term)* {if(!$A.missing()){$$=make_binop($*);}}
-                ;
-expr_sub        : term (O+="-" term)* {if(!$O.missing()){$$=make_binop($*);}}
+expr_arith      : term (A+="+" term)* {if(!$A.missing()){$$=make_binop($*);}}
+                | term (A+='-' term)* {if(!$A.missing()){$$=make_binop($*);}}
                 ;
 term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor (O+="/" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
@@ -317,7 +313,7 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
                 | factor (O+="//" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor 
                 ;
-factor          : ('+'! | '-'! | '~'!) atom
+factor          : ('+'! | '-'! | '~'!) factor
                 | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
                 | atom ("**" atom) {$$=make_binop($*);}
