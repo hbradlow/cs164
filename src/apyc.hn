@@ -254,10 +254,9 @@ stmtcompnodef   : stmt_if
                 | stmt_while
                 | stmt_for
                 ;
-stmt_if         : "if"! test ":"! flowblock stmt_elif {$$=$^(IF_EXPR, $*);}
+stmt_if         : "if"! test ":"! flowblock T+=stmt_elif? {if($T.missing()){$$=$^(IF, $*, $^(EMPTY));}else{$$=$^(IF, $*);}}
                 ;
-stmt_elif       : "elif"! test ":"! flowblock stmt_elif? {$$=$^(IF_EXPR, $*);}
-                | ("elif"! T+=test ":"! flowblock)? stmt_else? {if(!$T.missing()){$$=$^(IF_EXPR, $*);}}
+stmt_elif       : "elif"! test ":"! flowblock stmt_elif? stmt_else? {$$=$^(IF, $*);}
                 ;
 stmt_else       : "else"! ":"! flowblock 
                 ;
@@ -358,8 +357,9 @@ exprlist        : expr (","! expr)* ","!?
                 ;
 testlist        : test (","! test)* ","!?
                 ;
-dictorsetmaker  : test ":"! test ((","! test ":"! test)* ","!?)
-                | test ((","! test)* ","!?)
+dictorsetmaker  : kvpair ","!?
+                ;
+kvpair          : test ":"! test (","! kvpair)* {$$=$^(PAIR, $*);}
                 ;
 argument        : test  
                 ;
