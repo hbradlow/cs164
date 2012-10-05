@@ -5,6 +5,7 @@
 /* Authors:  Henry Bradlow, Will Skinner, Kevin Lindkvist */
 
 #include <iostream>
+#include <cmath>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -31,6 +32,7 @@ AST_Token::append_text(const string& s)
 {
     throw logic_error ("unimplemented operation: append_text");
 }
+
 class Define_Token : public AST_Token {
 private:
 
@@ -107,11 +109,17 @@ private:
     }
     ID_Token* post_make () {
         text = string (as_chars (), text_size ());
+        if (text == "as" || text == "assert" || text == "del" || text == "exec" 
+                || text == "except" || text == "finally" || text == "future" 
+                || text == "global" || text == "raise" || text == "try" || text == "with"
+                || text == "yield")
+            error(as_chars(), "Illegal identifier");
         return this;
     }
     string text;
     TOKEN_CONSTRUCTORS(ID_Token, AST_Token);
 };
+
 TOKEN_FACTORY(ID_Token, ID);
 class Type_Token : public AST_Token {
 private:
@@ -127,7 +135,6 @@ private:
 };
 TOKEN_FACTORY(Type_Token, TYPE_ID);
 
-
 /** represents an integer literal. */
 class Int_Token : public AST_Token {
 private:
@@ -142,6 +149,12 @@ private:
      *  construction of a node or token.] */
     Int_Token* post_make () {
         value = atoi(as_chars());
+        if (value > pow(2,30.0))
+        {
+            error(as_chars(), "Integer too large");
+        }
+        if (value == pow(2,30.0))
+            value = -value;
         return this;
     }
 
