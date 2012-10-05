@@ -59,6 +59,7 @@ If/while/- control
     static AST_Ptr make_id (AST_Ptr& token);
 //    static string raw_val(AST_Ptr token);
 
+
 %}
 
 %debug
@@ -233,7 +234,7 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
 stmt_expr       : factor ("="! stmt_expr)+ {$$=$^(ASSIGN, $*);}
                 | Z+=test (","! C+=test)* ","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(LIST, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
-stmt_print      : "print"! (test (","! test)* T+=","!? | ">>"! test (","! test)* T+=","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
+stmt_print      : "print"! (test (","! test)* T+=","!?  (">>"! test (","! test)* T+=","!?)?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
 stmt_pass       : "pass"!
                 ;
@@ -416,3 +417,4 @@ parse (FILE* f, const string& name)
         theTree->print (cout, 0);
     }
 }
+
