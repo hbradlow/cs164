@@ -218,7 +218,9 @@ stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : testlist 
-                | lefthand ("="! testlist)+ {$$=$^(ASSIGN,$*);}
+                | assignment
+                ;
+assignment      : lefthand "="! (assignment | testlist) {$$=$^(ASSIGN, $*);}
                 ;
 stmt_print      : "print"! (test (","! test)* T+=","!? | ">>"! test (","! test)+ ","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
@@ -232,7 +234,7 @@ stmt_break      : "break"! {$$=$^(BREAK, $*);}
                 ;
 stmt_continue   : "continue"! {$$=$^(CONT, $*);}
                 ;
-stmt_return     : "return"! testlist? {$$=$^(RETURN, $*);}
+stmt_return     : "return"! stmt_expr* {$$=$^(RETURN, $*);}
                 ;
 stmt_comp       : stmt_if
                 | stmt_while
@@ -307,7 +309,7 @@ factor          : ('+'! | '-'! | '~'!) atom
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $*);} 
                 | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
-                | factor ("**" atom) {$$=make_binop($*);}
+                | atom ("**" atom) {$$=make_binop($*);}
                 | atom
                 ; 
 lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}

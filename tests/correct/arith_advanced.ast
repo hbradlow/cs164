@@ -1,0 +1,7 @@
+(module 0
+    (assign 1
+        (id 1 a)
+        (int_literal 1 10))
+    (assign 2
+        (id 2 b)
+        (int_literal 2 2)))
