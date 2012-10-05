@@ -172,7 +172,7 @@ DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
 NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-TYPE_ID : ("::" | '$') ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
+TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 LINEBREAK : '\n';
 COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
@@ -326,7 +326,7 @@ lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | "("! (testlist_comp)? ")"! {$$=$^(TARGET_LIST, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(TARGET_LIST, $*);}
                 | ID (","! ID)+ ","!?  {$$=$^(TARGET_LIST, $*);}
-                | ID TYPE_ID {$$=$^(TYPED_ID, $*);} 
+                | ID type {$$=$^(TYPED_ID, $*);} 
                 | atomnostring
                 ; 
 atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
@@ -344,10 +344,9 @@ atomnostring    : ID
                 | type 
                 ;
 type            : TYPE_ID 
-                | "$"! ID {$$=$^(TYPE_VAR,$*);}
                 | TYPE_ID "of"! "["! typelist "]"! {$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}
                 ;
-typelist        : type (","! type)*
+typelist        : TYPE_ID (","! TYPE_ID)*
                 ;
 listmaker       : test ((","! test)* ","!?)
                 ;

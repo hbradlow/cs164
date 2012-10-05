@@ -6,6 +6,8 @@ def baz(a):
     def test(c):
         return c+4
     return test
+def bzz(d)::$AType:
+    return d
 
 print foo(1)
 print bar(1)
