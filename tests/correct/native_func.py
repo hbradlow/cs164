@@ -1,5 +1,6 @@
-def hello(): native "TEST"
+def hello1(): native "TEST"
 
-def hello(): 
+def hello2(): 
     native "test" 
-
+hello1()
+hello2()
