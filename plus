@@ -1,231 +1,191 @@
 Starting parse
 Entering state 0
-Reading a token: Next token is token ID ()
-Shifting token ID ()
-Entering state 1
-Reading a token: Next token is token "=" ()
-Reducing stack by rule 106 (line 345):
-   $1 = token ID ()
--> $$ = nterm atomnostring ()
-Stack now 0
-Entering state 58
-Reducing stack by rule 91 (line 328):
-   $1 = nterm atomnostring ()
--> $$ = nterm lefthand ()
-Stack now 0
-Entering state 56
-Next token is token "=" ()
-Shifting token "=" ()
-Entering state 137
 Reading a token: Next token is token NUMBER ()
 Shifting token NUMBER ()
 Entering state 23
-Reducing stack by rule 98 (line 336):
+Reducing stack by rule 96 (line 331):
    $1 = token NUMBER ()
 -> $$ = nterm atom ()
-Stack now 0 56 137
-Entering state 57
+Stack now 0
+Entering state 55
 Reading a token: Next token is token "+" ()
-Reducing stack by rule 88 (line 324):
+Reducing stack by rule 86 (line 319):
    $1 = nterm atom ()
 -> $$ = nterm factor ()
-Stack now 0 56 137
-Entering state 55
+Stack now 0
+Entering state 53
 Next token is token "+" ()
-Reducing stack by rule 83 (line 318):
+Reducing stack by rule 81 (line 313):
    $1 = nterm factor ()
 -> $$ = nterm term ()
-Stack now 0 56 137
-Entering state 54
-Reducing stack by rule 271 (line 365):
--> $$ = nterm __72 ()
-Stack now 0 56 137 54
-Entering state 127
+Stack now 0
+Entering state 52
+Reducing stack by rule 267 (line 360):
+-> $$ = nterm __71 ()
+Stack now 0 52
+Entering state 124
 Next token is token "+" ()
 Shifting token "+" ()
-Entering state 207
+Entering state 202
 Reading a token: Next token is token NUMBER ()
 Shifting token NUMBER ()
 Entering state 23
-Reducing stack by rule 98 (line 336):
+Reducing stack by rule 96 (line 331):
    $1 = token NUMBER ()
 -> $$ = nterm atom ()
-Stack now 0 56 137 54 127 207
-Entering state 76
+Stack now 0 52 124 202
+Entering state 74
 Reading a token: Next token is token LINEBREAK ()
-Reducing stack by rule 88 (line 324):
+Reducing stack by rule 86 (line 319):
    $1 = nterm atom ()
 -> $$ = nterm factor ()
-Stack now 0 56 137 54 127 207
-Entering state 55
+Stack now 0 52 124 202
+Entering state 53
 Next token is token LINEBREAK ()
-Reducing stack by rule 83 (line 318):
+Reducing stack by rule 81 (line 313):
    $1 = nterm factor ()
 -> $$ = nterm term ()
-Stack now 0 56 137 54 127 207
-Entering state 288
-Reducing stack by rule 272 (line 310):
-   $1 = nterm __72 ()
+Stack now 0 52 124 202
+Entering state 283
+Reducing stack by rule 268 (line 307):
+   $1 = nterm __71 ()
    $2 = token "+" ()
    $3 = nterm term ()
--> $$ = nterm __72 ()
-Stack now 0 56 137 54
-Entering state 127
+-> $$ = nterm __71 ()
+Stack now 0 52
+Entering state 124
 Next token is token LINEBREAK ()
-Reducing stack by rule 77 (line 310):
+Reducing stack by rule 76 (line 307):
    $1 = nterm term ()
-   $2 = nterm __72 ()
--> $$ = nterm expr_add ()
-Stack now 0 56 137
-Entering state 52
-Reducing stack by rule 75 (line 307):
-   $1 = nterm expr_add ()
+   $2 = nterm __71 ()
 -> $$ = nterm expr_arith ()
-Stack now 0 56 137
+Stack now 0
 Entering state 51
-Reducing stack by rule 259 (line 371):
--> $$ = nterm __66 ()
-Stack now 0 56 137 51
-Entering state 126
-Next token is token LINEBREAK ()
-Reducing stack by rule 74 (line 305):
+Reducing stack by rule 74 (line 304):
    $1 = nterm expr_arith ()
-   $2 = nterm __66 ()
 -> $$ = nterm expr ()
-Stack now 0 56 137
-Entering state 80
+Stack now 0
+Entering state 50
 Next token is token LINEBREAK ()
-Reducing stack by rule 73 (line 303):
+Reducing stack by rule 73 (line 302):
    $1 = nterm expr ()
 -> $$ = nterm comparison ()
-Stack now 0 56 137
+Stack now 0
 Entering state 49
-Reducing stack by rule 62 (line 290):
+Reducing stack by rule 62 (line 289):
    $1 = nterm comparison ()
 -> $$ = nterm not_test ()
-Stack now 0 56 137
+Stack now 0
 Entering state 48
-Reducing stack by rule 263 (line 375):
--> $$ = nterm __68 ()
-Stack now 0 56 137 48
-Entering state 105
+Reducing stack by rule 259 (line 370):
+-> $$ = nterm __67 ()
+Stack now 0 48
+Entering state 103
 Next token is token LINEBREAK ()
-Reducing stack by rule 60 (line 287):
+Reducing stack by rule 60 (line 286):
    $1 = nterm not_test ()
-   $2 = nterm __68 ()
+   $2 = nterm __67 ()
 -> $$ = nterm and_test ()
-Stack now 0 56 137
+Stack now 0
 Entering state 47
-Reducing stack by rule 253 (line 241):
+Reducing stack by rule 251 (line 240):
 -> $$ = nterm __63 ()
-Stack now 0 56 137 47
-Entering state 104
+Stack now 0 47
+Entering state 102
 Next token is token LINEBREAK ()
-Reducing stack by rule 59 (line 285):
+Reducing stack by rule 59 (line 284):
    $1 = nterm and_test ()
    $2 = nterm __63 ()
 -> $$ = nterm or_test ()
-Stack now 0 56 137
+Stack now 0
 Entering state 46
 Next token is token LINEBREAK ()
-Reducing stack by rule 265 (line 290):
--> $$ = nterm __69 ()
-Stack now 0 56 137 46
-Entering state 103
-Reducing stack by rule 58 (line 283):
-   $1 = nterm or_test ()
-   $2 = nterm __69 ()
--> $$ = nterm test ()
-Stack now 0 56 137
-Entering state 45
-Reducing stack by rule 275 (line 315):
--> $$ = nterm __74 ()
-Stack now 0 56 137 45
+Reducing stack by rule 261 (line 289):
+-> $$ = nterm __68 ()
+Stack now 0 46
 Entering state 101
+Reducing stack by rule 58 (line 282):
+   $1 = nterm or_test ()
+   $2 = nterm __68 ()
+-> $$ = nterm test ()
+Stack now 0
+Entering state 45
+Reducing stack by rule 271 (line 309):
+-> $$ = nterm __73 ()
+Stack now 0 45
+Entering state 99
 Next token is token LINEBREAK ()
-Reducing stack by rule 205 (line 369):
+Reducing stack by rule 203 (line 364):
 -> $$ = nterm __39 ()
-Stack now 0 56 137 45 101
-Entering state 181
-Reducing stack by rule 122 (line 370):
+Stack now 0 45 99
+Entering state 177
+Reducing stack by rule 120 (line 365):
    $1 = nterm test ()
-   $2 = nterm __74 ()
+   $2 = nterm __73 ()
    $3 = nterm __39 ()
 -> $$ = nterm testlist ()
-Stack now 0 56 137
-Entering state 218
-Reducing stack by rule 153 (line 236):
-   $1 = nterm testlist ()
--> $$ = nterm __13 ()
-Stack now 0 56 137
-Entering state 219
-Reducing stack by rule 28 (line 236):
-   $1 = nterm lefthand ()
-   $2 = token "=" ()
-   $3 = nterm __13 ()
--> $$ = nterm assignment ()
 Stack now 0
-Entering state 34
-Reducing stack by rule 27 (line 234):
-   $1 = nterm assignment ()
+Entering state 57
+Reducing stack by rule 26 (line 232):
+   $1 = nterm testlist ()
 -> $$ = nterm stmt_expr ()
 Stack now 0
 Entering state 33
-Reducing stack by rule 20 (line 225):
+Reducing stack by rule 20 (line 224):
    $1 = nterm stmt_expr ()
 -> $$ = nterm stmt_small ()
 Stack now 0
 Entering state 32
-Reducing stack by rule 267 (line 286):
--> $$ = nterm __70 ()
+Reducing stack by rule 263 (line 285):
+-> $$ = nterm __69 ()
 Stack now 0 32
-Entering state 100
+Entering state 98
 Next token is token LINEBREAK ()
-Reducing stack by rule 207 (line 347):
+Reducing stack by rule 205 (line 342):
 -> $$ = nterm __40 ()
-Stack now 0 32 100
-Entering state 179
+Stack now 0 32 98
+Entering state 175
 Next token is token LINEBREAK ()
 Shifting token LINEBREAK ()
-Entering state 268
-Reducing stack by rule 177 (line 223):
+Entering state 264
+Reducing stack by rule 175 (line 222):
    $1 = token LINEBREAK ()
 -> $$ = nterm __25 ()
-Stack now 0 32 100 179
-Entering state 269
+Stack now 0 32 98 175
+Entering state 265
 Reading a token: Now at end of input.
-Reducing stack by rule 19 (line 223):
+Reducing stack by rule 19 (line 222):
    $1 = nterm stmt_small ()
-   $2 = nterm __70 ()
+   $2 = nterm __69 ()
    $3 = nterm __40 ()
    $4 = nterm __25 ()
 -> $$ = nterm stmt_simple ()
 Stack now 0
 Entering state 31
-Reducing stack by rule 13 (line 214):
+Reducing stack by rule 13 (line 213):
    $1 = nterm stmt_simple ()
 -> $$ = nterm stmt ()
 Stack now 0
 Entering state 30
-Reducing stack by rule 4 (line 186):
+Reducing stack by rule 4 (line 185):
    $1 = nterm stmt ()
 -> $$ = nterm input_simple ()
 Stack now 0
 Entering state 27
-Reducing stack by rule 160 (line 181):
+Reducing stack by rule 158 (line 180):
    $1 = nterm input_simple ()
 -> $$ = nterm __17 ()
 Stack now 0
-Entering state 60
+Entering state 58
 Now at end of input.
-Reducing stack by rule 1 (line 181):
+Reducing stack by rule 1 (line 180):
    $1 = nterm __17 ()
 -> $$ = nterm program ()
 Stack now 0
 Entering state 26
 Now at end of input.
 Shifting token $end ()
-Entering state 99
-Stack now 0 26 99
+Entering state 97
+Stack now 0 26 97
 Cleanup: popping token $end ()
 Cleanup: popping nterm program ()

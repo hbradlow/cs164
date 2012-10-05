@@ -25,7 +25,6 @@ If/while/- control
 
 %define semantic_tree_type "AST"
 
-%token INT
 %token ID
 %token ID_R
 %token TYPE_ID
@@ -302,10 +301,11 @@ comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_binop($*);}
                 | E1+=expr ("is" "not"! E2+=expr)+ {$$=make_binop($*);}
                 | expr
                 ;
-expr            : expr_arith ("|"! expr_arith)*
+expr            : expr_arith 
                 ;
-expr_arith      : term (A+="+" term)* {if(!$A.missing()){$$=make_binop($*);}}
-                | term (A+='-' term)* {if(!$A.missing()){$$=make_binop($*);}}
+expr_arith      : term (A+="-" term)+ {if(!$A.missing()){$$=make_binop($*);}}
+                | term (A+="+" term)+ {if(!$A.missing()){$$=make_binop($*);}}
+                | term
                 ;
 term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor (O+="/" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
