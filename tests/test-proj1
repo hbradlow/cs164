@@ -97,38 +97,36 @@ for f in tests:
     dir, file = os.path.split(f)
     base, ext = os.path.splitext(file)
     ast = base + ".ast"
+    msg = ""
     if errors:
         if Compile(f, ast):
-            msg = "FAIL (wrong exit code)" + base
+            print "FAIL (wrong exit code)" + base
         elif HasError (Stderr):
-            msg = "OK" + base
+            msg = "OK"
         else:
-            msg = "FAIL (bad error message)" + base
+            print "FAIL (bad error message)" + base
     else:
         prog2 = base + "-2.py"
         inp = os.path.join(dir, base + ".in")
         std = Contents (os.path.join(dir, base + ".std"))
         if not Compile(f, ast):
-            msg = "FAIL (wrong exit code)" + base
+            print "FAIL (wrong exit code)" + base
         elif Stderr:
-            msg = "FAIL (error messages)" + base
+            print "FAIL (error messages)" + base
         elif not Unparse(ast, prog2):
-            msg = "FAIL (bad AST)" + base
+            print "FAIL (bad AST)" + base
         elif not Execute(prog2, Contents(inp)):
-            msg = "FAIL (execution error)" + base
+            print "FAIL (execution error)" + base
         elif Stderr:
-            msg = "FAIL (error output on execution)" + base
+            print "FAIL (error output on execution)" + base
         elif std and std != Stdout:
-            msg = "FAIL (wrong output)" + base
+            print "FAIL (wrong output)" + base
         else:
-            msg = "OK" + base
+            msg = "OK"
         Remove(prog2)
-    if not retain:
-        Remove(ast)
 
     if msg == "OK":
         OK += 1
-    print msg
 
 print
 print "Ran %d tests." % N,

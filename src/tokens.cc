@@ -140,9 +140,9 @@ private:
             int v;
             const char* s = as_chars ();
             size_t i;
-            i = 0;
+            i = 1;
             literal_text.clear ();
-            while (i < text_size ()) {
+            while (i < text_size ()-1) {
                 i += 1;
                 if (s[i-1] == '\\') {
                     i += 1;

@@ -7,4 +7,4 @@ class Foo:
 f = Foo()
 print f.a
 print f.b
-f.bar()
+f.bar

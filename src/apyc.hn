@@ -170,7 +170,7 @@ If/while/- control
 IDENT  : "@71684aa3418631a412d6105e160131b9"; 
 DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
 NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
-STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
+STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\"" |  "'" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
@@ -204,8 +204,7 @@ definefunc      : "def"! ID formals RT+=type? ":"! (LAST+=codeblock | NATIVE+=st
                 ;
 formals         : "("! (ID | ID type)? (","! (ID | ID type))* ","!? ")"! {$$=$^(ARGLIST, $*);}
                 ;
-arglist         : argument      
-                | argument (","! argument ","!?)* 
+arglist         : argument (","! argument ","!?)* 
                 | /*empty*/
                 ;
 defineclass     : "class"! ID ("of"! "["! TF+=typelist "]"!)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
@@ -227,15 +226,13 @@ stmt_small      : stmt_expr
                 | stmt_pass 
                 | stmt_flow 
                 ;
-stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
-                | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
+stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
+                | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
-stmt_expr       : testlist 
-                | assignment
+stmt_expr       : factor ("="! stmt_expr)+ {$$=$^(ASSIGN, $*);}
+                | test (","! test)* ","!?
                 ;
-assignment      : lefthand "="! (assignment | testlist) {$$=$^(ASSIGN, $*);}
-                ;
-stmt_print      : "print"! (testlist? T+=","!? | ">>"! testlist ","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
+stmt_print      : "print"! (test (","! test)* T+=","!? | ">>"! test (","! test)* T+=","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
 stmt_pass       : "pass"!
                 ;
@@ -274,7 +271,7 @@ stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! exprlist "in"! testlist ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
+stmt_for        : "for"! exprlist ","!? "in"! test (","! test)* ","!? ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
@@ -316,41 +313,31 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
                 | factor 
                 ;
 factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
-                | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
-                | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
-                | atom ("**" atom) {$$=make_binop($*);}
+                | power
+                ;
+power           : atom ("**" factor) {$$=make_binop($*);}
+                | atom "("! L+=arglist ")"! trailer* {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
+                | atom "["! subscriptlist "]"! trailer* {$$=$^(SUBSCRIPT, $*);}
+                | atom "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
-                ; 
-lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
-                | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);} 
-                | "("! (testlist_comp)? ")"! {$$=$^(TARGET_LIST, $*);}
-                | "["! (listmaker)? "]"! {$$=$^(TARGET_LIST, $*);}
-                | ID (","! ID)+ ","!?  {$$=$^(TARGET_LIST, $*);}
-                | ID type {$$=$^(TYPED_ID, $*);} 
-                | atomnostring
-                ; 
-atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
-                | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
+                ;
+atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
+                | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
-                | ID 
+                | ID T+=TYPE_ID? (C+=","! ID TYPE_ID?)* ","!? {if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
                 | NUMBER
                 | STRING
                 | RAWSTRING
-                | type 
-                | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
+                | TYPE_ID 
                 ;
-atomnostring    : ID 
-                | type 
+trailer         : "("! arglist ")"! 
+                | "["! subscriptlist "]"! {$$=$^(SUBSCRIPT, $*);}
+                | "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
-type            : TYPE_ID 
-                | TYPE_ID "of"! "["! typelist "]"! {$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}
+type            : TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}}
                 ;
-typelist        : TYPE_ID (","! TYPE_ID)*
-                ;
-listmaker       : test ((","! test)* ","!?)
-                ;
-testlist_comp   : test ","! (test ","! | test?)*
+typelist        : ID (","! ID)*
                 ;
 subscriptlist   : subscript (","! subscript)* ","!?
                 ;
@@ -358,13 +345,9 @@ subscript       : "."! "."! "."!
                 | test
                 | test? ":"! test? 
                 ;
-exprlist        : expr (","! expr)* ","!?
+exprlist        : expr (","! expr)* 
                 ;
-testlist        : test (","! test)* ","!?
-                ;
-dictorsetmaker  : kvpairlist ","!?
-                ;
-kvpairlist      : kvpair (","! kvpair)* 
+dictorsetmaker  : kvpair (","! kvpair)* ","!? 
                 ;
 kvpair          : test ":"! test {$$=$^(PAIR, $*);}
                 ;
