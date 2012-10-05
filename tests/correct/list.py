@@ -3,3 +3,6 @@ b = [4,]
 c = [a,b]
 [a,b] = c
 a,b = c
+print a[1]
+print a[1:]
+print a[:-1]
