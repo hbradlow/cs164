@@ -175,7 +175,7 @@ ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 LINEBREAK : '\n';
-COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
+* : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( 'A' .. 'Z' | 'a' .. 'z' | '_' | ' ' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
@@ -184,11 +184,10 @@ program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
 /* INPUTS */
 input_simple    : (LINEBREAK!)+ 
                 | stmt                 
-                | (COMMENT!)+
                 | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def"! ID formals RT+=type? ":"! (LAST+=codeblock | NATIVE+=stmt_native) {if(!$NATIVE.missing()){
+definefunc      : "def"! ID formals RT+=functype? ":"! (LAST+=codeblock | NATIVE+=stmt_native) {if(!$NATIVE.missing()){
                         if($RT.missing()){
                             $$=$^(DEF, $ID,$formals,$^(EMPTY),$^(BLOCK,$NATIVE));
                         }else{
@@ -202,7 +201,9 @@ definefunc      : "def"! ID formals RT+=type? ":"! (LAST+=codeblock | NATIVE+=st
                         }
                     }}
                 ;
-formals         : "("! (ID | ID type)? (","! (ID | ID type))* ","!? ")"! {$$=$^(ARGLIST, $*);}
+formals         : "("! type? (","! type)* ","!? ")"! {$$=$^(ARGLIST, $*);}
+                ;
+functype        : TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing()){$$=$^(FUNC_TYPE,$TYPE_ID,$typelist);}}
                 ;
 arglist         : argument (","! argument ","!?)* 
                 | /*empty*/
@@ -230,7 +231,7 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : factor ("="! stmt_expr)+ {$$=$^(ASSIGN, $*);}
-                | test (","! test)* ","!?
+                | Z+=test (","! C+=test)* ","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(LIST, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
 stmt_print      : "print"! (test (","! test)* T+=","!? | ">>"! test (","! test)* T+=","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
@@ -271,7 +272,7 @@ stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! exprlist ","!? "in"! test (","! test)* ","!? ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
+stmt_for        : "for"! expr ","!? "in"! test (","! test)* ","!? ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
@@ -317,7 +318,7 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ;
 power           : atom ("**" factor) {$$=make_binop($*);}
                 | atom "("! L+=arglist ")"! trailer* {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
-                | atom "["! subscriptlist "]"! trailer* {$$=$^(SUBSCRIPT, $*);}
+                | A+=atom "["! T+=subscriptlist "]"! T+=trailer* {$$=$^(SUBSCRIPT, $A, $T);}
                 | atom "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
@@ -325,27 +326,32 @@ atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
-                | ID T+=TYPE_ID? (C+=","! ID TYPE_ID?)* ","!? {if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
+                | idlist
                 | NUMBER
                 | STRING
                 | RAWSTRING
-                | TYPE_ID 
+                ;
+idlist          : ID T+=TYPE_ID? L+=idlist {if(!$L.missing() && $T.missing()){$$=$^(LIST, $*);}else if(!$L.missing()){$$=$^(LIST, $^(TYPED_ID, $ID, $T), $L);}else if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
+                | ID T+=TYPE_ID? {if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
+                | ID TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$typelist);}}
                 ;
 trailer         : "("! arglist ")"! 
                 | "["! subscriptlist "]"! {$$=$^(SUBSCRIPT, $*);}
                 | "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
-type            : TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}}
+type            : ID TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}}
+                | ID
                 ;
-typelist        : ID (","! ID)*
+typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);}
+                ;
+typelistatom    : ("$"!? ID) {$$=$^(TYPED_ID, $ID, $^(EMPTY));} 
+                | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
                 ;
 subscriptlist   : subscript (","! subscript)* ","!?
                 ;
 subscript       : "."! "."! "."! 
                 | test
                 | test? ":"! test? 
-                ;
-exprlist        : expr (","! expr)* 
                 ;
 dictorsetmaker  : kvpair (","! kvpair)* ","!? 
                 ;
