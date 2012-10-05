@@ -208,7 +208,7 @@ arglist         : argument
                 | argument (","! argument ","!?)* 
                 | /*empty*/
                 ;
-defineclass     : "class"! ID ("of"! TF+=type_formals_list)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
+defineclass     : "class"! ID ("of"! "["! TF+=typelist "]"!)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -267,9 +267,10 @@ stmtcompnodef   : stmt_if
 stmt_if         : "if"! test ":"! (flowblock | stmt_simple) T+=stmt_elif? {if($T.missing()){$$=$^(IF, $*, $^(EMPTY));}else{$$=$^(IF, $*);}}
                 | A+=expr "if"! B+=test "else"! C+=expr {$$=$^(IF_EXPR, $B, $A, $C);}
                 ;
-stmt_elif       : "elif"! test ":"! (flowblock | stmt_simple) stmt_elif? stmt_else? {$$=$^(IF, $*);}
+stmt_elif       : "elif"! test ":"! (flowblock | stmt_simple) T+=stmt_elif? {if($T.missing()){$$=$^(IF, $*, $^(EMPTY));}else{$$=$^(IF, $*);}}
+                | stmt_else
                 ;
-stmt_else       : "else"! ":"! (flowblock | stmt_simple)
+stmt_else       : "else"! ":"! (flowblock | stmt_simple) 
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
@@ -336,21 +337,17 @@ atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | NUMBER
                 | STRING
                 | RAWSTRING
-                | TYPE_ID 
+                | type 
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 ;
 atomnostring    : ID 
-                | TYPE_ID 
+                | type 
                 ;
 type            : TYPE_ID 
                 | "$"! ID {$$=$^(TYPE_VAR,$*);}
-                | TYPE_ID "of"! "["! type_list "]"! {$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$type_list));}
+                | TYPE_ID "of"! "["! typelist "]"! {$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}
                 ;
-type_formals_list: "["! type_list "]"! {$$=$^(TYPE_FORMALS,$*);}
-                | type_list {$$=$^(TYPE_FORMALS,$*);}
-                ;
-type_list       : type ","! type_list
-                | type
+typelist        : type (","! type)*
                 ;
 listmaker       : test ((","! test)* ","!?)
                 ;
