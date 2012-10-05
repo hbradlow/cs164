@@ -198,7 +198,7 @@ arglist         : argument
                 | argument (","! argument ","!?)* 
                 | /*empty*/
                 ;
-defineclass     : "class"! type ":"! codeblock {$$=$^(CLASS, $*);}
+defineclass     : "class"! ID ("of"! TF+=type_formals_list)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -265,7 +265,7 @@ stmt_while      : "while"! test ":"! flowblock stmt_else? {$$=$^(WHILE, $*);}
                 ;
 stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock stmt_else? {$$=$^(FOR, $*);}
                 ;
-codeblock       : stmt_simple 
+codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
                 ;
 flowblock       : stmt_simple
@@ -335,9 +335,12 @@ atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | ID 
                 | typed_id
                 ;
-type            : TYPE_VAR
+type            : ID {$$=$^(TYPE_VAR,$*);}
                 | "$"! ID {$$=$^(TYPE_VAR,$*);}
                 | ID "of"! "["! type_list "]"! {$$=$^(TYPE,$ID,$^(TYPE_LIST,$type_list));}
+                ;
+type_formals_list: "["! type_list "]"! {$$=$^(TYPE_FORMALS,$*);}
+                | type_list {$$=$^(TYPE_FORMALS,$*);}
                 ;
 type_list       : type ","! type_list
                 | type
