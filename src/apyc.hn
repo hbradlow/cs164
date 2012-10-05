@@ -322,8 +322,11 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ; 
 lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);} 
-                | atomnostring 
+                | "("! (testlist_comp)? ")"! {$$=$^(TARGET_LIST, $*);}
+                | "["! (listmaker)? "]"! {$$=$^(TARGET_LIST, $*);}
+                | ID (","! ID)+ ","!?  {$$=$^(TARGET_LIST, $*);}
                 | ID TYPE_ID {$$=$^(TYPED_ID, $*);} 
+                | atomnostring
                 ; 
 atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
@@ -354,7 +357,7 @@ type_list       : type ","! type_list
                 ;
 listmaker       : test ((","! test)* ","!?)
                 ;
-testlist_comp   : test ","! ((test ","!)* ","!? | test?)
+testlist_comp   : test ","! (test ","! | test?)*
                 ;
 subscriptlist   : subscript (","! subscript)* ","!?
                 ;
