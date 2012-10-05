@@ -3,134 +3,123 @@ Entering state 0
 Reading a token: Next token is token NUMBER ()
 Shifting token NUMBER ()
 Entering state 23
-Reducing stack by rule 98 (line 336):
+Reducing stack by rule 96 (line 331):
    $1 = token NUMBER ()
 -> $$ = nterm atom ()
 Stack now 0
-Entering state 57
+Entering state 55
 Reading a token: Next token is token "-" ()
-Reducing stack by rule 88 (line 324):
+Reducing stack by rule 86 (line 319):
    $1 = nterm atom ()
 -> $$ = nterm factor ()
 Stack now 0
-Entering state 55
+Entering state 53
 Next token is token "-" ()
-Reducing stack by rule 83 (line 318):
+Reducing stack by rule 81 (line 313):
    $1 = nterm factor ()
 -> $$ = nterm term ()
 Stack now 0
-Entering state 54
-Reducing stack by rule 271 (line 365):
--> $$ = nterm __72 ()
-Stack now 0 54
-Entering state 127
-Next token is token "-" ()
-Reducing stack by rule 77 (line 310):
-   $1 = nterm term ()
-   $2 = nterm __72 ()
--> $$ = nterm expr_add ()
-Stack now 0
 Entering state 52
-Reducing stack by rule 75 (line 307):
-   $1 = nterm expr_add ()
+Reducing stack by rule 267 (line 360):
+-> $$ = nterm __71 ()
+Stack now 0 52
+Entering state 124
+Next token is token "-" ()
+Reducing stack by rule 76 (line 307):
+   $1 = nterm term ()
+   $2 = nterm __71 ()
 -> $$ = nterm expr_arith ()
 Stack now 0
 Entering state 51
-Reducing stack by rule 259 (line 371):
--> $$ = nterm __66 ()
-Stack now 0 51
-Entering state 126
-Next token is token "-" ()
-Reducing stack by rule 74 (line 305):
+Reducing stack by rule 74 (line 304):
    $1 = nterm expr_arith ()
-   $2 = nterm __66 ()
 -> $$ = nterm expr ()
 Stack now 0
 Entering state 50
 Next token is token "-" ()
-Reducing stack by rule 73 (line 303):
+Reducing stack by rule 73 (line 302):
    $1 = nterm expr ()
 -> $$ = nterm comparison ()
 Stack now 0
 Entering state 49
-Reducing stack by rule 62 (line 290):
+Reducing stack by rule 62 (line 289):
    $1 = nterm comparison ()
 -> $$ = nterm not_test ()
 Stack now 0
 Entering state 48
-Reducing stack by rule 263 (line 375):
--> $$ = nterm __68 ()
+Reducing stack by rule 259 (line 370):
+-> $$ = nterm __67 ()
 Stack now 0 48
-Entering state 105
+Entering state 103
 Next token is token "-" ()
-Reducing stack by rule 60 (line 287):
+Reducing stack by rule 60 (line 286):
    $1 = nterm not_test ()
-   $2 = nterm __68 ()
+   $2 = nterm __67 ()
 -> $$ = nterm and_test ()
 Stack now 0
 Entering state 47
-Reducing stack by rule 253 (line 241):
+Reducing stack by rule 251 (line 240):
 -> $$ = nterm __63 ()
 Stack now 0 47
-Entering state 104
+Entering state 102
 Next token is token "-" ()
-Reducing stack by rule 59 (line 285):
+Reducing stack by rule 59 (line 284):
    $1 = nterm and_test ()
    $2 = nterm __63 ()
 -> $$ = nterm or_test ()
 Stack now 0
 Entering state 46
 Next token is token "-" ()
-Reducing stack by rule 265 (line 290):
--> $$ = nterm __69 ()
+Reducing stack by rule 261 (line 289):
+-> $$ = nterm __68 ()
 Stack now 0 46
-Entering state 103
-Reducing stack by rule 58 (line 283):
+Entering state 101
+Reducing stack by rule 58 (line 282):
    $1 = nterm or_test ()
-   $2 = nterm __69 ()
+   $2 = nterm __68 ()
 -> $$ = nterm test ()
 Stack now 0
 Entering state 45
-Reducing stack by rule 275 (line 315):
--> $$ = nterm __74 ()
+Reducing stack by rule 271 (line 309):
+-> $$ = nterm __73 ()
 Stack now 0 45
-Entering state 101
+Entering state 99
 Next token is token "-" ()
-Reducing stack by rule 205 (line 369):
+Reducing stack by rule 203 (line 364):
 -> $$ = nterm __39 ()
-Stack now 0 45 101
-Entering state 180
-Reducing stack by rule 122 (line 370):
+Stack now 0 45 99
+Entering state 177
+Reducing stack by rule 120 (line 365):
    $1 = nterm test ()
-   $2 = nterm __74 ()
+   $2 = nterm __73 ()
    $3 = nterm __39 ()
 -> $$ = nterm testlist ()
 Stack now 0
-Entering state 59
-Reducing stack by rule 26 (line 233):
+Entering state 57
+Reducing stack by rule 26 (line 232):
    $1 = nterm testlist ()
 -> $$ = nterm stmt_expr ()
 Stack now 0
 Entering state 33
-Reducing stack by rule 20 (line 225):
+Reducing stack by rule 20 (line 224):
    $1 = nterm stmt_expr ()
 -> $$ = nterm stmt_small ()
 Stack now 0
 Entering state 32
-Reducing stack by rule 267 (line 286):
--> $$ = nterm __70 ()
+Reducing stack by rule 263 (line 285):
+-> $$ = nterm __69 ()
 Stack now 0 32
-Entering state 100
+Entering state 98
 Next token is token "-" ()
-Reducing stack by rule 207 (line 347):
+Reducing stack by rule 205 (line 342):
 -> $$ = nterm __40 ()
-Stack now 0 32 100
-Entering state 178
+Stack now 0 32 98
+Entering state 175
 Next token is token "-" ()
 tests/correct/arith_minus.py:1: syntax error
 Error: popping nterm __40 ()
-Stack now 0 32 100
-Error: popping nterm __70 ()
+Stack now 0 32 98
+Error: popping nterm __69 ()
 Stack now 0 32
 Error: popping nterm stmt_small ()
 Stack now 0
