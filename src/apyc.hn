@@ -298,7 +298,7 @@ expr            : expr_arith ("|"! expr_arith)*
 expr_arith      : expr_add
                 | expr_sub
                 ;
-expr_add        : T1+=term (A+="+"! T2+=term)* {if(!$A.missing()){$$=make_binop($*);}}
+expr_add        : term (A+="+" term)* {if(!$A.missing()){$$=make_binop($*);}}
                 ;
 expr_sub        : term (O+="-" term)* {if(!$O.missing()){$$=make_binop($*);}}
                 ;
@@ -309,7 +309,7 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
                 | factor 
                 ;
 factor          : ('+'! | '-'! | '~'!) atom
-                | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $*);} 
+                | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
                 | atom ("**" atom) {$$=make_binop($*);}
