@@ -339,10 +339,7 @@ atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | TYPE_ID 
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 ;
-atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
-                | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
-                | ID (","! ID)+ ","!?
-                | ID 
+atomnostring    : ID 
                 | TYPE_ID 
                 ;
 type            : TYPE_ID 
