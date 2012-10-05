@@ -255,6 +255,7 @@ stmtcompnodef   : stmt_if
                 | stmt_for
                 ;
 stmt_if         : "if"! test ":"! flowblock T+=stmt_elif? {if($T.missing()){$$=$^(IF, $*, $^(EMPTY));}else{$$=$^(IF, $*);}}
+                | A+=expr "if"! B+=test "else"! C+=expr {$$=$^(IF_EXPR, $B, $A, $C);}
                 ;
 stmt_elif       : "elif"! test ":"! flowblock stmt_elif? stmt_else? {$$=$^(IF, $*);}
                 ;
@@ -267,8 +268,7 @@ stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock stmt_else? {$$=$
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
                 ;
-flowblock       : stmt_simple
-                | LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*)}
+flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*)}
                 ;
 test            : or_test ("if" or_test "else" test)? 
                 ;
