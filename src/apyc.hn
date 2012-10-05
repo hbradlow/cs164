@@ -153,7 +153,6 @@ If/while/- control
 %token TYPED_ID "@typed_id" 
 %token FUNC_TYPE "@function_type"
 %token TYPE "@type"
-%token TYPE_VAR
 %token TYPE_LIST "@type_list"
 %token TYPE_FORMALS "@type_formals_list"
 %token PAIR "@pair"
@@ -188,7 +187,19 @@ input_simple    : (LINEBREAK!)+
                 | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def"! ID params ("::"! RT+=return_type)? ":"! (LAST+=codeblock | LAST+=stmt_native) {if($RT.missing()){$$=$^(DEF, $ID,$params,$^(EMPTY),$LAST);}else{$$=$^(DEF,$*);}}
+definefunc      : "def"! ID params ("::"! RT+=return_type)? ":"! (LAST+=codeblock | NATIVE+=stmt_native) {if(!$NATIVE.missing()){
+                        if($RT.missing()){
+                            $$=$^(DEF, $ID,$params,$^(EMPTY),$^(BLOCK,$NATIVE));
+                        }else{
+                            $$=$^(DEF,$ID,$params,$RT,$^(BLOCK,$NATIVE));
+                        }
+                    }else{
+                        if($RT.missing()){
+                            $$=$^(DEF, $ID,$params,$^(EMPTY),$LAST);
+                        }else{
+                            $$=$^(DEF,$*);
+                        }
+                    }}
                 ;
 return_type     : type
                 ;
@@ -335,7 +346,7 @@ atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | ID 
                 | typed_id
                 ;
-type            : ID {$$=$^(TYPE_VAR,$*);}
+type            : TYPE_VAR
                 | "$"! ID {$$=$^(TYPE_VAR,$*);}
                 | ID "of"! "["! type_list "]"! {$$=$^(TYPE,$ID,$^(TYPE_LIST,$type_list));}
                 ;

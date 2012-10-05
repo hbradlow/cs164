@@ -1,2 +1,2 @@
-def hello()::list of [int,string]:
+def hello()::list:
     assign::int = test
