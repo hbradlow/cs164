@@ -75,6 +75,33 @@ private:
 
 TOKEN_FACTORY(Arglist_Token, ARGLIST);
 
+class ISNOT_Token : public AST_Token {
+private:
+    void print (ostream& out, int indent) {
+        out << "(id " << lineNumber () << " " << "isnot" << ")";
+    }
+    ISNOT_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+    string text;
+    TOKEN_CONSTRUCTORS(ISNOT_Token, AST_Token);
+};
+TOKEN_FACTORY(ISNOT_Token, NIS);
+class NOTIN_Token : public AST_Token {
+private:
+    void print (ostream& out, int indent) {
+        out << "(id " << lineNumber () << " " << "notin" << ")";
+    }
+    NOTIN_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+    string text;
+    TOKEN_CONSTRUCTORS(NOTIN_Token, AST_Token);
+};
+TOKEN_FACTORY(NOTIN_Token, NIN);
+
 class ID_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
@@ -82,6 +109,11 @@ private:
     }
     ID_Token* post_make () {
         text = string (as_chars (), text_size ());
+        if (text == "as" || text == "assert" || text == "del" || text == "exec" 
+                || text == "except" || text == "finally" || text == "future" 
+                || text == "global" || text == "raise" || text == "try" || text == "with"
+                || text == "yield")
+            error(as_chars(), "Illegal identifier");
         return this;
     }
     string text;
