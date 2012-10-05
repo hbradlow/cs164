@@ -57,8 +57,6 @@ def Compile(prog, ast):
 
 def Unparse(ast, python):
     code, out, err = Run("../pyunparse -o %s --remove-extensions %s", python, ast)
-    print out 
-    print err
     return code == 0
 
 def Execute(prog, inp):
@@ -101,29 +99,29 @@ for f in tests:
     ast = base + ".ast"
     if errors:
         if Compile(f, ast):
-            msg = "FAIL (wrong exit code)"
+            msg = "FAIL (wrong exit code)" + base
         elif HasError (Stderr):
-            msg = "OK"
+            msg = "OK" + base
         else:
-            msg = "FAIL (bad error message)"
+            msg = "FAIL (bad error message)" + base
     else:
         prog2 = base + "-2.py"
         inp = os.path.join(dir, base + ".in")
         std = Contents (os.path.join(dir, base + ".std"))
         if not Compile(f, ast):
-            msg = "FAIL (wrong exit code)"
+            msg = "FAIL (wrong exit code)" + base
         elif Stderr:
-            msg = "FAIL (error messages)"
+            msg = "FAIL (error messages)" + base
         elif not Unparse(ast, prog2):
-            msg = "FAIL (bad AST)"
+            msg = "FAIL (bad AST)" + base
         elif not Execute(prog2, Contents(inp)):
-            msg = "FAIL (execution error)"
+            msg = "FAIL (execution error)" + base
         elif Stderr:
-            msg = "FAIL (error output on execution)"
+            msg = "FAIL (error output on execution)" + base
         elif std and std != Stdout:
-            msg = "FAIL (wrong output)"
+            msg = "FAIL (wrong output)" + base
         else:
-            msg = "OK"
+            msg = "OK" + base
         Remove(prog2)
     if not retain:
         Remove(ast)

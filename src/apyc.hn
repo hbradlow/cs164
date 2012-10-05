@@ -155,7 +155,6 @@ If/while/- control
 %token TYPE "@type"
 %token TYPE_VAR
 %token TYPE_LIST "@type_list"
-%token FORMALS "@formals_list"
 %token TYPE_FORMALS "@type_formals_list"
 %token PAIR "@pair"
 %token ATTRIBUTEREF "@attributeref"
@@ -222,9 +221,11 @@ stmt_native     : "native"! M+=STRING {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : testlist 
-                | lefthand ("="! testlist)+ {$$=$^(ASSIGN,$*);}
+                | assignment
                 ;
-stmt_print      : "print"! (test (","! test)* ","!? | ">>"! test (","! test)+ ","!?)? {$$=$^(PRINTLN, $*);}
+assignment      : lefthand "="! (assignment | testlist) {$$=$^(ASSIGN, $*);}
+                ;
+stmt_print      : "print"! (test (","! test)* T+=","!? | ">>"! test (","! test)+ ","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
 stmt_pass       : "pass"!
                 ;
@@ -236,7 +237,7 @@ stmt_break      : "break"! {$$=$^(BREAK, $*);}
                 ;
 stmt_continue   : "continue"! {$$=$^(CONT, $*);}
                 ;
-stmt_return     : "return"! testlist? {$$=$^(RETURN, $*);}
+stmt_return     : "return"! stmt_expr* {$$=$^(RETURN, $*);}
                 ;
 stmt_comp       : stmt_if
                 | stmt_while
@@ -260,9 +261,9 @@ stmt_elif       : "elif"! test ":"! flowblock stmt_elif? {$$=$^(IF_EXPR, $*);}
                 ;
 stmt_else       : "else"! ":"! flowblock 
                 ;
-stmt_while      : "while"! test ":"! flowblock ("else"! ":"! flowblock)? {$$=$^(WHILE, $*);}
+stmt_while      : "while"! test ":"! flowblock stmt_else? {$$=$^(WHILE, $*);}
                 ;
-stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock ("else"! ":"! flowblock)? {$$=$^(FOR, $*);}
+stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock stmt_else? {$$=$^(FOR, $*);}
                 ;
 codeblock       : stmt_simple 
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
@@ -307,11 +308,11 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
                 | factor (O+="//" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor 
                 ;
-factor          : ("+"! | "-"! | "~"!) atom
+factor          : ('+'! | '-'! | '~'!) atom
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $*);} 
                 | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
-                | expr ("**" atom) {$$=make_binop($*);}
+                | atom ("**" atom) {$$=make_binop($*);}
                 | atom
                 ; 
 lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
