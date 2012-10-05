@@ -309,7 +309,6 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
                 | factor 
                 ;
 factor          : ('+'! | '-'! | '~'!) atom
-                | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
                 | atom ("**" atom) {$$=make_binop($*);}
@@ -322,11 +321,13 @@ lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
 atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
+                | "("! expr ")"!
                 | ID 
                 | NUMBER
                 | STRING
                 | RAWSTRING
                 | typed_id
+                | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 ;
 atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
@@ -345,7 +346,7 @@ typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
                 ;
 listmaker       : test ((","! test)* ","!?)
                 ;
-testlist_comp   : test ((","! test)* ","!?)
+testlist_comp   : test ","! ((test ","!)* ","!? | test?)
                 ;
 subscriptlist   : subscript (","! subscript)* ","!?
                 ;
