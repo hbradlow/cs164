@@ -28,6 +28,7 @@ If/while/- control
 %token INT
 %token ID
 %token ID_R
+%token TYPE_ID
 
 %{
   #include <string>
@@ -52,6 +53,7 @@ If/while/- control
     *  AST for the first operand, a token for the operator, and an AST for the
     *  second operand). */
     static AST_Ptr make_binop (const List_Ptr& operands);
+    static AST_Ptr make_compare (const List_Ptr& operands);
 
     /** Return a new ID node, where the text of the identifier is given by
     *  TOKEN. */
@@ -150,8 +152,8 @@ If/while/- control
 %token STMT_LIST "@stmt_list"
 %token BLOCK "@block" 
 %token ASSIGN "@assign" 
-%token TYPED_ID "@typed_id" 
 %token FUNC_TYPE "@function_type"
+%token TYPED_ID "@typed_id"
 %token TYPE "@type"
 %token TYPE_LIST "@type_list"
 %token TYPE_FORMALS "@type_formals_list"
@@ -160,7 +162,7 @@ If/while/- control
 %token SUBSCRIPT "@subscription"
 %token SLICING "@slicing"
 %token TARGET_LIST "@target_list"
-
+%token TYPE_VAR "@type_var"
 %%
 /*---------- TERMINALS -----------*/
 
@@ -168,10 +170,10 @@ If/while/- control
 * : (' ' | '\t' | '\r')+ ;
 IDENT  : "@71684aa3418631a412d6105e160131b9"; 
 DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
-NUMBER : "-"*(('1' .. '9') ('0' .. '9')* | '0'+);
+NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-TYPE_VAR : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
+TYPE_ID : ("::" | '$') ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 LINEBREAK : '\n';
 COMMENT : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
@@ -187,23 +189,21 @@ input_simple    : (LINEBREAK!)+
                 | (MULTILINE_COMMENT!)+
                 ;
 /* FUNCTION DEFS */
-definefunc      : "def"! ID params ("::"! RT+=return_type)? ":"! (LAST+=codeblock | NATIVE+=stmt_native) {if(!$NATIVE.missing()){
+definefunc      : "def"! ID formals RT+=type? ":"! (LAST+=codeblock | NATIVE+=stmt_native) {if(!$NATIVE.missing()){
                         if($RT.missing()){
-                            $$=$^(DEF, $ID,$params,$^(EMPTY),$^(BLOCK,$NATIVE));
+                            $$=$^(DEF, $ID,$formals,$^(EMPTY),$^(BLOCK,$NATIVE));
                         }else{
-                            $$=$^(DEF,$ID,$params,$RT,$^(BLOCK,$NATIVE));
+                            $$=$^(DEF,$ID,$formals,$RT,$^(BLOCK,$NATIVE));
                         }
                     }else{
                         if($RT.missing()){
-                            $$=$^(DEF, $ID,$params,$^(EMPTY),$LAST);
+                            $$=$^(DEF, $ID,$formals,$^(EMPTY),$LAST);
                         }else{
                             $$=$^(DEF,$*);
                         }
                     }}
                 ;
-return_type     : type
-                ;
-params          : "("! arglist ")"! {$$=$^(ARGLIST, $*);}
+formals         : "("! (ID | ID type)? (","! (ID | ID type))* ","!? ")"! {$$=$^(ARGLIST, $*);}
                 ;
 arglist         : argument      
                 | argument (","! argument ","!?)* 
@@ -279,7 +279,7 @@ stmt_for        : "for"! exprlist "in"! testlist ":"! (flowblock | stmt_simple) 
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
                 ;
-flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*)}
+flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*);}
                 ;
 test            : or_test ("if" or_test "else" test)? 
                 ;
@@ -290,12 +290,12 @@ and_test        : not_test (M+="and"! not_test)* {if(!$M.missing()){$$=$^(AND, $
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
                 ;
-comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr (">" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr ("==" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr ("<=" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr (">=" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr ("!=" E2+=expr)+ {$$=make_binop($*);}
+comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr (">" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr ("==" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr ("<=" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr (">=" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr ("!=" E2+=expr)+ {$$=make_compare($*);}
 
                 | E1+=expr ("in" E2+=expr)+ {$$=make_binop($*);}
                 | E1+=expr ("not in" E2+=expr)+ {$$=make_binop($*);}
@@ -314,7 +314,7 @@ term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}
                 | factor (O+="//" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor 
                 ;
-factor          : ('+' | '-' | '~') atom {$$=make_unop($*);}
+factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 | atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);}
                 | atom ("**" atom) {$$=make_binop($*);}
@@ -323,6 +323,7 @@ factor          : ('+' | '-' | '~') atom {$$=make_unop($*);}
 lefthand        : atom (L+="["! subscriptlist "]"!)+ {$$=$^(SUBSCRIPT, $*);}
                 | ID ("."! L+=ID)+ {$$=$^(ATTRIBUTEREF, $*);} 
                 | atomnostring 
+                | ID TYPE_ID {$$=$^(TYPED_ID, $*);} 
                 ; 
 atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
@@ -332,16 +333,16 @@ atom            : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | NUMBER
                 | STRING
                 | RAWSTRING
-                | typed_id
+                | TYPE_ID 
                 | atom ("("! L+=arglist? ")"!)+ {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 ;
 atomnostring    : "("! (testlist_comp)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (listmaker)? "]"! {$$=$^(LIST, $*);}
                 | ID (","! ID)+ ","!?
                 | ID 
-                | typed_id
+                | TYPE_ID 
                 ;
-type            : TYPE_VAR
+type            : TYPE_ID 
                 | "$"! ID {$$=$^(TYPE_VAR,$*);}
                 | ID "of"! "["! type_list "]"! {$$=$^(TYPE,$ID,$^(TYPE_LIST,$type_list));}
                 ;
@@ -350,8 +351,6 @@ type_formals_list: "["! type_list "]"! {$$=$^(TYPE_FORMALS,$*);}
                 ;
 type_list       : type ","! type_list
                 | type
-                ;
-typed_id        :  ID ("::"! type) {$$=$^(TYPED_ID,$*);}
                 ;
 listmaker       : test ((","! test)* ","!?)
                 ;
@@ -381,6 +380,13 @@ static AST_Ptr
 make_unop (const List_Ptr& operands)
 {
     return YYMAKE_TREE (UNOP, make_id (operands->at (0)), operands->at (1));
+}
+
+static AST_Ptr
+make_compare (const List_Ptr& operands)
+{
+    return YYMAKE_TREE (COMPARE, operands->at (0), make_id (operands->at (1)),
+    operands->at (2));
 }
 
 static AST_Ptr

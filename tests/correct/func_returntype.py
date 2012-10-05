@@ -1,2 +1,2 @@
-def hello(test::int, hello)::int:
+def hello()::int:
     a = b
