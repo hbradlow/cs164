@@ -1,3 +1,3 @@
-def hello()::string:
+def hello():
     assign = "test"
     return assign
