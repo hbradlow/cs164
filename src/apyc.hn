@@ -116,9 +116,9 @@ If/while/- control
 %token NE "@!="
 
 %token IS "@is"
-%token NIS "@isnot"
+%token NIS
 %token IN "@in"
-%token NIN "@notin"
+%token NIN
 
 %token EMPTY
 %token MODULE "@module"
@@ -172,6 +172,8 @@ NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
 STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\"" |  "'" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
+NIN : "not in";
+NIS : "is not";
 RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
 LINEBREAK : '\n';
 * : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
@@ -294,10 +296,10 @@ comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_compare($*);}
                 | E1+=expr (">=" E2+=expr)+ {$$=make_compare($*);}
                 | E1+=expr ("!=" E2+=expr)+ {$$=make_compare($*);}
 
-                | E1+=expr ("in" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr ("not in" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr ("is" E2+=expr)+ {$$=make_binop($*);}
-                | E1+=expr ("is not" E2+=expr)+ {$$=make_binop($*);}
+                | E1+=expr ("in" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr (NIN E2+=expr)+ {$$=$^(COMPARE,$*);}
+                | E1+=expr ("is" E2+=expr)+ {$$=make_compare($*);}
+                | E1+=expr (NIS E2+=expr)+ {$$=$^(COMPARE,$*);}
                 | expr
                 ;
 expr            : expr_arith 
@@ -330,7 +332,13 @@ atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | STRING
                 | RAWSTRING
                 ;
-idlist          : ID T+=TYPE_ID? L+=idlist {if(!$L.missing() && $T.missing()){$$=$^(LIST, $*);}else if(!$L.missing()){$$=$^(LIST, $^(TYPED_ID, $ID, $T), $L);}else if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
+idlist          : ID T+=TYPE_ID? ","! L+=idlist {if(!$L.missing() && $T.missing()){
+                                                    $$=$^(LIST, $*);
+                                                }else if(!$L.missing()){
+                                                    $$=$^(LIST, $^(TYPED_ID, $ID, $T), $L);
+                                                }else if(!$T.missing()){
+                                                    $$=$^(TYPED_ID, $*);
+                                                }}
                 | ID T+=TYPE_ID? {if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
                 | ID TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$typelist);}}
                 ;
