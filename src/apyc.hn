@@ -318,7 +318,7 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ;
 power           : atom ("**" factor) {$$=make_binop($*);}
                 | atom "("! L+=arglist ")"! trailer* {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
-                | A+=atom "["! T+=subscriptlist "]"! T+=trailer* {$$=$^(SUBSCRIPT, $A, $T);}
+                | A+=atom "["! subscriptlist "]"! T+=trailer* {$$=$^(SUBSCRIPT, $*);}
                 | atom "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
