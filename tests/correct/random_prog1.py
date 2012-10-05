@@ -4,7 +4,7 @@ class Testing:
     name = ""
     def name():
         name = "kevin"
-        for i in list:
+        for i in li:
             name = "henry"
         while True: 
             name = "will"

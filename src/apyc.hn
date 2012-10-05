@@ -265,16 +265,16 @@ stmtcompnodef   : stmt_if
                 | stmt_while
                 | stmt_for
                 ;
-stmt_if         : "if"! test ":"! flowblock T+=stmt_elif? {if($T.missing()){$$=$^(IF, $*, $^(EMPTY));}else{$$=$^(IF, $*);}}
+stmt_if         : "if"! test ":"! (flowblock | stmt_simple) T+=stmt_elif? {if($T.missing()){$$=$^(IF, $*, $^(EMPTY));}else{$$=$^(IF, $*);}}
                 | A+=expr "if"! B+=test "else"! C+=expr {$$=$^(IF_EXPR, $B, $A, $C);}
                 ;
-stmt_elif       : "elif"! test ":"! flowblock stmt_elif? stmt_else? {$$=$^(IF, $*);}
+stmt_elif       : "elif"! test ":"! (flowblock | stmt_simple) stmt_elif? stmt_else? {$$=$^(IF, $*);}
                 ;
-stmt_else       : "else"! ":"! flowblock 
+stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
-stmt_while      : "while"! test ":"! flowblock T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
+stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock stmt_else? {$$=$^(FOR, $*);}
+stmt_for        : "for"! exprlist "in"! testlist ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
