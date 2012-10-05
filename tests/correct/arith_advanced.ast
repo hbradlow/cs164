@@ -4,4 +4,43 @@
         (int_literal 1 10))
     (assign 2
         (id 2 b)
-        (int_literal 2 2)))
+        (int_literal 2 2))
+    (assign 3
+        (id 3 c)
+        (binop 3
+            (binop 3
+                (id 3 a)
+                (id 3 **)
+                (id 3 b))
+            (id 3 +)
+            (id 3 b)))
+    (assign 4
+        (id 4 d)
+        (binop 4
+            (binop 4
+                (id 4 c)
+                (id 4 /)
+                (id 4 b))
+            (id 4 +)
+            (id 4 a)))
+    (assign 5
+        (id 5 e)
+        (binop 5
+            (id 5 a)
+            (id 5 **)
+            (binop 5
+                (int_literal 5 2)
+                (id 5 +)
+                (int_literal 5 1))))
+    (assign 6
+        (id 6 f)
+        (binop 6
+            (binop 6
+                (id 6 a)
+                (id 6 /)
+                (id 6 b))
+            (id 6 +)
+            (binop 6
+                (int_literal 6 3)
+                (id 6 *)
+                (int_literal 6 7)))))
