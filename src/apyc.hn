@@ -235,7 +235,7 @@ stmt_expr       : testlist
                 ;
 assignment      : lefthand "="! (assignment | testlist) {$$=$^(ASSIGN, $*);}
                 ;
-stmt_print      : "print"! (test (","! test)* T+=","!? | ">>"! test (","! test)+ ","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
+stmt_print      : "print"! (testlist? T+=","!? | ">>"! testlist ","!?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
 stmt_pass       : "pass"!
                 ;
@@ -280,7 +280,7 @@ codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 ;
 flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*);}
                 ;
-test            : or_test ("if" or_test "else" test)? 
+test            : A+=or_test ("if"! B+=or_test "else"! C+=test)? {if(!$B.missing()){$$=$^(IF_EXPR, $B, $A, $C);}}
                 ;
 or_test         : and_test (M+="or"! and_test)* {if(!$M.missing()){$$=$^(OR, $*);}}
                 ;
