@@ -82,6 +82,11 @@ private:
     }
     ID_Token* post_make () {
         text = string (as_chars (), text_size ());
+        if (text == "as" || text == "assert" || text == "del" || text == "exec" 
+                || text == "except" || text == "finally" || text == "future" 
+                || text == "global" || text == "raise" || text == "try" || text == "with"
+                || text == "yield")
+            error(as_chars(), "Illegal identifier");
         return this;
     }
     string text;
