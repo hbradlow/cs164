@@ -5,4 +5,4 @@ print b
 def foo():
     print "FUNCTION"
 c = {"func":foo}
-print c['func']
+print c["func"]

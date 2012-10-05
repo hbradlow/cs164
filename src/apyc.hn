@@ -325,7 +325,15 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ;
 power           : atom ("**" factor) {$$=make_binop($*);}
                 | atom "("! L+=arglist ")"! trailer* {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
-                | A+=atom "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! T+=trailer* {if(!$S.missing() || !$R.missing()){$$=$^(SLICING, $A, $S, $R);}else{$$=$^(SUBSCRIPT, $A, $C);}}
+                | A+=atom "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! T+=trailer* 
+                                {if(!$S.missing() || !$R.missing())
+                                    {if($R.missing())
+                                        {$$=$^(SLICING, $A, $S, $^(EMPTY));}
+                                    else if($S.missing())
+                                        {$$=$^(SLICING, $A, $^(EMPTY), $R);}
+                                    else 
+                                        {$$=$^(SLICING, $A, $S,$R);}}
+                                else{$$=$^(SUBSCRIPT, $A, $C);}}
                 | atom "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;

@@ -19,6 +19,7 @@ def process(in_file):
     # in_docstring = False
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
+    space_sep_str_patt = r'(\"|\')(.*?)\1\s(\"|\')(.*?)\3'
     for ch in input_text:
         if whitespace_left and not re.match(r'(\ |\t)', ch): #and not in_docstring:
             whitespace_left = False
@@ -75,6 +76,8 @@ def process(in_file):
     while indent_stack > 0:
         indent_stack -= 1
         result_file += ' %s ' % DEDENT
+    while re.search(space_sep_str_patt, result_file):
+        result_file = re.sub(space_sep_str_patt, lambda m: '"' + m.group(2) + m.group(4) + '"', result_file)
     return result_file
 
 if __name__ == '__main__':
