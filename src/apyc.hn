@@ -366,9 +366,11 @@ exprlist        : expr (","! expr)* ","!?
                 ;
 testlist        : test (","! test)* ","!?
                 ;
-dictorsetmaker  : kvpair ","!?
+dictorsetmaker  : kvpairlist ","!?
                 ;
-kvpair          : test ":"! test (","! kvpair)* {$$=$^(PAIR, $*);}
+kvpairlist      : kvpair (","! kvpair)* 
+                ;
+kvpair          : test ":"! test {$$=$^(PAIR, $*);}
                 ;
 argument        : test  
                 ;
