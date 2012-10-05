@@ -1,0 +1,33 @@
+(module 0
+    (def 1
+        (id 1 foo)
+        (formals_list 1
+            (id 1 bar))
+        ()
+        (block 2
+            (return 2
+                (binop 2
+                    (id 2 bar)
+                    (id 2 *)
+                    (int_literal 2 3)))))
+    (def 3
+        (id 3 baz)
+        (formals_list 3
+            (id 3 x))
+        ()
+        (block 4
+            (return 4
+                (binop 4
+                    (id 4 x)
+                    (id 4 +)
+                    (int_literal 4 1)))))
+    (println 5
+        ()
+        (expr_list 5
+            (call 5
+                (id 5 foo)
+                (expr_list 5
+                    (call 5
+                        (id 5 baz)
+                        (expr_list 5
+                            (int_literal 5 100))))))))

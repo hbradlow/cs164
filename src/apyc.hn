@@ -261,7 +261,7 @@ stmt_elif       : "elif"! test ":"! flowblock stmt_elif? {$$=$^(IF_EXPR, $*);}
                 ;
 stmt_else       : "else"! ":"! flowblock 
                 ;
-stmt_while      : "while"! test ":"! flowblock stmt_else? {$$=$^(WHILE, $*);}
+stmt_while      : "while"! test ":"! flowblock T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
 stmt_for        : "for"! exprlist "in"! testlist ":"! flowblock stmt_else? {$$=$^(FOR, $*);}
                 ;
@@ -269,7 +269,7 @@ codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
                 ;
 flowblock       : stmt_simple
-                | LINEBREAK+ IDENT M+=stmtnodef+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(BLOCK, $M);}
+                | LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*)}
                 ;
 test            : or_test ("if" or_test "else" test)? 
                 ;
