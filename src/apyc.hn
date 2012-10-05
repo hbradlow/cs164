@@ -344,7 +344,7 @@ atomnostring    : ID
                 ;
 type            : TYPE_ID 
                 | "$"! ID {$$=$^(TYPE_VAR,$*);}
-                | ID "of"! "["! type_list "]"! {$$=$^(TYPE,$ID,$^(TYPE_LIST,$type_list));}
+                | TYPE_ID "of"! "["! type_list "]"! {$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$type_list));}
                 ;
 type_formals_list: "["! type_list "]"! {$$=$^(TYPE_FORMALS,$*);}
                 | type_list {$$=$^(TYPE_FORMALS,$*);}
