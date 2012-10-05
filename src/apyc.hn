@@ -206,7 +206,13 @@ definefunc      : "def"! ID formals RT+=functype? ":"! (LAST+=codeblock | NATIVE
                 ;
 formals         : "("! type? (","! type)* ","!? ")"! {$$=$^(ARGLIST, $*);}
                 ;
-functype        : TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing()){$$=$^(FUNC_TYPE,$TYPE_ID,$typelist);}}
+functype        : TID+=TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing()){
+                                                                $$=$^(TYPE,$TID,$typelist.list_value());
+                                                            }else{
+                                                                $$=$^(TYPE,$TID,$^(TYPE_LIST));
+                                                            }
+                                                            }
+
                 ;
 arglist         : argument (","! argument ","!?)* 
                 | /*empty*/
@@ -334,26 +340,27 @@ atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | STRING
                 | RAWSTRING
                 ;
-idlist          : ID T+=TYPE_ID? ","! L+=idlist {if(!$L.missing() && $T.missing()){
+idlist          : type ","! L+=idlist {if(!$L.missing()){
                                                     $$=$^(LIST, $*);
-                                                }else if(!$L.missing()){
-                                                    $$=$^(LIST, $^(TYPED_ID, $ID, $T), $L);
-                                                }else if(!$T.missing()){
-                                                    $$=$^(TYPED_ID, $*);
+                                                }else{
                                                 }}
-                | ID T+=TYPE_ID? {if(!$T.missing()){$$=$^(TYPED_ID, $*);}}
-                | ID TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$typelist);}}
+                | type
                 ;
 trailer         : "("! arglist ")"! 
                 | "["! subscriptlist "]"! {$$=$^(SUBSCRIPT, $*);}
                 | "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
-type            : ID TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$TYPE_ID,$^(TYPE_LIST,$typelist));}}
+type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){
+                                                                $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$typelist.list_value()));
+                                                            }else{
+                                                                $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$^(TYPE_LIST)));
+                                                            }
+                                                            }
                 | ID
                 ;
 typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);}
                 ;
-typelistatom    : ("$"!? ID) {$$=$^(TYPED_ID, $ID, $^(EMPTY));} 
+typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));} 
                 | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
                 ;
 subscriptlist   : subscript (","! subscript)* ","!?

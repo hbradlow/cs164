@@ -124,7 +124,7 @@ TOKEN_FACTORY(ID_Token, ID);
 class Type_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
-        out << "(type_var " << lineNumber () << " " << text.substr(2) << ")";
+        out << "(id " << lineNumber () << " " << text.substr(2) << ")";
     }
     Type_Token* post_make () {
         text = string (as_chars (), text_size ());
