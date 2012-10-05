@@ -324,7 +324,6 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 | power
                 ;
 power           : atom ("**" factor) {$$=make_binop($*);}
-                | atom "("! L+=arglist ")"! trailer* {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 | A+=atom "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! T+=trailer* 
                                 {if(!$S.missing() || !$R.missing())
                                     {if($R.missing())
@@ -341,6 +340,7 @@ atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
+                | atom "("! L+=arglist ")"! {$$=$^(CALL, $atom,$^(EXPR_LIST,$L.list_value()));} 
                 | idlist
                 | NUMBER
                 | STRING
@@ -352,7 +352,7 @@ idlist          : type ","! L+=idlist {if(!$L.missing()){
                                                 }}
                 | type
                 ;
-trailer         : "("! arglist ")"! 
+trailer         : "("! arglist ")"!
                 | "["! ((S+=test? ":" test?) | C+=test)? "]"! {if(!$S.missing()){$$=$^(SLICING, $*);}else{$$=$^(SUBSCRIPT, $*);}}
                 | "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
