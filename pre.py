@@ -23,6 +23,8 @@ def process(in_file):
     paren_stack = 0
     brace_stack = 0
     curly_stack = 0
+    single_quote_stack = 0
+    double_quote_stack = 0
     
     slash_count = 0
 
@@ -38,6 +40,7 @@ def process(in_file):
     in_lonely_comment = False
     in_comment = False
     balanced = False
+    quote_balanced = True
 
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
@@ -53,6 +56,7 @@ def process(in_file):
     line_buffer = ''
     for ch in input_text:
         balanced = paren_stack == 0 and curly_stack == 0 and brace_stack == 0
+        quote_balanced = single_quote_stack 
         if in_lonely_comment:
             if ch == '\n' and not single_quote_toggle and not double_quote_toggle:
                 result_file += '\n'
@@ -73,6 +77,11 @@ def process(in_file):
                 curly_stack += 1
             elif ch == '}':
                 curly_stack -= 1
+            elif ch == '"':
+                double_quote_stack += 1
+            elif ch == "'":
+                single_quote_stack += 1
+
         if in_comment:
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
                 if balanced:
