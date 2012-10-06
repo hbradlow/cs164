@@ -328,14 +328,16 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ;
 power           : power ("**" factor) {$$=make_binop($*);}
                 | power "("! L+=arglist ")"! {$$=$^(CALL, $power,$^(EXPR_LIST,$L.list_value()));} 
-                | A+=power "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! 
-                                {if(!$S.missing() || !$R.missing())
-                                    {if($R.missing())
-                                        {$$=$^(SLICING, $A, $S, $^(EMPTY));}
+                | A+=power "["! ((S+=test? D+=":" R+=test?) | C+=test)?"]"! 
+                                {if(!$D.missing())
+                                    {if($R.missing() && $S.missing())
+                                        {$$=$^(SLICING, $A, $^(EMPTY), $^(EMPTY));}
                                     else if($S.missing())
                                         {$$=$^(SLICING, $A, $^(EMPTY), $R);}
+                                    else if ($R.missing()) 
+                                        {$$=$^(SLICING, $A, $S,$^(EMPTY));}}
                                     else 
-                                        {$$=$^(SLICING, $A, $S,$R);}}
+                                        {$$=$^(SLICING, $A, $S, $R);}
                                 else{$$=$^(SUBSCRIPT, $A, $C);}}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom

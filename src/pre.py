@@ -52,6 +52,8 @@ def process(in_file):
                 equivalent_blanks_cur = 0
                 indent_stack -= 1
             if ch == '#':
+                print 'in comment'
+                write_buffer = ""
                 in_comment = True
         elif whitespace_left: 
             if ch == ' ':
@@ -75,7 +77,8 @@ def process(in_file):
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
             write_buffer += ch
             if in_comment:
-                write_buffer = ""
+                print 'end of comment'
+                write_buffer = "\n"
             result_file += write_buffer 
             write_buffer = ""
             in_comment = False

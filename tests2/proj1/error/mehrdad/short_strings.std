@@ -1,4 +1,0 @@
-  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\short_strings.py", line 1
-    print "this has unknown type\"
-                                 ^
-SyntaxError: EOL while scanning string literal

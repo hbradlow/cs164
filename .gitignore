@@ -8,3 +8,4 @@ apyc
 *.out
 out
 *.processed
+tests2/
