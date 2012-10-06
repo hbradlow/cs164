@@ -305,7 +305,17 @@ stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! expr ","!? "in"! test (","! test)* ","!? ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
+stmt_for        : "for"! expr ","!? "in"! TE+=test (COMMA+=","! TE+=test)* COMMA+=","!? ":"! (FB+=flowblock | FB+=stmt_simple) T+=stmt_else? {if($T.missing()){
+                                                                                                                        if($COMMA.missing())
+                                                                                                                            $$=$^(FOR, $*, $^(EMPTY));
+                                                                                                                        else
+                                                                                                                            $$=$^(FOR, $expr, $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
+                                                                                                                    }else{
+                                                                                                                        if($COMMA.missing())
+                                                                                                                            $$=$^(FOR, $*);
+                                                                                                                        else
+                                                                                                                            $$=$^(FOR, $expr, $^(TUPLE,$TE.list_value()), $FB, $T);
+                                                                                                                    }}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
