@@ -44,8 +44,11 @@ def process(in_file):
 
     triple_patt = r'(\"\"\"|\'\'\')(.*?)\1\s*(\"\"\"|\'\'\')(.*?)\3'
     space_sep_str_patt = r'(\'|\")(.*?)\1\s*(\"|\')(.*?)\3'
-    multiline_patt = r'(.*\\\n(\s*.*?\s*\\\n)*(\s*.*\s*\n))'
-
+    multiline_patt = r'((.|\"|\')*\\\n(.*\\\n)*((.|\"|\')*\n))'
+    # matches a space_separated_string and then a triple string
+    multi_a_patt = r'(((\'|\").*?\3)\s*((\"\"\"|\'\'\').*?\5))'
+    # matches a triple_string and then a space_separated_strin
+    multi_b_patt = r'(((\"\"\"|\'\'\').*?\3)\s*((\'|\").*?\5))'
     # build up multiline statements in here
     line_buffer = ''
     for ch in input_text:
@@ -75,6 +78,7 @@ def process(in_file):
                 if balanced:
                     write_buffer += ch
                 else:
+                    #print 'not balanced'
                     write_buffer +=  '\\'
                     write_buffer += ch
                     slash_count += 1
@@ -177,18 +181,23 @@ def process(in_file):
         elif ch == '#':
             in_comment = True
         # end of line
-        elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
-            if len(write_buffer) > 0 and write_buffer[-1] == '\\':
+        elif not balanced and ch == '\n' or (not double_quote_toggle and not single_quote_toggle and ch == '\n'):
+            if not balanced:
+                #print "this shit ain't balanced"
+                #print write_buffer
+                write_buffer += '\\'
+                slash_count += 1
+            elif len(write_buffer) > 0 and write_buffer[-1] == '\\':
                 slash_count += 1
                 no_indent = True
             else:
                 no_indent = False
                 write_buffer += slash_count*'\n'
                 slash_count = 0
-            if not balanced:
-                write_buffer += '\\'
-                slash_count += 1
             write_buffer += ch
+            #print '----'
+            #print write_buffer
+            #print '----'
             if in_lonely_comment:
                 #print 'end of comment'
                 write_buffer = "\n"
@@ -203,12 +212,14 @@ def process(in_file):
         indent_stack_cur -= 1
         result_file += ' %s ' % DEDENT
         indent_depth_stack.pop()
-    i = 0
     while re.search(multiline_patt, result_file):
-        i += 1
-        if i > 3:
-            break
-        result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', ' ', m.groups()[0]), result_file)
+        result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', '', m.groups()[0]), result_file)
+        print result_file
+    while re.search(multi_a_patt, result_file):
+        result_file = re.sub(multi_a_patt, lambda m: "'" + eval(m.groups()[1]) + eval(m.groups()[3]) + "'", result_file)
+    print result_file
+    while re.search(multi_b_patt, result_file):
+        result_file = re.sub(multi_b_patt, lambda m: '"' + eval(m.groups()[1]) + eval(m.groups()[3]) + '"', result_file)
     while re.search(triple_patt, result_file):
         match = re.search(triple_patt, result_file)
         result_file = re.sub(triple_patt, lambda m: '"' + m.group(2) + m.group(4) + '"', result_file)
@@ -221,4 +232,7 @@ if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
     with open(arg.split('.')[0] + '.py.processed', 'w') as f:
-        f.write(process(arg))
+        try:
+            f.write(process(arg))
+        except:
+            exit(1)
