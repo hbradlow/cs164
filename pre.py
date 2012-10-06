@@ -1,5 +1,3 @@
-# Preprocess the given file by inserting INDENT and DEDENT tokens into 
-# the text. 
 import re
 
 INDENT = '@71684aa3418631a412d6105e160131b9'
@@ -16,12 +14,13 @@ def process(in_file):
     indent_stack = 0
     write_buffer = ""
     single_quote_stack = 0
+    in_comment = False
     # in_docstring = False
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
     space_sep_str_patt = r'(\"|\')(.*?)\1\s(\"|\')(.*?)\3'
     for ch in input_text:
-        if whitespace_left and not re.match(r'(\ |\t)', ch): #and not in_docstring:
+        if whitespace_left and not re.match(r'(\ |\t)', ch):
             whitespace_left = False
             # No indentation on current line
             if equivalent_blanks_cur == 0:
@@ -44,7 +43,9 @@ def process(in_file):
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
                 indent_stack -= 1
-        elif whitespace_left: #and not in_docstring:
+            if ch == '#':
+                in_comment = True
+        elif whitespace_left: 
             if ch == ' ':
                 equivalent_blanks_cur += 1
                 continue
@@ -65,8 +66,11 @@ def process(in_file):
             #single_quote_stack = 0
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
             write_buffer += ch
+            if in_comment:
+                write_buffer = ""
             result_file += write_buffer 
             write_buffer = ""
+            in_comment = False
             whitespace_left = True
             #single_quote_stack = 0
         else:
