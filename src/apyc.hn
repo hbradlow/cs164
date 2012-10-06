@@ -177,14 +177,14 @@ If/while/- control
 IDENT  : "@71684aa3418631a412d6105e160131b9"; 
 DEDENT : "@d2b3009662c463c2ab96d1a73872c6f1";
 NUMBER : (('1' .. '9') ('0' .. '9')* | '0'+);
-STRING : "\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | ' ')* "\"" |  "'" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | ' ')* "'" ; 
+STRING : "\"" ('#' .. '~' | '!')* "\"" |  "'" ('#' .. '~' | '!')* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 NIN : "not in";
 NIS : "is not";
-RAWSTRING : "r\"" ('1' .. '9' | 'a' .. 'z' | 'A' .. 'Z')* "\""; 
+RAWSTRING : "r\"" ('#' .. '~' | '!')* "\""; 
 LINEBREAK : '\n';
-* : "#" ('A' .. 'Z' | 'a' .. 'z' | '_' | ' ')* '\n' ; 
+* : "#" ('#' .. '~' | '!')* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( 'A' .. 'Z' | 'a' .. 'z' | '_' | ' ' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
@@ -220,7 +220,7 @@ functype        : TID+=TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing())
                                                             }
 
                 ;
-arglist         : argument (","! argument ","!?)* 
+arglist         : argument (","! argument)* ","!? 
                 | /*empty*/
                 ;
 defineclass     : "class"! ID ("of"! "["! TF+=type_formals_list "]"!)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
@@ -248,7 +248,7 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
 stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSIGN, $*);}}
                 | Z+=test (","! C+=test)* ","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(LIST, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
-stmt_print      : "print"! (test (","! test)* T+=","!?  (">>"! test (","! test)* T+=","!?)?)? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
+stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! test (","! test)+ T+=","!?))? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
                 ;
 stmt_pass       : "pass"!
                 ;
@@ -303,17 +303,16 @@ and_test        : not_test (M+="and" not_test)* {if(!$M.missing()){$$=make_binop
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
                 ;
-comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (">" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr ("==" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr ("<=" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (">=" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr ("!=" E2+=expr)+ {$$=make_compare($*);}
-
-                | E1+=expr ("in" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (NIN E2+=expr)+ {$$=$^(COMPARE,$*);}
-                | E1+=expr ("is" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (NIS E2+=expr)+ {$$=$^(COMPARE,$*);}
+comparison      : E1+=comparison ("<" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (">" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("==" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("<=" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (">=" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("!=" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("in" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (NIN E2+=comparison )+ {$$=$^(COMPARE,$*);}
+                | E1+=comparison ("is" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (NIS E2+=comparison )+ {$$=$^(COMPARE,$*);}
                 | expr
                 ;
 expr            : expr (A+="-" expr)+ {if(!$A.missing()){$$=make_binop($*);}}
@@ -336,9 +335,9 @@ power           : power ("**" factor) {$$=make_binop($*);}
                                     else if($S.missing())
                                         {$$=$^(SLICING, $A, $^(EMPTY), $R);}
                                     else if ($R.missing()) 
-                                        {$$=$^(SLICING, $A, $S,$^(EMPTY));}}
+                                        {$$=$^(SLICING, $A, $S,$^(EMPTY));}
                                     else 
-                                        {$$=$^(SLICING, $A, $S, $R);}
+                                        {$$=$^(SLICING, $A, $S, $R);}}
                                 else{$$=$^(SUBSCRIPT, $A, $C);}}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
@@ -352,6 +351,7 @@ atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | NUMBER
                 | STRING
                 | RAWSTRING
+                | MULTILINE_COMMENT
                 ;
 idlist          : type ","! L+=idlist {if(!$L.missing()){
                                                     $$=$^(LIST, $*);
@@ -374,7 +374,6 @@ typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);
 typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));} 
                 | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
                 | ("$"!? ID) (T+="of"! typelistatom )? 
-                | ("$"!? ID)
                 ;
 dictorsetmaker  : kvpair (","! kvpair)+ ","!? 
                 | kvpair ","!?
