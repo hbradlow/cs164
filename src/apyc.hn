@@ -251,10 +251,10 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSIGN, $*);}}
-                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* 
-                                            {if(!$C.missing() && $A.missing())
+                | Z+=test (","! C+=test)* COMMA+=","!?  (A+="="! B+=stmt_expr)* 
+                                            {if((!$COMMA.missing() || !$C.missing()) && $A.missing())
                                                 {$$=$^(TUPLE, $*);}
-                                            else if(!$A.missing() && !$C.missing())
+                                            else if(!$A.missing() && (!$COMMA.missing() || !$C.missing()))
                                                 {$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
 stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)* T+=","!?))? 
@@ -312,23 +312,23 @@ stmt_for        : "for"! EE+=expr (COMMA2+=","! EE+=expr)* COMMA2+=","? ","!? "i
                                 if($COMMA2.missing())
                                     $$=$^(FOR, $*, $^(EMPTY));
                                 else
-                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()),$TE,$FB, $^(EMPTY));
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()),$TE,$FB, $^(EMPTY));
                             else
                                 if($COMMA2.missing())
                                     $$=$^(FOR, $EE, $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
                                 else
-                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
                         }else{
                             if($COMMA.missing())
                                 if($COMMA2.missing())
                                     $$=$^(FOR, $*);
                                 else
-                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()),$TE,$FB, $T);
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()),$TE,$FB, $T);
                             else
                                 if($COMMA2.missing())
                                     $$=$^(FOR, $EE, $^(TUPLE,$TE.list_value()), $FB, $T);
                                 else
-                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $T);
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $T);
                         }}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
