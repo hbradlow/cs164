@@ -1,5 +1,5 @@
 import re
-patt = re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\(list_display\s\d+)((\n\s+\(\w+\s\d+\s\w+\))*)\))')
+patt = re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\((list_display|id)\s\d+)((\n\s+\(\w+\s\d+\s\w+\))*)\))')
 def process(infile):
     with open(infile, 'r') as f:
         result = patt.sub(r'(target_list \1', f.read())
