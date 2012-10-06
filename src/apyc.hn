@@ -66,7 +66,6 @@ If/while/- control
     static AST_Ptr make_id (AST_Ptr& token);
     static AST_Ptr make_type_var (AST_Ptr& token);
 
-    static bool check_assign(const List_Ptr& token);
 %}
 
 %debug

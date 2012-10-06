@@ -49,16 +49,6 @@ Usage: apyc --phase=1 [ -dp ] DIR/BASE.py ...\n\
     exit (1);
 }
 
-char * get_selfpath() {
-    char buff[1024];
-    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
-    if (len != -1) {
-        buff[len] = '\0';
-        return (char *) buff;
-    } else {
-        /* handle error condition */
-    }
-}
 static void
 compile (const string& input, const string& output)
 {
