@@ -336,9 +336,9 @@ power           : power ("**" factor) {$$=make_binop($*);}
                                     else if($S.missing())
                                         {$$=$^(SLICING, $A, $^(EMPTY), $R);}
                                     else if ($R.missing()) 
-                                        {$$=$^(SLICING, $A, $S,$^(EMPTY));}}
+                                        {$$=$^(SLICING, $A, $S,$^(EMPTY));}
                                     else 
-                                        {$$=$^(SLICING, $A, $S, $R);}
+                                        {$$=$^(SLICING, $A, $S, $R);}}
                                 else{$$=$^(SUBSCRIPT, $A, $C);}}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
@@ -352,6 +352,7 @@ atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | NUMBER
                 | STRING
                 | RAWSTRING
+                | MULTILINE_COMMENT
                 ;
 idlist          : type ","! L+=idlist {if(!$L.missing()){
                                                     $$=$^(LIST, $*);
