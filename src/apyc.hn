@@ -185,7 +185,7 @@ NIS : "is not";
 RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9'| ' ')* "\""; 
 LINEBREAK : '\n';
 * : "#" ('#' .. '~' | '!' | '\9'| ' ' )* '\n' ; 
-MULTILINE_COMMENT : "\"\"\"" ( '#' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
+MULTILINE_COMMENT : "\"\"\"" ( '"' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
