@@ -199,6 +199,7 @@ private:
             case 'F': 
             case 'f': return 15;
         }
+        return -1;
     }
     int parse_hex(const char* p)
     {

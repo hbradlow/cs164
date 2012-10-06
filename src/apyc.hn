@@ -246,9 +246,19 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSIGN, $*);}}
-                | Z+=test (","! C+=test)* ","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(LIST, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
+                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(TUPLE, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
-stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! test (","! test)+ T+=","!?))? {if($T.missing()){$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}else{$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}}
+stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)+ T+=","!?))? 
+                                        {if($T.missing())
+                                            {if ($F.missing())
+                                                {$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}
+                                                else{$$=$^(PRINTLN, $F, $^(EXPR_LIST, $*));}}
+                                        else{
+                                                if ($F.missing())
+                                                    {$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}
+                                                else{$$=$^(PRINT, $F, $^(EXPR_LIST, $*));}}}
+
+
                 ;
 stmt_pass       : "pass"!
                 ;
@@ -342,7 +352,7 @@ power           : power ("**" factor) {$$=make_binop($*);}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
-atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
+atom            : "("! (test (T+=","! test)* T+=","!?)? ")"! {if(!$T.missing()){$$=$^(TUPLE, $*);}}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
@@ -404,13 +414,6 @@ make_binop (const List_Ptr& operands)
 {
     return YYMAKE_TREE (BINOP, operands->at (0), make_id (operands->at (1)),
     operands->at (2));
-}
-
-static bool
-check_assign (const List_Ptr& operands)
-{
-   operands->at(2)->print(cout, 0);
-   return 1; 
 }
 
 static AST_Ptr
