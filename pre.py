@@ -250,8 +250,8 @@ def process(in_file):
 if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
-    with open(arg.split('.')[0] + '.py.processed', 'w') as f:
-        try:
-            f.write(process(arg))
-        except:
-            exit(1)
+    #with open(arg.split('.')[0] + '.py.processed', 'w') as f:
+    try:
+        sys.stdout.write(process(arg))
+    except:
+        exit(1)

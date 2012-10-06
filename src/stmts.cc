@@ -77,7 +77,7 @@ private:
   For_AST* post_make(){
         for_each_child (c, this) {
             if (c_i_ == 0)
-                c->convert_child_to_target();
+                c->convert_to_target();
         } end_for;
         return this; 
    } 

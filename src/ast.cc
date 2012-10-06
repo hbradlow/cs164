@@ -34,7 +34,7 @@ void
 AST::convert_child_to_target()
 {
     int ln = lineNumber();
-    error("0", "Can not convert to target list");
+    error("0", "Can not convert to target list as child");
     exit(1);
 }
 
