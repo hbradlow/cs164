@@ -47,7 +47,7 @@ private:
     {
         isTarget = 1;
         for_each_child (c, this) {
-            c->convert_to_target();
+            c->convert_child_to_target();
         } end_for;
 
     }
@@ -72,6 +72,33 @@ private:
 };
 NODE_FACTORY(Tuple_AST, TUPLE);
 
+class For_AST : public AST_Tree {
+private:
+  For_AST* post_make(){
+        for_each_child (c, this) {
+            if (c_i_ == 0)
+                c->convert_child_to_target();
+        } end_for;
+        return this; 
+   } 
+    NODE_CONSTRUCTORS(For_AST, AST_Tree);
+};
+NODE_FACTORY(For_AST, FOR);
+
+class Target_List_AST : public AST_Tree {
+private:
+  Target_List_AST* post_make(){
+        for_each_child (c, this) {
+            c->convert_child_to_target();
+        } end_for;
+        return this; 
+   } 
+    NODE_CONSTRUCTORS(Target_List_AST, AST_Tree);
+};
+NODE_FACTORY(Target_List_AST, TARGET_LIST);
+
+
+
 class List_AST : public AST_Tree {
 private:
     bool isTarget;
@@ -79,7 +106,7 @@ private:
     {
         isTarget = 1;
         for_each_child (c, this) {
-            c->convert_to_target();
+            c->convert_child_to_target();
         } end_for;
 
     }
@@ -121,6 +148,7 @@ class Typed_Id_AST : public AST_Tree {
 private:
     
     void convert_to_target(){return;} 
+    void convert_child_to_target(){return;} 
     NODE_CONSTRUCTORS(Typed_Id_AST, AST_Tree);
 };
 NODE_FACTORY(Typed_Id_AST,TYPED_ID);
@@ -128,6 +156,7 @@ NODE_FACTORY(Typed_Id_AST,TYPED_ID);
 class Slice_AST : public AST_Tree {
 private:
     void convert_to_target(){return;} 
+    void convert_child_to_target(){return;} 
     NODE_CONSTRUCTORS(Slice_AST, AST_Tree);
 };
 
@@ -136,6 +165,7 @@ NODE_FACTORY(Slice_AST, SLICING);
 class Sub_AST : public AST_Tree {
 private:
     void convert_to_target(){return;} 
+    void convert_child_to_target(){return;} 
     NODE_CONSTRUCTORS(Sub_AST, AST_Tree);
 };
 
@@ -144,6 +174,7 @@ NODE_FACTORY(Sub_AST,SUBSCRIPT);
 class Atr_Ref_AST : public AST_Tree {
 private:
     void convert_to_target(){return;} 
+    void convert_child_to_target(){return;} 
     NODE_CONSTRUCTORS(Atr_Ref_AST, AST_Tree);
 };
 NODE_FACTORY(Atr_Ref_AST,ATTRIBUTEREF);
