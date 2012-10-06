@@ -1,0 +1,10 @@
+print 0X1
+print 0x1
+print 0xabc
+print 0xdef
+print 0xFF23
+print 0xb2A
+print 0X12A
+print 0xab
+print 0x12345
+print 0XFFFFF

@@ -1,0 +1,10 @@
+if True:
+    print 'ewwa'
+if 1:
+        print 'awwe'
+if 1:
+  print 1
+if True:
+	print 1
+        print 'blanks'
+   	print 'tabspace'

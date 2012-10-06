@@ -1,0 +1,18 @@
+print 'hi' 'there'
+print 'hi' '''there'''
+print 'hi' """there"""
+print '''hi''' 'there'
+print """hi""" 'there'
+print 'hi' r'''there'''
+print 'hi' r"""there"""
+print r'''hi''' 'there'
+print r"""hi""" 'there'
+print 'hi' 'there' '?'
+print 'hi' '''there''' '?'
+print 'hi' """there""" '?'
+print '''hi''' 'there' '?'
+print """hi""" 'there' '?'
+print 'hi' r'''there''' '?'
+print 'hi' r"""there""" '?'
+print r'''hi''' 'there' '?'
+print r"""hi""" 'there' '?'
