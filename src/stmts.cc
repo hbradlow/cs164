@@ -51,7 +51,20 @@ private:
         } end_for;
 
     }
-       NODE_CONSTRUCTORS(Tuple_AST, AST_Tree);
+    void print (ostream& out, int indent) {
+        string nm = "tuple";
+        if (isTarget)
+           nm = string("target_list");
+  
+        out << "(" << nm << " " << lineNumber ();
+        for_each_child (c, this) {
+            out << endl << setw (indent + 4) << "";
+            c->print (out, indent + 4);
+        } end_for;
+        out << ")";
+    }
+
+    NODE_CONSTRUCTORS(Tuple_AST, AST_Tree);
 };
 NODE_FACTORY(Tuple_AST, TUPLE);
 
@@ -66,13 +79,35 @@ private:
         } end_for;
 
     }
-       NODE_CONSTRUCTORS(List_AST, AST_Tree);
+    void print (ostream& out, int indent) {
+        string nm = "list_display";
+        if (isTarget)
+           nm = string("target_list");
+  
+        out << "(" << nm << " " << lineNumber ();
+        for_each_child (c, this) {
+            out << endl << setw (indent + 4) << "";
+            c->print (out, indent + 4);
+        } end_for;
+        out << ")";
+    }
+
+    NODE_CONSTRUCTORS(List_AST, AST_Tree);
 };
 NODE_FACTORY(List_AST, LIST);
 
 class Assignment_AST : public AST_Tree {
 private:
-    
+    void print (ostream& out, int indent) {
+        string nm = "assignment";
+  
+        out << "(" << nm << " " << lineNumber ();
+        for_each_child (c, this) {
+            out << endl << setw (indent + 4) << "";
+            c->print (out, indent + 4);
+        } end_for;
+        out << ")";
+    }
    Assignment_AST* post_make(){
         for_each_child (c, this) {
             if (c_i_ == 0)
@@ -86,6 +121,7 @@ NODE_FACTORY(Assignment_AST,ASSIGN);
 
 class Typed_Id_AST : public AST_Tree {
 private:
+    
     void convert_to_target(){return;} 
     NODE_CONSTRUCTORS(Typed_Id_AST, AST_Tree);
 };
