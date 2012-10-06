@@ -49,16 +49,31 @@ Usage: apyc --phase=1 [ -dp ] DIR/BASE.py ...\n\
     exit (1);
 }
 
+char * get_selfpath() {
+    char buff[1024];
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+    if (len != -1) {
+        buff[len] = '\0';
+        return (char *) buff;
+    } else {
+        /* handle error condition */
+    }
+}
 static void
 compile (const string& input, const string& output)
 {
+    error_no_file( get_selfpath());
     if (freopen (output.c_str (), "w", stdout) == NULL) {
         error_no_file ("Could not open %s", output.c_str ());
         return; 
     }
     file_name = input;
     std::string command = std::string("python ../../cs164/pre.py ") + std::string(input.c_str());
-    system(command.c_str());
+    int ret = system(command.c_str());
+    if(ret != 0){
+        fprintf(stderr, "Preprocessing error, most likely bad indentation.");
+        err_count += 1;
+    }
     std::string filename = std::string(input.c_str()) + std::string(".processed");
     FILE* inFile = fopen (filename.c_str(), "r");
     if (inFile == NULL) {
