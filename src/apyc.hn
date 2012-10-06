@@ -246,7 +246,11 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSIGN, $*);}}
-                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(TUPLE, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
+                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* 
+                                            {if(!$C.missing() && $A.missing())
+                                                {$$=$^(TUPLE, $*);}
+                                            else if(!$A.missing() && !$C.missing())
+                                                {$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
 stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)+ T+=","!?))? 
                                         {if($T.missing())
@@ -352,7 +356,7 @@ power           : power ("**" factor) {$$=make_binop($*);}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
-atom            : "("! (test (T+=","! test)* T+=","!?)? ")"! {if(!$T.missing()){$$=$^(TUPLE, $*);}}
+atom            : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()){$$=$^(TUPLE, $^(EMPTY));}else if(!$T.missing()){$$=$^(TUPLE, $*);}}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
