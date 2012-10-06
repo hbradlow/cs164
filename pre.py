@@ -111,7 +111,7 @@ def process(in_file):
                 write_buffer = ''
                 in_lonely_comment = True
                 #print 'in a lonely comment'
-            elif equivalent_blanks_cur < equivalent_blanks_pre:
+            elif equivalent_blanks_cur < indent_depth_stack[-1]:
                 #print 'fewer blanks: %s' % ch
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
