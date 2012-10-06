@@ -10,7 +10,7 @@ def process(infile):
     if re.search(binop, dump):
         print "bad binop"
         exit(1)
-    if re.search(bad_patt, dump):
+    if re.search(bad_patt, dump) and re.search(bad_patt1, dump):
         print "something was not an id"
         exit(1)
     result = patt.sub(r'(target_list \1', dump)
