@@ -46,6 +46,7 @@ def process(in_file):
                 result_file += '\n'
                 write_buffer = ''
                 in_lonely_comment = False
+                in_comment = False
                 continue
         if not in_comment and not in_lonely_comment:
             if ch == '(':
@@ -61,7 +62,6 @@ def process(in_file):
             elif ch == '}':
                 curly_stack -= 1
         if in_comment:
-            #comment_buffer += ch
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
                 write_buffer += ch
                 result_file += write_buffer
@@ -69,8 +69,6 @@ def process(in_file):
                 in_comment = False
                 in_lonely_comment = False
                 whitespace_left = True
-                #print ciomment_buffer
-                #icomment_buffer = ''
                 continue
             elif ch == '"':
                 if not single_quote_toggle:
@@ -162,7 +160,6 @@ def process(in_file):
         # comment at end of line
         elif ch == '#':
             in_comment = True
-
         # end of line
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
             if len(write_buffer) > 0 and write_buffer[-1] == '\\':
