@@ -1,13 +1,13 @@
 import re
-patt = re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\())') 
-patt1 = re.compile(r'\(tuple(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\())') 
-bad_patt = re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*\s\d+\((?!id)))')
+patt =     re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\())') 
+bad_patt = re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*\n\s+\((?!id)))')
+patt1 =    re.compile(r'\(tuple(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\())') 
 binop = r'\(assign\s\d+\n\s+\(binop'
 def process(infile):
     f = open(infile, 'r')
     dump = f.read()
     if re.search(binop, dump) or re.search(bad_patt, dump):
-        print "bad ast"
+        #print "bad ast"
         exit(1)
     result = patt.sub(r'(target_list \1', dump)
     result = patt1.sub(r'(target_list \1', result)
