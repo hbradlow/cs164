@@ -46,6 +46,10 @@ private:
     void convert_to_target()
     {
         isTarget = 1;
+        for_each_child (c, this) {
+            c->convert_to_target();
+        } end_for;
+
     }
     void print (ostream& out, int indent) {
         string nm = "tuple";
@@ -70,6 +74,10 @@ private:
     void convert_to_target()
     {
         isTarget = 1;
+        for_each_child (c, this) {
+            c->convert_to_target();
+        } end_for;
+
     }
     void print (ostream& out, int indent) {
         string nm = "list_display";
@@ -111,4 +119,33 @@ private:
 };
 NODE_FACTORY(Assignment_AST,ASSIGN);
 
+class Typed_Id_AST : public AST_Tree {
+private:
+    void convert_to_target(){return;} 
+    NODE_CONSTRUCTORS(Typed_Id_AST, AST_Tree);
+};
+NODE_FACTORY(Typed_Id_AST,TYPED_ID);
+
+class Slice_AST : public AST_Tree {
+private:
+    void convert_to_target(){return;} 
+    NODE_CONSTRUCTORS(Slice_AST, AST_Tree);
+};
+
+NODE_FACTORY(Slice_AST, SLICING);
+
+class Sub_AST : public AST_Tree {
+private:
+    void convert_to_target(){return;} 
+    NODE_CONSTRUCTORS(Sub_AST, AST_Tree);
+};
+
+NODE_FACTORY(Sub_AST,SUBSCRIPT);
+
+class Atr_Ref_AST : public AST_Tree {
+private:
+    void convert_to_target(){return;} 
+    NODE_CONSTRUCTORS(Atr_Ref_AST, AST_Tree);
+};
+NODE_FACTORY(Atr_Ref_AST,ATTRIBUTEREF);
 
