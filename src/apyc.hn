@@ -183,7 +183,7 @@ NUMBER  : (('1' .. '9') ('0' .. '9')* | '0'+)
 
 STRING : "\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9' | "\\" "'")* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
+TYPE_ID : ("::" | "::$") (" " | "\t")* ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
 
 NIN : "not" (" " | "\t")* "in";
 NIS : "is" (" " | "\t")* "not";
@@ -257,7 +257,7 @@ stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSI
                                             else if(!$A.missing() && !$C.missing())
                                                 {$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
-stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)+ T+=","!?))? 
+stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)* T+=","!?))? 
                                         {if($T.missing())
                                             {if ($F.missing())
                                                 {$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}
@@ -306,17 +306,30 @@ stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! expr ","!? "in"! TE+=test (COMMA+=","! TE+=test)* COMMA+=","!? ":"! (FB+=flowblock | FB+=stmt_simple) T+=stmt_else? {if($T.missing()){
-                                                                                                                        if($COMMA.missing())
-                                                                                                                            $$=$^(FOR, $*, $^(EMPTY));
-                                                                                                                        else
-                                                                                                                            $$=$^(FOR, $expr, $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
-                                                                                                                    }else{
-                                                                                                                        if($COMMA.missing())
-                                                                                                                            $$=$^(FOR, $*);
-                                                                                                                        else
-                                                                                                                            $$=$^(FOR, $expr, $^(TUPLE,$TE.list_value()), $FB, $T);
-                                                                                                                    }}
+stmt_for        : "for"! EE+=expr (COMMA2+=","! EE+=expr)* COMMA2+=","? ","!? "in"! TE+=test (COMMA+=","! TE+=test)* COMMA+=","!? ":"! (FB+=flowblock | FB+=stmt_simple) T+=stmt_else? 
+                        {if($T.missing()){
+                            if($COMMA.missing())
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $*, $^(EMPTY));
+                                else
+                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()),$TE,$FB, $^(EMPTY));
+                            else
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $EE, $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
+                                else
+                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
+                        }else{
+                            if($COMMA.missing())
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $*);
+                                else
+                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()),$TE,$FB, $T);
+                            else
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $EE, $^(TUPLE,$TE.list_value()), $FB, $T);
+                                else
+                                    $$=$^(FOR, $^(TUPLE,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $T);
+                        }}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
