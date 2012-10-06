@@ -169,17 +169,33 @@ private:
     }
 
     /* parsed a number in octal format into its decimal value */
-    int parse_oct(const char* p)
+    long parse_oct(const char* p)
     {
-        int x = 0;
+        long x = 0;
         for (; *p; ++p)
         {
-            x = x * 8 + digit_value(*p);
+            x = x * 8 + digit_oct_value(*p);
         }
         return x;
     }
     /* parses a character into its corresponding number */
-    int digit_value(char c)
+    long digit_oct_value(char c)
+    {
+        switch (c)
+        {
+            case '0': return 0;
+            case '1': return 1;
+            case '2': return 2;
+            case '3': return 3;
+            case '4': return 4;
+            case '5': return 5;
+            case '6': return 6;
+            case '7': return 7;
+        }
+        error(as_chars(), "Invalid octal digits");
+    }
+    /* parses a character into its corresponding number */
+    long digit_hex_value(char c)
     {
         switch (c)
         {
@@ -206,17 +222,17 @@ private:
             case 'F': 
             case 'f': return 15;
         }
-        return -1;
+        error(as_chars(), "Invalid hex digits");
     }
     /* parsed a number in hex format into its decimal value */
-    int parse_hex(const char* p)
+    long parse_hex(const char* p)
     {
-        int x = 0;
+        long x = 0;
         p++;
         p++;
         for (; *p; ++p)
         {
-            x = x * 16 + digit_value(*p);
+            x = x * 16 + digit_hex_value(*p);
         }
         return x;
     }
@@ -237,13 +253,13 @@ private:
                 value = parse_oct(as_chars());
         }
         else
-            value = atoi(as_chars());
+            value = atol(as_chars());
         if (value > pow(2,30.0))
         {
-            error(as_chars(), "Integer too large");
+            error(as_chars(), "Numeral too big");
         }
-        //if (value == pow(2,30.0))
-        //    value = -value;
+//        if (value == pow(2,30.0))
+//            value = -value;
         return this;
     }
 
