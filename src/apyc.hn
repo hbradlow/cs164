@@ -303,17 +303,16 @@ and_test        : not_test (M+="and" not_test)* {if(!$M.missing()){$$=make_binop
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
                 ;
-comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (">" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr ("==" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr ("<=" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (">=" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr ("!=" E2+=expr)+ {$$=make_compare($*);}
-
-                | E1+=expr ("in" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (NIN E2+=expr)+ {$$=$^(COMPARE,$*);}
-                | E1+=expr ("is" E2+=expr)+ {$$=make_compare($*);}
-                | E1+=expr (NIS E2+=expr)+ {$$=$^(COMPARE,$*);}
+comparison      : E1+=comparison ("<" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (">" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("==" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("<=" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (">=" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("!=" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison ("in" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (NIN E2+=comparison )+ {$$=$^(COMPARE,$*);}
+                | E1+=comparison ("is" E2+=comparison )+ {$$=make_compare($*);}
+                | E1+=comparison (NIS E2+=comparison )+ {$$=$^(COMPARE,$*);}
                 | expr
                 ;
 expr            : expr (A+="-" expr)+ {if(!$A.missing()){$$=make_binop($*);}}
@@ -375,7 +374,6 @@ typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);
 typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));} 
                 | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
                 | ("$"!? ID) (T+="of"! typelistatom )? 
-                | ("$"!? ID)
                 ;
 dictorsetmaker  : kvpair (","! kvpair)+ ","!? 
                 | kvpair ","!?
