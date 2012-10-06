@@ -203,6 +203,8 @@ private:
     int parse_hex(const char* p)
     {
         int x = 0;
+        p++;
+        p++;
         for (; *p; ++p)
         {
             x = x * 16 + digit_value(*p);
