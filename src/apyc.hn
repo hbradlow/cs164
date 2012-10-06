@@ -28,6 +28,12 @@ If/while/- control
 %token ID
 %token ID_R
 %token TYPE_ID
+
+%left '='
+%left '+' '-'
+%left '*' '/' '%' "//"
+%right "**"
+
 %{
   #include <string>
   #include "apyc.h"
@@ -52,10 +58,12 @@ If/while/- control
     *  second operand). */
     static AST_Ptr make_binop (const List_Ptr& operands);
     static AST_Ptr make_compare (const List_Ptr& operands);
+    static AST_Ptr make_type_var_list (const List_Ptr& operands);
 
     /** Return a new ID node, where the text of the identifier is given by
     *  TOKEN. */
     static AST_Ptr make_id (AST_Ptr& token);
+    static AST_Ptr make_type_var (AST_Ptr& token);
 
     static bool check_assign(const List_Ptr& token);
 %}
@@ -160,7 +168,7 @@ If/while/- control
 %token SUBSCRIPT "@subscription"
 %token SLICING "@slicing"
 %token TARGET_LIST "@target_list"
-%token TYPE_VAR "@type_var"
+%token TYPE_VAR
 %%
 /*---------- TERMINALS -----------*/
 
@@ -215,7 +223,7 @@ functype        : TID+=TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing())
 arglist         : argument (","! argument ","!?)* 
                 | /*empty*/
                 ;
-defineclass     : "class"! ID ("of"! "["! TF+=typelist "]"!)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
+defineclass     : "class"! ID ("of"! "["! TF+=type_formals_list "]"!)?":"! codeblock {if($TF.missing()){$$=$^(CLASS, $ID,$^(TYPE_FORMALS),$codeblock);}else{$$=$^(CLASS,$*);}}
                 ;
 /* STATEMENTS */
 stmt            : stmt_simple 
@@ -288,9 +296,9 @@ flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK
                 ;
 test            : A+=or_test ("if"! B+=or_test "else"! C+=test)? {if(!$B.missing()){$$=$^(IF_EXPR, $B, $A, $C);}}
                 ;
-or_test         : and_test (M+="or"! and_test)* {if(!$M.missing()){$$=$^(OR, $*);}}
+or_test         : and_test (M+="or" and_test)* {if(!$M.missing()){$$=make_binop($*);}}
                 ;
-and_test        : not_test (M+="and"! not_test)* {if(!$M.missing()){$$=$^(AND, $*);}}
+and_test        : not_test (M+="and" not_test)* {if(!$M.missing()){$$=make_binop($*);}}
                 ;
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
@@ -308,16 +316,12 @@ comparison      : E1+=expr ("<" E2+=expr)+ {$$=make_compare($*);}
                 | E1+=expr (NIS E2+=expr)+ {$$=$^(COMPARE,$*);}
                 | expr
                 ;
-expr            : expr_arith 
-                ;
-expr_arith      : term (A+="-" term)+ {if(!$A.missing()){$$=make_binop($*);}}
-                | term (A+="+" term)+ {if(!$A.missing()){$$=make_binop($*);}}
-                | term
-                ;
-term            : factor (O+="*" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
-                | factor (O+="/" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
-                | factor (O+="%" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
-                | factor (O+="//" factor)+ {if(!$O.missing()){$$=make_binop($*);}}
+expr            : expr (A+="-" expr)+ {if(!$A.missing()){$$=make_binop($*);}}
+                | expr (A+="+" expr)+ {if(!$A.missing()){$$=make_binop($*);}}
+                | expr (O+="*" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
+                | expr (O+="/" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
+                | expr (O+="%" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
+                | expr (O+="//" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
                 | factor 
                 ;
 factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
@@ -364,10 +368,14 @@ type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing
                                                             }
                 | ID
                 ;
+type_formals_list: "$"!? ID (","! "$"!? ID)* ","!? {$$=make_type_var_list($*);}
+                ;
 typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);}
                 ;
 typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));} 
                 | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
+                | ("$"!? ID) (T+="of"! typelistatom )? 
+                | ("$"!? ID)
                 ;
 subscriptlist   : subscript (","! subscript)* ","!?
                 ;
@@ -413,6 +421,23 @@ check_assign (const List_Ptr& operands)
    return 1; 
 }
 
+static AST_Ptr
+make_type_var_list (const List_Ptr& operands)
+{
+    for( int i = 0; i<operands->size(); i++){
+        operands->at(i) = make_type_var(operands->at(i));
+    }
+    return YYMAKE_TREE (TYPE_FORMALS, operands);
+}
+
+static AST_Ptr
+make_type_var (AST_Ptr& token)
+{
+    AST_Ptr result = AST::make_token (TYPE_VAR, token->text_size (),
+        token->as_chars (), false);
+    result->set_loc (token->loc ());
+    return result;
+}
 static AST_Ptr
 make_id (AST_Ptr& token)
 {
