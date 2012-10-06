@@ -95,14 +95,14 @@ def process(in_file):
             continue
         # first non-whitespace char of the line
         elif whitespace_left and not re.match(r'(\ |\t)', ch):
-            print 'newline: %d' % equivalent_blanks_cur
+            #print 'newline: %d' % equivalent_blanks_cur
             if ch == '\n':
-                print "empty line"
+                #print "empty line"
                 whitespace_left = True
                 write_buffer += '\n'
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
-                print indent_depth_stack
+                #print indent_depth_stack
                 continue
             indent_stack_pre = indent_stack_cur
             whitespace_left = False
@@ -112,7 +112,7 @@ def process(in_file):
                 in_lonely_comment = True
                 #print 'in a lonely comment'
             elif equivalent_blanks_cur < equivalent_blanks_pre:
-                print 'fewer blanks: %s' % ch
+                #print 'fewer blanks: %s' % ch
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
@@ -132,7 +132,7 @@ def process(in_file):
                     indent_depth_stack.pop()
                     #print "detected dedentation: first non"
             elif equivalent_blanks_cur > equivalent_blanks_pre:
-                print "maybe going to indent"
+                #print "maybe going to indent"
                 if no_indent:
                     #print "no indent on"
                     write_buffer += ch
