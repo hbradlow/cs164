@@ -180,14 +180,14 @@ NUMBER  : (('1' .. '9') ('0' .. '9')* | '0'+)
         | (('0' .. '9') ('0' .. '9')* | '0'+)
         | (("0x" | "0X") ('a' .. 'f' | 'A' .. 'F' | '0' .. '9')* | '0'+);
 
-STRING : "\"" ('#' .. '~' | '!' | '\9')* "\"" |  "'" ('"' .. '&' | '(' .. '~' | '!' | '\9')* "'" ; 
+STRING : "\"" (' ' | '#' .. '~' | '!' | '\9')* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9')* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 NIN : "not in";
 NIS : "is not";
-RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9')* "\""; 
+RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9'| ' ')* "\""; 
 LINEBREAK : '\n';
-* : "#" ('#' .. '~' | '!' | '\9')* '\n' ; 
+* : "#" ('#' .. '~' | '!' | '\9'| ' ' )* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( '#' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
@@ -249,7 +249,11 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSIGN, $*);}}
-                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* {if(!$C.missing() && $A.missing()){$$=$^(TUPLE, $*);}else if(!$A.missing() && !$C.missing()){$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
+                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* 
+                                            {if(!$C.missing() && $A.missing())
+                                                {$$=$^(TUPLE, $*);}
+                                            else if(!$A.missing() && !$C.missing())
+                                                {$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
 stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)+ T+=","!?))? 
                                         {if($T.missing())
@@ -355,7 +359,7 @@ power           : power ("**" factor) {$$=make_binop($*);}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
-atom            : "("! (test (T+=","! test)* T+=","!?)? ")"! {if(!$T.missing()){$$=$^(TUPLE, $*);}}
+atom            : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()){$$=$^(TUPLE, $^(EMPTY));}else if(!$T.missing()){$$=$^(TUPLE, $*);}}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
