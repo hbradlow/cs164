@@ -122,6 +122,7 @@ private:
         return this;
     }
     void convert_to_target(){}
+    void convert_child_to_target(){return;} 
 
     string text;
     TOKEN_CONSTRUCTORS(ID_Token, AST_Token);
