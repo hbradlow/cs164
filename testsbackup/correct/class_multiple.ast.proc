@@ -1,0 +1,14 @@
+(module 0
+    (class 1
+        (id 1 Test)
+        (type_formals_list 0)
+        (block 2
+            (assign 2
+                (id 2 a)
+                (string_literal 2 "b"))))
+    (class 3
+        (id 3 Test2)
+        (type_formals_list 0)
+        (block 4
+            (assign 4
+                (id 4 b)

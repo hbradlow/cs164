@@ -1,0 +1,46 @@
+(module 0
+    (for 1
+        (id 1 i)
+        (call 1
+            (id 1 range)
+            (expr_list 1
+                (int_literal 1 10)))
+        (stmt_list 2
+            (for 2
+                (id 2 j)
+                (call 2
+                    (id 2 range)
+                    (expr_list 2
+                        (int_literal 2 10)))
+                (stmt_list 3
+                    (if 3
+                        (compare 3
+                            (id 3 i)
+                            (id 3 ==)
+                            (id 3 j))
+                        (stmt_list 4
+                            (println 4
+                                ()
+                                (expr_list 4
+                                    (id 4 i)
+                                    (id 4 j))))
+                        ())
+                    (if 5
+                        (binop 5
+                            (compare 5
+                                (id 5 i)
+                                (id 5 ==)
+                                (int_literal 5 3))
+                            (id 5 and)
+                            (compare 5
+                                (id 5 j)
+                                (id 5 ==)
+                                (int_literal 5 4)))
+                        (stmt_list 6
+                            (println 6
+                                ()
+                                (expr_list 6
+                                    (id 6 i)
+                                    (id 6 j))))
+                        ()))
+                ()))

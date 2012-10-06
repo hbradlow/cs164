@@ -1,0 +1,17 @@
+(module 0
+    (def 1
+        (id 1 foo)
+        (formals_list 1
+            (id 1 x))
+        ()
+        (block 2
+            (assign 2
+                (id 2 x)
+                (string_literal 2 "hello world"))
+            (println 3
+                ()
+                (expr_list 3
+                    (id 3 x)))))
+    (call 4
+        (id 4 foo)
+        (expr_list 4

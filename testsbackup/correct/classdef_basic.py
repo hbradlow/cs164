@@ -1,0 +1,2 @@
+class rest:
+    a = "b"

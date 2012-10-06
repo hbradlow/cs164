@@ -1,0 +1,11 @@
+(module 0
+    (def 1
+        (id 1 hello)
+        (formals_list 1
+            (id 1 one))
+        ()
+        (block 2
+            (return 2
+                (id 2 one))))
+    (assign 3
+        (id 3 a)

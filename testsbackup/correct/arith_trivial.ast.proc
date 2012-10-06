@@ -1,0 +1,29 @@
+(module 0
+    (binop 1
+        (int_literal 1 10)
+        (id 1 +)
+        (int_literal 1 5))
+    (binop 2
+        (int_literal 2 10)
+        (id 2 +)
+        (binop 2
+            (int_literal 2 7)
+            (id 2 /)
+            (int_literal 2 9)))
+    (assign 3
+        (id 3 a)
+        (binop 3
+            (int_literal 3 7)
+            (id 3 +)
+            (int_literal 3 8)))
+    (assign 4
+        (id 4 b)
+        (binop 4
+            (int_literal 4 3)
+            (id 4 or)
+            (int_literal 4 5)))
+    (assign 5
+        (id 5 a)
+        (binop 5
+            (int_literal 5 10)
+            (id 5 %)

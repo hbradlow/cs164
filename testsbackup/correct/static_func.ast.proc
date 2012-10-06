@@ -1,0 +1,18 @@
+(module 0
+    (def 1
+        (id 1 foo3)
+        (formals_list 1
+            (id 1 bar))
+        (type 1
+            (id 1 list)
+            (type_list 1
+                (type 1
+                    (id 1 int)
+                    (type_list 0))
+                (type 1
+                    (id 1 string)
+                    (type_list 0))))
+        (block 2
+            (return 2
+                (list_display 2
+                    (int_literal 2 3)

@@ -1,0 +1,108 @@
+(module 0
+    (def 1
+        (id 1 foo1)
+        (formals_list 1
+            (id 1 bar))
+        ()
+        (block 2
+            (return 2
+                (id 2 bar))))
+    (def 3
+        (id 3 foo2)
+        (formals_list 3
+            (id 3 bar))
+        (type 3
+            (id 3 int)
+            (type_list 0))
+        (block 4
+            (return 4
+                (int_literal 4 3))))
+    (def 5
+        (id 5 foo3)
+        (formals_list 5
+            (id 5 bar))
+        (type 5
+            (id 5 list)
+            (type_list 5
+                (type 5
+                    (id 5 int)
+                    (type_list 0))
+                (type 5
+                    (id 5 string)
+                    (type_list 0))))
+        (block 6
+            (return 6
+                (list_display 6
+                    (int_literal 6 3)
+                    (string_literal 6 "hello")))))
+    (def 7
+        (id 7 foo4)
+        (formals_list 7
+            (id 7 bar))
+        (type 7
+            (id 7 string)
+            (type_list 0))
+        (block 8
+            (return 8
+                (string_literal 8 "hello"))))
+    (println 9
+        ()
+        (expr_list 9
+            (call 9
+                (id 9 foo1)
+                (expr_list 9
+                    (int_literal 9 6)))))
+    (println 10
+        ()
+        (expr_list 10
+            (call 10
+                (id 10 foo2)
+                (expr_list 10
+                    (int_literal 10 6)))))
+    (println 11
+        ()
+        (expr_list 11
+            (call 11
+                (id 11 foo3)
+                (expr_list 11
+                    (int_literal 11 6)))))
+    (println 12
+        ()
+        (expr_list 12
+            (call 12
+                (id 12 foo4)
+                (expr_list 12
+                    (int_literal 12 6)))))
+    (assign 13
+        (typed_id 13
+            (id 13 a)
+            (type 13
+                (id 13 int)
+                (type_list 0)))
+        (call 13
+            (id 13 foo1)
+            (expr_list 13
+                (int_literal 13 9))))
+    (println 14
+        ()
+        (expr_list 14
+            (id 14 a)))
+    (assign 15
+        (typed_id 15
+            (id 15 b)
+            (type 15
+                (id 15 list)
+                (type_list 15
+                    (type 15
+                        (id 15 int)
+                        (type_list 0))
+                    (type 15
+                        (id 15 string)
+                        (type_list 0)))))
+        (call 15
+            (id 15 foo3)
+            (expr_list 15
+                (int_literal 15 6))))
+    (println 16
+        ()
+        (expr_list 16

@@ -1,0 +1,17 @@
+(module 0
+    (unop 1
+        (id 1 -)
+        (unop 1
+            (id 1 -)
+            (unop 1
+                (id 1 -)
+                (unop 1
+                    (id 1 -)
+                    (unop 1
+                        (id 1 -)
+                        (unop 1
+                            (id 1 -)
+                            (unop 1
+                                (id 1 -)
+                                (unop 1
+                                    (id 1 -)

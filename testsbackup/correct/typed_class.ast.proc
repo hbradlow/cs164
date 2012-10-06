@@ -1,0 +1,26 @@
+(module 0
+    (class 1
+        (id 1 Foo)
+        (type_formals_list 1
+            (type_var 1 int)
+            (type_var 1 List))
+        (block 2
+            (def 2
+                (id 2 do)
+                (formals_list 2
+                    (id 2 self))
+                ()
+                (block 3
+                    (println 3
+                        ()
+                        (expr_list 3
+                            (string_literal 3 "hello")))))))
+    (assign 4
+        (id 4 f)
+        (call 4
+            (id 4 Foo)
+            (expr_list 0)))
+    (call 5
+        (attributeref 5
+            (id 5 f)
+            (id 5 do))
