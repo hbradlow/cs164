@@ -109,7 +109,8 @@ def process(in_file):
             if ch == '#':
                 write_buffer = ''
                 in_lonely_comment = True
-            elif equivalent_blanks_cur < equivalent_blanks_pre:
+                #print 'in a lonely comment'
+            elif equivalent_blanks_cur < indent_depth_stack[-1]:
                 #print 'fewer blanks: %s' % ch
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
@@ -131,8 +132,6 @@ def process(in_file):
                 if no_indent:
                     write_buffer += ch
                     continue
-                #if write_buffer == '':
-                #    continue
                 write_buffer += ' %s ' % INDENT
                 indent_depth_stack.append(equivalent_blanks_cur)
                 equivalent_blanks_pre = equivalent_blanks_cur
@@ -153,6 +152,7 @@ def process(in_file):
         elif whitespace_left: 
             if balanced and ch == ' ':
                 equivalent_blanks_cur += 1
+                #print equivalent_blanks_cur
                 continue
             else:
                 if balanced:
