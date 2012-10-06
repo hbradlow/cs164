@@ -13,7 +13,7 @@
 #
 
 APYC = $(shell echo `pwd`/../apyc)
-
+PY_PRE_HOME := $(APYC)
 CXXFLAGS = -g -Wall
 
 # List of normal C++ sources.  Add any new ones here
