@@ -1,5 +1,5 @@
 import re
-patt =     re.compile(r'\(list_display(\s\d+((\n\s+\(typed_id\s\d+\s\w+\))*)\)\n\s+(\())') 
+patt =     re.compile(r'\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\())') 
 bad_patt = re.compile(r'\(assign\s\d+\n\s+\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*\n\s+\((?!id)))')
 bad_patt1 = re.compile(r'\(assign\s\d+\n\s+\(list_display(\s\d+((\n\s+\(id\s\d+\s\w+\))*\n\s+\((?!typed_id)))')
 patt1 =    re.compile(r'\(tuple(\s\d+((\n\s+\(id\s\d+\s\w+\))*)\)\n\s+(\())') 
