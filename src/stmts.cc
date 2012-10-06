@@ -42,7 +42,7 @@ NODE_FACTORY (Println_AST, PRINTLN);
 
 class Tuple_AST : public AST_Tree {
 private:
-    bool isTarget = 0;
+    int isTarget = 0;
     void convert_to_target()
     {
         isTarget = 1;

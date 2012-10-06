@@ -26,7 +26,6 @@ YYDEFINE_LIST_TYPE(List_Ptr, AST_Ptr);
 /** The base type of all nodes in the abstract syntax tree. */
 class AST : public CommonNode<AST, AST_Token, AST_Tree> {
 public:
-    virtual bool isTarget;
     virtual int lineNumber ();
 
     /** Print my representation as an AST on OUT.  Use INDENT as the
