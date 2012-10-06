@@ -1,0 +1,4 @@
+  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\class_error1.py", line 1
+    class:
+         ^
+SyntaxError: invalid syntax

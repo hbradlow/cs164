@@ -1,0 +1,13 @@
+print "hello\\world"
+print 'hello\'world'
+print "hello\"world"
+print "hello\aworld"
+print "hello\bworld"
+print "hello\fworld"
+print "hello\nworld"
+print "hello\rworld"
+print "hello\tworld"
+print "hello\vworld"
+print "hello\040world"
+print "hello\x20world"
+print "invalid escaped \z\q"

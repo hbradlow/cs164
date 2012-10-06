@@ -1,0 +1,3 @@
+@A
+def f():
+    pass

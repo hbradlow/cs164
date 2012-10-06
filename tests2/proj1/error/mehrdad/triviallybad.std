@@ -1,0 +1,4 @@
+  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\triviallybad.py", line 1
+    pass
+    ^
+IndentationError: unexpected indent

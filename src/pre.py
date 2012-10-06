@@ -12,6 +12,8 @@ def process(in_file):
     single_quote_toggle = False  
     double_quote_toggle = False
     indent_stack = 0
+    # depths of all the indents
+    indent_depth_stack = [0]
     write_buffer = ""
     single_quote_stack = 0
     in_comment = False
@@ -31,6 +33,7 @@ def process(in_file):
                     equivalent_blanks_cur = 0
             elif equivalent_blanks_cur > equivalent_blanks_pre:
                 write_buffer += ' %s ' % INDENT
+                indent_depth_stack.append(equivalent_blanks_cur)
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
                 indent_stack += 1
@@ -40,6 +43,11 @@ def process(in_file):
             else:
                 #print "detected dedentation"
                 write_buffer += ' %s ' % DEDENT
+                indent_depth_stack.pop()
+                while indent_depth_stack[-1] > equivalent_blanks_cur:
+                    indent_depth_stack.pop()
+                    write_buffer += ' %s ' % DEDENT
+                    indent_stack -= 1
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
                 indent_stack -= 1

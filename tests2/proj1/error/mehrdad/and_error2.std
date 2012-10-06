@@ -1,0 +1,4 @@
+  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\and_error2.py", line 1
+    1 and
+        ^
+SyntaxError: invalid syntax

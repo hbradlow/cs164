@@ -1,0 +1,4 @@
+  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\not_error2.py", line 1
+    !
+    ^
+SyntaxError: invalid syntax

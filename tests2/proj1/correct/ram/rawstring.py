@@ -1,0 +1,12 @@
+print r'helloworld'
+#print ur'helloworld'
+print R'helloworld'
+#print UR'helloworld'
+print r"helloworld"
+#print ur"helloworld"
+print R"helloworld"
+#print UR"helloworld"
+print r'\n'[0]
+print r'\n'[1]
+print len(r'\n')
+print len('\n')
