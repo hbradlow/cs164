@@ -329,10 +329,7 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ;
 power           : power ("**" factor) {$$=make_binop($*);}
                 | power "("! L+=arglist ")"! {$$=$^(CALL, $power,$^(EXPR_LIST,$L.list_value()));} 
-                | trailer
-                | atom
-                ;
-trailer         : A+=atom trailer* "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! 
+                | A+=power "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! 
                                 {if(!$S.missing() || !$R.missing())
                                     {if($R.missing())
                                         {$$=$^(SLICING, $A, $S, $^(EMPTY));}
@@ -341,7 +338,8 @@ trailer         : A+=atom trailer* "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"
                                     else 
                                         {$$=$^(SLICING, $A, $S,$R);}}
                                 else{$$=$^(SUBSCRIPT, $A, $C);}}
-                | atom trailer* "."! ID {$$=$^(ATTRIBUTEREF, $*);}
+                | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
+                | atom
                 ;
 atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
@@ -375,12 +373,6 @@ typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));}
                 | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
                 | ("$"!? ID) (T+="of"! typelistatom )? 
                 | ("$"!? ID)
-                ;
-subscriptlist   : subscript (","! subscript)* ","!?
-                ;
-subscript       : "."! "."! "."! 
-                | test
-                | test? ":"! test?  
                 ;
 dictorsetmaker  : kvpair (","! kvpair)+ ","!? 
                 | kvpair ","!?

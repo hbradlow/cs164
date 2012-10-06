@@ -10,4 +10,3 @@
         (string_literal 3 "test"))
     (assign 4
         (id 4 asdfs)
-        (id 4 someid)))

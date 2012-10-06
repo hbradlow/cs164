@@ -1,4 +1,4 @@
 # This is a "\n" comment
 def foo(x):
     print 'foo'
-    # hello
+    #comment

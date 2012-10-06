@@ -1,0 +1,7 @@
+(module 0
+    (assign 1
+        (typed_id 1
+            (id 1 at)
+            (type 1
+                (id 1 test)
+                (type_list 0)))

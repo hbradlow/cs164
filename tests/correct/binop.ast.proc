@@ -1,0 +1,190 @@
+(module 0
+    (assign 1
+        (id 1 a)
+        (int_literal 1 1))
+    (assign 2
+        (id 2 b)
+        (int_literal 2 2))
+    (assign 3
+        (id 3 d)
+        (list_display 3
+            (int_literal 3 3)))
+    (assign 4
+        (id 4 c)
+        (binop 4
+            (id 4 a)
+            (id 4 +)
+            (id 4 b)))
+    (println 5
+        ()
+        (expr_list 5
+            (id 5 c)))
+    (assign 6
+        (id 6 c)
+        (binop 6
+            (id 6 a)
+            (id 6 -)
+            (id 6 b)))
+    (println 7
+        ()
+        (expr_list 7
+            (id 7 c)))
+    (assign 8
+        (id 8 c)
+        (binop 8
+            (id 8 a)
+            (id 8 *)
+            (id 8 b)))
+    (println 9
+        ()
+        (expr_list 9
+            (id 9 c)))
+    (assign 10
+        (id 10 c)
+        (binop 10
+            (id 10 a)
+            (id 10 /)
+            (id 10 b)))
+    (println 11
+        ()
+        (expr_list 11
+            (id 11 c)))
+    (assign 12
+        (id 12 c)
+        (binop 12
+            (id 12 a)
+            (id 12 //)
+            (id 12 b)))
+    (println 13
+        ()
+        (expr_list 13
+            (id 13 c)))
+    (assign 14
+        (id 14 c)
+        (binop 14
+            (id 14 a)
+            (id 14 **)
+            (id 14 b)))
+    (println 15
+        ()
+        (expr_list 15
+            (id 15 c)))
+    (assign 16
+        (id 16 c)
+        (binop 16
+            (id 16 a)
+            (id 16 %)
+            (id 16 b)))
+    (println 17
+        ()
+        (expr_list 17
+            (id 17 c)))
+    (assign 18
+        (id 18 c)
+        (binop 18
+            (id 18 a)
+            (id 18 and)
+            (id 18 b)))
+    (println 19
+        ()
+        (expr_list 19
+            (id 19 c)))
+    (assign 20
+        (id 20 c)
+        (binop 20
+            (id 20 a)
+            (id 20 or)
+            (id 20 b)))
+    (println 21
+        ()
+        (expr_list 21
+            (id 21 c)))
+    (assign 22
+        (id 22 c)
+        (compare 22
+            (id 22 a)
+            (id 22 ==)
+            (id 22 b)))
+    (println 23
+        ()
+        (expr_list 23
+            (id 23 c)))
+    (assign 24
+        (id 24 c)
+        (compare 24
+            (id 24 a)
+            (id 24 <=)
+            (id 24 b)))
+    (println 25
+        ()
+        (expr_list 25
+            (id 25 c)))
+    (assign 26
+        (id 26 c)
+        (compare 26
+            (id 26 a)
+            (id 26 >=)
+            (id 26 b)))
+    (println 27
+        ()
+        (expr_list 27
+            (id 27 c)))
+    (assign 28
+        (id 28 c)
+        (compare 28
+            (id 28 a)
+            (id 28 !=)
+            (id 28 b)))
+    (println 29
+        ()
+        (expr_list 29
+            (id 29 c)))
+    (assign 30
+        (id 30 c)
+        (compare 30
+            (id 30 a)
+            (id 30 <)
+            (id 30 b)))
+    (println 31
+        ()
+        (expr_list 31
+            (id 31 c)))
+    (assign 32
+        (id 32 c)
+        (compare 32
+            (id 32 a)
+            (id 32 in)
+            (id 32 d)))
+    (println 33
+        ()
+        (expr_list 33
+            (id 33 c)))
+    (assign 34
+        (id 34 c)
+        (compare 34
+            (id 34 a)
+            (id 34 notin)
+            (id 34 d)))
+    (println 35
+        ()
+        (expr_list 35
+            (id 35 c)))
+    (assign 36
+        (id 36 c)
+        (compare 36
+            (id 36 a)
+            (id 36 is)
+            (id 36 b)))
+    (println 37
+        ()
+        (expr_list 37
+            (id 37 c)))
+    (assign 38
+        (id 38 c)
+        (compare 38
+            (id 38 a)
+            (id 38 isnot)
+            (id 38 d)))
+    (println 39
+        ()
+        (expr_list 39

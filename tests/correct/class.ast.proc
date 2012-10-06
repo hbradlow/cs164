@@ -1,0 +1,39 @@
+(module 0
+    (class 1
+        (id 1 Foo)
+        (type_formals_list 0)
+        (block 2
+            (assign 2
+                (id 2 a)
+                (int_literal 2 3))
+            (assign 3
+                (id 3 b)
+                (int_literal 3 4))
+            (def 4
+                (id 4 bar)
+                (formals_list 0)
+                ()
+                (block 5
+                    (println 5
+                        ()
+                        (expr_list 5
+                            (string_literal 5 "a")))))))
+    (assign 7
+        (id 7 f)
+        (call 7
+            (id 7 Foo)
+            (expr_list 0)))
+    (println 8
+        ()
+        (expr_list 8
+            (attributeref 8
+                (id 8 f)
+                (id 8 a))))
+    (println 9
+        ()
+        (expr_list 9
+            (attributeref 9
+                (id 9 f)
+                (id 9 b))))
+    (attributeref 10
+        (id 10 f)

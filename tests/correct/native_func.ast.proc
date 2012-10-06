@@ -1,0 +1,20 @@
+(module 0
+    (def 1
+        (id 1 hello1)
+        (formals_list 0)
+        ()
+        (block 1
+            (native 1
+                (string_literal 1 "TEST"))))
+    (def 3
+        (id 3 hello2)
+        (formals_list 0)
+        ()
+        (block 4
+            (native 4
+                (string_literal 4 "test"))))
+    (call 5
+        (id 5 hello1)
+        (expr_list 0))
+    (call 6
+        (id 6 hello2)

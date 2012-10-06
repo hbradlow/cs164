@@ -1,0 +1,81 @@
+(module 0
+    (def 1
+        (id 1 foo)
+        (formals_list 1
+            (id 1 a))
+        (type 1
+            (id 1 int)
+            (type_list 0))
+        (block 2
+            (return 2
+                (int_literal 2 3))))
+    (def 3
+        (id 3 bar)
+        (formals_list 3
+            (id 3 a))
+        (type 3
+            (id 3 list)
+            (type_list 3
+                (type 3
+                    (id 3 int)
+                    (type_list 0))
+                (type 3
+                    (id 3 string)
+                    (type_list 0))))
+        (block 4
+            (return 4
+                (list_display 4
+                    (int_literal 4 3)
+                    (string_literal 4 "hello")))))
+    (def 5
+        (id 5 baz)
+        (formals_list 5
+            (id 5 a))
+        ()
+        (block 6
+            (def 6
+                (id 6 test)
+                (formals_list 6
+                    (id 6 c))
+                ()
+                (block 7
+                    (return 7
+                        (binop 7
+                            (id 7 c)
+                            (id 7 +)
+                            (int_literal 7 4)))))
+            (return 8
+                (id 8 test))))
+    (def 9
+        (id 9 bzz)
+        (formals_list 9
+            (id 9 d))
+        (type 9
+            (id 9 $AType)
+            (type_list 0))
+        (block 10
+            (return 10
+                (id 10 d))))
+    (println 12
+        ()
+        (expr_list 12
+            (call 12
+                (id 12 foo)
+                (expr_list 12
+                    (int_literal 12 1)))))
+    (println 13
+        ()
+        (expr_list 13
+            (call 13
+                (id 13 bar)
+                (expr_list 13
+                    (int_literal 13 1)))))
+    (println 14
+        ()
+        (expr_list 14
+            (call 14
+                (call 14
+                    (id 14 baz)
+                    (expr_list 14
+                        (int_literal 14 1)))
+                (expr_list 14

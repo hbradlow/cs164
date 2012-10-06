@@ -43,4 +43,3 @@
             (binop 6
                 (int_literal 6 3)
                 (id 6 *)
-                (int_literal 6 7)))))

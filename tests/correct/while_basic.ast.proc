@@ -1,0 +1,8 @@
+(module 0
+    (while 1
+        (id 1 True)
+        (stmt_list 2
+            (assign 2
+                (id 2 a)
+                (string_literal 2 "b"))
+            (break 0))

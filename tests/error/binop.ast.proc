@@ -1,0 +1,5 @@
+(module 0
+    (binop 1
+        (id 1 a)
+        (id 1 +)
+        (int_literal 1 5))

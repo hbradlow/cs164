@@ -1,0 +1,39 @@
+(module 0
+    (def 1
+        (id 1 method1)
+        (formals_list 0)
+        ()
+        (block 2
+            (println 2
+                ()
+                (expr_list 2
+                    (string_literal 2 "hello")))))
+    (class 3
+        (id 3 Testing)
+        (type_formals_list 0)
+        (block 4
+            (assign 4
+                (id 4 name)
+                (string_literal 4 ""))
+            (def 5
+                (id 5 name)
+                (formals_list 0)
+                ()
+                (block 6
+                    (assign 6
+                        (id 6 name)
+                        (string_literal 6 "kevin"))
+                    (for 7
+                        (id 7 i)
+                        (id 7 li)
+                        (stmt_list 8
+                            (assign 8
+                                (id 8 name)
+                                (string_literal 8 "henry")))
+                        ())
+                    (while 9
+                        (id 9 True)
+                        (stmt_list 10
+                            (assign 10
+                                (id 10 name)
+                                (string_literal 10 "will")))

@@ -30,4 +30,3 @@
                     (call 5
                         (id 5 baz)
                         (expr_list 5
-                            (int_literal 5 100))))))))

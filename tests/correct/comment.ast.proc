@@ -1,0 +1,10 @@
+(module 0
+    (def 1
+        (id 1 foo)
+        (formals_list 1
+            (id 1 x))
+        ()
+        (block 2
+            (println 2
+                ()
+                (expr_list 2

@@ -1,0 +1,7 @@
+(module 0
+    (assign 1
+        (id 1 a)
+        (int_literal 1 4))
+    (println 2
+        ()
+        (expr_list 2

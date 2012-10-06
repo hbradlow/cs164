@@ -1,0 +1,59 @@
+(module 0
+    (assign 1
+        (id 1 a)
+        (id 1 False))
+    (assign 2
+        (id 2 b)
+        (id 2 True))
+    (def 3
+        (id 3 foo)
+        (formals_list 0)
+        ()
+        (block 4
+            (println 4
+                ()
+                (expr_list 4
+                    (string_literal 4 "Hey")))))
+    (println 5
+        ()
+        (expr_list 5
+            (if_expr 5
+                (id 5 True)
+                (string_literal 5 "hello")
+                (string_literal 5 "bye"))))
+    (println 6
+        ()
+        (expr_list 6
+            (if_expr 6
+                (id 6 a)
+                (string_literal 6 "hello")
+                (string_literal 6 "bye"))))
+    (println 7
+        ()
+        (expr_list 7
+            (if_expr 7
+                (id 7 b)
+                (string_literal 7 "hello")
+                (string_literal 7 "bye"))))
+    (println 8
+        ()
+        (expr_list 8
+            (if_expr 8
+                (id 8 b)
+                (id 8 a)
+                (string_literal 8 "bye"))))
+    (println 9
+        ()
+        (expr_list 9
+            (if_expr 9
+                (id 9 b)
+                (id 9 a)
+                (id 9 b))))
+    (println 10
+        ()
+        (expr_list 10
+            (if_expr 10
+                (id 10 b)
+                (id 10 a)
+                (call 10
+                    (id 10 foo)
