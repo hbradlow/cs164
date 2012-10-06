@@ -58,6 +58,7 @@ If/while/- control
     *  second operand). */
     static AST_Ptr make_binop (const List_Ptr& operands);
     static AST_Ptr make_compare (const List_Ptr& operands);
+    static AST_Ptr make_left_compare (const List_Ptr& operands);
     static AST_Ptr make_type_var_list (const List_Ptr& operands);
 
     /** Return a new ID node, where the text of the identifier is given by
@@ -113,7 +114,7 @@ If/while/- control
  * this conversion, converting tokens that are supposed to represent
  * node operators to printable strings.
  */
-
+%token OP
 %token PLUS "@+"
 %token NOT "@not"
 %token LT "@<"
@@ -190,6 +191,7 @@ RAWSTRING : "r\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "r'" (' '
 LINEBREAK : '\n';
 * : "#" ('#' .. '~' | '!' | '\9'| ' ' )* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( '"' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
+OP : "<" | ">" | "==" | "!=" | "<=" | ">=" | "not in" | "is" | "is not" | "in" ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
@@ -331,16 +333,7 @@ and_test        : not_test (M+="and" not_test)* {if(!$M.missing()){$$=make_binop
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
                 ;
-comparison      : E1+=comparison ("<" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison (">" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison ("==" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison ("<=" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison (">=" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison ("!=" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison ("in" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison (NIN E2+=comparison )+ {$$=$^(COMPARE,$*);}
-                | E1+=comparison ("is" E2+=comparison )+ {$$=make_compare($*);}
-                | E1+=comparison (NIS E2+=comparison )+ {$$=$^(COMPARE,$*);}
+comparison      : comparison OP comparison {$$=make_compare($*);}
                 | expr
                 ;
 expr            : expr (A+="-" expr) {if(!$A.missing()){$$=make_binop($*);}}
@@ -434,6 +427,13 @@ make_compare (const List_Ptr& operands)
     return YYMAKE_TREE (COMPARE, operands->at (0), make_id (operands->at (1)),
     operands->at (2));
 }
+static AST_Ptr
+make_left_compare (const List_Ptr& operands)
+{
+    return YYMAKE_TREE (LCOMPARE, operands->at (0), make_id (operands->at (1)),
+    operands->at (2));
+}
+
 
 static AST_Ptr
 make_binop (const List_Ptr& operands)
