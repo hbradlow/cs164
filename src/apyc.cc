@@ -59,13 +59,15 @@ compile (const string& input, const string& output)
     }
     file_name = input;
     std::string command = std::string("python pre.py ") + std::string(input.c_str());
-    int ret = system(command.c_str());
-    if(ret != 0){
+    FILE* pipe = popen(command.c_str(), "r");
+    /*int ret = system(command.c_str());*/
+    if(!pipe){
         fprintf(stderr, "Preprocessing error, most likely bad indentation.");
         err_count += 1;
     }
-    std::string filename = std::string(input.c_str()) + std::string(".processed");
-    FILE* inFile = fopen (filename.c_str(), "r");
+    //std::string filename = std::string(input.c_str()) + std::string(".processed");
+    //FILE* inFile = fopen (filename.c_str(), "r");
+    FILE* inFile = pipe;
     if (inFile == NULL) {
         error_no_file ("Could not open %s", input.c_str ());
         return; 
