@@ -32,7 +32,9 @@ If/while/- control
 %left '='
 %left '+' '-'
 %left '*' '/' '%' "//"
+%left "and"
 %right "**"
+%right "or"
 
 %{
   #include <string>
@@ -182,7 +184,7 @@ NUMBER  : (('1' .. '9') ('0' .. '9')* | '0'+)
 
 STRING : "\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9' | "\\" "'")* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-TYPE_ID : ("::" | "::$") (" " | "\t")* ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
+TYPE_ID : ("::") (" ")* ("$")? (" " | "\t")* ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
 
 NIN : "not" (" " | "\t")* "in";
 NIS : "is" (" " | "\t")* "not";
@@ -256,15 +258,15 @@ stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSI
                                             else if(!$A.missing() && (!$COMMA.missing() || !$C.missing()))
                                                 {$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
-stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)* T+=","!?))? 
+stmt_print      : "print"! ((OTHER+=test (","! OTHER+=test)* T+=","!?) | (">>"! F+=test (","! OTHER+=test)* T+=","!?))? 
                                         {if($T.missing())
                                             {if ($F.missing())
                                                 {$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}
-                                                else{$$=$^(PRINTLN, $F, $^(EXPR_LIST, $*));}}
+                                                else{$$=$^(PRINTLN, $F, $^(EXPR_LIST, $OTHER.list_value()));}}
                                         else{
                                                 if ($F.missing())
                                                     {$$=$^(PRINT, $^(EMPTY), $^(EXPR_LIST, $*));}
-                                                else{$$=$^(PRINT, $F, $^(EXPR_LIST, $*));}}}
+                                                else{$$=$^(PRINT, $F, $^(EXPR_LIST, $OTHER.list_value()));}}}
 
 
                 ;
@@ -305,7 +307,7 @@ stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! EE+=expr (COMMA2+=","! EE+=expr)* COMMA2+=","? ","!? "in"! TE+=test (COMMA+=","! TE+=test)* COMMA+=","!? ":"! (FB+=flowblock | FB+=stmt_simple) T+=stmt_else? 
+stmt_for        : "for"! ("("! EE+=expr (COMMA2+=","! EE+=expr)* ")"! | EE+=expr (COMMA2+=","! EE+=expr)*) COMMA2+=","? ","!? "in"! TE+=test (COMMA+=","! TE+=test)* COMMA+=","!? ":"! (FB+=flowblock | FB+=stmt_simple) T+=stmt_else? 
                         {if($T.missing()){
                             if($COMMA.missing())
                                 if($COMMA2.missing())
@@ -483,7 +485,7 @@ make_binop (const List_Ptr& operands)
 /* creates a tar_var_list node */
 static AST_Ptr
 make_type_var_list (const List_Ptr& operands)
-
+{
     for( int i = 0; i<operands->size(); i++){
         operands->at(i) = make_type_var(operands->at(i));
     }
