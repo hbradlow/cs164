@@ -23,7 +23,7 @@ def process(in_file):
     paren_stack = 0
     brace_stack = 0
     curly_stack = 0
-    single_quote_stack = 0
+    line_single_quote_stack = 0
     double_quote_stack = 0
     
     slash_count = 0
@@ -36,7 +36,7 @@ def process(in_file):
     # depths of all the indents
     indent_depth_stack = [0]
     write_buffer = ""
-    single_quote_stack = 0
+    line_single_quote_stack = 0
     in_lonely_comment = False
     in_comment = False
     balanced = False
@@ -56,7 +56,7 @@ def process(in_file):
     line_buffer = ''
     for ch in input_text:
         balanced = paren_stack == 0 and curly_stack == 0 and brace_stack == 0
-        quote_balanced = single_quote_stack 
+        quote_balanced = line_single_quote_stack 
         if in_lonely_comment:
             if ch == '\n' and not single_quote_toggle and not double_quote_toggle:
                 result_file += '\n'
@@ -80,7 +80,7 @@ def process(in_file):
             elif ch == '"':
                 double_quote_stack += 1
             elif ch == "'":
-                single_quote_stack += 1
+                line_single_quote_stack += 1
 
         if in_comment:
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
