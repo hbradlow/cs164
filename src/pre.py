@@ -3,13 +3,21 @@ import re
 INDENT = '@71684aa3418631a412d6105e160131b9'
 DEDENT = '@d2b3009662c463c2ab96d1a73872c6f1'
 indent_len = len(INDENT)
+#remove all lonely comments
+def preprocess(infile):
+    with open(infile, 'r') as f:
+        f = f.read()
+        lonely_patt = r'#.*$'
+        f = re.sub(lonely_patt, lambda m: '#comment\n', f)
+        return f
 
 def process(in_file):
     result_file = ""
     equivalent_blanks_pre = 0
     equivalent_blanks_cur = 0
     origin_index = 0
-    input_text = open(in_file, 'r').read()
+    input_text = preprocess(in_file)
+    #print input_text
 
     paren_stack = 0
     brace_stack = 0
@@ -28,6 +36,7 @@ def process(in_file):
     single_quote_stack = 0
     in_lonely_comment = False
     in_comment = False
+    balanced = False
 
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
@@ -35,13 +44,17 @@ def process(in_file):
     triple_patt = r'(\"\"\"|\'\'\')(.*?)\1\s*(\"\"\"|\'\'\')(.*?)\3'
     space_sep_str_patt = r'(\'|\")(.*?)\1\s*(\"|\')(.*?)\3'
     multiline_patt = r'(.*\\\n(\s*.*?\s*\\\n)*(\s*.*\s*\n))'
-    comment_buffer = ''
+
+    # build up multiline statements in here
+    line_buffer = ''
     for ch in input_text:
+        balanced = paren_stack == 0 and curly_stack == 0 and brace_stack == 0
         if in_lonely_comment:
             if ch == '\n' and not single_quote_toggle and not double_quote_toggle:
                 result_file += '\n'
                 write_buffer = ''
                 in_lonely_comment = False
+                in_comment = False
                 continue
         if not in_comment and not in_lonely_comment:
             if ch == '(':
@@ -57,16 +70,14 @@ def process(in_file):
             elif ch == '}':
                 curly_stack -= 1
         if in_comment:
-            comment_buffer += ch
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
-                write_buffer += ch
+                if balanced:
+                    write_buffer += ch
                 result_file += write_buffer
                 write_buffer = ''
                 in_comment = False
                 in_lonely_comment = False
                 whitespace_left = True
-                #print comment_buffer
-                comment_buffer = ''
                 continue
             elif ch == '"':
                 if not single_quote_toggle:
@@ -79,10 +90,13 @@ def process(in_file):
             continue
         # first non-whitespace char of the line
         elif whitespace_left and not re.match(r'(\ |\t)', ch):
+            #print 'newline: %d' % equivalent_blanks_cur
             if ch == '\n':
                 #print "empty line"
                 whitespace_left = True
                 write_buffer += '\n'
+                equivalent_blanks_pre = equivalent_blanks_cur
+                equivalent_blanks_cur = 0
                 #print indent_depth_stack
                 continue
             indent_stack_pre = indent_stack_cur
@@ -93,12 +107,12 @@ def process(in_file):
                 in_lonely_comment = True
                 #print 'in a lonely comment'
             elif equivalent_blanks_cur < equivalent_blanks_pre:
-                #print 'fewer blanks'
+                #print 'fewer blanks: %s' % ch
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
                     indent_stack_cur -= 1
-                    print 'wrote a dedent'
+                    #print 'wrote a dedent'
                 result_file += write_buffer
                 write_buffer = ''
                 equivalent_blanks_pre = indent_depth_stack[-1]
@@ -158,7 +172,6 @@ def process(in_file):
         # comment at end of line
         elif ch == '#':
             in_comment = True
-
         # end of line
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
             if len(write_buffer) > 0 and write_buffer[-1] == '\\':
