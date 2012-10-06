@@ -60,7 +60,7 @@ compile (const string& input, const string& output)
     std::string command = std::string("python pre.py ") + std::string(input.c_str());
     if(system(command.c_str()))
     {
-        error("Preprocessing:", "Could not open %s", input.c_str ());
+        error("", "Preprocessing error");
         exit(-1);
     }
     std::string filename = std::string(input.c_str()) + std::string(".processed");
