@@ -100,10 +100,10 @@ def process(in_file):
         # first non-whitespace char of the line
         elif whitespace_left and not re.match(r'(\ |\t)', ch):
             #print 'newline: %d' % equivalent_blanks_cur
-            print "equivalent_blanks_cur: %d" % equivalent_blanks_cur
-            print "equivalent_blanks_pre: %d" % equivalent_blanks_pre
+            #print "equivalent_blanks_cur: %d" % equivalent_blanks_cur
+            #print "equivalent_blanks_pre: %d" % equivalent_blanks_pre
             if ch == '\n':
-                print "empty line"
+                #print "empty line"
                 whitespace_left = True
                 write_buffer += '\n'
                 equivalent_blanks_pre = equivalent_blanks_cur
@@ -119,8 +119,8 @@ def process(in_file):
                 #print 'in a lonely comment'
             elif equivalent_blanks_cur < indent_depth_stack[-1]:
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
-                    print indent_depth_stack, equivalent_blanks_cur
-                    print 'wrote a dedent' + '\n'
+                    #print indent_depth_stack, equivalent_blanks_cur
+                    #print 'wrote a dedent' + '\n'
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
                     indent_stack_cur -= 1
@@ -132,20 +132,20 @@ def process(in_file):
             # No indentation on current line
             elif equivalent_blanks_cur == 0:
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
-                    print indent_depth_stack, equivalent_blanks_cur
-                    print 'wrote a dedent' + '\n'
+                    #print indent_depth_stack, equivalent_blanks_cur
+                    #print 'wrote a dedent' + '\n'
                     write_buffer += ' %s ' % DEDENT
                     indent_stack_cur -= 1
                     indent_depth_stack.pop()
                     #print "detected dedentation: first non"
             elif equivalent_blanks_cur > equivalent_blanks_pre:
                 if no_indent:
-                    print "no indent on"
+                    #print "no indent on"
                     write_buffer += ch
                     continue
                 write_buffer += ' %s ' % INDENT
-                print indent_depth_stack, equivalent_blanks_cur
-                print 'wrote an indent'
+                #print indent_depth_stack, equivalent_blanks_cur
+                #print 'wrote an indent'
                 indent_depth_stack.append(equivalent_blanks_cur)
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
@@ -154,7 +154,7 @@ def process(in_file):
             elif equivalent_blanks_pre == equivalent_blanks_cur:
                 equivalent_blanks_cur = 0
             else:
-                print "detected dedentation"
+                #print "detected dedentation"
                 write_buffer += ' %s ' % DEDENT
                 indent_depth_stack.pop()
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
