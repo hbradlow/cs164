@@ -121,16 +121,6 @@ NODE_FACTORY(Assignment_AST,ASSIGN);
 
 class Typed_Id_AST : public AST_Tree {
 private:
-    void print (ostream& out, int indent) {
-        string nm = "assignment";
-  
-        out << "(" << nm << " " << lineNumber ();
-        for_each_child (c, this) {
-            out << endl << setw (indent + 4) << "";
-            c->print (out, indent + 4);
-        } end_for;
-        out << ")";
-    }
     void convert_to_target(){return;} 
     NODE_CONSTRUCTORS(Typed_Id_AST, AST_Tree);
 };
