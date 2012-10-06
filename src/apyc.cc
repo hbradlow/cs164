@@ -57,7 +57,7 @@ compile (const string& input, const string& output)
         return; 
     }
     file_name = input;
-    std::string command = std::string("python pre.py ") + std::string(input.c_str());
+    std::string command = std::string("python ./pre.py ") + std::string(input.c_str());
     system(command.c_str());
     std::string filename = std::string(input.c_str()) + std::string(".processed");
     FILE* inFile = fopen (filename.c_str(), "r");
@@ -68,14 +68,6 @@ compile (const string& input, const string& output)
 
     parse (inFile, input);
     fclose (inFile);
-    fflush(stdout);
-
-//    command = std::string("python post.py ") + std::string(output.c_str());
-
-//    system(command.c_str());
-
-    command = std::string("rm ") + filename;
-//    system(command.c_str());
     fclose (stdout);
 }
 
