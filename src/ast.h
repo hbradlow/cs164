@@ -39,6 +39,7 @@ public:
     virtual Type_Ptr as_type ();
 
     virtual void convert_to_target();
+    virtual void convert_child_to_target();
 protected:
 
 };

@@ -5,6 +5,7 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
+#include <cstdlib>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -24,8 +25,19 @@ AST::as_type ()
 void
 AST::convert_to_target()
 {
-//    error(0, "Can not convert to target list");
+    int ln = lineNumber();
+    error("0", "Can not convert to target list");
+    exit(1);
 }
+
+void
+AST::convert_child_to_target()
+{
+    int ln = lineNumber();
+    error("0", "Can not convert to target list");
+    exit(1);
+}
+
 
 void
 AST_Tree::print (ostream& out, int indent)
