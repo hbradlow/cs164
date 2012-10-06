@@ -222,7 +222,7 @@ functype        : TID+=TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing())
                                                                 $$=$^(TYPE,$TID,$^(TYPE_LIST));
                                                             }
                                                             }
-                | "::"! "("! typelist ")"! "->"! S+=typelistatom {$$=$^(FUNC_TYPE,$S,$typelist);}
+                | "::"! "("! typelist? ")"! "->"! S+=typelistatom {if($typelist.missing()){$$=$^(FUNC_TYPE,$S,$^(TYPE_LIST));}else{$$=$^(FUNC_TYPE,$S,$typelist);}}
                 ;
 arglist         : argument (","! argument)* ","!? 
                 | /*empty*/
@@ -389,7 +389,7 @@ type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"! | T+="of"! ATOM+=
                                                                 $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$^(TYPE_LIST)));
                                                             }
                                                             }
-                | ID "::"! "("! typelist ")"! "->"! S+=typelistatom {$$=$^(TYPED_ID,$ID,$^(FUNC_TYPE,$S,$typelist));}
+                | ID "::"! "("! typelist? ")"! "->"! ( S+=typelistatom ) {if($typelist.missing()){$$=$^(TYPED_ID,$ID,$^(FUNC_TYPE,$S,$^(TYPE_LIST)));}else{$$=$^(TYPED_ID,$ID,$^(FUNC_TYPE,$S,$typelist));}}
                 | ID 
                 ;
 type_formals_list: "$"!? ID (","! "$"!? ID)* ","!? {$$=make_type_var_list($*);}
@@ -399,7 +399,7 @@ typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);
 typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));} 
                 | ("$"!? ID) (T+="of"! "["! typelist "]"!)? {$$=$^(TYPE,$*);}
                 | ("$"!? ID) (T+="of"! typelistatom )?  {$$=$^(TYPE,$ID,$^(TYPE_LIST,$typelistatom));}
-                | "("! typelist ")"! "->"! ("("! S+=typelistatom ")"! | S+=typelistatom ) {$$=$^(FUNC_TYPE,$S,$typelist);}
+                | "("! typelist? ")"! "->"! ("("! S+=typelistatom ")"! | S+=typelistatom ) {if($typelist.missing()){$$=$^(FUNC_TYPE,$S,$^(TYPE_LIST));}else{$$=$^(FUNC_TYPE,$S,$typelist);}}
                 ;
 dictorsetmaker  : kvpair (","! kvpair)+ ","!? 
                 | kvpair ","!?
