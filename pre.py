@@ -95,7 +95,7 @@ def process(in_file):
         elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
             write_buffer += ch
             if in_lonely_comment:
-                print 'end of comment'
+                #print 'end of comment'
                 write_buffer = "\n"
             result_file += write_buffer 
             write_buffer = ""
