@@ -1,5 +1,3 @@
-# Preprocess the given file by inserting INDENT and DEDENT tokens into 
-# the text. 
 import re
 
 INDENT = '@71684aa3418631a412d6105e160131b9'
