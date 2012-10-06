@@ -184,9 +184,9 @@ STRING : "\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "'" (' ' | '"
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
 
-NIN : "not in";
-NIS : "is not";
-RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9'| ' ')* "\""; 
+NIN : "not" (" " | "\t")* "in";
+NIS : "is" (" " | "\t")* "not";
+RAWSTRING : "r\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "r'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9' | "\\" "'")* "'" ; 
 LINEBREAK : '\n';
 * : "#" ('#' .. '~' | '!' | '\9'| ' ' )* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( '"' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
@@ -239,7 +239,7 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";"! stmt_small)* ";"!? (LINEBREAK!)+
+stmt_simple     : stmt_small (";"! stmt_small)* ";"!? (LINEBREAK!)+ {$$=$^(STMT_LIST, $*);}
                 ;
 stmt_small      : stmt_expr 
                 | stmt_print
