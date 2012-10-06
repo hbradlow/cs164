@@ -42,7 +42,7 @@ NODE_FACTORY (Println_AST, PRINTLN);
 
 class Tuple_AST : public AST_Tree {
 private:
-    bool isTarget = 0;
+    bool isTarget;
     void convert_to_target()
     {
         isTarget = 1;
@@ -51,6 +51,10 @@ private:
         } end_for;
 
     }
+   Tuple_AST* post_make(){
+       isTarget = 0;
+       return this;
+   }
     void print (ostream& out, int indent) {
         string nm = "tuple";
         if (isTarget)
@@ -70,7 +74,7 @@ NODE_FACTORY(Tuple_AST, TUPLE);
 
 class List_AST : public AST_Tree {
 private:
-    bool isTarget = 0;
+    bool isTarget;
     void convert_to_target()
     {
         isTarget = 1;
@@ -79,6 +83,10 @@ private:
         } end_for;
 
     }
+   List_AST* post_make(){
+       isTarget = 0;
+       return this;
+   }
     void print (ostream& out, int indent) {
         string nm = "list_display";
         if (isTarget)

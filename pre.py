@@ -17,7 +17,6 @@ def process(in_file):
     equivalent_blanks_cur = 0
     origin_index = 0
     input_text = preprocess(in_file)
-    #print input_text
 
     # balance
     paren_stack = 0
@@ -121,7 +120,6 @@ def process(in_file):
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
                     indent_stack_cur -= 1
-                    #print 'wrote a dedent'
                 result_file += write_buffer
                 write_buffer = ''
                 equivalent_blanks_pre = indent_depth_stack[-1]
@@ -134,11 +132,8 @@ def process(in_file):
                     equivalent_blanks_pre = 0
                     equivalent_blanks_cur = 0
                     indent_depth_stack.pop()
-                    #print "detected dedentation: first non"
             elif equivalent_blanks_cur > equivalent_blanks_pre:
-                #print "maybe going to indent"
                 if no_indent:
-                    #print "no indent on"
                     write_buffer += ch
                     continue
                 write_buffer += ' %s ' % INDENT
@@ -146,11 +141,9 @@ def process(in_file):
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
                 indent_stack_cur += 1
-                #print "detected indentation"
             elif equivalent_blanks_pre == equivalent_blanks_cur:
                 equivalent_blanks_cur = 0
             else:
-                #print "detected dedentation"
                 write_buffer += ' %s ' % DEDENT
                 indent_depth_stack.pop()
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
@@ -199,7 +192,6 @@ def process(in_file):
             #print write_buffer
             #print '----'
             if in_lonely_comment:
-                #print 'end of comment'
                 write_buffer = "\n"
             result_file += write_buffer 
             write_buffer = ""

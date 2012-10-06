@@ -58,7 +58,7 @@ If/while/- control
     *  second operand). */
     static AST_Ptr make_binop (const List_Ptr& operands);
     static AST_Ptr make_compare (const List_Ptr& operands);
-    static AST_Ptr make_left_compare (const List_Ptr& operands);
+    static AST_Ptr make_lcompare (const List_Ptr& operands);
     static AST_Ptr make_type_var_list (const List_Ptr& operands);
 
     /** Return a new ID node, where the text of the identifier is given by
@@ -114,7 +114,7 @@ If/while/- control
  * this conversion, converting tokens that are supposed to represent
  * node operators to printable strings.
  */
-%token OP
+
 %token PLUS "@+"
 %token NOT "@not"
 %token LT "@<"
@@ -183,15 +183,14 @@ NUMBER  : (('1' .. '9') ('0' .. '9')* | '0'+)
 
 STRING : "\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9' | "\\" "'")* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
+TYPE_ID : ("::" | "::$") (" " | "\t")* ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
 
-NIN : "not in";
-NIS : "is not";
-RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9'| ' ')* "\""; 
+NIN : "not" (" " | "\t")* "in";
+NIS : "is" (" " | "\t")* "not";
+RAWSTRING : "r\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "r'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9' | "\\" "'")* "'" ; 
 LINEBREAK : '\n';
 * : "#" ('#' .. '~' | '!' | '\9'| ' ' )* '\n' ; 
 MULTILINE_COMMENT : "\"\"\"" ( '"' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
-OP : "<" | ">" | "==" | "!=" | "<=" | ">=" | "not in" | "is" | "is not" | "in" ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
@@ -241,7 +240,7 @@ stmtnoclass     : stmt_simple
 stmtnodef       : stmt_simple
                 | stmtcompnodef
                 ;
-stmt_simple     : stmt_small (";"! stmt_small)* ";"!? (LINEBREAK!)+
+stmt_simple     : stmt_small (";"! stmt_small)* ";"!? (LINEBREAK!)+ {$$=$^(STMT_LIST, $*);}
                 ;
 stmt_small      : stmt_expr 
                 | stmt_print
@@ -252,13 +251,13 @@ stmt_native     : "native"! M+=STRING+ {$$=$^(NATIVE, $M);}
                 | LINEBREAK+ IDENT "native"! M+=STRING+ LINEBREAK* DEDENT LINEBREAK* {$$=$^(NATIVE, $M);}
                 ;
 stmt_expr       : factor ("="! stmt_expr)+ {if(!$stmt_expr.missing()){$$=$^(ASSIGN, $*);}}
-                | Z+=test (","! C+=test)* C+=","!?  (A+="="! B+=stmt_expr)* 
-                                            {if(!$C.missing() && $A.missing())
+                | Z+=test (","! C+=test)* COMMA+=","!?  (A+="="! B+=stmt_expr)* 
+                                            {if((!$COMMA.missing() || !$C.missing()) && $A.missing())
                                                 {$$=$^(TUPLE, $*);}
-                                            else if(!$A.missing() && !$C.missing())
+                                            else if(!$A.missing() && (!$COMMA.missing() || !$C.missing()))
                                                 {$$=$^(ASSIGN, $^(LIST, $Z, $C), $B);}}
                 ;
-stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)+ T+=","!?))? 
+stmt_print      : "print"! ((test (","! test)* T+=","!?) | (">>"! F+=test (","! test)* T+=","!?))? 
                                         {if($T.missing())
                                             {if ($F.missing())
                                                 {$$=$^(PRINTLN, $^(EMPTY), $^(EXPR_LIST, $*));}
@@ -307,7 +306,30 @@ stmt_else       : "else"! ":"! (flowblock | stmt_simple)
                 ;
 stmt_while      : "while"! test ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(WHILE, $*, $^(EMPTY));}else{$$=$^(WHILE, $*);}}
                 ;
-stmt_for        : "for"! expr ","!? "in"! test (","! test)* ","!? ":"! (flowblock | stmt_simple) T+=stmt_else? {if($T.missing()){$$=$^(FOR, $*, $^(EMPTY));}else{$$=$^(FOR, $*);}}
+stmt_for        : "for"! EE+=expr (COMMA2+=","! EE+=expr)* COMMA2+=","? ","!? "in"! TE+=test (COMMA+=","! TE+=test)* COMMA+=","!? ":"! (FB+=flowblock | FB+=stmt_simple) T+=stmt_else? 
+                        {if($T.missing()){
+                            if($COMMA.missing())
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $*, $^(EMPTY));
+                                else
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()),$TE,$FB, $^(EMPTY));
+                            else
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $EE, $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
+                                else
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $^(EMPTY));
+                        }else{
+                            if($COMMA.missing())
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $*);
+                                else
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()),$TE,$FB, $T);
+                            else
+                                if($COMMA2.missing())
+                                    $$=$^(FOR, $EE, $^(TUPLE,$TE.list_value()), $FB, $T);
+                                else
+                                    $$=$^(FOR, $^(TARGET_LIST,$EE.list_value()), $^(TUPLE,$TE.list_value()), $FB, $T);
+                        }}
                 ;
 codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 | LINEBREAK+ IDENT M+=stmtnoclass+ LINEBREAK* DEDENT (LINEBREAK!)* {$$=$^(BLOCK, $M);}
@@ -323,7 +345,28 @@ and_test        : not_test (M+="and" not_test)* {if(!$M.missing()){$$=make_binop
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
                 ;
-comparison      : comparison OP comparison {$$=make_compare($*);}
+comparison      : E1+=left_compare ("<" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare (">" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare ("==" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare ("<=" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare (">=" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare ("!=" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare ("in" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare (NIN E2+=expr ) {$$=$^(COMPARE,$*);}
+                | E1+=left_compare ("is" E2+=expr ) {$$=make_compare($*);}
+                | E1+=left_compare (NIS E2+=expr ) {$$=$^(COMPARE,$*);}
+                | expr
+                ;
+left_compare    : E1+=left_compare ("<" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare (">" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare ("==" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare ("<=" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare (">=" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare ("!=" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare ("in" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare (NIN E2+=expr ) {$$=$^(LCOMPARE,$*);}
+                | E1+=left_compare ("is" E2+=expr ) {$$=make_lcompare($*);}
+                | E1+=left_compare (NIS E2+=expr ) {$$=$^(LCOMPARE,$*);}
                 | expr
                 ;
 expr            : expr (A+="-" expr) {if(!$A.missing()){$$=make_binop($*);}}
@@ -415,18 +458,17 @@ make_unop (const List_Ptr& operands)
 }
 
 static AST_Ptr
+make_lcompare (const List_Ptr& operands)
+{
+    return YYMAKE_TREE (LCOMPARE, operands->at (0), make_id (operands->at (1)),
+    operands->at (2));
+}
+static AST_Ptr
 make_compare (const List_Ptr& operands)
 {
     return YYMAKE_TREE (COMPARE, operands->at (0), make_id (operands->at (1)),
     operands->at (2));
 }
-static AST_Ptr
-make_left_compare (const List_Ptr& operands)
-{
-    return YYMAKE_TREE (LCOMPARE, operands->at (0), make_id (operands->at (1)),
-    operands->at (2));
-}
-
 
 static AST_Ptr
 make_binop (const List_Ptr& operands)

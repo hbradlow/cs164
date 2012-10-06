@@ -24,7 +24,7 @@ AST::as_type ()
 void
 AST::convert_to_target()
 {
-    error(0, "Can not convert to target list");
+//    error(0, "Can not convert to target list");
 }
 
 void
