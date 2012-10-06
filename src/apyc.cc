@@ -57,7 +57,7 @@ compile (const string& input, const string& output)
         return; 
     }
     file_name = input;
-    std::string command = std::string("python ../../cs164/pre.py ") + std::string(input.c_str());
+    std::string command = std::string("python pre.py ") + std::string(input.c_str());
     int ret = system(command.c_str());
     if(ret != 0){
         fprintf(stderr, "Preprocessing error, most likely bad indentation.");

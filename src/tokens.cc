@@ -33,6 +33,7 @@ AST_Token::append_text(const string& s)
     throw logic_error ("unimplemented operation: append_text");
 }
 
+/** The define token. */
 class Define_Token : public AST_Token {
 private:
 
@@ -55,6 +56,7 @@ TOKEN_FACTORY(Define_Token, DEF);
 
 
 
+/** Arglist token */
 class Arglist_Token : public AST_Token {
 private:
 
@@ -75,6 +77,7 @@ private:
 
 TOKEN_FACTORY(Arglist_Token, ARGLIST);
 
+/* the token for an "isnot" id. This was neccesary to properly recognize "is not" and turn it into an "isnot" token. */
 class ISNOT_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
@@ -88,6 +91,7 @@ private:
     TOKEN_CONSTRUCTORS(ISNOT_Token, AST_Token);
 };
 TOKEN_FACTORY(ISNOT_Token, NIS);
+/* the token for an "notin" id. This was neccesary to properly recognize "not in" and turn it into an "notin" token. */
 class NOTIN_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
@@ -102,6 +106,7 @@ private:
 };
 TOKEN_FACTORY(NOTIN_Token, NIN);
 
+/* the token for an ID. This is very frequently used in the gramar. */
 class ID_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
@@ -123,7 +128,7 @@ private:
 };
 
 TOKEN_FACTORY(ID_Token, ID);
-
+/* The node for a type_var token. This was neccesary as type_var is a terminal node. */
 class Type_Var_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
@@ -139,6 +144,7 @@ private:
 TOKEN_FACTORY(Type_Var_Token, TYPE_VAR);
 
 
+/* The node for a type token. This was neccesary as type_var is a terminal node. */
 class Type_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
@@ -162,10 +168,7 @@ private:
         out << "(int_literal " << lineNumber () << " " << value << ")";
     }
 
-    /** initialize value from the text of the lexeme, checking that
-     *  the literal is in range.  [the post_make method may be
-     *  overridden to provide additional processing during the
-     *  construction of a node or token.] */
+    /* parsed a number in octal format into its decimal value */
     int parse_oct(const char* p)
     {
         int x = 0;
@@ -175,6 +178,7 @@ private:
         }
         return x;
     }
+    /* parses a character into its corresponding number */
     int digit_value(char c)
     {
         switch (c)
@@ -204,6 +208,7 @@ private:
         }
         return -1;
     }
+    /* parsed a number in hex format into its decimal value */
     int parse_hex(const char* p)
     {
         int x = 0;
@@ -215,6 +220,10 @@ private:
         }
         return x;
     }
+    /** initialize value from the text of the lexeme, checking that
+     *  the literal is in range.  [the post_make method may be
+     *  overridden to provide additional processing during the
+     *  construction of a node or token.] */
     Int_Token* post_make () {
         char first = as_chars()[0];
         if(first=='0' && text_size()>1)

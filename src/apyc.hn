@@ -450,18 +450,21 @@ argument        : test
 
 bool debugParser;
 
+/* creates a unop node */
 static AST_Ptr
 make_unop (const List_Ptr& operands)
 {
     return YYMAKE_TREE (UNOP, make_id (operands->at (0)), operands->at (1));
 }
 
+/* creates a left_compare node */
 static AST_Ptr
 make_lcompare (const List_Ptr& operands)
 {
     return YYMAKE_TREE (LCOMPARE, operands->at (0), make_id (operands->at (1)),
     operands->at (2));
 }
+/* creates a compare node */
 static AST_Ptr
 make_compare (const List_Ptr& operands)
 {
@@ -469,6 +472,7 @@ make_compare (const List_Ptr& operands)
     operands->at (2));
 }
 
+/* creates a binop node */
 static AST_Ptr
 make_binop (const List_Ptr& operands)
 {
@@ -476,15 +480,17 @@ make_binop (const List_Ptr& operands)
     operands->at (2));
 }
 
+/* creates a tar_var_list node */
 static AST_Ptr
 make_type_var_list (const List_Ptr& operands)
-{
+
     for( int i = 0; i<operands->size(); i++){
         operands->at(i) = make_type_var(operands->at(i));
     }
     return YYMAKE_TREE (TYPE_FORMALS, operands);
 }
 
+/* creates a type_var node */
 static AST_Ptr
 make_type_var (AST_Ptr& token)
 {
