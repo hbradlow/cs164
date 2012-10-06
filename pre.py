@@ -23,9 +23,7 @@ def process(in_file):
     # in_docstring = False
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
-    triple_patt = r'(\"\"\"|\'\'\')(.*?)\1\s*(\"\"\"|\'\'\')(.*?)\3'
-    space_sep_str_patt = r'(\'|\")(.*?)\1\s*(\"|\')(.*?)\3'
-    multiline_patt = r'((\"|\').*\\\n(\s*.*?(\\\n|\2\n))*)'
+    space_sep_str_patt = r'(\"|\')(.*?)\1\s(\"|\')(.*?)\3'
     for ch in input_text:
         if in_comment:
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
@@ -109,18 +107,7 @@ def process(in_file):
     while indent_stack_cur > 0:
         indent_stack_cur -= 1
         result_file += ' %s ' % DEDENT
-    i = 0
-    while re.search(multiline_patt, result_file):
-        print result_file
-        i += 1
-        if i > 3:
-            break
-        result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', ' ', m.groups()[0]), result_file)
-    while re.search(triple_patt, result_file):
-        match = re.search(triple_patt, result_file)
-        result_file = re.sub(triple_patt, lambda m: '"' + m.group(2) + m.group(4) + '"', result_file)
     while re.search(space_sep_str_patt, result_file):
-        match = re.search(space_sep_str_patt, result_file)
         result_file = re.sub(space_sep_str_patt, lambda m: '"' + m.group(2) + m.group(4) + '"', result_file)
     return result_file
 
