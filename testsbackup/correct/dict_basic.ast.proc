@@ -1,4 +1,0 @@
-(module 0
-    (dict_display 1
-        (pair 1
-            (string_literal 1 "hello")

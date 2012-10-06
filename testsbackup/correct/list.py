@@ -1,7 +1,0 @@
-a = [1,2,[3]]
-b = [4,]
-c = [a,b]
-print a[1]
-print a[2][0]
-print a[1:]
-print a[:-1]

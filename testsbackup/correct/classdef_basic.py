@@ -1,2 +1,0 @@
-class rest:
-    a = "b"

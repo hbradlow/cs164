@@ -1,4 +1,0 @@
-(module 0
-    (if_expr 1
-        (id 1 True)
-        (int_literal 1 10)

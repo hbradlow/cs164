@@ -1,7 +1,0 @@
-(module 0
-    (assign 1
-        (list_display 1
-            (id 1 a)
-            (id 1 b))
-        (list_display 1
-            (int_literal 1 1)
