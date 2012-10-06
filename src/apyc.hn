@@ -188,7 +188,7 @@ NIS : "is not";
 RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9'| ' ')* "\""; 
 LINEBREAK : '\n';
 * : "#" ('#' .. '~' | '!' | '\9'| ' ' )* '\n' ; 
-MULTILINE_COMMENT : "\"\"\"" ( '#' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
+MULTILINE_COMMENT : "\"\"\"" ( '"' .. '~' | '!' | '\9' | '\n')* "\"\"\"" '\n'? ;
 /*---------- NON-TERMINALS -----------*/
 program         : input_simple+         {theTree = $^(MODULE, $*); $$ = NULL;}
                 |
@@ -359,7 +359,7 @@ power           : power ("**" factor) {$$=make_binop($*);}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
-atom            : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()){$$=$^(TUPLE, $^(EMPTY));}else if(!$T.missing()){$$=$^(TUPLE, $*);}}
+atom            : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()){$$=$^(TUPLE);}else if(!$T.missing()){$$=$^(TUPLE, $*);}}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
