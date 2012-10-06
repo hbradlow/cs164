@@ -139,7 +139,7 @@ If/while/- control
 %token IF_EXPR "@if_expr"
 %token AND "@and"
 %token OR "@or"
-%token TUPLE "@tuple" 
+%token TUPLE "@tuple"
 %token LIST "@list_display"
 %token CALL "@call" 
 %token DICT "@dict_display"
@@ -353,7 +353,10 @@ power           : power ("**" factor) {$$=make_binop($*);}
                 | power "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 | atom
                 ;
-atom            : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()){$$=$^(TUPLE);}else if(!$T.missing()){$$=$^(TUPLE, $*);}}
+tuple           : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()){$$=$^(TUPLE);}else if(!$T.missing()){$$=$^(TUPLE, $*);}}
+
+                ;
+atom            : tuple
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!

@@ -38,6 +38,7 @@ public:
      *  that do not represent types. */
     virtual Type_Ptr as_type ();
 
+    virtual void convert_to_target();
 protected:
 
 };
