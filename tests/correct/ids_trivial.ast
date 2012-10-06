@@ -1,13 +1,13 @@
 (module 0
-    (assign 1
+    (assignment 1
         (id 1 someid)
         (string_literal 1 "1"))
-    (assign 2
+    (assignment 2
         (id 2 _someid)
         (string_literal 2 "hello"))
-    (assign 3
+    (assignment 3
         (id 3 _asd110sa)
         (string_literal 3 "test"))
-    (assign 4
+    (assignment 4
         (id 4 asdfs)
         (id 4 someid)))

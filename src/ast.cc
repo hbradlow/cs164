@@ -22,6 +22,12 @@ AST::as_type ()
 /* Definitions of methods in base class AST_Tree. */
 
 void
+AST::convert_to_target()
+{
+    error(0, "Can not convert to target list");
+}
+
+void
 AST_Tree::print (ostream& out, int indent)
 {
     out << "(" << external_name () << " " << lineNumber ();

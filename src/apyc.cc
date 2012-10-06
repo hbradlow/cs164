@@ -74,9 +74,9 @@ compile (const string& input, const string& output)
     fclose (inFile);
     fflush(stdout);
 
-    command = std::string("python post.py ") + std::string(output.c_str());
+//    command = std::string("python post.py ") + std::string(output.c_str());
 
-    system(command.c_str());
+//    system(command.c_str());
 
     command = std::string("rm ") + filename;
 //    system(command.c_str());
