@@ -329,7 +329,10 @@ factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 ;
 power           : power ("**" factor) {$$=make_binop($*);}
                 | power "("! L+=arglist ")"! {$$=$^(CALL, $power,$^(EXPR_LIST,$L.list_value()));} 
-                | A+=power "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! T+=trailer* 
+                | trailer
+                | atom
+                ;
+trailer         : A+=atom trailer* "["! ((S+=test? ":"! R+=test?) | C+=test)?"]"! 
                                 {if(!$S.missing() || !$R.missing())
                                     {if($R.missing())
                                         {$$=$^(SLICING, $A, $S, $^(EMPTY));}
@@ -338,8 +341,7 @@ power           : power ("**" factor) {$$=make_binop($*);}
                                     else 
                                         {$$=$^(SLICING, $A, $S,$R);}}
                                 else{$$=$^(SUBSCRIPT, $A, $C);}}
-                | power "."! ID trailer* {$$=$^(ATTRIBUTEREF, $*);}
-                | atom
+                | atom trailer* "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
 atom            : "("! (test (","! test)* ","!?)? ")"! {$$=$^(TUPLE, $*);}
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
@@ -356,9 +358,6 @@ idlist          : type ","! L+=idlist {if(!$L.missing()){
                                                 }else{
                                                 }}
                 | type
-                ;
-trailer         : "["! ((S+=test? ":" test?) | C+=test)? "]"! {if(!$S.missing()){$$=$^(SLICING, $*);}else{$$=$^(SUBSCRIPT, $*);}}
-                | "."! ID {$$=$^(ATTRIBUTEREF, $*);}
                 ;
 type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){
                                                                 $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$typelist.list_value()));
