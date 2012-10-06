@@ -163,9 +163,62 @@ private:
      *  the literal is in range.  [the post_make method may be
      *  overridden to provide additional processing during the
      *  construction of a node or token.] */
+    int parse_oct(const char* p)
+    {
+        int x = 0;
+        for (; *p; ++p)
+        {
+            x = x * 8 + atoi(p);
+        }
+        return x;
+    }
+    int digit_value(char c)
+    {
+        switch (c)
+        {
+            case '0': return 0;
+            case '1': return 1;
+            case '2': return 2;
+            case '3': return 3;
+            case '4': return 4;
+            case '5': return 5;
+            case '6': return 6;
+            case '7': return 7;
+            case '8': return 8;
+            case '9': return 9;
+            case 'A': 
+            case 'a': return 10;
+            case 'B': 
+            case 'b': return 11;
+            case 'C': 
+            case 'c': return 12;
+            case 'D': 
+            case 'd': return 13;
+            case 'E': 
+            case 'e': return 14;
+            case 'F': 
+            case 'f': return 15;
+        }
+    }
+    int parse_hex(const char* p)
+    {
+        int x = 0;
+        for (; *p; ++p)
+        {
+            x = x * 16 + digit_value(*p);
+        }
+        return x;
+    }
     Int_Token* post_make () {
-        char first = as_chars()[0];
-        value = atoi(as_chars());
+        char first = atoi(&as_chars()[0]);
+        const char * second = &as_chars()[1];
+        if(first==0)
+            if(strcmp(second,"x") || strcmp(second,"X"))
+                value = parse_hex(as_chars());
+            else
+                value = parse_oct(as_chars());
+        else
+            value = atoi(as_chars());
         if (value > pow(2,30.0))
         {
             error(as_chars(), "Integer too large");
