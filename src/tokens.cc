@@ -139,16 +139,6 @@ private:
 TOKEN_FACTORY(Type_Var_Token, TYPE_VAR);
 
 
-class Type_Id : public AST_Token {
-private:
-    void convert_to_target()
-    {
-        return;
-    }
-    TOKEN_CONSTRUCTORS(Type_Id, AST_Token);
-};
-TOKEN_FACTORY(Type_Id, TYPED_ID);
-
 class Type_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
