@@ -62,7 +62,6 @@ char * get_selfpath() {
 static void
 compile (const string& input, const string& output)
 {
-    error_no_file( get_selfpath());
     if (freopen (output.c_str (), "w", stdout) == NULL) {
         error_no_file ("Could not open %s", output.c_str ());
         return; 

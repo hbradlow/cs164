@@ -51,6 +51,10 @@ private:
         } end_for;
 
     }
+   Tuple_AST* post_make(){
+       isTarget = 0;
+       return this;
+   }
     void print (ostream& out, int indent) {
         string nm = "tuple";
         if (isTarget)
@@ -79,6 +83,10 @@ private:
         } end_for;
 
     }
+   List_AST* post_make(){
+       isTarget = 0;
+       return this;
+   }
     void print (ostream& out, int indent) {
         string nm = "list_display";
         if (isTarget)
