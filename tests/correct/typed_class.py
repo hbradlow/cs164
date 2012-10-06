@@ -1,2 +1,5 @@
-class Foo of [int, list of [dict]]:
-    print hello
+class Foo of [int, $List]:
+    def do(self):
+        print "hello"
+f = Foo()
+f.do()

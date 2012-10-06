@@ -122,6 +122,20 @@ private:
 
 TOKEN_FACTORY(ID_Token, ID);
 
+class Type_Var_Token : public AST_Token {
+private:
+    void print (ostream& out, int indent) {
+        out << "(type_var " << lineNumber () << " " << text << ")";
+    }
+    Type_Var_Token* post_make () {
+        text = string (as_chars (), text_size ());
+        return this;
+    }
+    string text;
+    TOKEN_CONSTRUCTORS(Type_Var_Token, AST_Token);
+};
+TOKEN_FACTORY(Type_Var_Token, TYPE_VAR);
+
 class Type_Token : public AST_Token {
 private:
     void print (ostream& out, int indent) {
