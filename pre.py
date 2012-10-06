@@ -118,6 +118,9 @@ def process(in_file):
                 in_lonely_comment = True
                 #print 'in a lonely comment'
             elif equivalent_blanks_cur < indent_depth_stack[-1]:
+                if equivalent_blanks_cur not in indent_depth_stack:
+                    #print "bad indentation"
+                    exit(1)
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     #print indent_depth_stack, equivalent_blanks_cur
                     #print 'wrote a dedent' + '\n'
@@ -131,6 +134,9 @@ def process(in_file):
                 
             # No indentation on current line
             elif equivalent_blanks_cur == 0:
+                if equivalent_blanks_cur not in indent_depth_stack:
+                    #print "bad indentation"
+                    exit(1)
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     #print indent_depth_stack, equivalent_blanks_cur
                     #print 'wrote a dedent' + '\n'
@@ -235,7 +241,8 @@ def process(in_file):
 if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
-    try:
-        sys.stdout.write(process(arg))
-    except:
-        exit(1)
+    with open(arg.split('.')[0] + '.py.processed', 'w') as f:
+        try:
+            f.write(process(arg))
+        except:
+            exit(1)
