@@ -182,7 +182,8 @@ NUMBER  : (('1' .. '9') ('0' .. '9')* | '0'+)
 
 STRING : "\"" (' ' | '#' .. '~' | '!' | '\9')* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9')* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
-TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
+TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
+
 NIN : "not in";
 NIS : "is not";
 RAWSTRING : "r\"" ('#' .. '~' | '!' | '\9'| ' ')* "\""; 
@@ -221,7 +222,7 @@ functype        : TID+=TYPE_ID ("of"! "["! T+=typelist "]"!)? {if(!$T.missing())
                                                                 $$=$^(TYPE,$TID,$^(TYPE_LIST));
                                                             }
                                                             }
-
+                | "::"! "("! typelist ")"! "->"! S+=typelistatom {$$=$^(FUNC_TYPE,$S,$typelist);}
                 ;
 arglist         : argument (","! argument)* ","!? 
                 | /*empty*/
@@ -382,7 +383,8 @@ type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing
                                                                 $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$^(TYPE_LIST)));
                                                             }
                                                             }
-                | ID
+                | ID "::"! "("! typelist ")"! "->"! S+=typelistatom {$$=$^(TYPED_ID,$ID,$^(FUNC_TYPE,$S,$typelist));}
+                | ID 
                 ;
 type_formals_list: "$"!? ID (","! "$"!? ID)* ","!? {$$=make_type_var_list($*);}
                 ;
