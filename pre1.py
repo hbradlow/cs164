@@ -28,6 +28,7 @@ def process(in_file):
     single_quote_stack = 0
     in_lonely_comment = False
     in_comment = False
+    balanced = False
 
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
@@ -35,8 +36,17 @@ def process(in_file):
     triple_patt = r'(\"\"\"|\'\'\')(.*?)\1\s*(\"\"\"|\'\'\')(.*?)\3'
     space_sep_str_patt = r'(\'|\")(.*?)\1\s*(\"|\')(.*?)\3'
     multiline_patt = r'(.*\\\n(\s*.*?\s*\\\n)*(\s*.*\s*\n))'
-    comment_buffer = ''
+
+    # build up multiline statements in here
+    line_buffer = ''
     for ch in input_text:
+        #balanced = paren_stack == 0 and curly_stack = 0 and brace_stack == 0
+        if in_lonely_comment:
+            if ch == '\n' and not single_quote_toggle and not double_quote_toggle:
+                result_file += '\n'
+                write_buffer = ''
+                in_lonely_comment = False
+                continue
         if not in_comment and not in_lonely_comment:
             if ch == '(':
                 paren_stack += 1
@@ -74,16 +84,20 @@ def process(in_file):
         # first non-whitespace char of the line
         elif whitespace_left and not re.match(r'(\ |\t)', ch):
             if ch == '\n':
-                print "empty line"
+                #print "empty line"
                 whitespace_left = True
                 write_buffer += '\n'
-                print indent_depth_stack
+                #print indent_depth_stack
                 continue
             indent_stack_pre = indent_stack_cur
             whitespace_left = False
             # need a dedent
-            if equivalent_blanks_cur < equivalent_blanks_pre:
-                print 'fewer blanks'
+            if ch == '#':
+                write_buffer = ''
+                in_lonely_comment = True
+                #print 'in a lonely comment'
+            elif equivalent_blanks_cur < equivalent_blanks_pre:
+                #print 'fewer blanks'
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
@@ -101,11 +115,11 @@ def process(in_file):
                     equivalent_blanks_pre = 0
                     equivalent_blanks_cur = 0
                     indent_depth_stack.pop()
-                    print "detected dedentation: first non"
+                    #print "detected dedentation: first non"
             elif equivalent_blanks_cur > equivalent_blanks_pre:
                 #print "maybe going to indent"
                 if no_indent:
-                    print "no indent on"
+                    #print "no indent on"
                     write_buffer += ch
                     continue
                 #if write_buffer == '':
@@ -119,14 +133,8 @@ def process(in_file):
                 #print "detected indentation"
             elif equivalent_blanks_pre == equivalent_blanks_cur:
                 equivalent_blanks_cur = 0
-            elif ch == '#':
-                while indent_stack_cur > indent_stack_pre:
-                    write_buffer = write_buffer[:-indent_len -1]
-                    indent_stack_cur -= 1
-                in_lonely_comment = True
-                #print 'in a lonely comment'
             else:
-                print "detected dedentation"
+                #print "detected dedentation"
                 write_buffer += ' %s ' % DEDENT
                 indent_depth_stack.pop()
                 while indent_depth_stack[-1] > equivalent_blanks_cur:

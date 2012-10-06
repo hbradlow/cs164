@@ -28,6 +28,7 @@ def process(in_file):
     single_quote_stack = 0
     in_lonely_comment = False
     in_comment = False
+    balanced = False
 
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
@@ -35,8 +36,11 @@ def process(in_file):
     triple_patt = r'(\"\"\"|\'\'\')(.*?)\1\s*(\"\"\"|\'\'\')(.*?)\3'
     space_sep_str_patt = r'(\'|\")(.*?)\1\s*(\"|\')(.*?)\3'
     multiline_patt = r'(.*\\\n(\s*.*?\s*\\\n)*(\s*.*\s*\n))'
-    comment_buffer = ''
+
+    # build up multiline statements in here
+    line_buffer = ''
     for ch in input_text:
+        #balanced = paren_stack == 0 and curly_stack = 0 and brace_stack == 0
         if in_lonely_comment:
             if ch == '\n' and not single_quote_toggle and not double_quote_toggle:
                 result_file += '\n'
