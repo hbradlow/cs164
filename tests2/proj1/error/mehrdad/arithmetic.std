@@ -1,4 +1,0 @@
-  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\arithmetic.py", line 1
-    print -15 + -
-                ^
-SyntaxError: invalid syntax

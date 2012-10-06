@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "D:\Mehrdad\Berkeley\CS 164\cs164-team\trunk\proj1\tests\error\slicing.py", line 2, in <module>
-    a[::2] = [0,1,2]
-ValueError: attempt to assign sequence of size 3 to extended slice of size 2

@@ -1,1 +1,0 @@
-'str' = 'other_string'
