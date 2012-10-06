@@ -150,6 +150,7 @@ private:
 };
 TOKEN_FACTORY(Type_Token, TYPE_ID);
 
+
 /** represents an integer literal. */
 class Int_Token : public AST_Token {
 private:
@@ -163,6 +164,7 @@ private:
      *  overridden to provide additional processing during the
      *  construction of a node or token.] */
     Int_Token* post_make () {
+        char first = as_chars()[0];
         value = atoi(as_chars());
         if (value > pow(2,30.0))
         {
