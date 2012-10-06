@@ -70,14 +70,9 @@ def process(in_file):
                 equivalent_blanks_cur = 0
                 indent_stack_cur -= 1
             if ch == '#':
-                print 'in comment'
-                print write_buffer
-                print indent_stack_cur
-                print indent_stack_pre
                 while indent_stack_cur > indent_stack_pre:
                     write_buffer = write_buffer[:-indent_len -1]
                     indent_stack_cur -= 1
-                print write_buffer
                 in_lonely_comment = True
         elif whitespace_left: 
             if ch == ' ':
