@@ -18,6 +18,7 @@ def process(in_file):
     origin_index = 0
     input_text = preprocess(in_file)
 
+    # balance
     paren_stack = 0
     brace_stack = 0
     curly_stack = 0
@@ -72,6 +73,10 @@ def process(in_file):
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
                 if balanced:
                     write_buffer += ch
+                else:
+                    write_buffer +=  '\\'
+                    write_buffer += ch
+                    slash_count += 1
                 result_file += write_buffer
                 write_buffer = ''
                 in_comment = False
@@ -89,11 +94,14 @@ def process(in_file):
             continue
         # first non-whitespace char of the line
         elif whitespace_left and not re.match(r'(\ |\t)', ch):
+            #print 'newline: %d' % equivalent_blanks_cur
             if ch == '\n':
+                #print "empty line"
                 whitespace_left = True
                 write_buffer += '\n'
                 equivalent_blanks_pre = equivalent_blanks_cur
                 equivalent_blanks_cur = 0
+                #print indent_depth_stack
                 continue
             indent_stack_pre = indent_stack_cur
             whitespace_left = False
@@ -102,6 +110,7 @@ def process(in_file):
                 write_buffer = ''
                 in_lonely_comment = True
             elif equivalent_blanks_cur < equivalent_blanks_pre:
+                #print 'fewer blanks: %s' % ch
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
@@ -142,11 +151,12 @@ def process(in_file):
                 equivalent_blanks_cur = 0
                 indent_stack_cur -= 1
         elif whitespace_left: 
-            if ch == ' ':
+            if balanced and ch == ' ':
                 equivalent_blanks_cur += 1
                 continue
             else:
-                equivalent_blanks_cur += 8
+                if balanced:
+                    equivalent_blanks_cur += 8
                 continue
         if ch == '"':
             write_buffer += ch
@@ -168,6 +178,9 @@ def process(in_file):
                 no_indent = False
                 write_buffer += slash_count*'\n'
                 slash_count = 0
+            if not balanced:
+                write_buffer += '\\'
+                slash_count += 1
             write_buffer += ch
             if in_lonely_comment:
                 write_buffer = "\n"
