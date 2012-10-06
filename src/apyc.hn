@@ -339,9 +339,8 @@ flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK
                 ;
 test            : A+=or_test ("if"! B+=or_test "else"! C+=test)? {if(!$B.missing()){$$=$^(IF_EXPR, $B, $A, $C);}}
                 ;
-or_test         : and_test (M+="or" and_test)* {if(!$M.missing()){$$=make_binop($*);}}
-                ;
-and_test        : not_test (M+="and" not_test)* {if(!$M.missing()){$$=make_binop($*);}}
+or_test         : or_test (M+="or" or_test) {if(!$M.missing()){$$=make_binop($*);}}
+                | not_test
                 ;
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}
                 | comparison
@@ -376,7 +375,10 @@ expr            : expr (A+="-" expr) {if(!$A.missing()){$$=make_binop($*);}}
                 | expr (O+="/" expr ) {if(!$O.missing()){$$=make_binop($*);}}
                 | expr (O+="%" expr ) {if(!$O.missing()){$$=make_binop($*);}}
                 | expr (O+="//" expr ) {if(!$O.missing()){$$=make_binop($*);}}
-                | factor 
+                | and_test 
+                ;
+and_test        : and_test (M+="and" and_test) {if(!$M.missing()){$$=make_binop($*);}}
+                | factor
                 ;
 factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
                 | power
