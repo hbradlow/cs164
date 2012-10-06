@@ -168,7 +168,7 @@ private:
         int x = 0;
         for (; *p; ++p)
         {
-            x = x * 8 + atoi(p);
+            x = x * 8 + digit_value(*p);
         }
         return x;
     }
@@ -203,6 +203,8 @@ private:
     int parse_hex(const char* p)
     {
         int x = 0;
+        p++;
+        p++;
         for (; *p; ++p)
         {
             x = x * 16 + digit_value(*p);
@@ -210,21 +212,25 @@ private:
         return x;
     }
     Int_Token* post_make () {
-        char first = atoi(&as_chars()[0]);
-        const char * second = &as_chars()[1];
-        if(first==0)
-            if(strcmp(second,"x") || strcmp(second,"X"))
+        char first = as_chars()[0];
+        if(first=='0' && text_size()>1)
+        {
+            char second = as_chars()[1];
+            if(second=='x' || second=='X')
+            {
                 value = parse_hex(as_chars());
+            }
             else
                 value = parse_oct(as_chars());
+        }
         else
             value = atoi(as_chars());
         if (value > pow(2,30.0))
         {
             error(as_chars(), "Integer too large");
         }
-        if (value == pow(2,30.0))
-            value = -value;
+        //if (value == pow(2,30.0))
+        //    value = -value;
         return this;
     }
 
