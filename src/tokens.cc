@@ -227,8 +227,8 @@ private:
         {
             error(as_chars(), "Integer too large");
         }
-        if (value == pow(2,30.0))
-            value = -value;
+        //if (value == pow(2,30.0))
+        //    value = -value;
         return this;
     }
 
