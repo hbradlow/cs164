@@ -36,3 +36,7 @@ really-clean: clean
 
 depend:
 	$(MAKE) -C src depend
+
+checkExternal:
+	$(MAKE) -C src compile
+	$(MAKE) -C externalTests APYC=$(APYC) check
