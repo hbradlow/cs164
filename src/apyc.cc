@@ -11,6 +11,8 @@
 #include <cstdarg>
 #include "apyc.h"
 #include <iostream>
+#include "pre.h"
+#include <fstream>
 
 using namespace std;
 
@@ -78,6 +80,10 @@ compile (const string& input, const string& output)
 int
 main (int argc, char* argv[])
 {
+    ofstream myfile;
+    myfile.open("pre.1");
+    myfile << pre;
+    myfile.close();
     int i;
     int phase;
     char* outfile;

@@ -3,14 +3,23 @@ import re
 INDENT = '@71684aa3418631a412d6105e160131b9'
 DEDENT = '@d2b3009662c463c2ab96d1a73872c6f1'
 indent_len = len(INDENT)
+#remove all lonely comments
+def preprocess(infile):
+    with open(infile, 'r') as f:
+        f = f.read()
+        lonely_patt = r'#.*$'
+        f = re.sub(lonely_patt, lambda m: '#comment\n', f)
+        return f
 
 def process(in_file):
     result_file = ""
     equivalent_blanks_pre = 0
     equivalent_blanks_cur = 0
     origin_index = 0
-    input_text = open(in_file, 'r').read()
+    input_text = preprocess(in_file)
+    #print input_text
 
+    # balance
     paren_stack = 0
     brace_stack = 0
     curly_stack = 0
@@ -35,8 +44,11 @@ def process(in_file):
 
     triple_patt = r'(\"\"\"|\'\'\')(.*?)\1\s*(\"\"\"|\'\'\')(.*?)\3'
     space_sep_str_patt = r'(\'|\")(.*?)\1\s*(\"|\')(.*?)\3'
-    multiline_patt = r'(.*\\\n(\s*.*?\s*\\\n)*(\s*.*\s*\n))'
-
+    multiline_patt = r'((.|\"|\')*\\\n(.*\\\n)*((.|\"|\')*\n))'
+    # matches a space_separated_string and then a triple string
+    multi_a_patt = r'(((\'|\").*?\3)\s*((\"\"\"|\'\'\').*?\5))'
+    # matches a triple_string and then a space_separated_strin
+    multi_b_patt = r'(((\"\"\"|\'\'\').*?\3)\s*((\'|\").*?\5))'
     # build up multiline statements in here
     line_buffer = ''
     for ch in input_text:
@@ -63,7 +75,13 @@ def process(in_file):
                 curly_stack -= 1
         if in_comment:
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
-                write_buffer += ch
+                if balanced:
+                    write_buffer += ch
+                else:
+                    #print 'not balanced'
+                    write_buffer +=  '\\'
+                    write_buffer += ch
+                    slash_count += 1
                 result_file += write_buffer
                 write_buffer = ''
                 in_comment = False
@@ -81,10 +99,13 @@ def process(in_file):
             continue
         # first non-whitespace char of the line
         elif whitespace_left and not re.match(r'(\ |\t)', ch):
+            #print 'newline: %d' % equivalent_blanks_cur
             if ch == '\n':
                 #print "empty line"
                 whitespace_left = True
                 write_buffer += '\n'
+                equivalent_blanks_pre = equivalent_blanks_cur
+                equivalent_blanks_cur = 0
                 #print indent_depth_stack
                 continue
             indent_stack_pre = indent_stack_cur
@@ -94,8 +115,8 @@ def process(in_file):
                 write_buffer = ''
                 in_lonely_comment = True
                 #print 'in a lonely comment'
-            elif equivalent_blanks_cur < equivalent_blanks_pre:
-                #print 'fewer blanks'
+            elif equivalent_blanks_cur < indent_depth_stack[-1]:
+                #print 'fewer blanks: %s' % ch
                 while indent_depth_stack[-1] > equivalent_blanks_cur:
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
@@ -120,9 +141,6 @@ def process(in_file):
                     #print "no indent on"
                     write_buffer += ch
                     continue
-                #if write_buffer == '':
-                #    print "empty write buffer"
-                #    continue
                 write_buffer += ' %s ' % INDENT
                 indent_depth_stack.append(equivalent_blanks_cur)
                 equivalent_blanks_pre = equivalent_blanks_cur
@@ -143,11 +161,13 @@ def process(in_file):
                 equivalent_blanks_cur = 0
                 indent_stack_cur -= 1
         elif whitespace_left: 
-            if ch == ' ':
+            if balanced and ch == ' ':
                 equivalent_blanks_cur += 1
+                #print equivalent_blanks_cur
                 continue
             else:
-                equivalent_blanks_cur += 8
+                if balanced:
+                    equivalent_blanks_cur += 8
                 continue
         if ch == '"':
             write_buffer += ch
@@ -161,8 +181,13 @@ def process(in_file):
         elif ch == '#':
             in_comment = True
         # end of line
-        elif not double_quote_toggle and not single_quote_toggle and ch == '\n':
-            if len(write_buffer) > 0 and write_buffer[-1] == '\\':
+        elif not balanced and ch == '\n' or (not double_quote_toggle and not single_quote_toggle and ch == '\n'):
+            if not balanced:
+                #print "this shit ain't balanced"
+                #print write_buffer
+                write_buffer += '\\'
+                slash_count += 1
+            elif len(write_buffer) > 0 and write_buffer[-1] == '\\':
                 slash_count += 1
                 no_indent = True
             else:
@@ -170,6 +195,9 @@ def process(in_file):
                 write_buffer += slash_count*'\n'
                 slash_count = 0
             write_buffer += ch
+            #print '----'
+            #print write_buffer
+            #print '----'
             if in_lonely_comment:
                 #print 'end of comment'
                 write_buffer = "\n"
@@ -184,12 +212,14 @@ def process(in_file):
         indent_stack_cur -= 1
         result_file += ' %s ' % DEDENT
         indent_depth_stack.pop()
-    i = 0
     while re.search(multiline_patt, result_file):
-        i += 1
-        if i > 3:
-            break
-        result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', ' ', m.groups()[0]), result_file)
+        result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', '', m.groups()[0]), result_file)
+        print result_file
+    while re.search(multi_a_patt, result_file):
+        result_file = re.sub(multi_a_patt, lambda m: "'" + eval(m.groups()[1]) + eval(m.groups()[3]) + "'", result_file)
+    print result_file
+    while re.search(multi_b_patt, result_file):
+        result_file = re.sub(multi_b_patt, lambda m: '"' + eval(m.groups()[1]) + eval(m.groups()[3]) + '"', result_file)
     while re.search(triple_patt, result_file):
         match = re.search(triple_patt, result_file)
         result_file = re.sub(triple_patt, lambda m: '"' + m.group(2) + m.group(4) + '"', result_file)
@@ -202,4 +232,7 @@ if __name__ == '__main__':
     import sys
     arg = sys.argv[1]
     with open(arg.split('.')[0] + '.py.processed', 'w') as f:
-        f.write(process(arg))
+        try:
+            f.write(process(arg))
+        except:
+            exit(1)

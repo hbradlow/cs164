@@ -1,4 +1,8 @@
-const char * = R"PYTHON(
+#include <iostream>
+#include <string>
+using namespace std;
+
+string pre = R"(
 import re
 
 INDENT = '@71684aa3418631a412d6105e160131b9'
@@ -38,7 +42,8 @@ def process(in_file):
     in_lonely_comment = False
     in_comment = False
     balanced = False
-
+    )";
+string pre1 = R"(
     # True if still counting whitepsace at beginning of a line
     whitespace_left = True 
 
@@ -80,6 +85,8 @@ def process(in_file):
                 in_lonely_comment = False
                 whitespace_left = True
                 continue
+            	)";
+            	string pre2 = R"(
             elif ch == '"':
                 if not single_quote_toggle:
                     double_quote_toggle = not double_quote_toggle
@@ -117,7 +124,8 @@ def process(in_file):
                 result_file += write_buffer
                 write_buffer = ''
                 equivalent_blanks_pre = indent_depth_stack[-1]
-                
+		)";
+		string pre3 = R"(
             # No indentation on current line
             elif equivalent_blanks_cur == 0:
                 while indent_stack_cur > 0:
@@ -171,6 +179,8 @@ def process(in_file):
             if not double_quote_toggle:
                 single_quote_toggle = not single_quote_toggle
         # comment at end of line
+		)";
+		string pre4 = R"(
         elif ch == '#':
             in_comment = True
         # end of line
@@ -216,4 +226,4 @@ if __name__ == '__main__':
     arg = sys.argv[1]
     with open(arg.split('.')[0] + '.py.processed', 'w') as f:
         f.write(process(arg))
-)PYTHON";
+)";
