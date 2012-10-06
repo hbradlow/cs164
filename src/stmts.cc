@@ -87,12 +87,20 @@ NODE_FACTORY(For_AST, FOR);
 
 class Target_List_AST : public AST_Tree {
 private:
+    bool isTarget;
   Target_List_AST* post_make(){
         for_each_child (c, this) {
             c->convert_child_to_target();
         } end_for;
         return this; 
    } 
+   void convert_to_target()
+   {
+         isTarget = 1;
+        for_each_child (c, this) {
+            c->convert_child_to_target();
+        } end_for;
+   }
     NODE_CONSTRUCTORS(Target_List_AST, AST_Tree);
 };
 NODE_FACTORY(Target_List_AST, TARGET_LIST);
