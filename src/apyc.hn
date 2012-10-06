@@ -180,7 +180,7 @@ NUMBER  : (('1' .. '9') ('0' .. '9')* | '0'+)
         | (('0' .. '9') ('0' .. '9')* | '0'+)
         | (("0x" | "0X") ('a' .. 'f' | 'A' .. 'F' | '0' .. '9')* | '0'+);
 
-STRING : "\"" (' ' | '#' .. '~' | '!' | '\9')* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9')* "'" ; 
+STRING : "\"" (' ' | '#' .. '~' | '!' | '\9' | "\\" "\"")* "\"" |  "'" (' ' | '"' .. '&' | '(' .. '~' | '!' | '\9' | "\\" "'")* "'" ; 
 ID : ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')* ;
 TYPE_ID : ("::" | "::$") ('a' .. 'z' | '_' | 'A' .. 'Z')('A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_')*;
 
@@ -278,7 +278,7 @@ stmt_break      : "break"! {$$=$^(BREAK, $*);}
                 ;
 stmt_continue   : "continue"! {$$=$^(CONT, $*);}
                 ;
-stmt_return     : "return"! stmt_expr* {$$=$^(RETURN, $*);}
+stmt_return     : "return"! L+=stmt_expr* {if($L.missing()){$$=$^(RETURN, $^(EMPTY));}else{$$=$^(RETURN, $*);}}
                 ;
 stmt_comp       : stmt_if
                 | stmt_while
@@ -333,12 +333,12 @@ comparison      : E1+=comparison ("<" E2+=comparison )+ {$$=make_compare($*);}
                 | E1+=comparison (NIS E2+=comparison )+ {$$=$^(COMPARE,$*);}
                 | expr
                 ;
-expr            : expr (A+="-" expr)+ {if(!$A.missing()){$$=make_binop($*);}}
-                | expr (A+="+" expr)+ {if(!$A.missing()){$$=make_binop($*);}}
-                | expr (O+="*" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
-                | expr (O+="/" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
-                | expr (O+="%" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
-                | expr (O+="//" expr )+ {if(!$O.missing()){$$=make_binop($*);}}
+expr            : expr (A+="-" expr) {if(!$A.missing()){$$=make_binop($*);}}
+                | expr (A+="+" expr) {if(!$A.missing()){$$=make_binop($*);}}
+                | expr (O+="*" expr ) {if(!$O.missing()){$$=make_binop($*);}}
+                | expr (O+="/" expr ) {if(!$O.missing()){$$=make_binop($*);}}
+                | expr (O+="%" expr ) {if(!$O.missing()){$$=make_binop($*);}}
+                | expr (O+="//" expr ) {if(!$O.missing()){$$=make_binop($*);}}
                 | factor 
                 ;
 factor          : ('+' | '-' | '~') factor {$$=make_unop($*);}
@@ -364,21 +364,27 @@ atom            : "("! (A+=test (T+=","! test)* T+=","!?)? ")"! {if($A.missing()
                 | "["! (test (","! test)*  ","!?)?"]"! {$$=$^(LIST, $*);}
                 | "{"! (dictorsetmaker)? "}"! {$$=$^(DICT, $*);}
                 | "("! expr ")"!
-                | ID
+                | ID (T+="of"! typelistatom)? {if(!$T.missing()){$$=$^(TYPE,$ID,$^(TYPE_LIST,$typelistatom));}}
+                | ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){$$=$^(TYPE,$*);}}
                 | idlist
                 | NUMBER
                 | STRING
                 | RAWSTRING
                 | MULTILINE_COMMENT
                 ;
-idlist          : type ","! L+=idlist {if(!$L.missing()){
+idlist          : type (","! L+=type)* {if(!$L.missing()){
                                                     $$=$^(LIST, $*);
                                                 }else{
                                                 }}
                 | type
                 ;
-type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"!)? {if(!$T.missing()){
-                                                                $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$typelist.list_value()));
+type            : ID TID+=TYPE_ID (T+="of"! "["! typelist "]"! | T+="of"! ATOM+=typelistatom )? {if(!$T.missing()){
+                                                                if(!$ATOM.missing()){
+                                                                    $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$^(TYPE_LIST, $typelistatom)));
+                                                                }
+                                                                else{
+                                                                    $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$typelist.list_value()));
+                                                                }
                                                             }else{
                                                                 $$=$^(TYPED_ID,$ID,$^(TYPE,$TID,$^(TYPE_LIST)));
                                                             }
@@ -391,8 +397,9 @@ type_formals_list: "$"!? ID (","! "$"!? ID)* ","!? {$$=make_type_var_list($*);}
 typelist        : typelistatom (","! typelistatom)* ","!? {$$=$^(TYPE_LIST, $*);}
                 ;
 typelistatom    : ("$"!? ID) {$$=$^(TYPE, $ID, $^(TYPE_LIST));} 
-                | ("$"!? ID) (T+="of"! "["! typelist "]"!)? 
-                | ("$"!? ID) (T+="of"! typelistatom )? 
+                | ("$"!? ID) (T+="of"! "["! typelist "]"!)? {$$=$^(TYPE,$*);}
+                | ("$"!? ID) (T+="of"! typelistatom )?  {$$=$^(TYPE,$ID,$^(TYPE_LIST,$typelistatom));}
+                | "("! typelist ")"! "->"! ("("! S+=typelistatom ")"! | S+=typelistatom ) {$$=$^(FUNC_TYPE,$S,$typelist);}
                 ;
 dictorsetmaker  : kvpair (","! kvpair)+ ","!? 
                 | kvpair ","!?
