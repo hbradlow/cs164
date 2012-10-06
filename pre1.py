@@ -40,7 +40,7 @@ def process(in_file):
     # build up multiline statements in here
     line_buffer = ''
     for ch in input_text:
-        #balanced = paren_stack == 0 and curly_stack = 0 and brace_stack == 0
+        balanced = paren_stack == 0 and curly_stack == 0 and brace_stack == 0
         if in_lonely_comment:
             if ch == '\n' and not single_quote_toggle and not double_quote_toggle:
                 result_file += '\n'
@@ -61,7 +61,7 @@ def process(in_file):
             elif ch == '}':
                 curly_stack -= 1
         if in_comment:
-            comment_buffer += ch
+            #comment_buffer += ch
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
                 write_buffer += ch
                 result_file += write_buffer
@@ -69,8 +69,8 @@ def process(in_file):
                 in_comment = False
                 in_lonely_comment = False
                 whitespace_left = True
-                #print comment_buffer
-                comment_buffer = ''
+                #print ciomment_buffer
+                #icomment_buffer = ''
                 continue
             elif ch == '"':
                 if not single_quote_toggle:
@@ -102,7 +102,7 @@ def process(in_file):
                     indent_depth_stack.pop()
                     write_buffer += ' %s ' % DEDENT
                     indent_stack_cur -= 1
-                    print 'wrote a dedent'
+                    #print 'wrote a dedent'
                 result_file += write_buffer
                 write_buffer = ''
                 equivalent_blanks_pre = indent_depth_stack[-1]
