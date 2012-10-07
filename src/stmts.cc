@@ -40,6 +40,23 @@ public:
 
 NODE_FACTORY (Println_AST, PRINTLN);
 
+class Binop_AST : public AST_Tree {
+public:
+    NODE_CONSTRUCTORS (Binop_AST, AST_Tree);
+};
+
+NODE_FACTORY (Binop_AST, BINOP);
+class Unop_AST : public AST_Tree {
+public:
+    NODE_CONSTRUCTORS (Unop_AST, AST_Tree);
+
+};
+
+NODE_FACTORY (Unop_AST, UNOP);
+
+
+
+
 class Tuple_AST : public AST_Tree {
 private:
     bool isTarget;
