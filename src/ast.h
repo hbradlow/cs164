@@ -53,8 +53,8 @@ public:
         : CommonToken<AST, AST_Token, AST_Tree> (syntax, text, owner) { }
 
     void print (std::ostream& out, int indent);
-
-    /** The text denoted by THIS, if a string literal.  Undefined
+    virtual void convert_to_target();
+    virtual void convert_child_to_target();    /** The text denoted by THIS, if a string literal.  Undefined
      *  otherwise.  This is distinct from the actual text of a
      *  literal; all escape sequences have been replaced with their
      *  denotations. */
@@ -90,8 +90,8 @@ protected:
      *  This is NOT intended as a way of determine the type of a
      *  node. */
     virtual const char* external_name ();
-
-};
+    virtual void convert_to_target();
+    virtual void convert_child_to_target();};
 
 /** The supertype of all tree nodes that represent types.  We could
  *  instead define type-specific operations in AST, but that clutters

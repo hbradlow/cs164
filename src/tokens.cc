@@ -33,6 +33,19 @@ AST_Token::append_text(const string& s)
     throw logic_error ("unimplemented operation: append_text");
 }
 
+void
+AST_Token::convert_to_target()
+{
+    error(as_chars(), "Can not assign to token");
+}
+
+void
+AST_Token::convert_child_to_target()
+{
+    error(as_chars(), "Can not assign to token");
+}
+
+
 /** The define token. */
 class Define_Token : public AST_Token {
 private:
