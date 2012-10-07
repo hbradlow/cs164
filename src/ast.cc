@@ -19,25 +19,38 @@ AST::as_type ()
 {
     throw logic_error ("node does not represent a type");
 }
+void
+AST_Tree::convert_to_target()
+{
+    for_each_child (c, this) {
+            error(c->as_chars(), "Can not assign to tree");
+        } end_for;
+}
 
-/* Definitions of methods in base class AST_Tree. */
+void
+AST_Tree::convert_child_to_target()
+{
+        for_each_child (c, this) {
+            error(c->as_chars(), "Can not assign to tree");
+        } end_for;
+}
 
 void
 AST::convert_to_target()
 {
-    int ln = lineNumber();
-    error("0", "Can not convert to target list");
-    exit(1);
+    error(as_chars(), "Can not convert to target list");
 }
 
 void
 AST::convert_child_to_target()
 {
-    int ln = lineNumber();
-    error("0", "Can not convert to target list as child");
-    exit(1);
+    error(as_chars(), "Can not convert to target list as child");
 }
 
+
+
+
+/* Definitions of methods in base class AST_Tree. */
 
 void
 AST_Tree::print (ostream& out, int indent)
