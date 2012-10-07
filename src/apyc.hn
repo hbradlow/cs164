@@ -339,12 +339,12 @@ codeblock       : stmt_simple {$$=$^(BLOCK, $*);}
                 ;
 flowblock       : LINEBREAK!+ IDENT! M+=stmtnodef+ LINEBREAK!* DEDENT! LINEBREAK!* {$$=$^(STMT_LIST, $*);}
                 ;
-test            : A+=and_test ("if"! B+=and_test "else"! C+=test)? {if(!$B.missing()){$$=$^(IF_EXPR, $B, $A, $C);}}
-                ;
-and_test        : and_test (M+="and" and_test) {if(!$M.missing()){$$=make_binop($*);}}
-                | or_test
+test            : A+=or_test ("if"! B+=or_test "else"! C+=test)? {if(!$B.missing()){$$=$^(IF_EXPR, $B, $A, $C);}}
                 ;
 or_test         : or_test (M+="or" or_test) {if(!$M.missing()){$$=make_binop($*);}}
+                | and_test
+                ;
+and_test        : and_test (M+="and" and_test) {if(!$M.missing()){$$=make_binop($*);}}
                 | not_test
                 ;
 not_test        : M+="not" not_test {if(!$M.missing()){$$=make_unop($*);}}

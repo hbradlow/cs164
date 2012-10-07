@@ -28,6 +28,7 @@ error (const char* loc, const char* format, ...)
     va_end (ap);
     fprintf (stderr, "\n");
     err_count += 1;
+    exit (1);
 }
 
 void
@@ -39,6 +40,7 @@ error_no_file (const char* format, ...)
     va_end (ap);
     fprintf (stderr, "\n");
     err_count += 1;
+    exit (1);
 }
 
 static void

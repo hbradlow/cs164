@@ -26,16 +26,14 @@ void
 AST::convert_to_target()
 {
     int ln = lineNumber();
-    error("0", "Can not convert to target list");
-    exit(1);
+    error_no_file("Can not convert to target list");
 }
 
 void
 AST::convert_child_to_target()
 {
     int ln = lineNumber();
-    error("0", "Can not convert to target list as child");
-    exit(1);
+    error_no_file("Can not convert to target list as child");
 }
 
 
