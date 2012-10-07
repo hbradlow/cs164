@@ -270,7 +270,7 @@ private:
         }
         else
             value = atol(as_chars());
-        if (value > pow(2,30.0))
+        if ((unsigned int)value > pow(2,30.0))
         {
             error(as_chars(), "Numeral too big");
         }
