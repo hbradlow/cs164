@@ -207,6 +207,7 @@ private:
             case '7': return 7;
         }
         error(as_chars(), "Invalid octal digits");
+        return -1;
     }
     /* parses a character into its corresponding number */
     long digit_hex_value(char c)
@@ -237,6 +238,7 @@ private:
             case 'f': return 15;
         }
         error(as_chars(), "Invalid hex digits");
+        return -1;
     }
     /* parsed a number in hex format into its decimal value */
     long parse_hex(const char* p)

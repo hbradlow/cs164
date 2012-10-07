@@ -8,9 +8,10 @@ def preprocess(infile):
     multi_comment = r'((^\s*(\"\"\"|\'\'\')(.|\n)*)*\3)'
     with open(infile, 'r') as f:
         f = f.read()
-        lonely_patt = r'#.*$'
-        f = re.sub(lonely_patt, lambda m: '#comment\n', f)
+        lonely_patt = r'^\s*\#.*$'
+        f = re.sub(lonely_patt, lambda m: '\n', f)
 	f = re.sub(multi_comment, lambda m: m.groups()[0].count('\n')*'\n', f)
+	print f
         return f
 
 def process(in_file):
