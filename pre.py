@@ -5,13 +5,10 @@ DEDENT = '@d2b3009662c463c2ab96d1a73872c6f1'
 indent_len = len(INDENT)
 #remove all lonely comments
 def preprocess(infile):
-    multi_comment = r'((^\s*(\"\"\"|\'\'\')(.|\n)*)*\3)'
     with open(infile, 'r') as f:
         f = f.read()
-        lonely_patt = r'^\s*\#.*$'
-        f = re.sub(lonely_patt, lambda m: '\n', f)
-	f = re.sub(multi_comment, lambda m: m.groups()[0].count('\n')*'\n', f)
-	print f
+        lonely_patt = r'#.*$'
+        f = re.sub(lonely_patt, lambda m: '#comment\n', f)
         return f
 
 def process(in_file):
@@ -59,6 +56,8 @@ def process(in_file):
     multi_a_patt = r'(((\'|\").*?\3)\s*((\"\"\"|\'\'\').*?\5))'
     # matches a triple_string and then a space_separated_strin
     multi_b_patt = r'(((\"\"\"|\'\'\').*?\3)\s*((\'|\").*?\5))'
+    # build up multiline statements in here
+    line_buffer = ''
     for ch in input_text:
         balanced = paren_stack == 0 and curly_stack == 0 and brace_stack == 0
         quote_balanced = line_single_quote_stack 
@@ -249,10 +248,13 @@ def process(in_file):
         indent_stack_cur -= 1
         result_file += ' %s ' % DEDENT
         indent_depth_stack.pop()
+    #print result_file
     while re.search(multiline_patt, result_file):
         result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', '', m.groups()[0]), result_file)
+        #print result_file
     while re.search(multi_a_patt, result_file):
         result_file = re.sub(multi_a_patt, lambda m: "'" + eval(m.groups()[1]) + eval(m.groups()[3]) + "'", result_file)
+    #print result_file
     while re.search(multi_b_patt, result_file):
         result_file = re.sub(multi_b_patt, lambda m: '"' + eval(m.groups()[1]) + eval(m.groups()[3]) + '"', result_file)
     while re.search(triple_patt, result_file):
