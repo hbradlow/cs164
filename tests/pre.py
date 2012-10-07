@@ -15,6 +15,9 @@ def preprocess(infile):
 =======
         lonely_patt = r'#.*$'
         f = re.sub(lonely_patt, lambda m: '#comment\n', f)
+<<<<<<< HEAD
+>>>>>>> parent of 32738bf... multiline
+=======
 >>>>>>> parent of 32738bf... multiline
         return f
 
