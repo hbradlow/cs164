@@ -24,7 +24,7 @@ def process(in_file):
     brace_stack = 0
     curly_stack = 0
     line_single_quote_stack = 0
-    double_quote_stack = 0
+    line_double_quote_stack = 0
     
     slash_count = 0
 
@@ -32,6 +32,10 @@ def process(in_file):
     double_quote_toggle = False
     indent_stack_cur = 0
     indent_stack_pre = 0
+    triple_single = 0
+    triple_double = 0
+    # true if in a multiline string
+    triple_toggle = False
 
     # depths of all the indents
     indent_depth_stack = [0]
@@ -65,6 +69,10 @@ def process(in_file):
                 in_comment = False
                 continue
         if not in_comment and not in_lonely_comment:
+            #print triple_single
+            if ch not in ['"', "'"]:
+                triple_double = 0
+                triple_single = 0
             if ch == '(':
                 paren_stack += 1
             elif ch == ')':
@@ -78,10 +86,14 @@ def process(in_file):
             elif ch == '}':
                 curly_stack -= 1
             elif ch == '"':
-                double_quote_stack += 1
+                line_double_quote_stack += 1
+                triple_double += 1
             elif ch == "'":
                 line_single_quote_stack += 1
-
+                triple_single += 1
+            if triple_double > 2 or triple_single > 2:
+                triple_toggle = not triple_toggle
+        
         if in_comment:
             if not double_quote_toggle and not single_quote_toggle and ch == '\n':
                 if balanced:
@@ -206,6 +218,11 @@ def process(in_file):
                 #print write_buffer
                 write_buffer += '\\'
                 slash_count += 1
+            # multiline
+            elif triple_toggle:
+                #print '===triple quoted string'
+                write_buffer += '\\'
+                slash_count += 1
             elif len(write_buffer) > 0 and write_buffer[-1] == '\\':
                 slash_count += 1
                 no_indent = True
@@ -231,6 +248,7 @@ def process(in_file):
         indent_stack_cur -= 1
         result_file += ' %s ' % DEDENT
         indent_depth_stack.pop()
+    #print result_file
     while re.search(multiline_patt, result_file):
         result_file = re.sub(multiline_patt, lambda m: re.sub(r'\s*\\\n\s*', '', m.groups()[0]), result_file)
         #print result_file
