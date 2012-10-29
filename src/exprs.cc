@@ -134,17 +134,25 @@ class Unop_AST : public Callable {
 NODE_FACTORY (Unop_AST, UNOP);
 
 
-class Function_AST: public AST_Tree {
+class Def_AST: public AST_Tree {
 public:
     bool is_init(){
         return strcmp(this->child(0)->as_string().c_str(),"__init__") == 0;
     }
+    void assert_none_here(int k){
+        error("0", "Cannot use None as a method name");
+    }
 protected:
 
-    NODE_CONSTRUCTORS (Function_AST, AST_Tree);
+    NODE_CONSTRUCTORS (Def_AST, AST_Tree);
 };
+NODE_FACTORY (Def_AST, DEF);
 
-NODE_FACTORY (Function_AST, METHOD);
+class Method_AST: public Def_AST {
+protected:
+    NODE_CONSTRUCTORS (Method_AST, Def_AST);
+};
+NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree{
 public:
@@ -181,6 +189,9 @@ public:
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
         this->insert(0,def);
     }
+    void assert_none_here(int k){
+        error("0", "Cannot use None as a method name");
+    }
 protected:
 
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);
@@ -194,5 +205,17 @@ protected:
     }
 
 };
-
 NODE_FACTORY (Class_AST, CLASS_BLOCK);
+
+class Assign_AST: public AST_Tree {
+public:
+    void assert_none_here(int k){
+        if(k==0)
+            error("0","Cannot assign to None");
+    }
+protected:
+
+    NODE_CONSTRUCTORS (Assign_AST, AST_Tree);
+};
+
+NODE_FACTORY (Assign_AST, ASSIGN);

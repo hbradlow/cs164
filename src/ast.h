@@ -173,6 +173,8 @@ public:
     virtual bool is_init();
     /* returns true if this node is an id node with value "None" */
     virtual bool is_none();
+    /* Assert that it is legal that a None value is at posision k */
+    virtual void assert_none_here(int k);
 
 protected:
 

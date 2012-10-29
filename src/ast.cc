@@ -108,8 +108,8 @@ AST::doOuterSemantics ()
 
 
     //rewrites
-    this->append_init();
-    this->replace_none();
+    this->replace_none(); // 4.6
+    this->append_init(); // 4.2
 
     return this;
 }
@@ -330,6 +330,8 @@ void AST::replace_none(){
     int index = 0;
     for_each_child (c, this) {
         if(c->is_none()){
+            this->assert_none_here(index); // check to make sure its legal to have a None here
+
             NodePtr i = AST::make_token(ID,8,"__None__",true);
 
             vector<NodePtr> expr_v;
@@ -357,3 +359,9 @@ bool
 AST::is_none(){
     return false;
 }
+
+void
+AST::assert_none_here(int k){
+    /* do nothing */
+}
+
