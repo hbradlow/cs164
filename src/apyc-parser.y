@@ -1,5 +1,5 @@
 /* -*-C++-*- */
-/* Generated from apyc.hn at Mon Oct 29 02:38:13 2012 GMT. */
+/* Generated from apyc.hn at Mon Oct 29 20:08:01 2012 GMT. */
 
 %code top {
 
@@ -159,6 +159,7 @@
 %token BREAK "break"
 %token CALL "@call"
 %token CLASS_BLOCK "@@block"
+%token CLASS "@class"
 %token COMPARE "@compare"
 %token LEFT_COMPARE "@left_compare"
 %token CONTINUE "continue"
@@ -204,7 +205,7 @@
 %expect-rr 18
 %expect 2
 
-#line 208 "apyc-parser.y"
+#line 209 "apyc-parser.y"
 
 /* Horn prologue */
 
@@ -356,7 +357,7 @@ static yyvar yyv_while_stmt;
                         /* Main Grammar */
 
 program : 
-#line 349 "apyc.hn"
+#line 350 "apyc.hn"
  __14 
                 { YYCTLA($$,0,1,&$1); yylhs = YYMAKE_TREE (MODULE, yylhs.all_values ());
                   yylhs.set_loc (NULL);
@@ -366,55 +367,55 @@ program :
 
 
 identifier : 
-#line 356 "apyc.hn"
+#line 357 "apyc.hn"
  ID { YYCTLPA($$,0,1,&$1);  yyv_ID = $1; }
 ;
 
 
 
 atom : 
-#line 359 "apyc.hn"
+#line 360 "apyc.hn"
  identifier { YYCTLPA($$,0,1,&$1);  yyv_identifier = $1; }
  | 
-#line 359 "apyc.hn"
+#line 360 "apyc.hn"
  literal { YYCTLPA($$,0,1,&$1);  yyv_literal = $1; }
  | 
-#line 359 "apyc.hn"
+#line 360 "apyc.hn"
  enclosure { YYCTLPA($$,0,1,&$1);  yyv_enclosure = $1; }
 ;
 
 
   
 enclosure : 
-#line 362 "apyc.hn"
+#line 363 "apyc.hn"
  parenth_form { YYCTLPA($$,0,1,&$1);  yyv_parenth_form = $1; }
  | 
-#line 362 "apyc.hn"
+#line 363 "apyc.hn"
  list_display { YYCTLPA($$,0,1,&$1);  yyv_list_display = $1; }
  | 
-#line 362 "apyc.hn"
+#line 363 "apyc.hn"
  dict_display { YYCTLPA($$,0,1,&$1);  yyv_dict_display = $1; }
 ;
 
 
 
 literal : 
-#line 365 "apyc.hn"
+#line 366 "apyc.hn"
  
       stringliteral { YYCTLPA($$,0,1,&$1);  yyv_stringliteral = $1; }
  | 
-#line 367 "apyc.hn"
+#line 368 "apyc.hn"
  INT_LITERAL { YYCTLPA($$,0,1,&$1);  yyv_INT_LITERAL = $1; }
 ;
 
 
 
 string_piece : 
-#line 370 "apyc.hn"
+#line 371 "apyc.hn"
 
       STRING { YYCTLPA($$,0,1,&$1);  yyv_STRING = $1; }
  | 
-#line 372 "apyc.hn"
+#line 373 "apyc.hn"
  RAWSTRING { YYCTLPA($$,0,1,&$1);  yyv_RAWSTRING = $1; }
 ;
 
@@ -424,11 +425,11 @@ string_piece :
  * not required to retain its initial value.  Additional string literals are
  * appended to it as a side effect. */
 stringliteral : 
-#line 378 "apyc.hn"
+#line 379 "apyc.hn"
 
       string_piece { YYCTLPA($$,0,1,&$1);  yyv_string_piece = $1; }
  | 
-#line 380 "apyc.hn"
+#line 381 "apyc.hn"
  stringliteral string_piece
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_stringliteral = $1; yyv_string_piece = $2;yyv_stringliteral.value()->as_token()
                      ->append_text(yyv_string_piece.value()->as_token()
@@ -439,10 +440,10 @@ stringliteral :
 
 
 parenth_form : 
-#line 387 "apyc.hn"
+#line 388 "apyc.hn"
  "(" expression ")" { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore(); yyv_expression = $2; }
  | 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  "(" __19 ")" 
                 { YYCTLA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore();yylhs = YYMAKE_TREE(TUPLE, yylhs.all_values ()); } 
 ;
@@ -450,7 +451,7 @@ parenth_form :
 
 
 list_display : 
-#line 392 "apyc.hn"
+#line 393 "apyc.hn"
  "[" __20 "]" 
                 { YYCTLA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore();yylhs = YYMAKE_TREE(LIST_DISPLAY, yylhs.all_values ()); } 
 ;
@@ -458,7 +459,7 @@ list_display :
 
   
 dict_display : 
-#line 396 "apyc.hn"
+#line 397 "apyc.hn"
  "{" __21 "}"
                 { YYCTLA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore();yylhs = YYMAKE_TREE(DICT_DISPLAY, yylhs.all_values ()); } 
 ;
@@ -466,14 +467,14 @@ dict_display :
 
   
 key_datum_list : 
-#line 400 "apyc.hn"
+#line 401 "apyc.hn"
  key_datum __23 __9 { YYCTLA($$,0,3,&$1,&$2,&$3);  }
 ;
 
 
   
 key_datum : 
-#line 403 "apyc.hn"
+#line 404 "apyc.hn"
  expression ":" expression 
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.ignore(); yyv_expression = $1; yyv_expression = $3;yylhs = YYMAKE_TREE(PAIR, yylhs.all_values ()); } 
 ;
@@ -481,26 +482,26 @@ key_datum :
 
 
 primary : 
-#line 407 "apyc.hn"
+#line 408 "apyc.hn"
  atom { YYCTLPA($$,0,1,&$1);  yyv_atom = $1; }
  | 
-#line 408 "apyc.hn"
+#line 409 "apyc.hn"
  attributeref { YYCTLPA($$,0,1,&$1);  yyv_attributeref = $1; }
  | 
-#line 409 "apyc.hn"
+#line 410 "apyc.hn"
  subscription { YYCTLPA($$,0,1,&$1);  yyv_subscription = $1; }
  | 
-#line 410 "apyc.hn"
+#line 411 "apyc.hn"
  slicing { YYCTLPA($$,0,1,&$1);  yyv_slicing = $1; }
  | 
-#line 411 "apyc.hn"
+#line 412 "apyc.hn"
  call { YYCTLPA($$,0,1,&$1);  yyv_call = $1; }
 ;
 
 
 
 attributeref : 
-#line 414 "apyc.hn"
+#line 415 "apyc.hn"
  primary "." identifier 
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.ignore(); yyv_primary = $1; yyv_identifier = $3;yylhs = YYMAKE_TREE(ATTRIBUTEREF, yylhs.all_values ()); } 
 ;
@@ -508,7 +509,7 @@ attributeref :
 
 
 subscription : 
-#line 418 "apyc.hn"
+#line 419 "apyc.hn"
  primary "[" expression_or_list "]" 
                 { YYCTLPA($$,0,4,&$1,&$2,&$3,&$4);  $2.ignore(); $4.ignore(); yyv_primary = $1; yyv_expression_or_list = $3;yylhs = YYMAKE_TREE (SUBSCRIPTION, yyv_primary.value (),
                            yyv_expression_or_list.value (), 
@@ -518,7 +519,7 @@ subscription :
 
 
 slicing : 
-#line 425 "apyc.hn"
+#line 426 "apyc.hn"
  primary "[" bound  ":" bound  "]" 
       	        { YYCTLPA($$,0,6,&$1,&$2,&$3,&$4,&$5,&$6);  $2.ignore(); $4.ignore(); $6.ignore(); yyv_primary = $1; yyv_left = $3; yyv_bound = $3; yyv_right = $5; yyv_bound = $5;yylhs = YYMAKE_TREE (SLICING, yyv_primary.value (), 
                            yyv_left.value (), yyv_right.value (), 
@@ -528,22 +529,22 @@ slicing :
 
 
 bound : 
-#line 431 "apyc.hn"
+#line 432 "apyc.hn"
  
       expression { YYCTLPA($$,0,1,&$1);  yyv_expression = $1; }
  | 
-#line 433 "apyc.hn"
+#line 434 "apyc.hn"
  empty { YYCTLPA($$,0,1,&$1);  yyv_empty = $1; }
 ;
 
 
 
 call : 
-#line 436 "apyc.hn"
+#line 437 "apyc.hn"
  primary "(" argument_list ")" 
                 { YYCTLPA($$,0,4,&$1,&$2,&$3,&$4);  $2.ignore(); $4.ignore(); yyv_primary = $1; yyv_argument_list = $3;yylhs = YYMAKE_TREE(CALL, yylhs.all_values ()); } 
  | 
-#line 438 "apyc.hn"
+#line 439 "apyc.hn"
  parameterized_type "(" argument_list ")" 
                 { YYCTLPA($$,0,4,&$1,&$2,&$3,&$4);  $2.ignore(); $4.ignore(); yyv_parameterized_type = $1; yyv_argument_list = $3;yylhs = YYMAKE_TREE(CALL, yylhs.all_values ()); } 
 ;
@@ -551,7 +552,7 @@ call :
 
   
 argument_list : 
-#line 442 "apyc.hn"
+#line 443 "apyc.hn"
  __15
                 /* Trailing comma requires GLR*/
                 { YYCTLA($$,0,1,&$1); yylhs = YYMAKE_TREE(EXPR_LIST, yylhs.all_values ()); } 
@@ -560,7 +561,7 @@ argument_list :
 
   
 expression : 
-#line 447 "apyc.hn"
+#line 448 "apyc.hn"
  
       conditional_expression { YYCTLPA($$,0,1,&$1);  yyv_conditional_expression = $1; }
 ;
@@ -569,12 +570,12 @@ expression :
 
   
 conditional_expression : 
-#line 452 "apyc.hn"
+#line 453 "apyc.hn"
  expr1  "if" expr1  "else" expression  
                 { YYCTLPA($$,0,5,&$1,&$2,&$3,&$4,&$5);  $2.ignore(); $4.ignore(); yyv_thenpart = $1; yyv_expr1 = $1; yyv_cond = $3; yyv_expr1 = $3; yyv_elsepart = $5; yyv_expression = $5;yylhs = YYMAKE_TREE(IF_EXPR, yyv_cond.value(), yyv_thenpart.value (), 
                           yyv_elsepart.value ()); } 
  | 
-#line 456 "apyc.hn"
+#line 457 "apyc.hn"
  expr1 { YYCTLPA($$,0,1,&$1);  yyv_expr1 = $1; }
 ;
 
@@ -582,17 +583,17 @@ conditional_expression :
 
   
 expr1 : 
-#line 460 "apyc.hn"
+#line 461 "apyc.hn"
  
       expr2 { YYCTLPA($$,0,1,&$1);  yyv_expr2 = $1; }
  | 
-#line 462 "apyc.hn"
+#line 463 "apyc.hn"
  expr1 "or" expr1 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.mark_tree_op (); yyv_expr1 = $1; yyv_expr1 = $3; }
  | 
-#line 462 "apyc.hn"
+#line 463 "apyc.hn"
  expr1 "and" expr1 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.mark_tree_op (); yyv_expr1 = $1; yyv_expr1 = $3; }
  | 
-#line 463 "apyc.hn"
+#line 464 "apyc.hn"
  "not" expr1
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_expr1 = $2;yylhs = make_unop (yylhs.all_values ()); } 
 ;
@@ -600,7 +601,7 @@ expr1 :
 
 
 expression_list_no_comma : 
-#line 467 "apyc.hn"
+#line 468 "apyc.hn"
 
       expression __22   /* Requires GLR for trailiing "," */
                 { YYCTLA($$,0,2,&$1,&$2); yylhs = YYMAKE_TREE(EXPR_LIST, yylhs.all_values ()); } 
@@ -609,7 +610,7 @@ expression_list_no_comma :
 
 
 expression_list0_no_comma : 
-#line 473 "apyc.hn"
+#line 474 "apyc.hn"
  __16
                 { YYCTLA($$,0,1,&$1); yylhs = YYMAKE_TREE(EXPR_LIST, yylhs.all_values ()); } 
 ;
@@ -617,11 +618,11 @@ expression_list0_no_comma :
 
 
 expression_or_list : 
-#line 477 "apyc.hn"
+#line 478 "apyc.hn"
 
        expression { YYCTLPA($$,0,1,&$1);  yyv_expression = $1; }
  | 
-#line 479 "apyc.hn"
+#line 480 "apyc.hn"
  __1 __8
                 { YYCTLA($$,0,2,&$1,&$2); yylhs = YYMAKE_TREE(TUPLE, yylhs.all_values ()); } 
 ;
@@ -629,26 +630,26 @@ expression_or_list :
 
 
 expression_or_list0 : 
-#line 483 "apyc.hn"
+#line 484 "apyc.hn"
 
       expression_or_list { YYCTLPA($$,0,1,&$1);  yyv_expression_or_list = $1; }
  | 
-#line 485 "apyc.hn"
+#line 486 "apyc.hn"
  empty { YYCTLPA($$,0,1,&$1);  yyv_empty = $1; }
 ;
 
 
 
 comp_operator : 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  __0
                 { YYCTLA($$,0,1,&$1); yylhs = make_id(yylhs.all_values ()); } 
  | 
-#line 491 "apyc.hn"
+#line 492 "apyc.hn"
  "is"  "not" 
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_op = $1;yylhs = make_id("isnot", yyv_op.loc()); } 
  | 
-#line 493 "apyc.hn"
+#line 494 "apyc.hn"
  "not"  "in"
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_op = $1;yylhs = make_id("notin", yyv_op.loc()); } 
 ;
@@ -656,28 +657,28 @@ comp_operator :
 
 
 expr2 : 
-#line 497 "apyc.hn"
+#line 498 "apyc.hn"
  
       left_compare comp_operator expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_left_compare = $1; yyv_comp_operator = $2; yyv_expr3 = $3;yylhs = YYMAKE_TREE(COMPARE, yylhs.all_values ()); } 
  | 
-#line 500 "apyc.hn"
+#line 501 "apyc.hn"
  expr3 comp_operator expr3  
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_comp_operator = $2; yyv_expr3 = $3;yylhs = YYMAKE_TREE(COMPARE, yylhs.all_values ()); } 
  | 
-#line 502 "apyc.hn"
+#line 503 "apyc.hn"
  expr3 { YYCTLPA($$,0,1,&$1);  yyv_expr3 = $1; }
 ;
 
 
 
 left_compare : 
-#line 505 "apyc.hn"
+#line 506 "apyc.hn"
 
       expr3 comp_operator expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_comp_operator = $2; yyv_expr3 = $3;yylhs = YYMAKE_TREE(LEFT_COMPARE, yylhs.all_values ()); } 
  | 
-#line 508 "apyc.hn"
+#line 509 "apyc.hn"
  left_compare comp_operator expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_left_compare = $1; yyv_comp_operator = $2; yyv_expr3 = $3;yylhs = YYMAKE_TREE(LEFT_COMPARE, yylhs.all_values ()); } 
 ;
@@ -685,49 +686,49 @@ left_compare :
 
 
 expr3 : 
-#line 512 "apyc.hn"
+#line 513 "apyc.hn"
  
       primary { YYCTLPA($$,0,1,&$1);  yyv_primary = $1; }
  | 
-#line 514 "apyc.hn"
+#line 515 "apyc.hn"
  "-" expr3
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_expr3 = $2;yylhs = make_unop (yylhs.all_values ()); }  %prec UNOP
  | 
-#line 516 "apyc.hn"
+#line 517 "apyc.hn"
  "+" expr3
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_expr3 = $2;yylhs = make_unop (yylhs.all_values ()); }  %prec UNOP
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "+"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "-"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "*"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "/"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "//"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "%"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
  | 
-#line 518 "apyc.hn"
+#line 519 "apyc.hn"
  expr3 "**"
      expr3
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  yyv_expr3 = $1; yyv_expr3 = $3;yylhs = make_binop (yylhs.all_values ()); } 
@@ -736,45 +737,45 @@ expr3 :
 
              
 simple_stmt : 
-#line 524 "apyc.hn"
+#line 525 "apyc.hn"
 
       expression_stmt { YYCTLPA($$,0,1,&$1);  yyv_expression_stmt = $1; }
  | 
-#line 526 "apyc.hn"
+#line 527 "apyc.hn"
  assignment_stmt { YYCTLPA($$,0,1,&$1);  yyv_assignment_stmt = $1; }
  | 
-#line 527 "apyc.hn"
+#line 528 "apyc.hn"
  pass_stmt { YYCTLPA($$,0,1,&$1);  yyv_pass_stmt = $1; }
  | 
-#line 528 "apyc.hn"
+#line 529 "apyc.hn"
  print_stmt { YYCTLPA($$,0,1,&$1);  yyv_print_stmt = $1; }
  | 
-#line 529 "apyc.hn"
+#line 530 "apyc.hn"
  return_stmt { YYCTLPA($$,0,1,&$1);  yyv_return_stmt = $1; }
  | 
-#line 530 "apyc.hn"
+#line 531 "apyc.hn"
  break_stmt { YYCTLPA($$,0,1,&$1);  yyv_break_stmt = $1; }
  | 
-#line 531 "apyc.hn"
+#line 532 "apyc.hn"
  continue_stmt { YYCTLPA($$,0,1,&$1);  yyv_continue_stmt = $1; }
 ;
 
 
 
 expression_stmt : 
-#line 534 "apyc.hn"
+#line 535 "apyc.hn"
  expression_or_list { YYCTLPA($$,0,1,&$1);  yyv_expression_or_list = $1; }
 ;
 
 
 
 assignment_stmt : 
-#line 537 "apyc.hn"
+#line 538 "apyc.hn"
  
       target_list "=" expression_or_list
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.ignore(); yyv_target_list = $1; yyv_expression_or_list = $3;yylhs = YYMAKE_TREE (ASSIGN, yylhs.all_values ()); } 
  | 
-#line 540 "apyc.hn"
+#line 541 "apyc.hn"
  target_list "=" assignment_stmt
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.ignore(); yyv_target_list = $1; yyv_assignment_stmt = $3;yylhs = YYMAKE_TREE (ASSIGN, yylhs.all_values ()); } 
 ;
@@ -782,23 +783,23 @@ assignment_stmt :
 
 
 target_list : 
-#line 544 "apyc.hn"
+#line 545 "apyc.hn"
  
       target { YYCTLPA($$,0,1,&$1);  yyv_target = $1; }
  | 
-#line 546 "apyc.hn"
+#line 547 "apyc.hn"
  "(" target ")" { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore(); yyv_target = $2; }
  | 
-#line 547 "apyc.hn"
+#line 548 "apyc.hn"
  target_list1 { YYCTLPA($$,0,1,&$1);  yyv_target_list1 = $1; }
  | 
-#line 548 "apyc.hn"
+#line 549 "apyc.hn"
  "(" target_list1 ")" { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore(); yyv_target_list1 = $2; }
  | 
-#line 549 "apyc.hn"
+#line 550 "apyc.hn"
  "[" target_list1 "]" { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore(); yyv_target_list1 = $2; }
  | 
-#line 550 "apyc.hn"
+#line 551 "apyc.hn"
  "[" target "]"
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $3.ignore(); yyv_target = $2;yylhs = YYMAKE_TREE (TARGET_LIST, yylhs.all_values ()); } 
 ;
@@ -807,11 +808,11 @@ target_list :
 
 target_list1 : /* empty */  { YYCTLPA($$,0,0);  }
  | 
-#line 555 "apyc.hn"
+#line 556 "apyc.hn"
  target __4 __9
                 { YYCTLA($$,0,3,&$1,&$2,&$3); yylhs = YYMAKE_TREE(TARGET_LIST, yylhs.all_values ()); } 
  | 
-#line 557 "apyc.hn"
+#line 558 "apyc.hn"
  target ","
                 { YYCTLPA($$,0,2,&$1,&$2);  $2.ignore(); yyv_target = $1;yylhs = YYMAKE_TREE(TARGET_LIST, yyv_target.value ()); } 
 ;
@@ -819,28 +820,28 @@ target_list1 : /* empty */  { YYCTLPA($$,0,0);  }
 
   
 target : 
-#line 561 "apyc.hn"
+#line 562 "apyc.hn"
   
       identifier { YYCTLPA($$,0,1,&$1);  yyv_identifier = $1; }
  | 
-#line 563 "apyc.hn"
+#line 564 "apyc.hn"
  identifier type_annotation
                 { YYCTLPA($$,0,2,&$1,&$2);  yyv_identifier = $1; yyv_type_annotation = $2;yylhs = YYMAKE_TREE(TYPED_ID, yylhs.all_values ()); } 
  | 
-#line 565 "apyc.hn"
+#line 566 "apyc.hn"
  attributeref { YYCTLPA($$,0,1,&$1);  yyv_attributeref = $1; }
  | 
-#line 566 "apyc.hn"
+#line 567 "apyc.hn"
  subscription { YYCTLPA($$,0,1,&$1);  yyv_subscription = $1; }
  | 
-#line 567 "apyc.hn"
+#line 568 "apyc.hn"
  slicing { YYCTLPA($$,0,1,&$1);  yyv_slicing = $1; }
 ;
 
 
 
 pass_stmt : 
-#line 570 "apyc.hn"
+#line 571 "apyc.hn"
  "pass"   
                 { YYCTLPA($$,0,1,&$1);  $1.ignore();yylhs = YYMAKE_TREE(STMT_LIST); } 
 ;
@@ -848,24 +849,24 @@ pass_stmt :
 
 
 print_stmt : 
-#line 574 "apyc.hn"
+#line 575 "apyc.hn"
  
       "print" empty expression_list0_no_comma
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); yyv_empty = $2; yyv_expression_list0_no_comma = $3;yylhs = YYMAKE_TREE(PRINTLN, yylhs.all_values ()); } 
  | 
-#line 577 "apyc.hn"
+#line 578 "apyc.hn"
  "print" ">>" expression 
                 { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $2.ignore(); yyv_expression = $3;yylhs = YYMAKE_TREE(PRINTLN, yyv_expression.value (), YYMAKE_TREE(EXPR_LIST)); } 
  | 
-#line 579 "apyc.hn"
+#line 580 "apyc.hn"
  "print" ">>" expression "," expression_list_no_comma
                 { YYCTLPA($$,0,5,&$1,&$2,&$3,&$4,&$5);  $1.ignore(); $2.ignore(); $4.ignore(); yyv_expression = $3; yyv_expression_list_no_comma = $5;yylhs = YYMAKE_TREE(PRINTLN, yylhs.all_values ()); } 
  | 
-#line 581 "apyc.hn"
+#line 582 "apyc.hn"
  "print" empty expression_list_no_comma ","
                 { YYCTLPA($$,0,4,&$1,&$2,&$3,&$4);  $1.ignore(); $4.ignore(); yyv_empty = $2; yyv_expression_list_no_comma = $3;yylhs = YYMAKE_TREE(PRINT, yylhs.all_values ()); } 
  | 
-#line 583 "apyc.hn"
+#line 584 "apyc.hn"
  "print" ">>" expression "," expression_list_no_comma ","
                 { YYCTLPA($$,0,6,&$1,&$2,&$3,&$4,&$5,&$6);  $1.ignore(); $2.ignore(); $4.ignore(); $6.ignore(); yyv_expression = $3; yyv_expression_list_no_comma = $5;yylhs = YYMAKE_TREE(PRINT, yylhs.all_values ()); } 
 ;
@@ -873,7 +874,7 @@ print_stmt :
 
 
 return_stmt : 
-#line 587 "apyc.hn"
+#line 588 "apyc.hn"
  "return" expression_or_list0
                 { YYCTLPA($$,0,2,&$1,&$2);  $1.mark_tree_op (); yyv_expression_or_list0 = $2;check_in_func (); } 
 ;
@@ -881,58 +882,58 @@ return_stmt :
 
 
 break_stmt : 
-#line 591 "apyc.hn"
+#line 592 "apyc.hn"
  "break" { YYCTLPA($$,0,1,&$1);  $1.mark_tree_op ();check_in_loop (); } 
 ;
 
 
 
 continue_stmt : 
-#line 594 "apyc.hn"
+#line 595 "apyc.hn"
  "continue" { YYCTLPA($$,0,1,&$1);  $1.mark_tree_op ();check_in_loop (); } 
 ;
 
 
 
 compound_stmt : 
-#line 597 "apyc.hn"
+#line 598 "apyc.hn"
  
       if_stmt { YYCTLPA($$,0,1,&$1);  yyv_if_stmt = $1; }
  | 
-#line 599 "apyc.hn"
+#line 600 "apyc.hn"
  while_stmt { YYCTLPA($$,0,1,&$1);  yyv_while_stmt = $1; }
  | 
-#line 600 "apyc.hn"
+#line 601 "apyc.hn"
  for_stmt { YYCTLPA($$,0,1,&$1);  yyv_for_stmt = $1; }
  | 
-#line 601 "apyc.hn"
+#line 602 "apyc.hn"
  funcdef { YYCTLPA($$,0,1,&$1);  yyv_funcdef = $1; }
  | 
-#line 602 "apyc.hn"
+#line 603 "apyc.hn"
  classdef { YYCTLPA($$,0,1,&$1);  yyv_classdef = $1; }
 ;
 
 
 
 stmts : 
-#line 605 "apyc.hn"
+#line 606 "apyc.hn"
  
       stmt_list NEWLINE { YYCTLPA($$,0,2,&$1,&$2);  $2.ignore(); yyv_stmt_list = $1; yyv_NEWLINE = $2; }
  | 
-#line 607 "apyc.hn"
+#line 608 "apyc.hn"
  NEWLINE INDENT __2 DEDENT { YYCTLA($$,0,4,&$1,&$2,&$3,&$4);  $1.ignore(); $2.ignore(); $4.ignore(); yyv_DEDENT = $4; }
  | 
-#line 608 "apyc.hn"
+#line 609 "apyc.hn"
  __error__ NEWLINE { YYCTLPA($$,0,2,&$1,&$2);  $1.ignore(); $2.ignore(); yyv_NEWLINE = $2; }
  | 
-#line 609 "apyc.hn"
+#line 610 "apyc.hn"
  NEWLINE INDENT __error__ DEDENT { YYCTLPA($$,0,4,&$1,&$2,&$3,&$4);  $1.ignore(); $2.ignore(); $3.ignore(); $4.ignore(); yyv_NEWLINE = $1; yyv_INDENT = $2; yyv_DEDENT = $4; }
 ;
 
 
   
 suite : 
-#line 612 "apyc.hn"
+#line 613 "apyc.hn"
 
       stmts     { YYCTLPA($$,0,1,&$1);  yyv_stmts = $1;yylhs = YYMAKE_TREE(STMT_LIST, yylhs.all_values ()); } 
 ;
@@ -940,17 +941,17 @@ suite :
 
 
 statement : 
-#line 616 "apyc.hn"
+#line 617 "apyc.hn"
  stmt_list NEWLINE { YYCTLPA($$,0,2,&$1,&$2);  $2.ignore(); yyv_stmt_list = $1; yyv_NEWLINE = $2; }
  | 
-#line 616 "apyc.hn"
+#line 617 "apyc.hn"
  compound_stmt { YYCTLPA($$,0,1,&$1);  yyv_compound_stmt = $1; }
 ;
 
 
   
 stmt_list : 
-#line 619 "apyc.hn"
+#line 620 "apyc.hn"
  
       simple_stmt __24 __10 { YYCTLA($$,0,3,&$1,&$2,&$3);  }
 ;
@@ -958,7 +959,7 @@ stmt_list :
 
 
 if_stmt : 
-#line 623 "apyc.hn"
+#line 624 "apyc.hn"
  
       "if" expression ":"
                 { YYCTLP($$, 0, 0);  yyv_expression = $2;incr (control_depth); }  
@@ -970,31 +971,31 @@ if_stmt :
 
 
 elifs : 
-#line 631 "apyc.hn"
+#line 632 "apyc.hn"
 
       "elif" expression ":" suite elifs 
                 { YYCTLPA($$,0,5,&$1,&$2,&$3,&$4,&$5);  $1.ignore(); $3.ignore(); yyv_expression = $2; yyv_suite = $4; yyv_elifs = $5;yylhs = YYMAKE_TREE (IF, yylhs.all_values ()); } 
  | 
-#line 634 "apyc.hn"
+#line 635 "apyc.hn"
  else_clause { YYCTLPA($$,0,1,&$1);  yyv_else_clause = $1; }
 ;
 
 
 
 else_clause : 
-#line 637 "apyc.hn"
+#line 638 "apyc.hn"
 /* empty */ 
        /* empty */
                 { YYCTLPA($$,0,0); yylhs = YYMAKE_TREE(STMT_LIST); } 
  | 
-#line 640 "apyc.hn"
+#line 641 "apyc.hn"
  "else" ":" suite { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.ignore(); $2.ignore(); yyv_suite = $3; }
 ;
 
 
 
 while_stmt : 
-#line 643 "apyc.hn"
+#line 644 "apyc.hn"
  
       "while" expression ":" 
                 { YYCTLP($$, 0, 0);  yyv_expression = $2;incr (control_depth); incr (loop_depth); }  
@@ -1007,7 +1008,7 @@ while_stmt :
 
 
 for_stmt : 
-#line 652 "apyc.hn"
+#line 653 "apyc.hn"
  
       "for" target_list "in" expression_or_list ":" 
                 { YYCTLP($$, 0, 0);  yyv_target_list = $2; yyv_expression_or_list = $4;incr (control_depth); incr (loop_depth); }  
@@ -1020,7 +1021,7 @@ for_stmt :
 
 
 funcdef : 
-#line 661 "apyc.hn"
+#line 662 "apyc.hn"
  
       "def" funcname "(" parameter_list ")" opt_type_annotation ":" 
                 { YYCTLP($$, 0, 0);  yyv_funcname = $2; yyv_parameter_list = $4; yyv_opt_type_annotation = $6;check_def_placement (); 
@@ -1036,14 +1037,14 @@ funcdef :
 
 
 funcbody : 
-#line 675 "apyc.hn"
+#line 676 "apyc.hn"
 
       stmts     { YYCTLPA($$,0,1,&$1);  yyv_stmts = $1;yylhs = YYMAKE_TREE(BLOCK, yylhs.all_values ()); } 
  | 
-#line 677 "apyc.hn"
+#line 678 "apyc.hn"
  native    { YYCTLPA($$,0,1,&$1);  yyv_native = $1;yylhs = YYMAKE_TREE(BLOCK, yylhs.all_values ()); } 
  | 
-#line 678 "apyc.hn"
+#line 679 "apyc.hn"
  NEWLINE INDENT native DEDENT
                 { YYCTLPA($$,0,4,&$1,&$2,&$3,&$4);  $1.ignore(); $2.ignore(); $4.ignore(); yyv_NEWLINE = $1; yyv_INDENT = $2; yyv_native = $3; yyv_DEDENT = $4;yylhs = YYMAKE_TREE(BLOCK, yylhs.all_values ()); } 
 ;
@@ -1051,7 +1052,7 @@ funcbody :
 
 
 native : 
-#line 682 "apyc.hn"
+#line 683 "apyc.hn"
 
       "native" stringliteral NEWLINE { YYCTLPA($$,0,3,&$1,&$2,&$3);  $1.mark_tree_op (); $3.ignore(); yyv_stringliteral = $2; yyv_NEWLINE = $3; }
 ;
@@ -1059,12 +1060,12 @@ native :
 
 
 parameter_list : 
-#line 686 "apyc.hn"
+#line 687 "apyc.hn"
 /* empty */  
       /* empty */
                 { YYCTLPA($$,0,0); yylhs = YYMAKE_TREE(FORMALS_LIST); } 
  | 
-#line 689 "apyc.hn"
+#line 690 "apyc.hn"
  __13 parameter __11 
                 { YYCTLA($$,0,3,&$1,&$2,&$3); yylhs = YYMAKE_TREE(FORMALS_LIST, yylhs.all_values ()); } 
 ;
@@ -1073,34 +1074,34 @@ parameter_list :
   
 
 parameter : 
-#line 694 "apyc.hn"
+#line 695 "apyc.hn"
  identifier { YYCTLPA($$,0,1,&$1);  yyv_identifier = $1; }
  | 
-#line 695 "apyc.hn"
+#line 696 "apyc.hn"
  identifier type_annotation  { YYCTLPA($$,0,2,&$1,&$2);  yyv_identifier = $1; yyv_type_annotation = $2;yylhs = YYMAKE_TREE(TYPED_ID, yylhs.all_values ()); } 
 ;
 
 
   
 funcname : 
-#line 698 "apyc.hn"
+#line 699 "apyc.hn"
   identifier { YYCTLPA($$,0,1,&$1);  yyv_identifier = $1; }
 ;
 
 
 
 classdef : 
-#line 700 "apyc.hn"
+#line 701 "apyc.hn"
  "class" identifier  type_formals ":" 
                 { YYCTLP($$, 0, 0);  yyv_name = $2; yyv_identifier = $2; yyv_type_formals = $3;check_class_placement (); incr (defn_depth); }  
                classbody
-                { YYCTLA($$,0,6,&$1,&$2,&$3,&$4,&$5,&$6);  $1.mark_tree_op (); $4.ignore(); yyv_classbody = $6;decr (defn_depth); } 
+                { YYCTLA($$,0,6,&$1,&$2,&$3,&$4,&$5,&$6);  $1.ignore(); $4.ignore(); yyv_classbody = $6;decr (defn_depth); yylhs=YYMAKE_TREE(CLASS,yylhs.all_values ()); } 
 ;
 
 
   
 type_formals : 
-#line 707 "apyc.hn"
+#line 708 "apyc.hn"
  __18
                 { YYCTLA($$,0,1,&$1); yylhs = YYMAKE_TREE(TYPE_FORMALS_LIST, yylhs.all_values ()); } 
 ;
@@ -1108,7 +1109,7 @@ type_formals :
 
 
 classbody : 
-#line 711 "apyc.hn"
+#line 712 "apyc.hn"
 
       stmts     { YYCTLPA($$,0,1,&$1);  yyv_stmts = $1;yylhs = YYMAKE_TREE(CLASS_BLOCK, yylhs.all_values ()); } 
 ;
@@ -1116,36 +1117,36 @@ classbody :
 
 
 type_annotation : 
-#line 715 "apyc.hn"
+#line 716 "apyc.hn"
  "::" type { YYCTLPA($$,0,2,&$1,&$2);  $1.ignore(); yyv_type = $2; }
 ;
 
 
 
 opt_type_annotation : 
-#line 718 "apyc.hn"
+#line 719 "apyc.hn"
  
       type_annotation { YYCTLPA($$,0,1,&$1);  yyv_type_annotation = $1; }
  | 
-#line 720 "apyc.hn"
+#line 721 "apyc.hn"
  empty { YYCTLPA($$,0,1,&$1);  yyv_empty = $1; }
 ;
 
       
 
 type : 
-#line 723 "apyc.hn"
+#line 724 "apyc.hn"
  
       parameterized_type { YYCTLPA($$,0,1,&$1);  yyv_parameterized_type = $1; }
  | 
-#line 725 "apyc.hn"
+#line 726 "apyc.hn"
  identifier 
                 { YYCTLPA($$,0,1,&$1);  yyv_identifier = $1;yylhs = YYMAKE_TREE(TYPE, yyv_identifier, YYMAKE_TREE(TYPE_LIST)); } 
  | 
-#line 727 "apyc.hn"
+#line 728 "apyc.hn"
  type_var { YYCTLPA($$,0,1,&$1);  yyv_type_var = $1; }
  | 
-#line 728 "apyc.hn"
+#line 729 "apyc.hn"
  "(" type_list ")" "->" type
                 { YYCTLPA($$,0,5,&$1,&$2,&$3,&$4,&$5);  $1.ignore(); $3.ignore(); $4.ignore(); yyv_type_list = $2; yyv_type = $5;yylhs = YYMAKE_TREE(FUNCTION_TYPE, 
                           yyv_type.value (), yyv_type_list.value ()); } 
@@ -1154,7 +1155,7 @@ type :
 
 
 type_var : 
-#line 733 "apyc.hn"
+#line 734 "apyc.hn"
 
       TYPE_VAR  { YYCTLPA($$,0,1,&$1);  yyv_TYPE_VAR = $1;yylhs = YYMAKE_TREE(TYPE_VAR, yylhs.all_values ()); } 
 ;
@@ -1162,7 +1163,7 @@ type_var :
 
 
 parameterized_type : 
-#line 737 "apyc.hn"
+#line 738 "apyc.hn"
 
       identifier type_params { YYCTLPA($$,0,2,&$1,&$2);  yyv_identifier = $1; yyv_type_params = $2;yylhs = YYMAKE_TREE(TYPE, yylhs.all_values ()); } 
 ;
@@ -1170,7 +1171,7 @@ parameterized_type :
 
 
 type_params : 
-#line 742 "apyc.hn"
+#line 743 "apyc.hn"
  __6
                 { YYCTLA($$,0,1,&$1); yylhs = YYMAKE_TREE(TYPE_LIST, yylhs.all_values ()); } 
 ;
@@ -1178,236 +1179,236 @@ type_params :
  
 
 type_list : 
-#line 746 "apyc.hn"
+#line 747 "apyc.hn"
  __17    { YYCTLA($$,0,1,&$1); yylhs = YYMAKE_TREE(TYPE_LIST, yylhs.all_values ()); } 
 ;
 
 
 
 types : 
-#line 750 "apyc.hn"
+#line 751 "apyc.hn"
  
       type { YYCTLPA($$,0,1,&$1);  yyv_type = $1; }
  | 
-#line 752 "apyc.hn"
+#line 753 "apyc.hn"
  types ',' type { YYCTLPA($$,0,3,&$1,&$2,&$3);  $2.ignore(); yyv_types = $1; yyv_type = $3; }
 ;
 
 
 
 empty : 
-#line 755 "apyc.hn"
+#line 756 "apyc.hn"
 /* empty */ 
       /* empty */
                 { YYCTLPA($$,0,0); yylhs = YYMAKE_TREE(EMPTY); yylhs.set_loc (yysource_location ()); } 
 ;
 
  __0 : 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  "<" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  ">" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  "==" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  "<=" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  ">=" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  "!=" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  "is" { YYCTLPC($$,0,1,&$1);  }
  | 
-#line 489 "apyc.hn"
+#line 490 "apyc.hn"
  "in" { YYCTLPC($$,0,1,&$1);  }
 ;
 
  __1 : 
-#line 479 "apyc.hn"
+#line 480 "apyc.hn"
  expression "," { YYCTLPC($$,0,2,&$1,&$2);  $2.ignore(); yyv_expression = $1; }
  | 
-#line 479 "apyc.hn"
+#line 480 "apyc.hn"
  __1 expression "," { YYCTLC($$,0,3,&$1,&$2,&$3);  $3.ignore(); yyv_expression = $2; }
 ;
 
  __2 : 
-#line 607 "apyc.hn"
+#line 608 "apyc.hn"
  statement { YYCTLPC($$,2,3,&$-1,&$0,&$1);  yyv_NEWLINE = $-1; yyv_INDENT = $0; yyv_statement = $1; }
  | 
-#line 607 "apyc.hn"
+#line 608 "apyc.hn"
  __2 statement { YYCTLC($$,2,4,&$-1,&$0,&$1,&$2);  yyv_statement = $2; }
 ;
 
  __3 : 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  "," expression { YYCTLPC($$,2,4,&$-1,&$0,&$1,&$2);  $1.ignore(); yyv_expression = $0; yyv_expression = $2; }
  | 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  __3 "," expression { YYCTLC($$,2,5,&$-1,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_expression = $3; }
 ;
 
  __4 : 
-#line 555 "apyc.hn"
+#line 556 "apyc.hn"
  "," target { YYCTLPC($$,1,3,&$0,&$1,&$2);  $1.ignore(); yyv_target = $0; yyv_target = $2; }
  | 
-#line 555 "apyc.hn"
+#line 556 "apyc.hn"
  __4 "," target { YYCTLC($$,1,4,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_target = $3; }
 ;
 
  __5 : 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  "," { YYCTLPC($$,2,3,&$-1,&$0,&$1);  $1.ignore(); yyv_expression = $0; }
  | 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  __3 __12 { YYCTLC($$,2,4,&$-1,&$0,&$1,&$2);  }
 ;
 
  __6 : 
-#line 742 "apyc.hn"
+#line 743 "apyc.hn"
  "of" "[" types "]" { YYCTLPC($$,0,4,&$1,&$2,&$3,&$4);  $1.ignore(); $2.ignore(); $4.ignore(); yyv_types = $3; }
  | 
-#line 742 "apyc.hn"
+#line 743 "apyc.hn"
  "of" type { YYCTLPC($$,0,2,&$1,&$2);  $1.ignore(); yyv_type = $2; }
 ;
 
  __7 : 
-#line 349 "apyc.hn"
+#line 350 "apyc.hn"
  NEWLINE { YYCTLC($$,1,2,&$0,&$1);  $1.ignore(); yyv_NEWLINE = $1; }
  | 
-#line 349 "apyc.hn"
+#line 350 "apyc.hn"
  statement { YYCTLC($$,1,2,&$0,&$1);  yyv_statement = $1; }
 ;
 
  __8 : /* empty */  { YYCTLC($$,1,1,&$0);  }
  | 
-#line 479 "apyc.hn"
+#line 480 "apyc.hn"
  expression { YYCTLC($$,1,2,&$0,&$1);  yyv_expression = $1; }
 ;
 
  __9 : /* empty */  { YYCTLC($$,2,2,&$-1,&$0);  }
  | 
-#line 400 "apyc.hn"
+#line 401 "apyc.hn"
  "," { YYCTLC($$,2,3,&$-1,&$0,&$1);  $1.ignore(); }
 ;
 
  __10 : /* empty */  { YYCTLC($$,2,2,&$-1,&$0);  }
  | 
-#line 620 "apyc.hn"
+#line 621 "apyc.hn"
  ";" { YYCTLC($$,2,3,&$-1,&$0,&$1);  $1.ignore(); }
 ;
 
  __11 : /* empty */  { YYCTLC($$,2,2,&$-1,&$0);  yyv_parameter = $0; }
  | 
-#line 689 "apyc.hn"
+#line 690 "apyc.hn"
  "," { YYCTLC($$,2,3,&$-1,&$0,&$1);  $1.ignore(); yyv_parameter = $0; }
 ;
 
  __12 : /* empty */  { YYCTLC($$,3,3,&$-2,&$-1,&$0);  }
  | 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  "," { YYCTLC($$,3,4,&$-2,&$-1,&$0,&$1);  $1.ignore(); }
 ;
 
  __13 : /* empty */  { YYCTLPC($$,0,0);  }
  | 
-#line 689 "apyc.hn"
+#line 690 "apyc.hn"
  __13 parameter "," { YYCTLC($$,0,3,&$1,&$2,&$3);  $3.ignore(); yyv_parameter = $2; }
 ;
 
  __14 : /* empty */  { YYCTLPC($$,0,0);  }
  | 
-#line 349 "apyc.hn"
+#line 350 "apyc.hn"
  __14 __7 { YYCTLC($$,0,2,&$1,&$2);  }
 ;
 
  __15 : /* empty */  { YYCTLPC($$,0,0);  }
  | 
-#line 442 "apyc.hn"
+#line 443 "apyc.hn"
  expression __22 __9 { YYCTLC($$,0,3,&$1,&$2,&$3);  }
 ;
 
  __16 : /* empty */  { YYCTLPC($$,0,0);  }
  | 
-#line 473 "apyc.hn"
+#line 474 "apyc.hn"
  expression __22 { YYCTLC($$,0,2,&$1,&$2);  }
 ;
 
  __17 : /* empty */  { YYCTLPC($$,0,0);  }
  | 
-#line 746 "apyc.hn"
+#line 747 "apyc.hn"
 
       types { YYCTLPC($$,0,1,&$1);  yyv_types = $1; }
 ;
 
  __18 : /* empty */  { YYCTLPC($$,0,0);  }
  | 
-#line 707 "apyc.hn"
+#line 708 "apyc.hn"
  "of" "[" type_var __26 "]" { YYCTLC($$,0,5,&$1,&$2,&$3,&$4,&$5);  $1.ignore(); $2.ignore(); $5.ignore(); }
 ;
 
  __19 : /* empty */  { YYCTLPC($$,1,1,&$0);  }
  | 
-#line 388 "apyc.hn"
+#line 389 "apyc.hn"
  expression __5 { YYCTLC($$,1,3,&$0,&$1,&$2);  }
 ;
 
  __20 : /* empty */  { YYCTLPC($$,1,1,&$0);  }
  | 
-#line 392 "apyc.hn"
+#line 393 "apyc.hn"
  expression __25 __12 { YYCTLC($$,1,4,&$0,&$1,&$2,&$3);  }
 ;
 
  __21 : /* empty */  { YYCTLPC($$,1,1,&$0);  }
  | 
-#line 396 "apyc.hn"
+#line 397 "apyc.hn"
  key_datum_list { YYCTLPC($$,1,2,&$0,&$1);  yyv_key_datum_list = $1; }
 ;
 
  __22 : /* empty */  { YYCTLPC($$,1,1,&$0);  yyv_expression = $0; }
  | 
-#line 442 "apyc.hn"
+#line 443 "apyc.hn"
  __22 "," expression { YYCTLC($$,1,4,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_expression = $3; }
 ;
 
  __23 : /* empty */  { YYCTLPC($$,1,1,&$0);  yyv_key_datum = $0; }
  | 
-#line 400 "apyc.hn"
+#line 401 "apyc.hn"
  __23 "," key_datum { YYCTLC($$,1,4,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_key_datum = $3; }
 ;
 
  __24 : /* empty */  { YYCTLPC($$,1,1,&$0);  yyv_simple_stmt = $0; }
  | 
-#line 620 "apyc.hn"
+#line 621 "apyc.hn"
  __24 ";" simple_stmt { YYCTLC($$,1,4,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_simple_stmt = $3; }
 ;
 
  __25 : /* empty */  { YYCTLPC($$,2,2,&$-1,&$0);  yyv_expression = $0; }
  | 
-#line 392 "apyc.hn"
+#line 393 "apyc.hn"
  __25 "," expression { YYCTLC($$,2,5,&$-1,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_expression = $3; }
 ;
 
  __26 : /* empty */  { YYCTLPC($$,3,3,&$-2,&$-1,&$0);  yyv_type_var = $0; }
  | 
-#line 707 "apyc.hn"
+#line 708 "apyc.hn"
  __26 "," type_var { YYCTLC($$,3,6,&$-2,&$-1,&$0,&$1,&$2,&$3);  $2.ignore(); yyv_type_var = $3; }
 ;
 
 
 
 __error__ : error   { $$._clear (); } ;
-#line 1406 "apyc-parser.y"
+#line 1407 "apyc-parser.y"
 
 %%
 
 
-#line 760 "apyc.hn"
+#line 761 "apyc.hn"
 
 
 #include <stack>
@@ -1644,7 +1645,7 @@ parse ()
 }
 
 
-#line 1648 "apyc-parser.y"
+#line 1649 "apyc-parser.y"
 
 const char* 
 yyexternal_token_name (int syntax)

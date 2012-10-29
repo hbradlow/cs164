@@ -3,18 +3,18 @@
         (id 1 A)
         (type_formals_list 0)
         (block 2
-            (def 0
-                (id 0 __init__)
-                (formals_list 0
-                    (id 0 self))
+            (def 2
+                (id 2 __init__)
+                (formals_list 2
+                    (id 2 self))
                 ()
-                (block 0
-                    (stmt_list 0)))
+                (block 2
+                    (stmt_list 2)))
             (assign 2
                 (id 2 a)
-                (call 0
-                    (id 0 __None__)
-                    (expr_list 0)))
+                (call 2
+                    (id 2 __None__)
+                    (expr_list 2)))
             (assign 3
                 (id 3 b)
                 (int_literal 3 3))

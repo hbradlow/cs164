@@ -1,4 +1,4 @@
-/* Generated from apyc.hn at Mon Oct 29 02:38:13 2012 GMT. */
+/* Generated from apyc.hn at Mon Oct 29 20:08:01 2012 GMT. */
 
 %option 8bit nodefault noinput nounput noyywrap
 
@@ -93,6 +93,7 @@ _COMMENT	(#[\001-\011\013-\376]*)
 @binop	{ { YY_LEXLHS(BINOP); YYLEXRET; } } 
 @block	{ { YY_LEXLHS(BLOCK); YYLEXRET; } } 
 @call	{ { YY_LEXLHS(CALL); YYLEXRET; } } 
+@class	{ { YY_LEXLHS(CLASS); YYLEXRET; } } 
 @compare	{ { YY_LEXLHS(COMPARE); YYLEXRET; } } 
 @def	{ { YY_LEXLHS(METHOD); YYLEXRET; } } 
 @dict_display	{ { YY_LEXLHS(DICT_DISPLAY); YYLEXRET; } } 
