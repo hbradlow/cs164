@@ -12,22 +12,27 @@
                     (stmt_list 0)))
             (assign 2
                 (id 2 a)
-                (int_literal 2 3))
-            (def 3
-                (id 3 f)
-                (formals_list 3
-                    (id 3 self))
+                (call 0
+                    (id 0 __None__)
+                    (expr_list 0)))
+            (assign 3
+                (id 3 b)
+                (int_literal 3 3))
+            (def 4
+                (id 4 f)
+                (formals_list 4
+                    (id 4 self))
                 ()
                 (block 0
                     (stmt_list 0)))))
-    (class 6
-        (id 6 B)
+    (class 7
+        (id 7 B)
         (type_formals_list 0)
-        (block 7
-            (def 7
-                (id 7 __init__)
-                (formals_list 7
-                    (id 7 self))
+        (block 8
+            (def 8
+                (id 8 __init__)
+                (formals_list 8
+                    (id 8 self))
                 ()
                 (block 0
                     (stmt_list 0))))))

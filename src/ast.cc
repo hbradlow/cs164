@@ -109,6 +109,8 @@ AST::doOuterSemantics ()
 
     //rewrites
     this->append_init();
+    this->replace_none();
+
     return this;
 }
 
@@ -317,17 +319,41 @@ NODE_FACTORY (Empty_AST, EMPTY);
 
 
 
-//our stuff
+//rewrites
 void
-AST::append_init()
-{
-    printf("A\n");
+AST::append_init(){
     for_each_child (c, this) {
         c->append_init();
     } end_for;
 }
+void AST::replace_none(){
+    int index = 0;
+    for_each_child (c, this) {
+        if(c->is_none()){
+            NodePtr i = AST::make_token(ID,8,"__None__",true);
 
+            vector<NodePtr> expr_v;
+            NodePtr expr = make_tree(EXPR_LIST,expr_v.begin(),expr_v.end());
+
+            vector<NodePtr> call_v;
+            call_v.push_back(i);
+            call_v.push_back(expr);
+            NodePtr call = make_tree(CALL,call_v.begin(),call_v.end());
+
+            this->replace(index,call);
+        }
+        index++;
+        c->replace_none();
+    } end_for;
+}
+
+//checkers
 bool
 AST::is_init(){
+    return false;
+}
+
+bool
+AST::is_none(){
     return false;
 }

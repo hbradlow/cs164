@@ -1,5 +1,6 @@
 class A:
-    a = 3
+    a = None
+    b = 3
     def f(self):
         pass
 
