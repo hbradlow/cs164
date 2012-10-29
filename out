@@ -1,0 +1,33 @@
+(module 0
+    (class 1
+        (id 1 A)
+        (type_formals_list 0)
+        (block 2
+            (def 0
+                (id 0 __init__)
+                (formals_list 0
+                    (id 0 self))
+                ()
+                (block 0
+                    (stmt_list 0)))
+            (assign 2
+                (id 2 a)
+                (int_literal 2 3))
+            (def 3
+                (id 3 f)
+                (formals_list 3
+                    (id 3 self))
+                ()
+                (block 0
+                    (stmt_list 0)))))
+    (class 6
+        (id 6 B)
+        (type_formals_list 0)
+        (block 7
+            (def 7
+                (id 7 __init__)
+                (formals_list 7
+                    (id 7 self))
+                ()
+                (block 0
+                    (stmt_list 0))))))

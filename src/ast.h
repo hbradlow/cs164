@@ -160,6 +160,12 @@ public:
     /** Report unresolved overloaded names in me as errors. */
     virtual void checkResolved ();
 
+    //our stuff....
+
+    //rewrites
+    virtual void append_init();
+    virtual bool is_init();
+
 protected:
 
     AST ();

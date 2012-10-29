@@ -105,6 +105,10 @@ AST::isUnboundMethod ()
 AST_Ptr
 AST::doOuterSemantics ()
 {
+
+
+    //rewrites
+    this->append_init();
     return this;
 }
 
@@ -310,3 +314,20 @@ protected:
 };
 
 NODE_FACTORY (Empty_AST, EMPTY);
+
+
+
+//our stuff
+void
+AST::append_init()
+{
+    printf("A\n");
+    for_each_child (c, this) {
+        c->append_init();
+    } end_for;
+}
+
+bool
+AST::is_init(){
+    return false;
+}
