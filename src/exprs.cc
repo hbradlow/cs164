@@ -173,9 +173,9 @@ public:
             }
         } end_for;
 
-        NodePtr i = AST::make_token(ID,8,"__init__",true);
+        NodePtr i = make_token(ID,8,"__init__",true);
         i->set_loc(this->loc());
-        NodePtr s = AST::make_token(ID,4,"self",true);
+        NodePtr s = make_token(ID,4,"self",true);
         s->set_loc(this->loc());
 
         std::vector<NodePtr> formals_v;
@@ -210,7 +210,7 @@ protected:
 
     NODE_CONSTRUCTORS (ClassBlock_AST, AST_Tree);
 
-    Decl* getDecl () {
+    Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
 
