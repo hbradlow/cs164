@@ -111,7 +111,8 @@ public:
      *  identifier.  Does nothing for other nodes. Assumes that
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleTypeIds (const Environ* env);
-    
+   
+    // 4.3
     /** Replace any allocators in me with appropriate NEW nodes,
      *  returning the modified node. */
     virtual AST_Ptr resolveAllocators (const Environ* env);
@@ -125,6 +126,7 @@ public:
      *  FROZEN. */
     virtual void freezeDecls (bool frozen);
 
+    // 4.4
     /** Resolve the types of me and my subcomponents, and resolve
      *  the meanings of unresolved attribute references (OBJ.ID, where
      *  OBJ is not a class, so that the possible meanings of ID depends 
@@ -138,6 +140,7 @@ public:
      *  becomes ID(OBJ, ARG1, ...)). */
     virtual AST_Ptr resolveTypesOuter(Decl* context);
 
+    // 4.4
     /** Resolve the types of me and my subcomponents, and resolve
      *  the meanings of unresolved attribute references (OBJ.ID, where
      *  OBJ is not a class, so that the possible meanings of ID depends on the
