@@ -70,10 +70,12 @@ Type::typeParam (int k)
 Type_Ptr
 Type::makeVar ()
 {
-    AST_Ptr dummy[0];
+    NodePtr i = make_token(ID,3,"Any",true);
+    std::vector<NodePtr> test;
+    test.push_back(i);
 
-    Type_Ptr result = AST::make_tree (TYPE_VAR, dummy, dummy)->asType ();
-    //result->addDecl (makeTypeVarDecl (result->as_string (), result));
+    Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
+    result->addDecl (makeTypeVarDecl (result->as_string (), result));
     return result;
 }
 
@@ -471,8 +473,12 @@ public:
         } end_for;
 
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        
         NodePtr i = child(1)->child(0);
+
+        string t = decl->getType()->binding()->as_string();
+        if (t.compare("Any")!=0 && t.compare(i->as_string().c_str())!=0)
+            error(loc(),"Id previously defined as a different type");
+
 
         std::vector<NodePtr> test;
         test.push_back(i);

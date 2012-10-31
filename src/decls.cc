@@ -213,10 +213,10 @@ protected:
 public:
 
     Type_Ptr getType () const {
-	if (isFrozen () || _type == NULL)
-	    return _type;
-	else
-	    return _type->freshen ();
+        if (isFrozen () || _type == NULL)
+            return _type;
+        else
+            return _type->freshen ();
     }
 
     void setType (Type_Ptr type) {
