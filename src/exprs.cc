@@ -149,6 +149,15 @@ public:
             error(loc(), "Redefinition of method"); 
         child(0)->addDecl(decl);
     }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+        for_each_child_var(c, this)
+        {
+            Decl *decl = child(0)->getDecl();
+            c->resolveSimpleIds(decl->getEnviron()); 
+        } end_for; 
+    }
     
     AST_Ptr doOuterSemantics()
     {
@@ -245,20 +254,3 @@ protected:
 
 };
 NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
-
-class Assign_AST: public AST_Tree {
-public:
-    void assert_none_here(int k){
-        if(k==0)
-            error(loc(),"Cannot assign to None");
-    }
-
-    void collectDecls(Decl *enclosing)
-    {
-        child(0)->addTargetDecls(enclosing);
-    }
-protected:
-
-    NODE_CONSTRUCTORS (Assign_AST, AST_Tree);
-};
-NODE_FACTORY (Assign_AST, ASSIGN);

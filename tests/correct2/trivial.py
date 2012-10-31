@@ -1,3 +1,3 @@
-a = 10
-b = 11 
-a::int = 13
+a::int = 10
+b::bool = a
+a::string = 13

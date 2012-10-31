@@ -37,6 +37,12 @@ protected:
         {
             c = c->doOuterSemantics(); 
         } end_for;
+        /* Do the resolving */
+        for_each_child_var(c, this)
+        {
+            c->resolveSimpleIds(mod_decl->getEnviron()); 
+        } end_for;
+
         return this;
     }
     

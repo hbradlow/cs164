@@ -138,8 +138,20 @@ protected:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
-            addDecl(enclosing->addVarDecl(this));
+        {
+            Decl *d = enclosing->addVarDecl(this);
+            addDecl(d);
+        }
         else 
+            addDecl(decl);
+    }
+
+    void resolveSimpleIds (const Environ* env)
+    {
+        Decl *decl = env->find(as_string());
+        if (decl == NULL) 
+            error(loc(), "Use of unidentified identifier");
+        else if (numDecls() == 0)
             addDecl(decl);
     }
 
