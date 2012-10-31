@@ -61,7 +61,6 @@ public:
         {
             c->collectDecls(enclosing);
         } end_for;
-        this->resolveTypesOuter(enclosing);
     }
 
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 

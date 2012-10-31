@@ -475,9 +475,9 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-	Decl* decl = makeInstanceDecl (id->as_string (), this, Type::makeVar ());
-	addMember (decl);
-	return decl;
+        Decl* decl = makeInstanceDecl (id->as_string (), this, Type::makeVar ());
+        addMember (decl);
+        return decl;
     }
 
     Decl* addDefDecl (AST_Ptr id) {
