@@ -134,6 +134,11 @@ protected:
         _me.erase (_me.begin () + k);
     }
 
+    void collectDecls(Decl *enclosing)
+    {
+        enclosing->addVarDecl(this);
+    }
+
 private:
 
     Decl_Vector _me;
