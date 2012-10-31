@@ -7,6 +7,7 @@ Terminals unused in grammar
    "@block"
    "@call"
    "@@block"
+   "@class"
    "@compare"
    "@left_compare"
    "@dict_display"
@@ -403,277 +404,278 @@ ID (260) 2
 "break" (269) 96
 "@call" (270)
 "@@block" (271)
-"@compare" (272)
-"@left_compare" (273)
-"continue" (274) 97
-DEDENT (275) 104 106 127
-"def" (276) 124
-"@dict_display" (277)
-EMPTY (278)
-"@expr_list" (279)
-"for" (280) 122
-"@formals_list" (281)
-"@function_type" (282)
-"if" (283) 35 112
-"@if_expr" (284)
-INDENT (285) 104 106 127
-"@int_literal" (286) 10
-"@list_display" (287)
-"@def" (288)
-"@module" (289)
-"native" (290) 128
-"not" (291) 40 48 49
-"or" (292) 38
-"@pair" (293)
-"@print" (294)
-"@println" (295)
-"@slicing" (296)
-"@@slicing" (297)
-"@stmt_list" (298)
-STRING_LITERAL (299)
-"@subscription" (300)
-"@@subscription" (301)
-"@target_list" (302)
-"@type_formals_list" (303)
-"@tuple" (304)
-"@type" (305)
-"@type_list" (306)
-"@type_var" (307) 145
-"@typed_id" (308)
-"while" (309) 119
-"!=" (310) 157
-"->" (311) 144
-"::" (312) 138
-"<=" (313) 155
-"==" (314) 154
-">=" (315) 156
-">>" (316) 91 92 94
-"class" (317) 135
-"elif" (318) 113
-"else" (319) 35 116
-"in" (320) 49 122 159
-"is" (321) 48 158
-"of" (322) 170 171 195
-"pass" (323) 89
-"print" (324) 90 91 92 93 94
-"return" (325) 95
-NEWLINE (326) 103 104 105 106 108 127 128 172
-RAWSTRING (327) 12
+"@class" (272)
+"@compare" (273)
+"@left_compare" (274)
+"continue" (275) 97
+DEDENT (276) 104 106 127
+"def" (277) 124
+"@dict_display" (278)
+EMPTY (279)
+"@expr_list" (280)
+"for" (281) 122
+"@formals_list" (282)
+"@function_type" (283)
+"if" (284) 35 112
+"@if_expr" (285)
+INDENT (286) 104 106 127
+"@int_literal" (287) 10
+"@list_display" (288)
+"@def" (289)
+"@module" (290)
+"native" (291) 128
+"not" (292) 40 48 49
+"or" (293) 38
+"@pair" (294)
+"@print" (295)
+"@println" (296)
+"@slicing" (297)
+"@@slicing" (298)
+"@stmt_list" (299)
+STRING_LITERAL (300)
+"@subscription" (301)
+"@@subscription" (302)
+"@target_list" (303)
+"@type_formals_list" (304)
+"@tuple" (305)
+"@type" (306)
+"@type_list" (307)
+"@type_var" (308) 145
+"@typed_id" (309)
+"while" (310) 119
+"!=" (311) 157
+"->" (312) 144
+"::" (313) 138
+"<=" (314) 155
+"==" (315) 154
+">=" (316) 156
+">>" (317) 91 92 94
+"class" (318) 135
+"elif" (319) 113
+"else" (320) 35 116
+"in" (321) 49 122 159
+"is" (322) 48 158
+"of" (323) 170 171 195
+"pass" (324) 89
+"print" (325) 90 91 92 93 94
+"return" (326) 95
+NEWLINE (327) 103 104 105 106 108 127 128 172
+RAWSTRING (328) 12
 
 
 Nonterminals, with rules where they appear
 
-$accept (91)
+$accept (92)
     on left: 0
-program (92)
+program (93)
     on left: 1, on right: 0
-identifier (93)
+identifier (94)
     on left: 2, on right: 3 26 84 85 131 132 133 135 142 146
-atom (94)
+atom (95)
     on left: 3 4 5, on right: 21
-enclosure (95)
+enclosure (96)
     on left: 6 7 8, on right: 5
-literal (96)
+literal (97)
     on left: 9 10, on right: 4
-string_piece (97)
+string_piece (98)
     on left: 11 12, on right: 13 14
-stringliteral (98)
+stringliteral (99)
     on left: 13 14, on right: 9 14 128
-parenth_form (99)
+parenth_form (100)
     on left: 15 16, on right: 6
-list_display (100)
+list_display (101)
     on left: 17, on right: 7
-dict_display (101)
+dict_display (102)
     on left: 18, on right: 8
-key_datum_list (102)
+key_datum_list (103)
     on left: 19, on right: 201
-key_datum (103)
+key_datum (104)
     on left: 20, on right: 19 205
-primary (104)
+primary (105)
     on left: 21 22 23 24 25, on right: 26 27 28 31 55
-attributeref (105)
+attributeref (106)
     on left: 26, on right: 22 86
-subscription (106)
+subscription (107)
     on left: 27, on right: 23 87
-slicing (107)
+slicing (108)
     on left: 28, on right: 24 88
-bound (108)
+bound (109)
     on left: 29 30, on right: 28
-call (109)
+call (110)
     on left: 31 32, on right: 25
-argument_list (110)
+argument_list (111)
     on left: 33, on right: 31 32
-expression (111)
+expression (112)
     on left: 34, on right: 15 20 29 35 41 43 91 92 94 112 113 119 160
     161 164 165 175 189 191 197 199 203 209
-conditional_expression (112)
+conditional_expression (113)
     on left: 35 36, on right: 34
-expr1 (113)
+expr1 (114)
     on left: 37 38 39 40, on right: 35 36 38 39 40
-expression_list_no_comma (114)
+expression_list_no_comma (115)
     on left: 41, on right: 92 93 94
-expression_list0_no_comma (115)
+expression_list0_no_comma (116)
     on left: 42, on right: 90
-expression_or_list (116)
+expression_or_list (117)
     on left: 43 44, on right: 27 45 72 73 122
-expression_or_list0 (117)
+expression_or_list0 (118)
     on left: 45 46, on right: 95
-comp_operator (118)
+comp_operator (119)
     on left: 47 48 49, on right: 50 51 53 54
-expr2 (119)
+expr2 (120)
     on left: 50 51 52, on right: 37
-left_compare (120)
+left_compare (121)
     on left: 53 54, on right: 50 54
-expr3 (121)
+expr3 (122)
     on left: 55 56 57 58 59 60 61 62 63 64, on right: 50 51 52 53 54
     56 57 58 59 60 61 62 63 64
-simple_stmt (122)
+simple_stmt (123)
     on left: 65 66 67 68 69 70 71, on right: 110 207
-expression_stmt (123)
+expression_stmt (124)
     on left: 72, on right: 65
-assignment_stmt (124)
+assignment_stmt (125)
     on left: 73 74, on right: 66 74
-target_list (125)
+target_list (126)
     on left: 75 76 77 78 79 80, on right: 73 74 122
-target_list1 (126)
+target_list1 (127)
     on left: 81 82 83, on right: 77 78 79
-target (127)
+target (128)
     on left: 84 85 86 87 88, on right: 75 76 80 82 83 166 167
-pass_stmt (128)
+pass_stmt (129)
     on left: 89, on right: 67
-print_stmt (129)
+print_stmt (130)
     on left: 90 91 92 93 94, on right: 68
-return_stmt (130)
+return_stmt (131)
     on left: 95, on right: 69
-break_stmt (131)
+break_stmt (132)
     on left: 96, on right: 70
-continue_stmt (132)
+continue_stmt (133)
     on left: 97, on right: 71
-compound_stmt (133)
+compound_stmt (134)
     on left: 98 99 100 101 102, on right: 109
-stmts (134)
+stmts (135)
     on left: 103 104 105 106, on right: 107 125 137
-suite (135)
+suite (136)
     on left: 107, on right: 112 113 116 119 122
-statement (136)
+statement (137)
     on left: 108 109, on right: 162 163 173
-stmt_list (137)
+stmt_list (138)
     on left: 110, on right: 103 108
-if_stmt (138)
+if_stmt (139)
     on left: 112, on right: 98
-@1 (139)
+@1 (140)
     on left: 111, on right: 112
-elifs (140)
+elifs (141)
     on left: 113 114, on right: 112 113
-else_clause (141)
+else_clause (142)
     on left: 115 116, on right: 114 119 122
-while_stmt (142)
+while_stmt (143)
     on left: 119, on right: 99
-@2 (143)
+@2 (144)
     on left: 117, on right: 119
-@3 (144)
+@3 (145)
     on left: 118, on right: 119
-for_stmt (145)
+for_stmt (146)
     on left: 122, on right: 100
-@4 (146)
+@4 (147)
     on left: 120, on right: 122
-@5 (147)
+@5 (148)
     on left: 121, on right: 122
-funcdef (148)
+funcdef (149)
     on left: 124, on right: 101
-@6 (149)
+@6 (150)
     on left: 123, on right: 124
-funcbody (150)
+funcbody (151)
     on left: 125 126 127, on right: 124
-native (151)
+native (152)
     on left: 128, on right: 126 127
-parameter_list (152)
+parameter_list (153)
     on left: 129 130, on right: 124
-parameter (153)
+parameter (154)
     on left: 131 132, on right: 130 185
-funcname (154)
+funcname (155)
     on left: 133, on right: 124
-classdef (155)
+classdef (156)
     on left: 135, on right: 102
-@7 (156)
+@7 (157)
     on left: 134, on right: 135
-type_formals (157)
+type_formals (158)
     on left: 136, on right: 135
-classbody (158)
+classbody (159)
     on left: 137, on right: 135
-type_annotation (159)
+type_annotation (160)
     on left: 138, on right: 85 132 139
-opt_type_annotation (160)
+opt_type_annotation (161)
     on left: 139 140, on right: 124
-type (161)
+type (162)
     on left: 141 142 143 144, on right: 138 144 149 150 171
-type_var (162)
+type_var (163)
     on left: 145, on right: 143 195 211
-parameterized_type (163)
+parameterized_type (164)
     on left: 146, on right: 32 141
-type_params (164)
+type_params (165)
     on left: 147, on right: 146
-type_list (165)
+type_list (166)
     on left: 148, on right: 144
-types (166)
+types (167)
     on left: 149 150, on right: 150 170 193
-empty (167)
+empty (168)
     on left: 151, on right: 30 46 90 93 140
-__0 (168)
+__0 (169)
     on left: 152 153 154 155 156 157 158 159, on right: 47
-__1 (169)
+__1 (170)
     on left: 160 161, on right: 44 161
-__2 (170)
+__2 (171)
     on left: 162 163, on right: 104 163
-__3 (171)
+__3 (172)
     on left: 164 165, on right: 165 169
-__4 (172)
+__4 (173)
     on left: 166 167, on right: 82 167
-__5 (173)
+__5 (174)
     on left: 168 169, on right: 197
-__6 (174)
+__6 (175)
     on left: 170 171, on right: 147
-__7 (175)
+__7 (176)
     on left: 172 173, on right: 187
-__8 (176)
+__8 (177)
     on left: 174 175, on right: 44
-__9 (177)
+__9 (178)
     on left: 176 177, on right: 19 82 189
-__10 (178)
+__10 (179)
     on left: 178 179, on right: 110
-__11 (179)
+__11 (180)
     on left: 180 181, on right: 130
-__12 (180)
+__12 (181)
     on left: 182 183, on right: 169 199
-__13 (181)
+__13 (182)
     on left: 184 185, on right: 130 185
-__14 (182)
+__14 (183)
     on left: 186 187, on right: 1 187
-__15 (183)
+__15 (184)
     on left: 188 189, on right: 33
-__16 (184)
+__16 (185)
     on left: 190 191, on right: 42
-__17 (185)
+__17 (186)
     on left: 192 193, on right: 148
-__18 (186)
+__18 (187)
     on left: 194 195, on right: 136
-__19 (187)
+__19 (188)
     on left: 196 197, on right: 16
-__20 (188)
+__20 (189)
     on left: 198 199, on right: 17
-__21 (189)
+__21 (190)
     on left: 200 201, on right: 18
-__22 (190)
+__22 (191)
     on left: 202 203, on right: 41 189 191 203
-__23 (191)
+__23 (192)
     on left: 204 205, on right: 19 205
-__24 (192)
+__24 (193)
     on left: 206 207, on right: 110 207
-__25 (193)
+__25 (194)
     on left: 208 209, on right: 199 209
-__26 (194)
+__26 (195)
     on left: 210 211, on right: 195 211
-__error__ (195)
+__error__ (196)
     on left: 212, on right: 105 106
 
 
