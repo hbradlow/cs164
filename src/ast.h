@@ -112,7 +112,10 @@ public:
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleTypeIds (const Environ* env);
    
+<<<<<<< HEAD
     // 4.3
+=======
+>>>>>>> 85d6dea6bb51622fa49cd0bdad1286121b0fc98f
     /** Replace any allocators in me with appropriate NEW nodes,
      *  returning the modified node. */
     virtual AST_Ptr resolveAllocators (const Environ* env);

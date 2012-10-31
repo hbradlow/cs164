@@ -80,7 +80,6 @@ protected:
     // USE THE METHODS ABOVE TO ADAPT IT TO PARTICULAR TYPES OF NODE.
 
 };
-
 NODE_FACTORY (Call_AST, CALL);
 
 /** A binary operator. */
@@ -105,7 +104,6 @@ class Binop_AST : public Callable {
     }
 
 };    
-
 NODE_FACTORY (Binop_AST, BINOP);
 
 /** A unary operator. */
@@ -130,7 +128,6 @@ class Unop_AST : public Callable {
     }
 
 };    
-
 NODE_FACTORY (Unop_AST, UNOP);
 
 
@@ -140,7 +137,7 @@ public:
         return strcmp(this->child(0)->as_string().c_str(),"__init__") == 0;
     }
     void assert_none_here(int k){
-        error("0", "Cannot use None as a method name");
+        error(loc(), "Cannot use None as a method name");
     }
 protected:
 
@@ -148,13 +145,23 @@ protected:
 };
 NODE_FACTORY (Def_AST, DEF);
 
+/* Method is just a subtype of Def */
 class Method_AST: public Def_AST {
 protected:
     NODE_CONSTRUCTORS (Method_AST, Def_AST);
 };
 NODE_FACTORY (Method_AST, METHOD);
 
-class Class_AST: public AST_Tree{
+class Class_AST: public AST_Tree {
+    void assert_none_here(int k){
+        error(loc(), "Cannot use None as a class name");
+    }
+protected:
+    NODE_CONSTRUCTORS (Class_AST, AST_Tree);
+};
+NODE_FACTORY (Class_AST, CLASS);
+
+class ClassBlock_AST: public AST_Tree{
 public:
     void append_init()
     {
@@ -164,22 +171,30 @@ public:
             }
         } end_for;
 
-        NodePtr i = AST::make_token(ID,8,"__init__",true);
-        NodePtr s = AST::make_token(ID,4,"self",true);
+        NodePtr i = make_token(ID,8,"__init__",true);
+        i->set_loc(this->loc());
+        NodePtr s = make_token(ID,4,"self",true);
+        s->set_loc(this->loc());
 
         std::vector<NodePtr> formals_v;
         formals_v.push_back(s);
         NodePtr formals = make_tree(FORMALS_LIST,formals_v.begin(),formals_v.end());
+        formals->set_loc(this->loc());
 
         std::vector<NodePtr> empty_v;
         NodePtr empty = make_tree(EMPTY,empty_v.begin(),empty_v.end());
+        empty->set_loc(this->loc());
+
 
         std::vector<NodePtr> stmt_v;
         NodePtr stmt = make_tree(STMT_LIST,stmt_v.begin(),stmt_v.end());
+        stmt->set_loc(this->loc());
 
         std::vector<NodePtr> block_v;
         block_v.push_back(stmt);
         NodePtr block = make_tree(BLOCK,block_v.begin(),block_v.end());
+        block->set_loc(this->loc());
+
 
         std::vector<NodePtr> def_v;
         def_v.push_back(i);
@@ -189,14 +204,11 @@ public:
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
         this->insert(0,def);
     }
-    void assert_none_here(int k){
-        error("0", "Cannot use None as a method name");
-    }
 protected:
 
-    NODE_CONSTRUCTORS (Class_AST, AST_Tree);
+    NODE_CONSTRUCTORS (ClassBlock_AST, AST_Tree);
 
-    Decl* getDecl () {
+    Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
 
@@ -205,17 +217,16 @@ protected:
     }
 
 };
-NODE_FACTORY (Class_AST, CLASS_BLOCK);
+NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
 
 class Assign_AST: public AST_Tree {
 public:
     void assert_none_here(int k){
         if(k==0)
-            error("0","Cannot assign to None");
+            error(loc(),"Cannot assign to None");
     }
 protected:
 
     NODE_CONSTRUCTORS (Assign_AST, AST_Tree);
 };
-
 NODE_FACTORY (Assign_AST, ASSIGN);

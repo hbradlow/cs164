@@ -113,7 +113,9 @@ main (int argc, char* argv[])
     AST_Ptr tree = parse ();
 
     if (maxPhase >= 2 && tree != NULL && errCount == 0)
+    {
         tree = tree->doOuterSemantics ();
+    }
     if (errCount == 0) {
         printTree (tree, outfileStr);
         outputDecls ();

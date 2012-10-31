@@ -1,9 +1,3 @@
-class A:
-    a = None
-    b = 3
-    def f(self):
-        pass
-
-class B:
-    def __init__(self):
-        pass
+a = 10
+b = 11 
+a = 13
