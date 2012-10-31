@@ -48,7 +48,7 @@ $(OTHER_SRCS): parser-sentinel
 # is changed, any compilation that depends on a generated file will cause 
 # horn to rebuild the generated files (OTHER_SRCS).
 parser-sentinel: apyc.hn
-	horn $<
+	/Users/henrybradlow/bin/horn $<
 	touch parser-sentinel
 
 ../apyc: $(OBJS) 

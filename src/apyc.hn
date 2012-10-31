@@ -141,6 +141,7 @@
 %token BREAK "break"
 %token CALL "@call"
 %token CLASS_BLOCK "@@block"
+%token CLASS "@class"
 %token COMPARE "@compare"
 %token LEFT_COMPARE "@left_compare"
 %token CONTINUE "continue"
@@ -697,10 +698,10 @@ parameter: identifier
   
 funcname:  identifier ;
 
-classdef: "class"^ name=identifier type_formals ":"! 
+classdef: "class"! name=identifier type_formals ":"! 
                 { check_class_placement (); incr (defn_depth); } 
                classbody
-                { decr (defn_depth); }
+                { decr (defn_depth); $$=$^(CLASS,$*);}
     ;
   
 type_formals: 

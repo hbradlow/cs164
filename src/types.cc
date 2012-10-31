@@ -379,7 +379,7 @@ protected:
         return this;
     }
 
-    Decl* getDecl () {
+    Decl* getDecl (int k = 0) {
         return _me;
     }
 
@@ -443,7 +443,7 @@ protected:
 
     NODE_CONSTRUCTORS (ClassType_AST, Type);
 
-    Decl* getDecl () {
+    Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
 

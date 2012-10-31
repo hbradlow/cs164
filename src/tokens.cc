@@ -99,6 +99,10 @@ TOKEN_FACTORY(Int_Token, INT_LITERAL);
 
 /** Represents an identifier. */
 class Id_Token : public Typed_Token {
+public:
+    bool is_none(){
+        return strcmp(this->as_string().c_str(),"None") == 0;
+    }
 protected:
 
     void _print (ostream& out, int indent) {
