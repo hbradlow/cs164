@@ -26,12 +26,15 @@ protected:
     /** Top-level semantic processing for the program. */
     AST_Ptr doOuterSemantics () {
         outer_environ = new Environ (NULL);
-        for_each_child_var (c, this) {
-            c = c->doOuterSemantics ();
+        /* Create the module declaration */ 
+        Decl *mod_decl = makeModuleDecl("__main__"); 
+        for_each_child_var(c, this)
+        {
+            c->collectDecls(mod_decl);   
         } end_for;
         return this;
     }
-
+    
     NODE_CONSTRUCTORS (Module_AST, AST_Tree);
 
 };

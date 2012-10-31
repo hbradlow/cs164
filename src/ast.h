@@ -111,7 +111,7 @@ public:
      *  identifier.  Does nothing for other nodes. Assumes that
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleTypeIds (const Environ* env);
-    
+   
     /** Replace any allocators in me with appropriate NEW nodes,
      *  returning the modified node. */
     virtual AST_Ptr resolveAllocators (const Environ* env);
