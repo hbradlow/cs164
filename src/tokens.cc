@@ -134,7 +134,7 @@ protected:
         _me.erase (_me.begin () + k);
     }
 
-    void collectDecls(Decl *enclosing)
+    void addTargetDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
@@ -143,6 +143,15 @@ protected:
             addDecl(d);
         }
         else 
+            addDecl(decl);
+    }
+
+    void resolveSimpleIds (const Environ* env)
+    {
+        Decl *decl = env->find(as_string());
+        if (decl == NULL) 
+            error(loc(), "Use of unidentified identifier");
+        else if (numDecls() == 0)
             addDecl(decl);
     }
 

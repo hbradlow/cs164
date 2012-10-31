@@ -55,12 +55,10 @@ public:
         if(k==0)
             error(loc(),"Cannot assign to None");
     }
+
     void collectDecls(Decl *enclosing)
     {
-        for_each_child_var(c, this)
-        {
-            c->collectDecls(enclosing);
-        } end_for;
+        child(0)->addTargetDecls(enclosing);
     }
 
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 

@@ -139,6 +139,42 @@ public:
     void assert_none_here(int k){
         error(loc(), "Cannot use None as a method name");
     }
+
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+            decl = enclosing->addDefDecl(child(0));
+        else 
+            error(loc(), "Redefinition of method"); 
+        child(0)->addDecl(decl);
+    }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+        for_each_child_var(c, this)
+        {
+            Decl *decl = child(0)->getDecl();
+            c->resolveSimpleIds(decl->getEnviron()); 
+        } end_for; 
+    }
+    
+    AST_Ptr doOuterSemantics()
+    {
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           if (c_i_ == 0) 
+               continue; 
+           c->collectDecls(decl);
+        } end_for;
+        return this;
+    }
+
+private: 
+
+    Decl_Vector _me;
+    
 protected:
 
     NODE_CONSTRUCTORS (Def_AST, AST_Tree);
