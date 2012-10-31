@@ -145,7 +145,7 @@ protected:
         else 
             addDecl(decl);
     }
-
+    
     void resolveSimpleIds (const Environ* env)
     {
         Decl *decl = env->find(as_string());
