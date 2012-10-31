@@ -50,15 +50,21 @@ NODE_FACTORY (StmtList_AST, STMT_LIST);
 
 class Assignment_AST : public AST_Tree 
 {
-    NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
-    
+public:
+    void assert_none_here(int k){
+        if(k==0)
+            error(loc(),"Cannot assign to None");
+    }
     void collectDecls(Decl *enclosing)
     {
         for_each_child_var(c, this)
         {
             c->collectDecls(enclosing);
         } end_for;
+        this->resolveTypesOuter(enclosing);
     }
+
+    NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
 };
 
 NODE_FACTORY (Assignment_AST, ASSIGN);
