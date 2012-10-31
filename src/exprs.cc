@@ -80,7 +80,6 @@ protected:
     // USE THE METHODS ABOVE TO ADAPT IT TO PARTICULAR TYPES OF NODE.
 
 };
-
 NODE_FACTORY (Call_AST, CALL);
 
 /** A binary operator. */
@@ -105,7 +104,6 @@ class Binop_AST : public Callable {
     }
 
 };    
-
 NODE_FACTORY (Binop_AST, BINOP);
 
 /** A unary operator. */
@@ -130,7 +128,6 @@ class Unop_AST : public Callable {
     }
 
 };    
-
 NODE_FACTORY (Unop_AST, UNOP);
 
 
@@ -148,6 +145,7 @@ protected:
 };
 NODE_FACTORY (Def_AST, DEF);
 
+/* Method is just a subtype of Def */
 class Method_AST: public Def_AST {
 protected:
     NODE_CONSTRUCTORS (Method_AST, Def_AST);
@@ -231,5 +229,4 @@ protected:
 
     NODE_CONSTRUCTORS (Assign_AST, AST_Tree);
 };
-
 NODE_FACTORY (Assign_AST, ASSIGN);
