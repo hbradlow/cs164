@@ -138,7 +138,10 @@ protected:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
-            addDecl(enclosing->addVarDecl(this));
+        {
+            Decl *d = enclosing->addVarDecl(this);
+            addDecl(d);
+        }
         else 
             addDecl(decl);
     }

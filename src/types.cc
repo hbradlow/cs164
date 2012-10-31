@@ -27,6 +27,7 @@ AST::resolveTypesOuter (Decl* context)
         ambiguities0 = ambiguities;
         resolved = ambiguities = 0;
         errors = false;
+        printf("HERE\n");
         r = r->resolveTypes (context, resolved, ambiguities, errors);
     } while (!errors && (resolved != resolved0 || ambiguities != ambiguities0));
     r->freezeDecls (false);
@@ -69,10 +70,10 @@ Type::typeParam (int k)
 Type_Ptr
 Type::makeVar ()
 {
-    AST_Ptr dummy[1];
+    AST_Ptr dummy[0];
 
     Type_Ptr result = AST::make_tree (TYPE_VAR, dummy, dummy)->asType ();
-    result->addDecl (makeTypeVarDecl (result->as_string (), result));
+    //result->addDecl (makeTypeVarDecl (result->as_string (), result));
     return result;
 }
 
@@ -450,8 +451,36 @@ protected:
     void addDecl (Decl* decl) {
         child (0)->addDecl (decl);
     }
+    void collectDecls (Decl* enclosing)
+    {
+    }
 
 };
 
 NODE_FACTORY (ClassType_AST, TYPE);
 
+class TypedId_AST : public Type
+{
+public:
+    NODE_CONSTRUCTORS (TypedId_AST, Type); 
+
+    void collectDecls (Decl* enclosing)
+    {
+        for_each_child (c, this) {
+            c->collectDecls (enclosing);
+        } end_for;
+
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        
+        NodePtr i = child(1)->child(0);
+
+        std::vector<NodePtr> test;
+        test.push_back(i);
+        Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
+        result->addDecl (makeTypeVarDecl (result->as_string (), result));
+
+        decl->setType(result);
+    }
+};
+
+NODE_FACTORY (TypedId_AST, TYPED_ID);

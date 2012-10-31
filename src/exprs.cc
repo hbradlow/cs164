@@ -218,15 +218,3 @@ protected:
 
 };
 NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
-
-class Assign_AST: public AST_Tree {
-public:
-    void assert_none_here(int k){
-        if(k==0)
-            error(loc(),"Cannot assign to None");
-    }
-protected:
-
-    NODE_CONSTRUCTORS (Assign_AST, AST_Tree);
-};
-NODE_FACTORY (Assign_AST, ASSIGN);
