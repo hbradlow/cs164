@@ -134,7 +134,7 @@ protected:
         _me.erase (_me.begin () + k);
     }
 
-    void collectDecls(Decl *enclosing)
+    void addTargetDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
