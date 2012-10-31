@@ -466,10 +466,10 @@ class TypedId_AST : public Type
 public:
     NODE_CONSTRUCTORS (TypedId_AST, Type); 
 
-    void collectDecls (Decl* enclosing)
+    void addTargetDecls(Decl* enclosing)
     {
         for_each_child (c, this) {
-            c->collectDecls (enclosing);
+            c->addTargetDecls(enclosing);
         } end_for;
 
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
