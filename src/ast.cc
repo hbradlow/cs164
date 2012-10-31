@@ -105,8 +105,6 @@ AST::isUnboundMethod ()
 AST_Ptr
 AST::doOuterSemantics ()
 {
-
-
     //rewrites
     this->replace_none(); // 4.6
     this->append_init(); // 4.2
