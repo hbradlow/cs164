@@ -100,15 +100,19 @@ main (int argc, char* argv[])
 
     parse_init ();
     add_source_file (infile);
+<<<<<<< HEAD
+    
+    if (maxPhase > 2) {
+=======
     /*
     if (maxPhase > 1) {
+>>>>>>> 85d6dea6bb51622fa49cd0bdad1286121b0fc98f
         string prelude = argv[0];
         size_t lastSeg = prelude.find_last_of ("/\\");
         prelude.erase (lastSeg == string::npos ? 0 : lastSeg+1);
         prelude += PRELUDE_NAME;
         add_source_file (prelude);
     }
-    */
 
     AST_Ptr tree = parse ();
 

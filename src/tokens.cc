@@ -136,7 +136,11 @@ protected:
 
     void collectDecls(Decl *enclosing)
     {
-        enclosing->addVarDecl(this);
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+            addDecl(enclosing->addVarDecl(this));
+        else 
+            addDecl(decl);
     }
 
 private:
