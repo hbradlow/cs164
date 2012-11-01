@@ -174,6 +174,12 @@ Decl::addDefDecl (AST_Ptr) {
     UNIMPLEMENTED (addDefDecl);
 }
 
+Decl*
+Decl::addParamDecl (AST_Ptr, int)
+{
+    UNIMPLEMENTED(addParamDecl);
+}
+
 bool
 Decl::assignable () const
 {
@@ -381,8 +387,15 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-        Decl* decl = makeFuncDecl (id->as_string (), this, NULL);
+        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
         addMember (decl);
+        return decl;
+    }
+
+    Decl* addParamDecl (AST_Ptr id, int k)
+    {
+        Decl *decl = makeParamDecl (id->as_string(), this, k, Type::makeVar());
+        addMember(decl);
         return decl;
     }
 };

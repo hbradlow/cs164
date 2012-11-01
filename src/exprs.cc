@@ -233,7 +233,7 @@ protected:
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);
 };
 NODE_FACTORY (Class_AST, CLASS);
-/*
+
 class ClassBlock_AST: public AST_Tree{
 public:
     
@@ -244,17 +244,17 @@ public:
                 return;
             }
         } end_for;
-
+       /* 
         NodePtr i = make_token(ID,8,"__init__",true);
         i->set_loc(this->loc());
         NodePtr s = make_token(ID,4,"self",true);
         s->set_loc(this->loc());
-
+        
         std::vector<NodePtr> formals_v;
         formals_v.push_back(s);
         NodePtr formals = make_tree(FORMALS_LIST,formals_v.begin(),formals_v.end());
         formals->set_loc(this->loc());
-
+        
         std::vector<NodePtr> empty_v;
         NodePtr empty = make_tree(EMPTY,empty_v.begin(),empty_v.end());
         empty->set_loc(this->loc());
@@ -276,7 +276,7 @@ public:
         def_v.push_back(empty);
         def_v.push_back(block);
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
-        this->insert(0,def);
+        this->insert(0,def);*/
     }
 protected:
 
@@ -292,4 +292,4 @@ protected:
 
 };
 NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
-*/
+

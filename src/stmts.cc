@@ -75,7 +75,7 @@ protected:
     {
         for_each_child(c, this)
         {
-            c->addTargetDecls(enclosing);
+            enclosing->addParamDecl(c, c_i_);
         } end_for; 
     }
 };

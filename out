@@ -1,36 +1,22 @@
 (module 0
-    (assign 1
-        (id 1 a 2)
-        (int_literal 1 10))
-    (assign 2
-        (typed_id 2
-            (id 2 a 2)
-            (type 2
-                (id 2 int 4)
-                (type_list 0)))
-        (int_literal 2 11))
-    (assign 3
-        (typed_id 3
-            (id 3 a 2)
-            (type 3
-                (id 3 int 4)
-                (type_list 0)))
-        (int_literal 3 11))
-    (assign 4
-        (typed_id 4
-            (id 4 b 8)
-            (type 4
-                (id 4 bool 10)
-                (type_list 0)))
-        (id 4 a 2)))(moduledecl 0 __main__  (index_list 2 4 8 10))
+    (def 1
+        (id 1 b 2)
+        (formals_list 1
+            (id 1 c 4)
+            (id 1 d 6)
+            (id 1 e 8))
+        ()
+        (block 2
+            (assign 2
+                (id 2 a 10)
+                (id 2 c 4)))))(moduledecl 0 __main__  (index_list 2))
 (typevardecl 1 Any )
-(vardecl 2 a 0  (type_var 3 int 6))
+(funcdecl 2 b 0  (type_var 0 Any 1) (index_list 4 6 8 10))
 (typevardecl 3 Any )
-(vardecl 4 int 0  (type_var 0 Any 3))
-(typevardecl 5 int )
-(typevardecl 6 int )
+(paramdecl 4 c 2  0 (type_var 0 Any 3))
+(typevardecl 5 Any )
+(paramdecl 6 d 2  1 (type_var 0 Any 5))
 (typevardecl 7 Any )
-(vardecl 8 b 0  (type_var 4 bool 11))
+(paramdecl 8 e 2  2 (type_var 0 Any 7))
 (typevardecl 9 Any )
-(vardecl 10 bool 0  (type_var 0 Any 9))
-(typevardecl 11 bool )
+(vardecl 10 a 2  (type_var 0 Any 9))

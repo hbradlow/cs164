@@ -125,6 +125,9 @@ public:
      *  resulting declaration. */
     virtual Decl* addDefDecl (AST_Ptr id);
 
+    /** Create a parameter of ID for function definition */
+    virtual Decl* addParamDecl (AST_Ptr id, int k);
+
     /** True iff the entity I represent can be assigned to or defined
      *  by assignment. */
     virtual bool assignable () const;
