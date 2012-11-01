@@ -175,6 +175,12 @@ Decl::addDefDecl (AST_Ptr) {
 }
 
 Decl*
+Decl::addClassDecl (AST_Ptr) 
+{
+    UNIMPLEMENTED (addClassDecl);
+}
+
+Decl*
 Decl::addParamDecl (AST_Ptr, int)
 {
     UNIMPLEMENTED(addParamDecl);
@@ -494,9 +500,9 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	Decl* decl = makeMethodDecl (id->as_string (), this, NULL);
-	addMember (decl);
-	return decl;
+	    Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
+	    addMember (decl);
+	    return decl;
     }
 
     int getTypeArity () const {
@@ -538,6 +544,14 @@ protected:
 	Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar ());
 	addMember (decl);
 	return decl;
+    }
+
+    /* Kevin */
+    Decl* addClassDecl (AST_Ptr id) 
+    {
+    Decl *decl = makeClassDecl(id->child(0)->as_string(), id->child(1));
+    addMember (decl);
+    return decl;
     }
 
 };
