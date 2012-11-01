@@ -144,7 +144,7 @@ public:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
-            decl = enclosing->addDefDecl(child(0));
+            decl = makeFuncDecl(child(0)->as_string(), enclosing, Type::makeVar()); 
         else 
             error(loc(), "Redefinition of method"); 
         child(0)->addDecl(decl);
@@ -198,7 +198,7 @@ class Class_AST: public AST_Tree {
  
     void collectDecls(Decl *enclosing)
     {
-        Decl *decl = makeClassDecl(as_string(), child(1)); 
+        Decl *decl = makeClassDecl(child(0)->as_string(), child(1)); 
         child(0)->addDecl(decl);
     }
 
