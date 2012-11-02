@@ -1,3 +1,5 @@
-a = 10
-a::int = 11
-b::bool = a
+class int:
+    pass
+class string:
+    pass
+a = "sldkfj"

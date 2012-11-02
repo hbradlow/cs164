@@ -63,9 +63,19 @@ public:
     void
     resolveSimpleIds (const Environ* env)
     {
+        for_each_child(c, this)
+        {
+            c->resolveSimpleIds(env);
+        } end_for;
+
         Unwind_Stack s;
         Type_Ptr t1 = child(0)->getType();
-        //bool b = child(0)->getType()->unify(child(1)->getType(),s);
+        Type_Ptr t2 = child(1)->getType();
+        int b = t1->unify(t2,s);
+        if(b==0){
+            //error(loc(),"Invalid unify");
+            printf("INVALID UNIFY\n");
+        }
     }
 
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 

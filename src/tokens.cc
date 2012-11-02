@@ -73,6 +73,12 @@ protected:
 	    << ")";
     }
 
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
+
     TOKEN_CONSTRUCTORS(Int_Token, Typed_Token);
 
     Int_Token* post_make () {
@@ -128,9 +134,7 @@ protected:
     Type_Ptr
     getType ()
     {
-        string k = this->getDecl()->as_string();
-        printf("HERE: %d\n",this->numDecls());
-        return this->getDecl()->asType();
+        return this->getDecl()->getType();
     }
 
     void addDecl (Decl* decl) {
@@ -154,6 +158,7 @@ protected:
         if (enclosing->isFunc() && enclosing->getName() == as_string())
             error(loc(), "Redefinition of function variable");
         addDecl(decl);
+        string t = this->getDecl()->getType()->binding()->as_string();
     }
     
     void resolveSimpleIds (const Environ* env)
@@ -179,6 +184,12 @@ TOKEN_FACTORY(Id_Token, ID);
 
 /** Represents a string. */
 class String_Token : public Typed_Token {
+public:
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
 private:
     
     String_Token* post_make () {

@@ -27,7 +27,6 @@ AST::resolveTypesOuter (Decl* context)
         ambiguities0 = ambiguities;
         resolved = ambiguities = 0;
         errors = false;
-        printf("HERE\n");
         r = r->resolveTypes (context, resolved, ambiguities, errors);
     } while (!errors && (resolved != resolved0 || ambiguities != ambiguities0));
     r->freezeDecls (false);
@@ -70,9 +69,7 @@ Type::typeParam (int k)
 Type_Ptr
 Type::makeVar ()
 {
-    NodePtr i = make_token(ID,3,"Any",true);
     std::vector<NodePtr> test;
-    test.push_back(i);
 
     Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
     result->addDecl (makeTypeVarDecl (result->as_string (), result));
@@ -313,6 +310,7 @@ protected:
 
     bool bind (Type_Ptr target, Unwind_Stack& bindings) {
         assert (_binding == NULL && target != NULL);
+        printf("BIND: %s\n",this->as_string().c_str());
         Decl* me = getDecl ();
         assert (me != NULL);
         TypeVar_AST* canonical = 
@@ -447,7 +445,7 @@ protected:
     Type_Ptr
     asType ()
     {
-        return this->getDecl()->getType();
+        return this->freshen();
     }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
@@ -467,7 +465,7 @@ public:
     Type_Ptr
     getType ()
     {
-        return child(1)->asType();
+        return child(0)->getType();
     }
     void
     resolveSimpleTypedIds (const Environ* env)
@@ -483,18 +481,34 @@ public:
         child(0)->addTargetDecls(enclosing);
 
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        NodePtr i = child(1)->child(0);
 
-        string t = decl->getType()->binding()->as_string();
+        Decl *tdecl = enclosing->getEnviron()->find_immediate(child(1)->child(0)->as_string());
+        AST_Ptr t = decl->getType();
+
+        if(tdecl==NULL)
+            error(loc(),"Undefined type");
+        else
+        {
+            /*
+            Unwind_Stack s;
+            int b = decl->asType()->unify(tdecl->asType(),s);
+            printf("PASSED: %d\n",b);
+            */
+            decl->setType(tdecl->asType());
+        }
+
+        //NodePtr i = child(1)->child(0);
+        /*
         if (t.compare("Any")!=0 && t.compare(i->as_string().c_str())!=0)
             error(loc(),"Id previously defined as a different type");
+        */
 
+        /*
         std::vector<NodePtr> test;
         test.push_back(i);
         Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
         result->addDecl (makeTypeVarDecl (result->as_string (), result));
-
-        decl->setType(result);
+        */
     }
 };
 

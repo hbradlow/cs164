@@ -202,6 +202,25 @@ class Class_AST: public AST_Tree {
     {
         Decl *decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
+        //makeTypeVarDecl(decl->getName(), decl->asType());
+        
+        /*
+        NodePtr i = make_token(ID,decl->getName().length(),decl->getName().c_str(),true);
+        std::vector<NodePtr> test;
+        test.push_back(i);
+
+        Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
+        Decl * tv = makeTypeVarDecl(result->as_string (), result);
+        Decl * tdecl = makeVarDecl(result->as_string (), enclosing,result);
+        */
+
+
+        if(decl->getName().compare("int")==0){
+            intDecl = decl;
+        }
+        else if(decl->getName().compare("string")==0){
+            strDecl = decl;
+        }
     }
 
     void resolveSimpleIds(const Environ *env)
@@ -246,30 +265,25 @@ public:
                 return;
             }
         } end_for;
-       /* 
+
+        /*
         NodePtr i = make_token(ID,8,"__init__",true);
-        i->set_loc(this->loc());
         NodePtr s = make_token(ID,4,"self",true);
-        s->set_loc(this->loc());
         
         std::vector<NodePtr> formals_v;
         formals_v.push_back(s);
         NodePtr formals = make_tree(FORMALS_LIST,formals_v.begin(),formals_v.end());
-        formals->set_loc(this->loc());
         
         std::vector<NodePtr> empty_v;
         NodePtr empty = make_tree(EMPTY,empty_v.begin(),empty_v.end());
-        empty->set_loc(this->loc());
 
 
         std::vector<NodePtr> stmt_v;
         NodePtr stmt = make_tree(STMT_LIST,stmt_v.begin(),stmt_v.end());
-        stmt->set_loc(this->loc());
 
         std::vector<NodePtr> block_v;
         block_v.push_back(stmt);
         NodePtr block = make_tree(BLOCK,block_v.begin(),block_v.end());
-        block->set_loc(this->loc());
 
 
         std::vector<NodePtr> def_v;
@@ -278,7 +292,8 @@ public:
         def_v.push_back(empty);
         def_v.push_back(block);
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
-        this->insert(0,def);*/
+        this->insert(0,def);
+        */
     }
 protected:
 

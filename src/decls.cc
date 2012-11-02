@@ -374,6 +374,7 @@ protected:
 
 };
 
+
 Decl*
 makeTypeVarDecl (const string& name, AST_Ptr typeVar)
 {
@@ -466,7 +467,7 @@ public:
     }
     bool isClass() const 
     {
-    return true;
+        return true;
     }
 
 protected:
@@ -503,8 +504,8 @@ protected:
             if (params[i] == NULL)
                 throw domain_error ("attempt to pass null type parameter");
 
-	AST_Ptr id = make_id (getName ().c_str (), NULL);
-	id->addDecl (const_cast<ClassDecl*> (this));
+        AST_Ptr id = make_id (getName ().c_str (), NULL);
+        id->addDecl (const_cast<ClassDecl*> (this));
 
         return consTree (TYPE, id,
 			 AST::make_tree (TYPE_LIST, params, params+arity))
