@@ -108,7 +108,11 @@ AST::doOuterSemantics ()
     //rewrites
     this->replace_none(); // 4.6
     this->append_init(); // 4.2
-
+    
+    for_each_child(c, this)
+    {
+        c->doOuterSemantics();
+    } end_for;
     return this;
 }
 
