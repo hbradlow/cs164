@@ -73,8 +73,7 @@ public:
         Type_Ptr t2 = child(1)->getType();
         int b = t1->unify(t2,s);
         if(b==0){
-            //error(loc(),"Invalid unify");
-            printf("INVALID UNIFY\n");
+            error(loc(),"Incompatible types");
         }
     }
 
@@ -92,8 +91,14 @@ protected:
     {
         for_each_child(c, this)
         {
+            c->addTargetDecls(enclosing);
+        } end_for;
+        /*
+        for_each_child(c, this)
+        {
             enclosing->addParamDecl(c, c_i_);
         } end_for; 
+        */
     }
 };
 

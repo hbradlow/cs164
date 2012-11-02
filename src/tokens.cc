@@ -158,7 +158,11 @@ protected:
         if (enclosing->isFunc() && enclosing->getName() == as_string())
             error(loc(), "Redefinition of function variable");
         addDecl(decl);
-        string t = this->getDecl()->getType()->binding()->as_string();
+    }
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        addDecl(decl);
     }
     
     void resolveSimpleIds (const Environ* env)

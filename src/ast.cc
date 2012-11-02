@@ -177,6 +177,7 @@ AST::freezeDecls (bool frozen)
 AST_Ptr
 AST::resolveTypes (Decl* context, int& resolved, int& ambiguities,  bool& errors)
 {
+    printf("HERE\n");
     for_each_child_var (c, this) {
         c = c->resolveTypes (context, resolved, ambiguities, errors);
     } end_for;

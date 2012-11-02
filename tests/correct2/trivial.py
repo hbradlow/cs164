@@ -2,4 +2,5 @@ class int:
     pass
 class string:
     pass
-a = "sldkfj"
+def f(g::int,a::string)::int:
+    return g

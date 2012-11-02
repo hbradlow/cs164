@@ -9,11 +9,43 @@
         (type_formals_list 0)
         (block 0
             (stmt_list 0)))
-    (assign 5
-        (id 5 a 4)
-        (string_literal 5 "sldkfj")))(moduledecl 0 __main__  (index_list 1 2 4))
+    (def 5
+        (id 5 f 4)
+        (formals_list 5
+            (typed_id 5
+                (id 5 g 6)
+                (type 5
+                    (id 5 int 1)
+                    (type_list 0)))
+            (typed_id 5
+                (id 5 a 8)
+                (type 5
+                    (id 5 string 2)
+                    (type_list 0))))
+        (type 5
+            (id 5 int 1)
+            (type_list 0))
+        (block 6
+            (return 6
+                (id 6 g 10)))))(moduledecl 0 __main__  (index_list 1 2 4 6 8))
 (classdecl 1 int  (index_list) (index_list))
 (classdecl 2 string  (index_list) (index_list))
-(vardecl 4 a 0  (type 0
-    (id 0 string 2)
+(funcdecl 4 f 0  (function_type 5
+    (type 5
+        (id 5 int 1)
+        (type_list 0))
+    (type_list 0
+        (type 5
+            (id 5 int 1)
+            (type_list 0))
+        (type 5
+            (id 5 string 2)
+            (type_list 0)))) (index_list 10 12))
+(vardecl 6 g 0  (type 5
+    (id 5 int 1)
     (type_list 0)))
+(vardecl 8 a 0  (type 5
+    (id 5 string 2)
+    (type_list 0)))
+(vardecl 10 g 4  (type_var 0 $#3 9))
+(vardecl 12 a 4  (type_var 0 $#4 11))

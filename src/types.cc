@@ -310,7 +310,6 @@ protected:
 
     bool bind (Type_Ptr target, Unwind_Stack& bindings) {
         assert (_binding == NULL && target != NULL);
-        printf("BIND: %s\n",this->as_string().c_str());
         Decl* me = getDecl ();
         assert (me != NULL);
         TypeVar_AST* canonical = 
@@ -475,41 +474,20 @@ public:
     void
     resolveSimpleIds (const Environ* env)
     {
+        Unwind_Stack s;
+        Type_Ptr t0 = child(0)->getType();
+        Type_Ptr t1 = child(1)->asType();
+        int b = t0->unify(t1,s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
     }
     void addTargetDecls(Decl* enclosing)
     {
         child(0)->addTargetDecls(enclosing);
-
-        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-
-        Decl *tdecl = enclosing->getEnviron()->find_immediate(child(1)->child(0)->as_string());
-        AST_Ptr t = decl->getType();
-
-        if(tdecl==NULL)
-            error(loc(),"Undefined type");
-        else
-        {
-            /*
-            Unwind_Stack s;
-            int b = decl->asType()->unify(tdecl->asType(),s);
-            printf("PASSED: %d\n",b);
-            */
-            decl->setType(tdecl->asType());
-        }
-
-        //NodePtr i = child(1)->child(0);
-        /*
-        if (t.compare("Any")!=0 && t.compare(i->as_string().c_str())!=0)
-            error(loc(),"Id previously defined as a different type");
-        */
-
-        /*
-        std::vector<NodePtr> test;
-        test.push_back(i);
-        Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
-        result->addDecl (makeTypeVarDecl (result->as_string (), result));
-        */
+        child(1)->collectDecls(enclosing);
     }
 };
 
 NODE_FACTORY (TypedId_AST, TYPED_ID);
+

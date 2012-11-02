@@ -51,7 +51,6 @@ protected:
     /** Set the Kth actual parameter in this call to EXPR. */
     virtual void setActual (int k, AST_Ptr expr) = 0;
 
-
 };
 
 /** A function call. */
@@ -74,6 +73,10 @@ protected:
 
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
+    }
+    AST_Ptr resolveTypesOuter(Decl* context)
+    {
+        printf("HERE\n");
     }
 
     // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
@@ -150,10 +153,32 @@ public:
         else 
             error(loc(), "Redefinition of method"); 
         child(0)->addDecl(decl);
+        child(1)->collectDecls(enclosing);
+        child(2)->collectDecls(enclosing);
     }
 
     void resolveSimpleIds(const Environ *env)
     {
+        Unwind_Stack s;
+
+        AST_Ptr type = child(2);
+
+        std::vector<AST_Ptr> types;
+        for_each_child(c,child(1)){
+            types.push_back(c->getType());
+        } end_for;
+        AST_Ptr type_list = make_tree(TYPE_LIST,types.begin(),types.end());
+
+        std::vector<AST_Ptr> ft_vec;
+        ft_vec.push_back(type);
+        ft_vec.push_back(type_list);
+        AST_Ptr function_type = make_tree(FUNCTION_TYPE,ft_vec.begin(),ft_vec.end());
+
+        int b = child(0)->getType()->unify(function_type->asType(),s);
+    //    int b = child(0)->getType()->unify(child(2)->asType(),s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
     }
 
     AST_Ptr doOuterSemantics()
@@ -202,24 +227,18 @@ class Class_AST: public AST_Tree {
     {
         Decl *decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
-        //makeTypeVarDecl(decl->getName(), decl->asType());
-        
-        /*
-        NodePtr i = make_token(ID,decl->getName().length(),decl->getName().c_str(),true);
-        std::vector<NodePtr> test;
-        test.push_back(i);
-
-        Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
-        Decl * tv = makeTypeVarDecl(result->as_string (), result);
-        Decl * tdecl = makeVarDecl(result->as_string (), enclosing,result);
-        */
-
 
         if(decl->getName().compare("int")==0){
             intDecl = decl;
         }
         else if(decl->getName().compare("string")==0){
             strDecl = decl;
+        }
+        else if(decl->getName().compare("bool")==0){
+            boolDecl = decl;
+        }
+        else if(decl->getName().compare("list")==0){
+            listDecl = decl;
         }
     }
 
