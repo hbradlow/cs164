@@ -118,6 +118,12 @@ Decl::isType () const
 }
 
 bool
+Decl::isClass () const
+{
+    return false;
+}
+
+bool
 Decl::isInternal () const
 {
     return false;
@@ -125,6 +131,12 @@ Decl::isInternal () const
 
 bool
 Decl::isMethod () const
+{
+    return false;
+}
+
+bool
+Decl::isFunc() const
 {
     return false;
 }
@@ -376,6 +388,12 @@ public:
         :  TypedDecl (name, container, type, env) {
     }
 
+    /** Kevin */
+    bool isFunc() const
+    {
+        return true;
+    }
+
 protected:
 
     const char* declTypeName () const {
@@ -411,6 +429,7 @@ makeFuncDecl (const string& name, Decl* container, AST_Ptr type)
 {
     return new FuncDecl (name, container, type,
 			 new Environ (container->getEnviron ()));
+
 }
 
 class MethodDecl : public FuncDecl {
@@ -445,13 +464,17 @@ public:
     ClassDecl (const string& name, AST_Ptr params)
         : Decl (name, NULL, new Environ (outer_environ)), _params (params) {
     }
+    bool isClass() const 
+    {
+    return true;
+    }
 
 protected:
 
     bool isType () const {
 	return true;
     }
-
+    
     void printContainer () const {
     }
 
@@ -494,7 +517,7 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-        Decl* decl = makeInstanceDecl (id->as_string (), this, Type::makeVar ());
+        Decl *decl = makeInstanceDecl (id->as_string (), this, Type::makeVar ());
         addMember (decl);
         return decl;
     }

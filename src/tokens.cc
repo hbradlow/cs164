@@ -138,12 +138,14 @@ protected:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
-        {
-            Decl *d = enclosing->addVarDecl(this);
-            addDecl(d);
-        }
-        else 
-            addDecl(decl);
+        decl = enclosing->addVarDecl(this);
+        else if (decl->isClass() || decl->isFunc())
+            error(loc(), "Redefinition as class or function"); 
+        if (enclosing->isClass() && enclosing->getName() == as_string())
+            error(loc(), "Redefinition of class variable");
+        if (enclosing->isFunc() && enclosing->getName() == as_string())
+            error(loc(), "Redefinition of function variable");
+        addDecl(decl);
     }
     
     void resolveSimpleIds (const Environ* env)

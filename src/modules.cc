@@ -31,11 +31,12 @@ protected:
         for_each_child_var(c, this)
         {
             c->collectDecls(mod_decl);   
+            c = c->doOuterSemantics(); 
         } end_for;
         /* Do the nested stuff */ 
         for_each_child_var(c, this)
         {
-            c = c->doOuterSemantics(); 
+            
         } end_for;
         /* Do the resolving */
         for_each_child_var(c, this)
