@@ -153,8 +153,16 @@ protected:
 NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
+public:
     void assert_none_here(int k){
         error(loc(), "Cannot use None as a class name");
+    }
+
+    // Resolve my type
+    AST_Ptr 
+    resolveTypes(Decl* context, int& resolved, int& ambiguities, 
+    		 bool& errors) {
+    	context->print();
     }
 protected:
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);

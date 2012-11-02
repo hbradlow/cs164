@@ -164,11 +164,12 @@ Decl::addMember (Decl* new_member)
 	_members->define (new_member);
 }
 
+//
 Decl*
 Decl::addVarDecl (AST_Ptr) {
     UNIMPLEMENTED (addVarDecl);
 }
-
+//
 Decl*
 Decl::addDefDecl (AST_Ptr) {
     UNIMPLEMENTED (addDefDecl);
@@ -375,15 +376,15 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-        Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
-        addMember (decl);
-        return decl;
+	Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
+	addMember (decl);
+	return decl;
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-        Decl* decl = makeFuncDecl (id->as_string (), this, NULL);
-        addMember (decl);
-        return decl;
+	Decl* decl = makeFuncDecl (id->as_string (), this, NULL);
+	addMember (decl);
+	return decl;
     }
 };
 
@@ -475,9 +476,9 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-        Decl* decl = makeInstanceDecl (id->as_string (), this, Type::makeVar ());
-        addMember (decl);
-        return decl;
+	Decl* decl = makeInstanceDecl (id->as_string (), this, Type::makeVar ());
+	addMember (decl);
+	return decl;
     }
 
     Decl* addDefDecl (AST_Ptr id) {
@@ -516,9 +517,9 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-        Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
-        addMember (decl);
-        return decl;
+	Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
+	addMember (decl);
+	return decl;
     }
 
     Decl* addDefDecl (AST_Ptr id) {
