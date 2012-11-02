@@ -134,7 +134,7 @@ protected:
         _me.erase (_me.begin () + k);
     }
 
-    void collectDecls(Decl *enclosing)
+    void addTargetDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
@@ -143,6 +143,19 @@ protected:
             addDecl(d);
         }
         else 
+            addDecl(decl);
+    }
+    
+    void resolveSimpleIds (const Environ* env)
+    {
+        Decl *decl = env->find(as_string());
+        if (decl == NULL) 
+        {
+            string str = "Use of undeclared identifier '";
+            str += as_string() + "'"; 
+            error(loc(), str.c_str()); 
+        }
+        else if (numDecls() == 0)
             addDecl(decl);
     }
 

@@ -139,6 +139,50 @@ public:
     void assert_none_here(int k){
         error(loc(), "Cannot use None as a method name");
     }
+
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+        {
+            decl = enclosing->addDefDecl(child(0)); 
+        }
+        else 
+            error(loc(), "Redefinition of method"); 
+        child(0)->addDecl(decl);
+    }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+    }
+
+    AST_Ptr doOuterSemantics()
+    {
+        /* Do the first collecting */
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           c->collectDecls(decl);
+        } end_for;
+        /* Do the internal stuff */
+        for_each_child(c, this)
+        {
+            c->doOuterSemantics();
+        }end_for;
+        /* Do the resolving */
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0) 
+                continue;
+            c->resolveSimpleIds(decl->getEnviron());
+        } end_for;
+        return this;
+    }
+
+private: 
+
+    Decl_Vector _me;
+    
 protected:
 
     NODE_CONSTRUCTORS (Def_AST, AST_Tree);
@@ -153,6 +197,7 @@ protected:
 NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
+<<<<<<< HEAD
 public:
     void assert_none_here(int k){
         error(loc(), "Cannot use None as a class name");
@@ -164,6 +209,41 @@ public:
     		 bool& errors) {
     	context->print();
     }
+=======
+ 
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->addClassDecl(this);
+        child(0)->addDecl(decl);
+    }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+    }
+
+   
+    AST_Ptr doOuterSemantics()
+    {
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           c->collectDecls(decl);
+        } end_for;
+        for_each_child(c, this)
+        {
+            c->doOuterSemantics();
+        }end_for;
+        
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0)
+                continue;
+            c->resolveSimpleIds(decl->getEnviron());
+        } end_for;
+        return this;
+    }
+
+
 protected:
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);
 };
@@ -171,6 +251,7 @@ NODE_FACTORY (Class_AST, CLASS);
 
 class ClassBlock_AST: public AST_Tree{
 public:
+    
     void append_init()
     {
         for_each_child (c, this) {
@@ -178,17 +259,17 @@ public:
                 return;
             }
         } end_for;
-
+       /* 
         NodePtr i = make_token(ID,8,"__init__",true);
         i->set_loc(this->loc());
         NodePtr s = make_token(ID,4,"self",true);
         s->set_loc(this->loc());
-
+        
         std::vector<NodePtr> formals_v;
         formals_v.push_back(s);
         NodePtr formals = make_tree(FORMALS_LIST,formals_v.begin(),formals_v.end());
         formals->set_loc(this->loc());
-
+        
         std::vector<NodePtr> empty_v;
         NodePtr empty = make_tree(EMPTY,empty_v.begin(),empty_v.end());
         empty->set_loc(this->loc());
@@ -210,7 +291,7 @@ public:
         def_v.push_back(empty);
         def_v.push_back(block);
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
-        this->insert(0,def);
+        this->insert(0,def);*/
     }
 protected:
 
@@ -226,3 +307,4 @@ protected:
 
 };
 NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
+

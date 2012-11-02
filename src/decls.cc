@@ -175,6 +175,18 @@ Decl::addDefDecl (AST_Ptr) {
     UNIMPLEMENTED (addDefDecl);
 }
 
+Decl*
+Decl::addClassDecl (AST_Ptr) 
+{
+    UNIMPLEMENTED (addClassDecl);
+}
+
+Decl*
+Decl::addParamDecl (AST_Ptr, int)
+{
+    UNIMPLEMENTED(addParamDecl);
+}
+
 bool
 Decl::assignable () const
 {
@@ -214,10 +226,10 @@ protected:
 public:
 
     Type_Ptr getType () const {
-	if (isFrozen () || _type == NULL)
-	    return _type;
-	else
-	    return _type->freshen ();
+        if (isFrozen () || _type == NULL)
+            return _type;
+        else
+            return _type->freshen ();
     }
 
     void setType (Type_Ptr type) {
@@ -382,9 +394,16 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	Decl* decl = makeFuncDecl (id->as_string (), this, NULL);
-	addMember (decl);
-	return decl;
+        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
+        addMember (decl);
+        return decl;
+    }
+
+    Decl* addParamDecl (AST_Ptr id, int k)
+    {
+        Decl *decl = makeParamDecl (id->as_string(), this, k, Type::makeVar());
+        addMember(decl);
+        return decl;
     }
 };
 
@@ -482,9 +501,9 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	Decl* decl = makeMethodDecl (id->as_string (), this, NULL);
-	addMember (decl);
-	return decl;
+	    Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
+	    addMember (decl);
+	    return decl;
     }
 
     int getTypeArity () const {
@@ -526,6 +545,14 @@ protected:
 	Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar ());
 	addMember (decl);
 	return decl;
+    }
+
+    /* Kevin */
+    Decl* addClassDecl (AST_Ptr id) 
+    {
+    Decl *decl = makeClassDecl(id->child(0)->as_string(), id->child(1));
+    addMember (decl);
+    return decl;
     }
 
 };

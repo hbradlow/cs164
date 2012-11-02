@@ -99,7 +99,7 @@ public:
 
     /** Assuming I am a target of an assignment, add any local
      *  declarations that would result from assignments to me to
-     *  ENCLOSING, my enclosing construct.  (Used by overridings of
+     *  ENCLOSING, mY enclosing construct.  (Used by overridings of
      *  collectDecls.) */
     virtual void addTargetDecls (Decl* enclosing);
 
