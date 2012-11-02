@@ -125,6 +125,14 @@ protected:
             return _me[k];
     }
 
+    Type_Ptr
+    getType ()
+    {
+        string k = this->getDecl()->as_string();
+        printf("HERE: %d\n",this->numDecls());
+        return this->getDecl()->asType();
+    }
+
     void addDecl (Decl* decl) {
         _me.push_back (decl);
     }

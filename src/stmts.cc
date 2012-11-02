@@ -60,6 +60,13 @@ public:
     {
         child(0)->addTargetDecls(enclosing);
     }
+    void
+    resolveSimpleIds (const Environ* env)
+    {
+        Unwind_Stack s;
+        Type_Ptr t1 = child(0)->getType();
+        //bool b = child(0)->getType()->unify(child(1)->getType(),s);
+    }
 
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
 };

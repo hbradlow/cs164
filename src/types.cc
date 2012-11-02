@@ -443,20 +443,18 @@ NODE_FACTORY (FunctionType_AST, FUNCTION_TYPE);
 
 class ClassType_AST: public Type {
 protected:
-
     NODE_CONSTRUCTORS (ClassType_AST, Type);
-
+    Type_Ptr
+    asType ()
+    {
+        return this->getDecl()->getType();
+    }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
-
     void addDecl (Decl* decl) {
         child (0)->addDecl (decl);
     }
-    void collectDecls (Decl* enclosing)
-    {
-    }
-
 };
 
 NODE_FACTORY (ClassType_AST, TYPE);
@@ -466,11 +464,23 @@ class TypedId_AST : public Type
 public:
     NODE_CONSTRUCTORS (TypedId_AST, Type); 
 
+    Type_Ptr
+    getType ()
+    {
+        return child(1)->asType();
+    }
+    void
+    resolveSimpleTypedIds (const Environ* env)
+    {
+        child(0)->resolveSimpleIds(env);
+    }
+    void
+    resolveSimpleIds (const Environ* env)
+    {
+    }
     void addTargetDecls(Decl* enclosing)
     {
-        for_each_child (c, this) {
-            c->addTargetDecls(enclosing);
-        } end_for;
+        child(0)->addTargetDecls(enclosing);
 
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         NodePtr i = child(1)->child(0);
@@ -478,7 +488,6 @@ public:
         string t = decl->getType()->binding()->as_string();
         if (t.compare("Any")!=0 && t.compare(i->as_string().c_str())!=0)
             error(loc(),"Id previously defined as a different type");
-
 
         std::vector<NodePtr> test;
         test.push_back(i);
