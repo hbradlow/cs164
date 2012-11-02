@@ -88,6 +88,12 @@ public:
     /** True iff I represent a method. */
     virtual bool isMethod () const;
 
+    /** Kevin : True iff I represent a function or method */
+    virtual bool isFunc() const;
+
+    /** Kevin : True iff I represent a class */
+    virtual bool isClass() const;
+
     /** True iff I represent a type. */
     virtual bool isType () const;
 
