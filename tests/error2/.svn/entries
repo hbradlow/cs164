@@ -1,8 +1,13 @@
 10
 
 dir
+<<<<<<< HEAD
 9364
 svn+ssh://cs164-ta@torus.cs.berkeley.edu/HKW/trunk/proj2-3/tests/error2
+=======
+8521
+svn+ssh://cs164-ta@torus.cs.berkeley.edu/HKW/trunk/proj2-2/tests/error2
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 svn+ssh://cs164-ta@torus.cs.berkeley.edu
 
 
@@ -32,7 +37,11 @@ file
 
 
 
+<<<<<<< HEAD
 2012-11-03T20:42:48.893884Z
+=======
+2012-10-28T21:28:00.724042Z
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 6ceec5a323aa595b3df882e18404235f
 2012-10-21T10:11:28.910817Z
 8189

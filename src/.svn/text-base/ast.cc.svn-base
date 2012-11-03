@@ -95,7 +95,11 @@ AST::isMissing ()
 }
 
 bool
+<<<<<<< HEAD
 AST::isBoundMethod ()
+=======
+AST::isUnboundMethod ()
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 {
     return false;
 }

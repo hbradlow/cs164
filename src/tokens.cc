@@ -73,6 +73,12 @@ protected:
 	    << ")";
     }
 
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
+
     TOKEN_CONSTRUCTORS(Int_Token, Typed_Token);
 
     Int_Token* post_make () {
@@ -99,6 +105,10 @@ TOKEN_FACTORY(Int_Token, INT_LITERAL);
 
 /** Represents an identifier. */
 class Id_Token : public Typed_Token {
+public:
+    bool is_none(){
+        return strcmp(this->as_string().c_str(),"None") == 0;
+    }
 protected:
 
     void _print (ostream& out, int indent) {
@@ -121,6 +131,12 @@ protected:
             return _me[k];
     }
 
+    Type_Ptr
+    getType ()
+    {
+        return this->getDecl()->getType();
+    }
+
     void addDecl (Decl* decl) {
         _me.push_back (decl);
     }
@@ -128,6 +144,34 @@ protected:
     void removeDecl (int k) {
         assert (k >= 0 && k < (int) _me.size ());
         _me.erase (_me.begin () + k);
+    }
+
+    void addTargetDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+        decl = enclosing->addVarDecl(this);
+        else if (decl->isClass() || decl->isFunc())
+            error(loc(), "Redefinition as class or function"); 
+        if (enclosing->isClass() && enclosing->getName() == as_string())
+            error(loc(), "Redefinition of class variable");
+        if (enclosing->isFunc() && enclosing->getName() == as_string())
+            error(loc(), "Redefinition of function variable");
+        addDecl(decl);
+        string t = this->getDecl()->getType()->binding()->as_string();
+    }
+    
+    void resolveSimpleIds (const Environ* env)
+    {
+        Decl *decl = env->find(as_string());
+        if (decl == NULL) 
+        {
+            string str = "Use of undeclared identifier '";
+            str += as_string() + "'"; 
+            error(loc(), str.c_str()); 
+        }
+        else if (numDecls() == 0)
+            addDecl(decl);
     }
 
 private:
@@ -140,6 +184,12 @@ TOKEN_FACTORY(Id_Token, ID);
 
 /** Represents a string. */
 class String_Token : public Typed_Token {
+public:
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
 private:
     
     String_Token* post_make () {

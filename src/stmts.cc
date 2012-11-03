@@ -45,3 +45,58 @@ protected:
 };
 
 NODE_FACTORY (StmtList_AST, STMT_LIST);
+
+/* A node for assignments */
+
+class Assignment_AST : public AST_Tree 
+{
+public:
+    void assert_none_here(int k){
+        if(k==0)
+            error(loc(),"Cannot assign to None");
+    }
+
+    void collectDecls(Decl *enclosing)
+    {
+        child(0)->addTargetDecls(enclosing);
+    }
+    void
+    resolveSimpleIds (const Environ* env)
+    {
+        for_each_child(c, this)
+        {
+            c->resolveSimpleIds(env);
+        } end_for;
+
+        Unwind_Stack s;
+        Type_Ptr t1 = child(0)->getType();
+        Type_Ptr t2 = child(1)->getType();
+        int b = t1->unify(t2,s);
+        if(b==0){
+            //error(loc(),"Invalid unify");
+            printf("INVALID UNIFY\n");
+        }
+    }
+
+    NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
+};
+
+NODE_FACTORY (Assignment_AST, ASSIGN);
+
+class FormalsList_AST : public AST_Tree {
+protected:
+
+    NODE_CONSTRUCTORS (FormalsList_AST, AST_Tree);
+
+    void collectDecls(Decl *enclosing)
+    {
+        for_each_child(c, this)
+        {
+            enclosing->addParamDecl(c, c_i_);
+        } end_for; 
+    }
+};
+
+NODE_FACTORY (FormalsList_AST, FORMALS_LIST);
+
+

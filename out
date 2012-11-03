@@ -1,0 +1,19 @@
+(module 0
+    (class 1
+        (id 1 int 1)
+        (type_formals_list 0)
+        (block 0
+            (stmt_list 0)))
+    (class 3
+        (id 3 string 2)
+        (type_formals_list 0)
+        (block 0
+            (stmt_list 0)))
+    (assign 5
+        (id 5 a 4)
+        (string_literal 5 "sldkfj")))(moduledecl 0 __main__  (index_list 1 2 4))
+(classdecl 1 int  (index_list) (index_list))
+(classdecl 2 string  (index_list) (index_list))
+(vardecl 4 a 0  (type 0
+    (id 0 string 2)
+    (type_list 0)))

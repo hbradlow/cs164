@@ -67,7 +67,6 @@
     /** Create a comparison or binop node out of operator OP (an integer
      *  token value), and OPERANDS. */
     static AST_Ptr make_binop (const List_Ptr& operands, int op);
-
     /** Create an id out of the text and location of TOKEN, which must be a
      *  token. */
     static AST_Ptr make_id (AST_Ptr& token);
@@ -140,6 +139,7 @@
 %token BREAK "break"
 %token CALL "@call"
 %token CLASS_BLOCK "@@block"
+%token CLASS "@class"
 %token COMPARE "@compare"
 %token LEFT_COMPARE "@left_compare"
 %token CONTINUE "continue"
@@ -696,10 +696,10 @@ parameter: identifier
   
 funcname:  identifier ;
 
-classdef: "class"^ name=identifier type_formals ":"! 
+classdef: "class"! name=identifier type_formals ":"! 
                 { check_class_placement (); incr (defn_depth); } 
                classbody
-                { decr (defn_depth); }
+                { decr (defn_depth); $$=$^(CLASS,$*);}
     ;
   
 type_formals: 

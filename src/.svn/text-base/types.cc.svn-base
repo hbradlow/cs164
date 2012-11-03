@@ -379,7 +379,11 @@ protected:
         return this;
     }
 
+<<<<<<< HEAD
     Decl* getDecl (int k = 0) {
+=======
+    Decl* getDecl () {
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
         return _me;
     }
 
@@ -443,7 +447,11 @@ protected:
 
     NODE_CONSTRUCTORS (ClassType_AST, Type);
 
+<<<<<<< HEAD
     Decl* getDecl (int k = 0) {
+=======
+    Decl* getDecl () {
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
         return child (0)->getDecl ();
     }
 

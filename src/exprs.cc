@@ -80,7 +80,6 @@ protected:
     // USE THE METHODS ABOVE TO ADAPT IT TO PARTICULAR TYPES OF NODE.
 
 };
-
 NODE_FACTORY (Call_AST, CALL);
 
 /** A binary operator. */
@@ -105,7 +104,6 @@ class Binop_AST : public Callable {
     }
 
 };    
-
 NODE_FACTORY (Binop_AST, BINOP);
 
 /** A unary operator. */
@@ -130,7 +128,185 @@ class Unop_AST : public Callable {
     }
 
 };    
-
 NODE_FACTORY (Unop_AST, UNOP);
 
+
+class Def_AST: public AST_Tree {
+public:
+    bool is_init(){
+        return strcmp(this->child(0)->as_string().c_str(),"__init__") == 0;
+    }
+    void assert_none_here(int k){
+        error(loc(), "Cannot use None as a method name");
+    }
+
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+        {
+            decl = enclosing->addDefDecl(child(0)); 
+        }
+        else 
+            error(loc(), "Redefinition of method"); 
+        child(0)->addDecl(decl);
+    }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+    }
+
+    AST_Ptr doOuterSemantics()
+    {
+        /* Do the first collecting */
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           c->collectDecls(decl);
+        } end_for;
+        /* Do the internal stuff */
+        for_each_child(c, this)
+        {
+            c->doOuterSemantics();
+        }end_for;
+        /* Do the resolving */
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0) 
+                continue;
+            c->resolveSimpleIds(decl->getEnviron());
+        } end_for;
+        return this;
+    }
+
+private: 
+
+    Decl_Vector _me;
+    
+protected:
+
+    NODE_CONSTRUCTORS (Def_AST, AST_Tree);
+};
+NODE_FACTORY (Def_AST, DEF);
+
+/* Method is just a subtype of Def */
+class Method_AST: public Def_AST {
+protected:
+    NODE_CONSTRUCTORS (Method_AST, Def_AST);
+};
+NODE_FACTORY (Method_AST, METHOD);
+
+class Class_AST: public AST_Tree {
+ 
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->addClassDecl(this);
+        child(0)->addDecl(decl);
+        //makeTypeVarDecl(decl->getName(), decl->asType());
+        
+        /*
+        NodePtr i = make_token(ID,decl->getName().length(),decl->getName().c_str(),true);
+        std::vector<NodePtr> test;
+        test.push_back(i);
+
+        Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
+        Decl * tv = makeTypeVarDecl(result->as_string (), result);
+        Decl * tdecl = makeVarDecl(result->as_string (), enclosing,result);
+        */
+
+
+        if(decl->getName().compare("int")==0){
+            intDecl = decl;
+        }
+        else if(decl->getName().compare("string")==0){
+            strDecl = decl;
+        }
+    }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+    }
+
+   
+    AST_Ptr doOuterSemantics()
+    {
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           c->collectDecls(decl);
+        } end_for;
+        for_each_child(c, this)
+        {
+            c->doOuterSemantics();
+        }end_for;
+        
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0)
+                continue;
+            c->resolveSimpleIds(decl->getEnviron());
+        } end_for;
+        return this;
+    }
+
+
+protected:
+    NODE_CONSTRUCTORS (Class_AST, AST_Tree);
+};
+NODE_FACTORY (Class_AST, CLASS);
+
+class ClassBlock_AST: public AST_Tree{
+public:
+    
+    void append_init()
+    {
+        for_each_child (c, this) {
+            if(c->is_init()){
+                return;
+            }
+        } end_for;
+
+        /*
+        NodePtr i = make_token(ID,8,"__init__",true);
+        NodePtr s = make_token(ID,4,"self",true);
+        
+        std::vector<NodePtr> formals_v;
+        formals_v.push_back(s);
+        NodePtr formals = make_tree(FORMALS_LIST,formals_v.begin(),formals_v.end());
+        
+        std::vector<NodePtr> empty_v;
+        NodePtr empty = make_tree(EMPTY,empty_v.begin(),empty_v.end());
+
+
+        std::vector<NodePtr> stmt_v;
+        NodePtr stmt = make_tree(STMT_LIST,stmt_v.begin(),stmt_v.end());
+
+        std::vector<NodePtr> block_v;
+        block_v.push_back(stmt);
+        NodePtr block = make_tree(BLOCK,block_v.begin(),block_v.end());
+
+
+        std::vector<NodePtr> def_v;
+        def_v.push_back(i);
+        def_v.push_back(formals);
+        def_v.push_back(empty);
+        def_v.push_back(block);
+        NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
+        this->insert(0,def);
+        */
+    }
+protected:
+
+    NODE_CONSTRUCTORS (ClassBlock_AST, AST_Tree);
+
+    Decl* getDecl (int k = 0) {
+        return child (0)->getDecl ();
+    }
+
+    void addDecl (Decl* decl) {
+        child (0)->addDecl (decl);
+    }
+
+};
+NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
 

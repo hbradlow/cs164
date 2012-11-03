@@ -105,6 +105,14 @@ AST::isBoundMethod ()
 AST_Ptr
 AST::doOuterSemantics ()
 {
+    //rewrites
+    this->replace_none(); // 4.6
+    this->append_init(); // 4.2
+    
+    for_each_child(c, this)
+    {
+        c->doOuterSemantics();
+    } end_for;
     return this;
 }
 
@@ -310,3 +318,56 @@ protected:
 };
 
 NODE_FACTORY (Empty_AST, EMPTY);
+
+///////////////////////////////////////////////////////////////////////////////////
+//OUR CODE FROM HERE
+///////////////////////////////////////////////////////////////////////////////////
+
+//rewrites
+void
+AST::append_init(){
+    for_each_child (c, this) {
+        c->append_init();
+    } end_for;
+}
+void AST::replace_none(){
+    int index = 0;
+    for_each_child (c, this) {
+        if(c->is_none()){
+            this->assert_none_here(index); // check to make sure its legal to have a None here
+
+            NodePtr i = AST::make_token(ID,8,"__None__",true);
+            i->set_loc(this->loc());
+
+            vector<NodePtr> expr_v;
+            NodePtr expr = make_tree(EXPR_LIST,expr_v.begin(),expr_v.end());
+            expr->set_loc(this->loc());
+
+            vector<NodePtr> call_v;
+            call_v.push_back(i);
+            call_v.push_back(expr);
+            NodePtr call = make_tree(CALL,call_v.begin(),call_v.end());
+
+            this->replace(index,call);
+        }
+        index++;
+        c->replace_none();
+    } end_for;
+}
+
+//checkers
+bool
+AST::is_init(){
+    return false;
+}
+
+bool
+AST::is_none(){
+    return false;
+}
+
+void
+AST::assert_none_here(int k){
+    /* do nothing */
+}
+

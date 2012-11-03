@@ -100,7 +100,7 @@ main (int argc, char* argv[])
 
     parse_init ();
     add_source_file (infile);
-    if (maxPhase > 1) {
+    if (maxPhase > 2) {
         string prelude = argv[0];
         size_t lastSeg = prelude.find_last_of ("/\\");
         prelude.erase (lastSeg == string::npos ? 0 : lastSeg+1);
@@ -111,7 +111,9 @@ main (int argc, char* argv[])
     AST_Ptr tree = parse ();
 
     if (maxPhase >= 2 && tree != NULL && errCount == 0)
+    {
         tree = tree->doOuterSemantics ();
+    }
     if (errCount == 0) {
         printTree (tree, outfileStr);
         outputDecls ();

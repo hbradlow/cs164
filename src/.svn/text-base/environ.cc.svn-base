@@ -62,7 +62,11 @@ void
 Environ::find(const string& name, Decl_Vector& defns) const
 {
     find_immediate(name, defns);
+<<<<<<< HEAD
     if (!defns.empty () || enclosure == NULL)
+=======
+    if (defns.empty () || enclosure == NULL)
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 	return;
     enclosure->find(name, defns);
 }
