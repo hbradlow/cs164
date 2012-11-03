@@ -98,7 +98,6 @@ protected:
             new_v.push_back(t);
             NodePtr n = make_tree(NEW,new_v.begin(),new_v.end());
             expr_list->insert(0,n);
-            this->_oper = CALL1;
             this->replace(0,i);
         }
     }

@@ -344,9 +344,9 @@ protected:
 
     bool assignable () const {
 	return true;
+    }
     void setFrozen (bool freeze) {
         _frozen = freeze;
-    }
     }
 
 };

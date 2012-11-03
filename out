@@ -2,30 +2,19 @@
     (class 1
         (id 1 int 1)
         (type_formals_list 0)
-        (block 2
-            (def 2
-                (id 2 __init__ 3)
-                (formals_list 2
-                    (id 2 self 5))
+        (block 0
+            (stmt_list 0)
+            (def 0
+                (id 0 __init__ 3)
+                (formals_list 0
+                    (id 0 self 5))
                 ()
                 (block 0
-                    (stmt_list 0)))))
-    (assign 4
-        (id 4 a 9)
-        (int_literal 4 3))
-    (assign 5
-        (id 5 b 11)
-        (id 5 a 9)))(moduledecl 0 __main__  (index_list 1 9 11))
+                    (stmt_list 0))))))(moduledecl 0 __main__  (index_list 1))
 (classdecl 1 int  (index_list) (index_list 3 5))
-(funcdecl 3 __init__ 1  (function_type 2
+(funcdecl 3 __init__ 1  (function_type 0
     ()
     (type_list 0
         (type_var 0 $#1 4))) (index_list 7))
 (instancedecl 5 self 1  (type_var 0 $#1 4))
 (vardecl 7 self 3  (type_var 0 $#2 6))
-(vardecl 9 a 0  (type 0
-    (id 0 int 1)
-    (type_list 0)))
-(vardecl 11 b 0  (type 0
-    (id 0 int 1)
-    (type_list 0)))
