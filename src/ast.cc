@@ -108,7 +108,7 @@ AST::doOuterSemantics ()
     //rewrites
     this->replace_none(); // 4.6
     this->append_init(); // 4.2
-    
+
     for_each_child(c, this)
     {
         c->doOuterSemantics();
@@ -325,6 +325,12 @@ NODE_FACTORY (Empty_AST, EMPTY);
 ///////////////////////////////////////////////////////////////////////////////////
 
 //rewrites
+void
+AST::rewrite_types(Decl* enclosing){
+    for_each_child (c, this) {
+        c->rewrite_types(enclosing);
+    } end_for;
+}
 void
 AST::append_init(){
     for_each_child (c, this) {

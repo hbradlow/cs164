@@ -71,15 +71,26 @@ protected:
         return child (1)->child (k);
     }
 
+    //hbradlow - 4.1
+    void rewrite_types(Decl* enclosing){
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        if(decl==NULL)
+        {
+            return;
+        }
+        else if(decl->isType()){
+            vector<NodePtr> dummy;
+            vector<NodePtr> type_v;
+            type_v.push_back(child(0));
+            type_v.push_back(make_tree(TYPE_LIST,dummy.begin(),dummy.end()));
+            NodePtr type = make_tree(TYPE,type_v.begin(),type_v.end());
+            this->replace(0,type);
+        }
+    }
+
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
     }
-    /*
-    AST_Ptr resolveTypesOuter(Decl* context)
-    {
-        printf("HERE\n");
-    }
-    */
 
     Type_Ptr
     getType ()
@@ -233,7 +244,6 @@ protected:
 NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
- 
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->addClassDecl(this);
@@ -296,7 +306,6 @@ public:
             }
         } end_for;
 
-        /*
         NodePtr i = make_token(ID,8,"__init__",true);
         NodePtr s = make_token(ID,4,"self",true);
         
@@ -322,8 +331,7 @@ public:
         def_v.push_back(empty);
         def_v.push_back(block);
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
-        this->insert(0,def);
-        */
+        this->append(def);
     }
 protected:
 
