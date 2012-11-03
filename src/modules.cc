@@ -11,7 +11,7 @@
 
 using namespace std;
 
-const Environ* outer_environ;
+Environ* outer_environ;
 
 /*****   MODULE    *****/
 
@@ -31,13 +31,10 @@ protected:
         for_each_child_var(c, this)
         {
             c->collectDecls(mod_decl);   
-            c = c->doOuterSemantics(); 
+            /* Do the nested stuff */ 
+            c->doOuterSemantics(); 
         } end_for;
-        /* Do the nested stuff */ 
-        for_each_child_var(c, this)
-        {
-            
-        } end_for;
+
         /* Do the resolving */
         for_each_child_var(c, this)
         {

@@ -61,11 +61,21 @@ public:
         child(0)->addTargetDecls(enclosing);
     }
 
+    void resolveSimpleIds (const Environ *env)
+    {
+        for_each_child(c, this)
+        {
+           if (c_i_ == 0) 
+               continue;
+           c->resolveSimpleIds(env);
+        } end_for;
+    }
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
 };
 
 NODE_FACTORY (Assignment_AST, ASSIGN);
 
+/** Kevin : This entire class deals with parameter definitions */
 class FormalsList_AST : public AST_Tree {
 protected:
 
@@ -81,5 +91,18 @@ protected:
 };
 
 NODE_FACTORY (FormalsList_AST, FORMALS_LIST);
+
+/** Kevin : This deals with attributerefs */ 
+class AttributeRef_AST : public AST_Tree {
+protected:
+
+    NODE_CONSTRUCTORS (AttributeRef_AST, AST_Tree);
+
+    void resolveSimpleIds(const Environ *env) 
+    {
+    }
+};
+
+NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
 
 

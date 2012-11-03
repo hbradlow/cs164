@@ -124,6 +124,11 @@ Decl::isClass () const
 }
 
 bool
+Decl::redefine() const 
+{
+    return true;
+}
+bool
 Decl::isInternal () const
 {
     return false;
@@ -391,7 +396,12 @@ public:
     /** Kevin */
     bool isFunc() const
     {
-        return true;
+    return true;
+    }
+
+    bool redefine() const 
+    {
+    return false;
     }
 
 protected:
@@ -464,9 +474,15 @@ public:
     ClassDecl (const string& name, AST_Ptr params)
         : Decl (name, NULL, new Environ (outer_environ)), _params (params) {
     }
+    
     bool isClass() const 
     {
     return true;
+    }
+
+    bool redefine() const
+    {
+    return false;
     }
 
 protected:
@@ -534,7 +550,7 @@ protected:
 
     AST_Ptr _params;
 };
-
+/** Kevin */
 Decl*
 makeClassDecl (const string& name, AST_Ptr params)
 {
@@ -545,7 +561,7 @@ class ModuleDecl : public Decl {
 public:
 
     ModuleDecl (const string& name)
-        :  Decl (name, NULL, new Environ (NULL)) {
+        :  Decl (name, NULL, outer_environ) {
     }
 
 protected:

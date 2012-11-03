@@ -76,9 +76,6 @@ protected:
         child (1)->replace (k, expr);
     }
 
-    // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
-    // USE THE METHODS ABOVE TO ADAPT IT TO PARTICULAR TYPES OF NODE.
-
 };
 NODE_FACTORY (Call_AST, CALL);
 
@@ -102,9 +99,49 @@ class Binop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (2*k, expr);
     }
+    
+    /** Kevin: Prevent operator from being checked during resolve */
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(0)->resolveSimpleIds(env);
+        child(2)->resolveSimpleIds(env);
+    }
 
 };    
 NODE_FACTORY (Binop_AST, BINOP);
+
+/** Kevin : A compare. */
+class Compare_AST : public Callable{
+
+    NODE_CONSTRUCTORS (Compare_AST, Callable);
+
+    AST_Ptr calledExpr () {
+        return child (3);
+    }
+
+    int numActuals () {
+        return 2;
+    }
+
+    AST_Ptr actualParam (int k) {
+        return child(k * 2);
+    }
+
+    void setActual (int k, AST_Ptr expr) {
+        child (1)->replace (2*k, expr);
+    }
+    
+    /** Kevin: Prevent operator from being checked during resolve */
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(0)->resolveSimpleIds(env);
+        child(2)->resolveSimpleIds(env);
+    }
+
+};    
+NODE_FACTORY (Compare_AST, COMPARE);
+
+
 
 /** A unary operator. */
 class Unop_AST : public Callable {
@@ -126,6 +163,11 @@ class Unop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (2*k, expr);
     }
+    /** Kevin: unop has different identifiers than normal call*/
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(1)->resolveSimpleIds(env);
+    }
 
 };    
 NODE_FACTORY (Unop_AST, UNOP);
@@ -142,13 +184,11 @@ public:
 
     void collectDecls(Decl *enclosing)
     {
-        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
-        if (decl == NULL)
-        {
-            decl = enclosing->addDefDecl(child(0)); 
-        }
-        else 
-            error(loc(), "Redefinition of method"); 
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        if (decl != NULL)
+            error(loc(), "Trying to assign class to pre-defined variable");
+
+        decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
     }
 
@@ -200,7 +240,10 @@ class Class_AST: public AST_Tree {
  
     void collectDecls(Decl *enclosing)
     {
-        Decl *decl = enclosing->addClassDecl(this);
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        if (decl != NULL)
+            error(loc(), "Trying to assign class to pre-defined variable");
+        decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
     }
 
