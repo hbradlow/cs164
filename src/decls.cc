@@ -14,7 +14,10 @@ using namespace std;
  *  constructs.  All are initially NULL. */
 Decl* intDecl;
 Decl* listDecl;
-Decl* tupleDecl;
+Decl* tuple0Decl;
+Decl* tuple1Decl;
+Decl* tuple2Decl;
+Decl* tuple3Decl;
 Decl* strDecl;
 Decl* dictDecl;
 Decl* boolDecl;
@@ -237,10 +240,10 @@ protected:
 public:
 
     Type_Ptr getType () const {
-        if (isFrozen () || _type == NULL)
-            return _type;
-        else
-            return _type->freshen ();
+	if (isFrozen () || _type == NULL)
+	    return _type;
+	else
+	    return _type->freshen ();
     }
 
     void setType (Type_Ptr type) {
@@ -335,12 +338,15 @@ public:
 
 protected:
 
+    const char* declTypeName () const {
+        return "instancedecl";
+    }
+
+    bool assignable () const {
+	return true;
     void setFrozen (bool freeze) {
         _frozen = freeze;
     }
-
-    const char* declTypeName () const {
-        return "instancedecl";
     }
 
 };
@@ -373,7 +379,6 @@ protected:
     }
 
 };
-
 
 Decl*
 makeTypeVarDecl (const string& name, AST_Ptr typeVar)
@@ -430,7 +435,6 @@ makeFuncDecl (const string& name, Decl* container, AST_Ptr type)
 {
     return new FuncDecl (name, container, type,
 			 new Environ (container->getEnviron ()));
-
 }
 
 class MethodDecl : public FuncDecl {
@@ -475,7 +479,6 @@ protected:
     bool isType () const {
 	return true;
     }
-    
     void printContainer () const {
     }
 

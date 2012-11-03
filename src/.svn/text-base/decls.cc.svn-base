@@ -14,7 +14,14 @@ using namespace std;
  *  constructs.  All are initially NULL. */
 Decl* intDecl;
 Decl* listDecl;
+<<<<<<< HEAD
+Decl* tuple0Decl;
+Decl* tuple1Decl;
+Decl* tuple2Decl;
+Decl* tuple3Decl;
+=======
 Decl* tupleDecl;
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 Decl* strDecl;
 Decl* dictDecl;
 Decl* boolDecl;
@@ -311,12 +318,21 @@ public:
 
 protected:
 
+<<<<<<< HEAD
+    const char* declTypeName () const {
+        return "instancedecl";
+    }
+
+    bool assignable () const {
+	return true;
+=======
     void setFrozen (bool freeze) {
         _frozen = freeze;
     }
 
     const char* declTypeName () const {
         return "instancedecl";
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
     }
 
 };

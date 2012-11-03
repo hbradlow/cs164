@@ -61,14 +61,14 @@ def __None__():
 # truth replaces bool(...) in regular Python.  truth(x) is True iff x is a
 # true value, according to the Python spec.
 
-def truth(x)::boolean:
+def truth(x)::bool:
     native "__truth__"
 
-def __not__(x)::boolean:
+def __not__(x)::bool:
     native "__not__"
 
-True::boolean = truth(1)
-False::boolean = truth(0)
+True::bool = truth(1)
+False::bool = truth(0)
 
 # Type range
 
@@ -170,13 +170,13 @@ def tostr(x)::str:
 
 # Type list
 
-def __getitem__(L::list of $a, k::int)::$a:
+def __getitem__(S::list of $a, k::int)::$a:
     native "__getitem__list"
 
-def __getslice__(L::list of $a, L::int, U::int)::list of $a:
+def __getslice__(S::list of $a, L::int, U::int)::list of $a:
     native "__getslice__list"
 
-def len(L::list of $a)::int:
+def len(S::list of $a)::int:
     native "__len__list"
 
 def __argv__()::list of str:

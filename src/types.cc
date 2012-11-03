@@ -441,6 +441,7 @@ NODE_FACTORY (FunctionType_AST, FUNCTION_TYPE);
 
 class ClassType_AST: public Type {
 protected:
+
     NODE_CONSTRUCTORS (ClassType_AST, Type);
     Type_Ptr
     asType ()
