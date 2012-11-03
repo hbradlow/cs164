@@ -70,7 +70,11 @@ public:
 
         Unwind_Stack s;
         Type_Ptr t1 = child(0)->getType();
+        t1->print(cout,0);
+        printf("\n");
         Type_Ptr t2 = child(1)->getType();
+        t2->print(cout,0);
+        printf("\n");
         int b = t1->unify(t2,s);
         if(b==0){
             error(loc(),"Incompatible types");

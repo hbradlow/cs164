@@ -74,9 +74,17 @@ protected:
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
     }
+    /*
     AST_Ptr resolveTypesOuter(Decl* context)
     {
         printf("HERE\n");
+    }
+    */
+
+    Type_Ptr
+    getType ()
+    {
+        return child(0)->getType()->binding()->returnType();
     }
 
     // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
@@ -156,6 +164,9 @@ public:
         child(1)->collectDecls(enclosing);
         child(2)->collectDecls(enclosing);
     }
+    Type_Ptr getType(){
+        return child(2)->asType();
+    }
 
     void resolveSimpleIds(const Environ *env)
     {
@@ -174,8 +185,8 @@ public:
         ft_vec.push_back(type_list);
         AST_Ptr function_type = make_tree(FUNCTION_TYPE,ft_vec.begin(),ft_vec.end());
 
+
         int b = child(0)->getType()->unify(function_type->asType(),s);
-    //    int b = child(0)->getType()->unify(child(2)->asType(),s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
         }

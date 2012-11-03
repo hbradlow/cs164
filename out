@@ -27,7 +27,14 @@
             (type_list 0))
         (block 6
             (return 6
-                (id 6 g 10)))))(moduledecl 0 __main__  (index_list 1 2 4 6 8))
+                (id 6 g 10))))
+    (assign 7
+        (id 7 x 14)
+        (call 7
+            (id 7 f 4)
+            (expr_list 7
+                (int_literal 7 1)
+                (string_literal 7 "this")))))(moduledecl 0 __main__  (index_list 1 2 4 6 8 14))
 (classdecl 1 int  (index_list) (index_list))
 (classdecl 2 string  (index_list) (index_list))
 (funcdecl 4 f 0  (function_type 5
@@ -49,3 +56,6 @@
     (type_list 0)))
 (vardecl 10 g 4  (type_var 0 $#3 9))
 (vardecl 12 a 4  (type_var 0 $#4 11))
+(vardecl 14 x 0  (type 5
+    (id 5 int 1)
+    (type_list 0)))

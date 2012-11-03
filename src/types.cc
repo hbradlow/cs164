@@ -45,6 +45,7 @@ Type::numParams ()
 Type_Ptr
 Type::returnType ()
 {
+    printf("HERE\n");
     return NULL;
 }
 
