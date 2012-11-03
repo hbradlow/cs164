@@ -74,17 +74,32 @@ protected:
     //hbradlow - 4.1
     void rewrite_types(Decl* enclosing){
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if(decl==NULL)
-        {
-            return;
-        }
-        else if(decl->isType()){
+        if(decl!=NULL && decl->isType()){
             vector<NodePtr> dummy;
             vector<NodePtr> type_v;
             type_v.push_back(child(0));
             type_v.push_back(make_tree(TYPE_LIST,dummy.begin(),dummy.end()));
             NodePtr type = make_tree(TYPE,type_v.begin(),type_v.end());
+            type->collectDecls(enclosing);
             this->replace(0,type);
+        }
+    }
+    //hbradlow - 4.3
+    void rewrite_allocators(Decl* enclosing){
+        if(child(0)->asType()!=NULL) 
+        {
+            NodePtr t = child(0);
+            NodePtr i = AST::make_token(ID,8,"__init__",true);
+            Decl *decl = t->getDecl()->getEnviron()->find_immediate("__init__");
+            i->addDecl(decl);
+            NodePtr expr_list = child(1);
+
+            std::vector<NodePtr> new_v;
+            new_v.push_back(t);
+            NodePtr n = make_tree(NEW,new_v.begin(),new_v.end());
+            expr_list->insert(0,n);
+            this->_oper = CALL1;
+            this->replace(0,i);
         }
     }
 
@@ -103,6 +118,20 @@ protected:
 
 };
 NODE_FACTORY (Call_AST, CALL);
+
+/** A function call. */
+//hbradow - 4.3
+class Call1_AST : public Call_AST {
+protected:
+    NODE_CONSTRUCTORS (Call1_AST, Call_AST);
+
+    Type_Ptr
+    getType ()
+    {
+        return child(0)->getType()->binding()->returnType();
+    }
+};
+NODE_FACTORY (Call1_AST, CALL1);
 
 /** A binary operator. */
 class Binop_AST : public Callable {

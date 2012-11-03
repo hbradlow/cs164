@@ -68,7 +68,6 @@ public:
             c->resolveSimpleIds(env);
         } end_for;
 
-        /*
         Unwind_Stack s;
         Type_Ptr t1 = child(0)->getType();
         Type_Ptr t2 = child(1)->getType();
@@ -76,7 +75,6 @@ public:
         if(b==0){
             error(loc(),"Incompatible types");
         }
-        */
     }
 
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 

@@ -140,6 +140,8 @@
 %token BLOCK "@block"
 %token BREAK "break"
 %token CALL "@call"
+%token CALL1 "@call1"
+%token NEW "@new"
 %token CLASS_BLOCK "@@block"
 %token CLASS "class"
 %token COMPARE "@compare"

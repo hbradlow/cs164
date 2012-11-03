@@ -170,9 +170,13 @@ protected:
         Decl *decl = env->find(as_string());
         if (decl == NULL) 
         {
-            string str = "Use of undeclared identifier '";
-            str += as_string() + "'"; 
-            error(loc(), str.c_str()); 
+            decl = getDecl();
+            if (decl == NULL) 
+            {
+                string str = "Use of undeclared identifier '";
+                str += as_string() + "'"; 
+                error(loc(), str.c_str()); 
+            }
         }
         else if (numDecls() == 0)
             addDecl(decl);

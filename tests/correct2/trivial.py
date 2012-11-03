@@ -1,5 +1,5 @@
 class int:
-    pass
-class string:
-    pass
-a = int()
+    def __init__(self):
+        pass
+a = 3
+b = a

@@ -42,6 +42,7 @@ protected:
         for_each_child_var(c, this)
         {
             c->rewrite_types(mod_decl);
+            c->rewrite_allocators(mod_decl);
         } end_for;
         /* Do the resolving */
         for_each_child_var(c, this)
