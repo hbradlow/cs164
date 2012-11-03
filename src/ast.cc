@@ -331,11 +331,12 @@ AST::rewrite_types(Decl* enclosing){
         c->rewrite_types(enclosing);
     } end_for;
 }
-void
+AST_Ptr
 AST::rewrite_allocators(Decl* enclosing){
-    for_each_child (c, this) {
-        c->rewrite_allocators(enclosing);
+    for_each_child_var (c, this) {
+        c = c->rewrite_allocators(enclosing);
     } end_for;
+    return this;
 }
 void
 AST::append_init(){

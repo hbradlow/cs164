@@ -167,7 +167,7 @@ public:
     /* 4.2: If this node is a class define, and there isn't already a __init__ method in the class, this function adds an empty __init__ method. */
     virtual void append_init();
     /* 4.3: Rewirte allocators */
-    virtual void rewrite_allocators(Decl* enclosing);
+    virtual AST_Ptr rewrite_allocators(Decl* enclosing);
     /* 4.6: replace all occurences of "None" with __None__() */
     virtual void replace_none();
 

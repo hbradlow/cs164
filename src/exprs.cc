@@ -85,7 +85,7 @@ protected:
         }
     }
     //hbradlow - 4.3
-    void rewrite_allocators(Decl* enclosing){
+    AST_Ptr rewrite_allocators(Decl* enclosing){
         if(child(0)->asType()!=NULL) 
         {
             NodePtr t = child(0);
@@ -98,8 +98,13 @@ protected:
             new_v.push_back(t);
             NodePtr n = make_tree(NEW,new_v.begin(),new_v.end());
             expr_list->insert(0,n);
-            this->replace(0,i);
+
+            std::vector<NodePtr> call_v;
+            call_v.push_back(i);
+            call_v.push_back(expr_list);
+            return make_tree(CALL1,call_v.begin(),call_v.end());
         }
+        return this;
     }
 
     void setActual (int k, AST_Ptr expr) {
@@ -124,10 +129,11 @@ class Call1_AST : public Call_AST {
 protected:
     NODE_CONSTRUCTORS (Call1_AST, Call_AST);
 
-    Type_Ptr
-    getType ()
+    //hbradow - 4.3
+    Type_Ptr getType ()
     {
-        return child(0)->getType()->binding()->returnType();
+        //return the first element of the expression list
+        return child(1)->child(0)->child(0)->asType();
     }
 };
 NODE_FACTORY (Call1_AST, CALL1);
