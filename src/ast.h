@@ -83,7 +83,7 @@ public:
 
     /** True if I represent a "bound method" (i.e., OBJ.ID where OBJ
      *  is a value of type C and ID is a method defined in C.). */
-    virtual bool isUnboundMethod ();
+    virtual bool isBoundMethod ();
 
     /** Do outer-level semantic analysis on me---all scope and type
      *  analysis that applies to definitions and statements that are
@@ -99,7 +99,7 @@ public:
 
     /** Assuming I am a target of an assignment, add any local
      *  declarations that would result from assignments to me to
-     *  ENCLOSING, mY enclosing construct.  (Used by overridings of
+     *  ENCLOSING, my enclosing construct.  (Used by overridings of
      *  collectDecls.) */
     virtual void addTargetDecls (Decl* enclosing);
 
@@ -111,7 +111,6 @@ public:
      *  identifier.  Does nothing for other nodes. Assumes that
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleTypeIds (const Environ* env);
-   
     /** Replace any allocators in me with appropriate NEW nodes,
      *  returning the modified node. */
     virtual AST_Ptr resolveAllocators (const Environ* env);
@@ -163,10 +162,17 @@ public:
     //our stuff....
 
     //rewrites
+    /* 4.1: (hbradlow) Rewrite ids that represent types as type nodes */
+    virtual void rewrite_types(Decl* enclosing);
     /* 4.2: If this node is a class define, and there isn't already a __init__ method in the class, this function adds an empty __init__ method. */
     virtual void append_init();
+    /* 4.3: Rewirte allocators */
+    virtual AST_Ptr rewrite_allocators(Decl* enclosing);
     /* 4.6: replace all occurences of "None" with __None__() */
     virtual void replace_none();
+
+    //hbradlow
+    virtual void unifyWith(AST_Ptr right);
 
     //checkers
     /* returns true if this node is a def node with name "__init__" */
@@ -200,7 +206,7 @@ protected:
     /** Undo the mark on THIS. */
     void unmark ();
 
-    /** Print my as an AST on OUT.  Use INDENT as the indentation for 
+    /** Print me as an AST on OUT.  Use INDENT as the indentation for 
      *  subsequent lines if my representation takes up multiple lines.
      *  This method is intended to be called by other print methods
      *  during a traversal (using the print method below), whereas
@@ -304,6 +310,7 @@ public:
     /** My current binding.  Initially THIS, and then changed by
      *  unification. */
     virtual Type_Ptr binding ();
+
 
     /** Unify THIS with TYPE, returning true iff successful, and
      *  recording all bindings at the end of BINDINGS, so that

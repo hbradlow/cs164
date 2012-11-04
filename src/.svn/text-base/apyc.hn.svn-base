@@ -62,12 +62,20 @@
      *  file and false if at the end of input. */
     static bool pop_source_file ();
 
+<<<<<<< HEAD
+    /** Create a "unop" node out of OPERANDS. */
+    static AST_Ptr make_unop (const List_Ptr& operands);
+    /** Create a comparison or binop node out of operator OP (an integer
+     *  token value), and OPERANDS. */
+    static AST_Ptr make_binop (const List_Ptr& operands, int op);
+=======
     /** Create a "unop" node out of operator OP (a token) and operand
      *  RIGHT. */
     static AST_Ptr make_unop (const List_Ptr& operands);
     /** Create a "binop" node out of operator OP (a token) and operands
      *  LEFT and RIGHT. */
     static AST_Ptr make_binop (const List_Ptr& operands);
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 
     /** Create an id out of the text and location of TOKEN, which must be a
      *  token. */
@@ -496,17 +504,29 @@ comp_operator:
 
 expr2: 
       left_compare comp_operator expr3
+<<<<<<< HEAD
+                { $$ = make_binop ($*, COMPARE); }
+    | expr3 comp_operator expr3  
+                { $$ = make_binop ($*, COMPARE); }
+=======
                 { $$ = $^(COMPARE, $*); }
     | expr3 comp_operator expr3  
                 { $$ = $^(COMPARE, $*); }
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
     | expr3
     ;
 
 left_compare:
       expr3 comp_operator expr3
+<<<<<<< HEAD
+                { $$ = make_binop ($*, LEFT_COMPARE); }
+    | left_compare comp_operator expr3
+                { $$ = make_binop ($*, LEFT_COMPARE); }
+=======
                 { $$ = $^(LEFT_COMPARE, $*); }
     | left_compare comp_operator expr3
                 { $$ = $^(LEFT_COMPARE, $*); }
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
     ;
 
 expr3: 
@@ -518,7 +538,11 @@ expr3:
     | expr3 
      ("+" | "-" | "*" | "/" | "//" | "%" | "**")
      expr3 %expand
+<<<<<<< HEAD
+                { $$ = make_binop ($*, BINOP); }
+=======
                 { $$ = make_binop ($*); }
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
     ;
              
 simple_stmt:
@@ -907,6 +931,15 @@ make_unop (const List_Ptr& operands)
 }
 
 static AST_Ptr
+<<<<<<< HEAD
+make_binop (const List_Ptr& operands, int op = BINOP)
+{
+    AST_Ptr oper = operands->at (1);
+
+    return YYMAKE_TREE (op, operands->at (0), make_id (oper), operands->at (2), 
+                        make_id (get_binop_method(oper->as_string ()),
+                                 oper->loc ()));
+=======
 make_binop (const List_Ptr& operands)
 {
     AST_Ptr op = operands->at (1);
@@ -914,6 +947,7 @@ make_binop (const List_Ptr& operands)
     return YYMAKE_TREE (BINOP, operands->at (0), make_id (op), operands->at (2), 
                         make_id (get_binop_method(op->as_string ()),
                                  op->loc ()));
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 }
 
 static AST_Ptr

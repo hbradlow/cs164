@@ -1,43 +1,5 @@
 (module 0
     (class 1
-<<<<<<< HEAD
-        (id 1 A 1)
-        (type_formals_list 0)
-        (block 2
-            (assign 2
-                (id 2 x 3)
-                (binop 2
-                    (int_literal 2 3)
-                    (id 2 +)
-                    (int_literal 2 5)
-                    (id 2 __add__)))
-            (def 3
-                (id 3 f 5)
-                (formals_list 3
-                    (id 3 self 7))
-                ()
-                (block 4
-                    (if 4
-                        (compare 4
-                            (attributeref 4
-                                (id 4 self 7)
-                                (id 4 x))
-                            (id 4 >)
-                            (int_literal 4 0))
-                        (stmt_list 5
-                            (return 5
-                                (attributeref 5
-                                    (id 5 self 7)
-                                    (id 5 x))))
-                        (stmt_list 0)))))))(moduledecl 0 __main__  (index_list 1))
-(classdecl 1 A  (index_list) (index_list 3 5))
-(typevardecl 2 Any )
-(instancedecl 3 x 1  (type_var 0 Any 2))
-(typevardecl 4 Any )
-(funcdecl 5 f 1  (type_var 0 Any 4) (index_list 7))
-(typevardecl 6 Any )
-(paramdecl 7 self 5  0 (type_var 0 Any 6))
-=======
         (id 1 int 1)
         (type_formals_list 0)
         (block 0
@@ -109,4 +71,3 @@
 (vardecl 20 b 0  (type 5
     (id 5 int 1)
     (type_list 0)))
->>>>>>> project2

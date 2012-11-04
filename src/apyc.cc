@@ -100,7 +100,6 @@ main (int argc, char* argv[])
 
     parse_init ();
     add_source_file (infile);
-
     if (maxPhase > 2) {
         string prelude = argv[0];
         size_t lastSeg = prelude.find_last_of ("/\\");

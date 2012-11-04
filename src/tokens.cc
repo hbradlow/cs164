@@ -73,6 +73,12 @@ protected:
 	    << ")";
     }
 
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
+
     TOKEN_CONSTRUCTORS(Int_Token, Typed_Token);
 
     Int_Token* post_make () {
@@ -125,6 +131,12 @@ protected:
             return _me[k];
     }
 
+    Type_Ptr
+    getType ()
+    {
+        return this->getDecl()->getType();
+    }
+
     void addDecl (Decl* decl) {
         _me.push_back (decl);
     }
@@ -138,22 +150,40 @@ protected:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
-        decl = enclosing->addVarDecl(this);
+            decl = enclosing->addVarDecl(this);
         if (enclosing->isClass() && enclosing->getName() == as_string())
             error(loc(), "Redefinition of class variable");
         if (enclosing->isFunc() && enclosing->getName() == as_string())
             error(loc(), "Redefinition of function variable");
         addDecl(decl);
     }
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        addDecl(decl);
+    }
     
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t1 = this->getType();
+        Type_Ptr t2 = right->getType();
+        int b = t1->unify(t2,s);
+        if(b==0){
+            error(loc(),"Incompatible types");
+        }
+    }
     void resolveSimpleIds (const Environ* env)
     {
         Decl *decl = env->find(as_string());
         if (decl == NULL) 
         {
-            string str = "Use of undeclared identifier '";
-            str += as_string() + "'"; 
-            error(loc(), str.c_str()); 
+            decl = getDecl();
+            if (decl == NULL) 
+            {
+                string str = "Use of undeclared identifier '";
+                str += as_string() + "'"; 
+                error(loc(), str.c_str()); 
+            }
         }
         else if (numDecls() == 0)
             addDecl(decl);
@@ -169,6 +199,12 @@ TOKEN_FACTORY(Id_Token, ID);
 
 /** Represents a string. */
 class String_Token : public Typed_Token {
+public:
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
 private:
     
     String_Token* post_make () {

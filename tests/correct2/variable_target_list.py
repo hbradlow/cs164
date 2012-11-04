@@ -1,3 +1,5 @@
+class int:
+    pass
 a = 10
 b = 11 
 c = 9 

@@ -60,6 +60,16 @@ public:
     {
         child(0)->addTargetDecls(enclosing);
     }
+    void
+    resolveSimpleIds (const Environ* env)
+    {
+        for_each_child(c, this)
+        {
+            c->resolveSimpleIds(env);
+        } end_for;
+
+        child(0)->unifyWith(child(1));
+    }
 
     void resolveSimpleIds (const Environ *env)
     {
@@ -85,8 +95,14 @@ protected:
     {
         for_each_child(c, this)
         {
+            c->addTargetDecls(enclosing);
+        } end_for;
+        /*
+        for_each_child(c, this)
+        {
             enclosing->addParamDecl(c, c_i_);
         } end_for; 
+        */
     }
 };
 

@@ -62,13 +62,11 @@
      *  file and false if at the end of input. */
     static bool pop_source_file ();
 
-    /** Create a "unop" node out of operator OP (a token) and operand
-     *  RIGHT. */
+    /** Create a "unop" node out of OPERANDS. */
     static AST_Ptr make_unop (const List_Ptr& operands);
-    /** Create a "binop" node out of operator OP (a token) and operands
-     *  LEFT and RIGHT. */
-    static AST_Ptr make_binop (const List_Ptr& operands);
-
+    /** Create a comparison or binop node out of operator OP (an integer
+     *  token value), and OPERANDS. */
+    static AST_Ptr make_binop (const List_Ptr& operands, int op);
     /** Create an id out of the text and location of TOKEN, which must be a
      *  token. */
     static AST_Ptr make_id (AST_Ptr& token);
@@ -140,8 +138,10 @@
 %token BLOCK "@block"
 %token BREAK "break"
 %token CALL "@call"
+%token CALL1 "@call1"
+%token NEW "@new"
 %token CLASS_BLOCK "@@block"
-%token CLASS "@class"
+%token CLASS "class"
 %token COMPARE "@compare"
 %token LEFT_COMPARE "@left_compare"
 %token CONTINUE "continue"
@@ -497,17 +497,17 @@ comp_operator:
 
 expr2: 
       left_compare comp_operator expr3
-                { $$ = $^(COMPARE, $*); }
+                { $$ = make_binop ($*, COMPARE); }
     | expr3 comp_operator expr3  
-                { $$ = $^(COMPARE, $*); }
+                { $$ = make_binop ($*, COMPARE); }
     | expr3
     ;
 
 left_compare:
       expr3 comp_operator expr3
-                { $$ = $^(LEFT_COMPARE, $*); }
+                { $$ = make_binop ($*, LEFT_COMPARE); }
     | left_compare comp_operator expr3
-                { $$ = $^(LEFT_COMPARE, $*); }
+                { $$ = make_binop ($*, LEFT_COMPARE); }
     ;
 
 expr3: 
@@ -519,7 +519,7 @@ expr3:
     | expr3 
      ("+" | "-" | "*" | "/" | "//" | "%" | "**")
      expr3 %expand
-                { $$ = make_binop ($*); }
+                { $$ = make_binop ($*, BINOP); }
     ;
              
 simple_stmt:
@@ -698,10 +698,10 @@ parameter: identifier
   
 funcname:  identifier ;
 
-classdef: "class"! name=identifier type_formals ":"! 
+classdef: "class"^ name=identifier type_formals ":"! 
                 { check_class_placement (); incr (defn_depth); } 
                classbody
-                { decr (defn_depth); $$=$^(CLASS,$*);}
+                { decr (defn_depth);}
     ;
   
 type_formals: 
@@ -908,13 +908,13 @@ make_unop (const List_Ptr& operands)
 }
 
 static AST_Ptr
-make_binop (const List_Ptr& operands)
+make_binop (const List_Ptr& operands, int op = BINOP)
 {
-    AST_Ptr op = operands->at (1);
+    AST_Ptr oper = operands->at (1);
 
-    return YYMAKE_TREE (BINOP, operands->at (0), make_id (op), operands->at (2), 
-                        make_id (get_binop_method(op->as_string ()),
-                                 op->loc ()));
+    return YYMAKE_TREE (op, operands->at (0), make_id (oper), operands->at (2), 
+                        make_id (get_binop_method(oper->as_string ()),
+                                 oper->loc ()));
 }
 
 static AST_Ptr

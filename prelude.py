@@ -170,13 +170,13 @@ def tostr(x)::str:
 
 # Type list
 
-def __getitem__(L::list of $a, k::int)::$a:
+def __getitem__(S::list of $a, k::int)::$a:
     native "__getitem__list"
 
-def __getslice__(L::list of $a, L::int, U::int)::list of $a:
+def __getslice__(S::list of $a, L::int, U::int)::list of $a:
     native "__getslice__list"
 
-def len(L::list of $a)::int:
+def len(S::list of $a)::int:
     native "__len__list"
 
 def __argv__()::list of str:
