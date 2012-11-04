@@ -228,7 +228,10 @@ extern void outputDecls ();
 /** Decls for built-in types. */
 extern Decl* intDecl;
 extern Decl* listDecl;
-extern Decl* tupleDecl;
+extern Decl* tuple0Decl;
+extern Decl* tuple1Decl;
+extern Decl* tuple2Decl;
+extern Decl* tuple3Decl;
 extern Decl* strDecl;
 extern Decl* dictDecl;
 extern Decl* boolDecl;

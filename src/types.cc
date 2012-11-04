@@ -27,7 +27,6 @@ AST::resolveTypesOuter (Decl* context)
         ambiguities0 = ambiguities;
         resolved = ambiguities = 0;
         errors = false;
-        printf("HERE\n");
         r = r->resolveTypes (context, resolved, ambiguities, errors);
     } while (!errors && (resolved != resolved0 || ambiguities != ambiguities0));
     r->freezeDecls (false);
@@ -46,6 +45,7 @@ Type::numParams ()
 Type_Ptr
 Type::returnType ()
 {
+    printf("HERE\n");
     return NULL;
 }
 
@@ -70,9 +70,7 @@ Type::typeParam (int k)
 Type_Ptr
 Type::makeVar ()
 {
-    NodePtr i = make_token(ID,3,"Any",true);
     std::vector<NodePtr> test;
-    test.push_back(i);
 
     Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
     result->addDecl (makeTypeVarDecl (result->as_string (), result));
@@ -445,18 +443,17 @@ class ClassType_AST: public Type {
 protected:
 
     NODE_CONSTRUCTORS (ClassType_AST, Type);
-
+    Type_Ptr
+    asType ()
+    {
+        return this->freshen();
+    }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
-
     void addDecl (Decl* decl) {
         child (0)->addDecl (decl);
     }
-    void collectDecls (Decl* enclosing)
-    {
-    }
-
 };
 
 NODE_FACTORY (ClassType_AST, TYPE);
@@ -466,27 +463,33 @@ class TypedId_AST : public Type
 public:
     NODE_CONSTRUCTORS (TypedId_AST, Type); 
 
+    Type_Ptr
+    getType ()
+    {
+        return child(0)->getType();
+    }
+    void
+    resolveSimpleTypedIds (const Environ* env)
+    {
+        child(0)->resolveSimpleIds(env);
+    }
+    void
+    resolveSimpleIds (const Environ* env)
+    {
+        Unwind_Stack s;
+        Type_Ptr t0 = child(0)->getType();
+        Type_Ptr t1 = child(1)->asType();
+        int b = t0->unify(t1,s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
+    }
     void addTargetDecls(Decl* enclosing)
     {
-        for_each_child (c, this) {
-            c->addTargetDecls(enclosing);
-        } end_for;
-
-        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        NodePtr i = child(1)->child(0);
-
-        string t = decl->getType()->binding()->as_string();
-        if (t.compare("Any")!=0 && t.compare(i->as_string().c_str())!=0)
-            error(loc(),"Id previously defined as a different type");
-
-
-        std::vector<NodePtr> test;
-        test.push_back(i);
-        Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
-        result->addDecl (makeTypeVarDecl (result->as_string (), result));
-
-        decl->setType(result);
+        child(0)->addTargetDecls(enclosing);
+        child(1)->collectDecls(enclosing);
     }
 };
 
 NODE_FACTORY (TypedId_AST, TYPED_ID);
+

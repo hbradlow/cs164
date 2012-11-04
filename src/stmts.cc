@@ -61,15 +61,19 @@ public:
         child(0)->addTargetDecls(enclosing);
     }
 
-    void resolveSimpleIds (const Environ *env)
+    void
+    resolveSimpleIds (const Environ* env)
     {
         for_each_child(c, this)
         {
            if (c_i_ == 0) 
-               continue;
+           continue;
            c->resolveSimpleIds(env);
         } end_for;
+
+        child(0)->unifyWith(child(1));
     }
+
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
 };
 
@@ -85,8 +89,14 @@ protected:
     {
         for_each_child(c, this)
         {
+            c->addTargetDecls(enclosing);
+        } end_for;
+        
+        for_each_child(c, this)
+        {
             enclosing->addParamDecl(c, c_i_);
         } end_for; 
+        
     }
 };
 
@@ -104,7 +114,7 @@ protected:
         Decl *childDecl = env->find(child(0)->as_string());
         if (childDecl != NULL)
         {
-            // This should work as soon as we implemente 4.4
+            // This should work as soon as we implement 4.4
             child(1)->resolveSimpleIds(childDecl->getEnviron());
         }
     }

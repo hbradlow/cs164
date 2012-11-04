@@ -95,7 +95,7 @@ AST::isMissing ()
 }
 
 bool
-AST::isUnboundMethod ()
+AST::isBoundMethod ()
 {
     return false;
 }
@@ -108,7 +108,7 @@ AST::doOuterSemantics ()
     //rewrites
     this->replace_none(); // 4.6
     this->append_init(); // 4.2
-    
+
     for_each_child(c, this)
     {
         c->doOuterSemantics();
@@ -177,6 +177,7 @@ AST::freezeDecls (bool frozen)
 AST_Ptr
 AST::resolveTypes (Decl* context, int& resolved, int& ambiguities,  bool& errors)
 {
+    printf("HERE\n");
     for_each_child_var (c, this) {
         c = c->resolveTypes (context, resolved, ambiguities, errors);
     } end_for;
@@ -323,7 +324,25 @@ NODE_FACTORY (Empty_AST, EMPTY);
 //OUR CODE FROM HERE
 ///////////////////////////////////////////////////////////////////////////////////
 
+//hbradlow
+void AST::unifyWith(AST_Ptr right){
+    printf("GENERIC\n");
+}
+
 //rewrites
+void
+AST::rewrite_types(Decl* enclosing){
+    for_each_child (c, this) {
+        c->rewrite_types(enclosing);
+    } end_for;
+}
+AST_Ptr
+AST::rewrite_allocators(Decl* enclosing){
+    for_each_child_var (c, this) {
+        c = c->rewrite_allocators(enclosing);
+    } end_for;
+    return this;
+}
 void
 AST::append_init(){
     for_each_child (c, this) {

@@ -83,7 +83,11 @@ public:
 
     /** True if I represent a "bound method" (i.e., OBJ.ID where OBJ
      *  is a value of type C and ID is a method defined in C.). */
+<<<<<<< HEAD
+    virtual bool isBoundMethod ();
+=======
     virtual bool isUnboundMethod ();
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 
     /** Do outer-level semantic analysis on me---all scope and type
      *  analysis that applies to definitions and statements that are
@@ -184,7 +188,11 @@ protected:
     /** Undo the mark on THIS. */
     void unmark ();
 
+<<<<<<< HEAD
+    /** Print me as an AST on OUT.  Use INDENT as the indentation for 
+=======
     /** Print my as an AST on OUT.  Use INDENT as the indentation for 
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
      *  subsequent lines if my representation takes up multiple lines.
      *  This method is intended to be called by other print methods
      *  during a traversal (using the print method below), whereas

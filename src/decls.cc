@@ -14,7 +14,10 @@ using namespace std;
  *  constructs.  All are initially NULL. */
 Decl* intDecl;
 Decl* listDecl;
-Decl* tupleDecl;
+Decl* tuple0Decl;
+Decl* tuple1Decl;
+Decl* tuple2Decl;
+Decl* tuple3Decl;
 Decl* strDecl;
 Decl* dictDecl;
 Decl* boolDecl;
@@ -242,10 +245,10 @@ protected:
 public:
 
     Type_Ptr getType () const {
-        if (isFrozen () || _type == NULL)
-            return _type;
-        else
-            return _type->freshen ();
+	if (isFrozen () || _type == NULL)
+	    return _type;
+	else
+	    return _type->freshen ();
     }
 
     void setType (Type_Ptr type) {
@@ -340,12 +343,15 @@ public:
 
 protected:
 
-    void setFrozen (bool freeze) {
-        _frozen = freeze;
-    }
-
     const char* declTypeName () const {
         return "instancedecl";
+    }
+
+    bool assignable () const {
+	return true;
+    }
+    void setFrozen (bool freeze) {
+        _frozen = freeze;
     }
 
 };
@@ -439,7 +445,6 @@ makeFuncDecl (const string& name, Decl* container, AST_Ptr type)
 {
     return new FuncDecl (name, container, type,
 			 new Environ (container->getEnviron ()));
-
 }
 
 class MethodDecl : public FuncDecl {
@@ -477,7 +482,7 @@ public:
     
     bool isClass() const 
     {
-    return true;
+        return true;
     }
 
     bool redefine() const
@@ -490,7 +495,6 @@ protected:
     bool isType () const {
 	return true;
     }
-    
     void printContainer () const {
     }
 
@@ -519,8 +523,8 @@ protected:
             if (params[i] == NULL)
                 throw domain_error ("attempt to pass null type parameter");
 
-	AST_Ptr id = make_id (getName ().c_str (), NULL);
-	id->addDecl (const_cast<ClassDecl*> (this));
+        AST_Ptr id = make_id (getName ().c_str (), NULL);
+        id->addDecl (const_cast<ClassDecl*> (this));
 
         return consTree (TYPE, id,
 			 AST::make_tree (TYPE_LIST, params, params+arity))
