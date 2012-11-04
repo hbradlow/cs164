@@ -60,16 +60,6 @@ public:
     {
         child(0)->addTargetDecls(enclosing);
     }
-    void
-    resolveSimpleIds (const Environ* env)
-    {
-        for_each_child(c, this)
-        {
-            c->resolveSimpleIds(env);
-        } end_for;
-
-        child(0)->unifyWith(child(1));
-    }
 
     void resolveSimpleIds (const Environ *env)
     {
@@ -79,6 +69,7 @@ public:
                continue;
            c->resolveSimpleIds(env);
         } end_for;
+        child(0)->unifyWith(child(1));
     }
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
 };

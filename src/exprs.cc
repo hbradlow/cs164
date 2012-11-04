@@ -178,6 +178,12 @@ class Binop_AST : public Callable {
     {
         child(0)->resolveSimpleIds(env);
         child(2)->resolveSimpleIds(env);
+        child(0)->unifyWith(child(2));
+    }
+
+    Type_Ptr getType(){
+        //FIXME
+        return child(0)->getType();
     }
 
 };    
