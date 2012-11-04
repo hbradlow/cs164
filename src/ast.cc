@@ -326,7 +326,7 @@ NODE_FACTORY (Empty_AST, EMPTY);
 
 //hbradlow
 void AST::unifyWith(AST_Ptr right){
-    printf("GENERIC\n");
+    /* do nothing */
 }
 
 //rewrites

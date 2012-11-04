@@ -125,6 +125,7 @@ protected:
         child (1)->replace (k, expr);
     }
 
+    //hbradlow
     Type_Ptr
     getType ()
     {
@@ -178,9 +179,10 @@ class Binop_AST : public Callable {
     {
         child(0)->resolveSimpleIds(env);
         child(2)->resolveSimpleIds(env);
-        child(0)->unifyWith(child(2));
+        child(0)->unifyWith(child(2)); //hbradlow
     }
 
+    //hbradlow
     Type_Ptr getType(){
         //FIXME
         return child(0)->getType();
@@ -215,6 +217,11 @@ class Compare_AST : public Callable{
     {
         child(0)->resolveSimpleIds(env);
         child(2)->resolveSimpleIds(env);
+        child(0)->unifyWith(child(2)); //hbradlow
+    }
+    //hbradlow
+    Type_Ptr getType(){
+        return child(0)->getType();
     }
 
 };    
@@ -246,6 +253,9 @@ class Unop_AST : public Callable {
     void resolveSimpleIds(const Environ *env)
     {
         child(1)->resolveSimpleIds(env);
+    }
+    Type_Ptr getType(){
+        return child(1)->getType();
     }
 
 };    
