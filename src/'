@@ -11,20 +11,6 @@
 
 using namespace std;
 
-//hbradlow
-class TargetList_AST : public AST_Tree {
-protected:
-    NODE_CONSTRUCTORS (TargetList_AST, AST_Tree);
-
-    void unifyWith(AST_Ptr right){
-        for_each_child(c,this){
-            c->unifyWith(right->child(c_i_));
-        } end_for;
-    }
-};
-
-NODE_FACTORY (TargetList_AST, TARGET_LIST);
-
 /*****   EXPR_LIST    *****/
 
 /** A list of expressions. */
@@ -353,7 +339,7 @@ public:
     
     void append_init()
     {
-        for_each_child (c,this) {
+        for_each_child (c, this) {
             if(c->is_init()){
                 return;
             }
@@ -384,7 +370,12 @@ public:
         def_v.push_back(empty);
         def_v.push_back(block);
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
-        this->insert(0,def);
+        child(0)->print(cout,0);
+        child(0)->print(cout,0);
+        printf("\n");
+        child(0)->insert(0,def);
+        child(0)->print(cout,0);
+        printf("\n");
     }
 protected:
 

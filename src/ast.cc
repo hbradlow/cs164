@@ -324,6 +324,11 @@ NODE_FACTORY (Empty_AST, EMPTY);
 //OUR CODE FROM HERE
 ///////////////////////////////////////////////////////////////////////////////////
 
+//hbradlow
+void AST::unifyWith(AST_Ptr right){
+    printf("GENERIC\n");
+}
+
 //rewrites
 void
 AST::rewrite_types(Decl* enclosing){

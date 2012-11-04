@@ -171,6 +171,9 @@ public:
     /* 4.6: replace all occurences of "None" with __None__() */
     virtual void replace_none();
 
+    //hbradlow
+    virtual void unifyWith(AST_Ptr right);
+
     //checkers
     /* returns true if this node is a def node with name "__init__" */
     virtual bool is_init();
@@ -307,6 +310,7 @@ public:
     /** My current binding.  Initially THIS, and then changed by
      *  unification. */
     virtual Type_Ptr binding ();
+
 
     /** Unify THIS with TYPE, returning true iff successful, and
      *  recording all bindings at the end of BINDINGS, so that

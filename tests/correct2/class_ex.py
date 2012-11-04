@@ -1,3 +1,5 @@
+class int:
+    pass
 class A: 
     x=3
     def f(self):

@@ -150,7 +150,7 @@ protected:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
         if (decl == NULL)
-        decl = enclosing->addVarDecl(this);
+            decl = enclosing->addVarDecl(this);
         else if (decl->isClass() || decl->isFunc())
             error(loc(), "Redefinition as class or function"); 
         if (enclosing->isClass() && enclosing->getName() == as_string())
@@ -165,6 +165,15 @@ protected:
         addDecl(decl);
     }
     
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t1 = this->getType();
+        Type_Ptr t2 = right->getType();
+        int b = t1->unify(t2,s);
+        if(b==0){
+            error(loc(),"Incompatible types");
+        }
+    }
     void resolveSimpleIds (const Environ* env)
     {
         Decl *decl = env->find(as_string());
