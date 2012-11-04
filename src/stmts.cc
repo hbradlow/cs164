@@ -100,6 +100,13 @@ protected:
 
     void resolveSimpleIds(const Environ *env) 
     {
+        child(0)->resolveSimpleIds(env);
+        Decl *childDecl = env->find(child(0)->as_string());
+        if (childDecl != NULL)
+        {
+            // This should work as soon as we implemente 4.4
+            child(1)->resolveSimpleIds(childDecl->getEnviron());
+        }
     }
 };
 

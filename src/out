@@ -10,7 +10,13 @@
         (id 4 c 5)
         (call 4
             (id 4 a 1)
-            (expr_list 0))))(moduledecl 0 __main__  (index_list 1 5))
+            (expr_list 0)))
+    (println 5
+        ()
+        (expr_list 5
+            (attributeref 5
+                (id 5 c 5)
+                (id 5 b)))))(moduledecl 0 __main__  (index_list 1 5))
 (classdecl 1 a  (index_list) (index_list 3))
 (typevardecl 2 Any )
 (instancedecl 3 b 1  (type_var 0 Any 2))
