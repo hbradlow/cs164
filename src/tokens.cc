@@ -165,7 +165,15 @@ protected:
         // Does nothing
         return;
     }
-    
+   
+    void resolve_reference (Decl* enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find(as_string());
+        if (decl == NULL) 
+            error(loc(), "Attribute does not exist");
+        addDecl(decl);
+    }
+
     void collectParams (Decl* enclosing, int k)
     {
         Decl *decl = enclosing->addParamDecl(this, k);
@@ -189,7 +197,7 @@ protected:
         {
             string str = "Use of undeclared identifier '";
             str += as_string() + "'"; 
-            //error(loc(), str.c_str()); 
+            error(loc(), str.c_str()); 
         }
     }
 

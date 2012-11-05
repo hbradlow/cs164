@@ -355,6 +355,14 @@ AST::append_init(){
         c->append_init();
     } end_for;
 }
+
+void
+AST::resolve_reference (Decl* enclosing)
+{
+    // Default does nothing 
+    UNIMPLEMENTED(resolve_reference);
+}
+
 void AST::replace_none(){
     int index = 0;
     for_each_child (c, this) {

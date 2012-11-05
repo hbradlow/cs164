@@ -111,8 +111,7 @@ protected:
         Decl *childDecl = env->find(child(0)->as_string());
         if (childDecl != NULL)
         {
-            // This should work as soon as we implemente 4.4
-            //child(1)->resolveSimpleIds(childDecl->getEnviron());
+            child(1)->resolve_reference(childDecl);
         }
     }
 };

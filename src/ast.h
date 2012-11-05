@@ -171,6 +171,8 @@ public:
     virtual void append_init();
     /* 4.3: Rewirte allocators */
     virtual AST_Ptr rewrite_allocators(Decl* enclosing);
+    /* 4.4: Given a declaration of a class, this resolves the reference */
+    virtual void resolve_reference(Decl* enclosing);
     /* 4.6: replace all occurences of "None" with __None__() */
     virtual void replace_none();
 

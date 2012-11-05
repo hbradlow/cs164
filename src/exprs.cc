@@ -166,6 +166,7 @@ protected:
         Type_Ptr t = make_tree(TYPE,t_v.begin(),t_v.end())->asType();
         return t;
     }
+
 };
 NODE_FACTORY (Call1_AST, CALL1);
 
