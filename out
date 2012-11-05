@@ -6,50 +6,18 @@
             (def 0
                 (id 0 __init__ 3)
                 (formals_list 0
-                    (id 0 self 5))
+                    (id 0 self))
                 ()
                 (block 0
                     (stmt_list 0)))
             (stmt_list 0)))
-    (def 3
-        (id 3 fact 11)
-        (formals_list 3
-            (id 3 n 13))
-        ()
-        (block 4
-            (if 4
-                (compare 4
-                    (id 4 n 15)
-                    (id 4 ==)
-                    (int_literal 4 0)
-                    (id 4 __eq__))
-                (stmt_list 5
-                    (return 5
-                        (int_literal 5 1)))
-                (stmt_list 7
-                    (return 7
-                        (call 7
-                            (id 7 fact)
-                            (expr_list 7
-                                (binop 7
-                                    (id 7 n 15)
-                                    (id 7 -)
-                                    (int_literal 7 1)
-                                    (id 7 __sub__))))))))))(moduledecl 0 __main__  (index_list 1 11 13))
-(classdecl 1 int  (index_list) (index_list 3 5))
+    (assign 3
+        (id 3 x 5)
+        (int_literal 3 10)))(moduledecl 0 __main__  (index_list 1 5))
+(classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (function_type 0
-    (type_var 0 $#4)
-    (type_list 0
-        (type_var 0 $#1 4))) (index_list 7))
-(instancedecl 5 self 1  (type_var 0 $#1 4))
-(vardecl 7 self 3  (type_var 0 $#2 6))
-(paramdecl 9 self 3  0 (type_var 0 $#3 8))
-(funcdecl 11 fact 0  (function_type 0
-    (type_var 0 $#9)
-    (type_list 0
-        (type_var 0 $#6 12))) (index_list 15))
-(vardecl 13 n 0  (type_var 0 $#6 12))
-(vardecl 15 n 11  (type 0
+    (type_var 0 $#1)
+    (type_list 0)) (index_list))
+(vardecl 5 x 0  (type 0
     (id 0 int 1)
     (type_list 0)))
-(paramdecl 17 n 11  0 (type_var 0 $#8 16))

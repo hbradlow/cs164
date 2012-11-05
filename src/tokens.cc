@@ -134,7 +134,10 @@ protected:
     Type_Ptr
     getType ()
     {
-        return this->getDecl()->getType();
+        if(this->getDecl()!=NULL)
+            return this->getDecl()->getType();
+        else
+            return NULL;
     }
 
     void addDecl (Decl* decl) {
