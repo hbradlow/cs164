@@ -119,7 +119,7 @@ protected:
             NodePtr expr_list = child(1);
 
             std::vector<NodePtr> new_v;
-            new_v.push_back(t);
+            new_v.push_back(t->child(0));
             NodePtr n = make_tree(NEW,new_v.begin(),new_v.end());
             expr_list->insert(0,n);
 
@@ -158,7 +158,13 @@ protected:
     Type_Ptr getType ()
     {
         //return the first element of the expression list
-        return child(1)->child(0)->child(0)->asType();
+        std::vector<NodePtr> tl_v;
+        AST_Ptr tl = make_tree(TYPE_LIST,tl_v.begin(),tl_v.end());
+        std::vector<NodePtr> t_v;
+        t_v.push_back(child(1)->child(0)->child(0));
+        t_v.push_back(tl);
+        Type_Ptr t = make_tree(TYPE,t_v.begin(),t_v.end())->asType();
+        return t;
     }
 };
 NODE_FACTORY (Call1_AST, CALL1);
