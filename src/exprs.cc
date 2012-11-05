@@ -111,7 +111,10 @@ protected:
         {
             NodePtr t = child(0);
             NodePtr i = AST::make_token(ID,8,"__init__",true);
-            Decl *decl = t->getDecl()->getEnviron()->find_immediate("__init__");
+
+            Decl *tdecl = enclosing->getEnviron()->find_immediate(t->child(0)->as_string());
+            Decl *decl = tdecl->getEnviron()->find_immediate("__init__");
+
             i->addDecl(decl);
             NodePtr expr_list = child(1);
 
