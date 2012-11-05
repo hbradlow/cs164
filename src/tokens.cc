@@ -189,7 +189,7 @@ protected:
         {
             string str = "Use of undeclared identifier '";
             str += as_string() + "'"; 
-            error(loc(), str.c_str()); 
+            //error(loc(), str.c_str()); 
         }
     }
 
