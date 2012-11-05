@@ -299,8 +299,7 @@ public:
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if (decl != NULL)
-            error(loc(), "Trying to assign class to pre-defined variable");
-
+            error(loc(), "Trying to assign def to pre-defined variable");
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
         child(1)->collectDecls(decl);

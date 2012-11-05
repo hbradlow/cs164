@@ -3,5 +3,6 @@ class int:
 class c:
     def a():
         return
+    z = 11
 d = c()
-d.a()
+d.z

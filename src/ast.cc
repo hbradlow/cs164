@@ -357,10 +357,19 @@ AST::append_init(){
 }
 
 void
-AST::resolve_reference (Decl* enclosing)
+AST::resolve_reference (const Environ* env)
 {
-    // Default does nothing 
-    UNIMPLEMENTED(resolve_reference);
+    for_each_child(c, this)
+    {
+        c->resolve_reference (env);
+    } end_for;
+}
+
+void
+AST::create_attr_ref(Decl* enclosing)
+{
+    // Default should do nothing
+    return;
 }
 
 void AST::replace_none(){

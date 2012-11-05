@@ -115,11 +115,18 @@ protected:
     void resolveSimpleIds(const Environ *env) 
     {
         child(0)->resolveSimpleIds(env);
+    }
+
+    void resolve_reference (const Environ *env)
+    {
         Decl *childDecl = env->find(child(0)->as_string());
         if (childDecl != NULL)
         {
-            child(1)->resolve_reference(childDecl);
+            Type_Ptr type = childDecl->getType()->binding();
+            string str = type->child(0)->as_string();
+            child(1)->create_attr_ref(env->find(str));
         }
+
     }
 };
 

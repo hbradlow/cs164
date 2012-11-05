@@ -285,7 +285,6 @@ protected:
     bool assignable () const {
 	return true;
     }
-
 };
 
 Decl*

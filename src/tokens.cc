@@ -175,7 +175,7 @@ protected:
             error(loc(),"Identifier not defined before use");
     }
    
-    void resolve_reference (Decl* enclosing)
+    void create_attr_ref (Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find(as_string());
         if (decl == NULL) 
@@ -204,13 +204,13 @@ protected:
     void resolveSimpleIds (const Environ* env)
     {
         Decl *decl = env->find(as_string());
-        addDecl(decl);
-        if (decl == NULL) 
+        if (decl == NULL && !numDecls())
         {
             string str = "Use of undeclared identifier '";
             str += as_string() + "'"; 
             error(loc(), str.c_str()); 
         }
+        addDecl(decl);
     }
 
 private:

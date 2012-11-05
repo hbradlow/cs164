@@ -106,6 +106,9 @@ public:
      *  collectDecls.) */
     virtual void addTargetDecls (Decl* enclosing);
 
+    /** Kevin : create the reference to the class attribute */
+    virtual void create_attr_ref (Decl* enclosing);
+
     /** Resolve all simple (non-qualified) identifiers in me, assuming
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleIds (const Environ* env);
@@ -172,7 +175,7 @@ public:
     /* 4.3: Rewirte allocators */
     virtual AST_Ptr rewrite_allocators(Decl* enclosing);
     /* 4.4: Given a declaration of a class, this resolves the reference */
-    virtual void resolve_reference(Decl* enclosing);
+    virtual void resolve_reference(const Environ* env);
     /* 4.6: replace all occurences of "None" with __None__() */
     virtual void replace_none();
 

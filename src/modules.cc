@@ -33,13 +33,14 @@ protected:
 
         /* Create the module declaration */ 
         Decl *mod_decl = makeModuleDecl("__main__"); 
+
         for_each_child_var(c, this)
         {
             c->collectDecls(mod_decl);   
             /* Do the nested stuff */ 
             c = c->doOuterSemantics(); 
         } end_for;
-        /* Do the nested stuff */ 
+
         for_each_child_var(c, this)
         {
             c->rewrite_types(mod_decl);
@@ -52,12 +53,11 @@ protected:
             c->resolveSimpleIds(mod_decl->getEnviron()); 
         } end_for;
 
-        /*
-        for_each_child_var(c, this)
+        for_each_child_var(c, this) 
         {
-            c->check_defined(); 
+            c->resolve_reference(mod_decl->getEnviron());
         } end_for;
-        */
+
         return this;
     }
     
