@@ -32,7 +32,14 @@ class Expr_List_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
-
+    
+    void resolveSimpleIds (const Environ* env)
+    {
+        for_each_child(c, this)
+        {
+            c->resolveSimpleIds(env);
+        } end_for;
+    }
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -279,7 +286,7 @@ public:
 
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
-        child(1)->collectDecls(enclosing);
+        child(1)->collectDecls(decl);
         child(2)->collectDecls(enclosing);
     }
     Type_Ptr getType(){

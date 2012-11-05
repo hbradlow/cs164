@@ -162,8 +162,8 @@ protected:
     }
     void collectDecls(Decl *enclosing)
     {
-        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
-        addDecl(decl);
+        // Does nothing
+        return;
     }
     
     void collectParams (Decl* enclosing, int k)
@@ -184,18 +184,13 @@ protected:
     void resolveSimpleIds (const Environ* env)
     {
         Decl *decl = env->find(as_string());
+        addDecl(decl);
         if (decl == NULL) 
         {
-            decl = getDecl();
-            if (decl == NULL) 
-            {
-                string str = "Use of undeclared identifier '";
-                str += as_string() + "'"; 
-                error(loc(), str.c_str()); 
-            }
+            string str = "Use of undeclared identifier '";
+            str += as_string() + "'"; 
+            error(loc(), str.c_str()); 
         }
-        else if (numDecls() == 0)
-            addDecl(decl);
     }
 
 private:

@@ -1,0 +1,17 @@
+(module 0
+    (assign 1
+        (typed_id 1
+            (id 1 a 2)
+            (type 1
+                (id 1 int)
+                (type_list 0)))
+        (int_literal 1 10))
+    (assign 2
+        (typed_id 2
+            (id 2 b 4)
+            (type 2
+                (id 2 string)
+                (type_list 0)))
+        (id 2 a 2)))(moduledecl 0 __main__  (index_list 2 4))
+(vardecl 2 a 0  (type_var 0 $#0 1))
+(vardecl 4 b 0  (type_var 0 $#1 3))

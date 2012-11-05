@@ -6,34 +6,41 @@
             (def 0
                 (id 0 __init__ 3)
                 (formals_list 0
-                    (id 0 self))
+                    (id 0 self 5))
                 ()
                 (block 0
                     (stmt_list 0)))
             (stmt_list 0)))
-    (assign 3
-        (id 3 x 5)
-        (int_literal 3 10))
-    (assign 4
-        (id 4 y 7)
-        (int_literal 4 11))
-    (assign 5
-        (id 5 z 9)
-        (binop 5
-            (id 5 x 5)
-            (id 5 +)
-            (id 5 y 7)
-            (id 5 __add__))))(moduledecl 0 __main__  (index_list 1 5 7 9))
+    (def 3
+        (id 3 g 9)
+        (formals_list 0)
+        ()
+        (block 4
+            (def 4
+                (id 4 h 11)
+                (formals_list 0)
+                ()
+                (block 5
+                    (println 5
+                        ()
+                        (expr_list 5
+                            (id 5 y 13)))))
+            (assign 6
+                (id 6 y 13)
+                (int_literal 6 3)))))(moduledecl 0 __main__  (index_list 1 9))
 (classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (function_type 0
-    (type_var 0 $#1)
+    (type_var 0 $#3)
+    (type_list 0
+        (type_var 0 $#1 4))) (index_list 5))
+(paramdecl 5 self 3  0 (type_var 0 $#1 4))
+(paramdecl 7 self 3  0 (type_var 0 $#2 6))
+(funcdecl 9 g 0  (function_type 0
+    (type_var 0 $#8)
+    (type_list 0)) (index_list 11 13))
+(funcdecl 11 h 9  (function_type 0
+    (type_var 0 $#7)
     (type_list 0)) (index_list))
-(vardecl 5 x 0  (type 0
-    (id 0 int 1)
-    (type_list 0)))
-(vardecl 7 y 0  (type 0
-    (id 0 int 1)
-    (type_list 0)))
-(vardecl 9 z 0  (type 0
+(vardecl 13 y 9  (type 0
     (id 0 int 1)
     (type_list 0)))
