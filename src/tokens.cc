@@ -94,6 +94,11 @@ protected:
     }
 
     Type_Ptr computeType () {
+        if(intDecl==NULL)
+        {
+            error(loc(),"int not defined");
+            return NULL;
+        }
         return intDecl->asType ();
     }
 
@@ -134,6 +139,7 @@ protected:
     Type_Ptr
     getType ()
     {
+        this->assert_is_defined();
         if(this->getDecl()!=NULL)
             return this->getDecl()->getType();
         else
@@ -162,8 +168,11 @@ protected:
     }
     void collectDecls(Decl *enclosing)
     {
-        // Does nothing
-        return;
+    }
+    //hbradlow
+    void assert_is_defined(){
+        if(this->getDecl()==NULL)
+            error(loc(),"Identifier not defined before use");
     }
    
     void resolve_reference (Decl* enclosing)
@@ -184,9 +193,12 @@ protected:
         Unwind_Stack s;
         Type_Ptr t1 = this->getType();
         Type_Ptr t2 = right->getType();
-        int b = t1->unify(t2,s);
-        if(b==0){
-            error(loc(),"Incompatible types");
+        if(t2!=NULL)
+        {
+            int b = t1->unify(t2,s);
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
         }
     }
     void resolveSimpleIds (const Environ* env)

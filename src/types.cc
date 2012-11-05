@@ -45,7 +45,6 @@ Type::numParams ()
 Type_Ptr
 Type::returnType ()
 {
-    printf("HERE\n");
     return NULL;
 }
 
@@ -448,6 +447,10 @@ protected:
     {
         return this->freshen();
     }
+    void collectDecls(Decl *enclosing){
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        addDecl(decl);
+    }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
@@ -463,15 +466,28 @@ class TypedId_AST : public Type
 public:
     NODE_CONSTRUCTORS (TypedId_AST, Type); 
 
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t0 = this->getType();
+        Type_Ptr t1 = right->getType();
+        if(t1!=NULL)
+        {
+            int b = t0->unify(t1,s);
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
+    }
+
     Type_Ptr
     getType ()
     {
         return child(0)->getType();
     }
     void
-    resolveSimpleTypedIds (const Environ* env)
+    resolveSimpleTypeIds (const Environ* env)
     {
-        child(0)->resolveSimpleIds(env);
+        this->resolveSimpleIds(env);
     }
     void
     resolveSimpleIds (const Environ* env)

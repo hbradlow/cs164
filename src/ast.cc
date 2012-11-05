@@ -389,18 +389,39 @@ void AST::replace_none(){
 }
 
 //checkers
+//hbradlow
 bool
 AST::is_init(){
     return false;
 }
 
+//hbradlow
 bool
 AST::is_none(){
     return false;
 }
 
+//hbradlow
 void
 AST::assert_none_here(int k){
     /* do nothing */
 }
 
+//hbradlow
+void
+AST::check_defined(){
+    for_each_child_var(c, this)
+    {
+        c->check_defined(); 
+    } end_for;
+}
+
+//hbradlow
+void
+AST::assert_is_defined(){
+    /* do nothing */
+}
+//hbradlow
+void 
+AST::attachDecl(Decl *enclosing){
+}

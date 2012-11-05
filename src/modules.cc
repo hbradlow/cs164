@@ -52,6 +52,12 @@ protected:
             c->resolveSimpleIds(mod_decl->getEnviron()); 
         } end_for;
 
+        /*
+        for_each_child_var(c, this)
+        {
+            c->check_defined(); 
+        } end_for;
+        */
         return this;
     }
     

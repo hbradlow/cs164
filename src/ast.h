@@ -178,14 +178,20 @@ public:
 
     //hbradlow
     virtual void unifyWith(AST_Ptr right);
+    //hbradlow
+    virtual void attachDecl(Decl *enclosing);
 
-    //checkers
+    //hbradlow - checkers
     /* returns true if this node is a def node with name "__init__" */
     virtual bool is_init();
     /* returns true if this node is an id node with value "None" */
     virtual bool is_none();
     /* Assert that it is legal that a None value is at posision k */
     virtual void assert_none_here(int k);
+    /* Assert that this node is defined */
+    virtual void assert_is_defined();
+
+    virtual void check_defined();
 
 protected:
 

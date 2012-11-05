@@ -32,7 +32,14 @@ class Expr_List_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
-    
+
+    void check_defined(){
+        for_each_child(c, this)
+        {
+            c->assert_is_defined();
+            c->check_defined();
+        } end_for;
+    }
     void resolveSimpleIds (const Environ* env)
     {
         for_each_child(c, this)
