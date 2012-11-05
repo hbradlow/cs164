@@ -1,3 +1,5 @@
+class int:
+    pass
 a = 10
 def b():
     c = a

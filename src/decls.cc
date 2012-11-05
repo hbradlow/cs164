@@ -14,7 +14,10 @@ using namespace std;
  *  constructs.  All are initially NULL. */
 Decl* intDecl;
 Decl* listDecl;
-Decl* tupleDecl;
+Decl* tuple0Decl;
+Decl* tuple1Decl;
+Decl* tuple2Decl;
+Decl* tuple3Decl;
 Decl* strDecl;
 Decl* dictDecl;
 Decl* boolDecl;
@@ -123,6 +126,11 @@ Decl::isClass () const
     return false;
 }
 
+bool
+Decl::redefine() const 
+{
+    return true;
+}
 bool
 Decl::isInternal () const
 {
@@ -238,10 +246,10 @@ protected:
 public:
 
     Type_Ptr getType () const {
-        if (isFrozen () || _type == NULL)
-            return _type;
-        else
-            return _type->freshen ();
+	if (isFrozen () || _type == NULL)
+	    return _type;
+	else
+	    return _type->freshen ();
     }
 
     void setType (Type_Ptr type) {
@@ -278,7 +286,6 @@ protected:
     bool assignable () const {
 	return true;
     }
-
 };
 
 Decl*
@@ -336,12 +343,15 @@ public:
 
 protected:
 
-    void setFrozen (bool freeze) {
-        _frozen = freeze;
-    }
-
     const char* declTypeName () const {
         return "instancedecl";
+    }
+
+    bool assignable () const {
+	return true;
+    }
+    void setFrozen (bool freeze) {
+        _frozen = freeze;
     }
 
 };
@@ -392,7 +402,12 @@ public:
     /** Kevin */
     bool isFunc() const
     {
-        return true;
+    return true;
+    }
+
+    bool redefine() const 
+    {
+    return false;
     }
 
 protected:
@@ -430,7 +445,6 @@ makeFuncDecl (const string& name, Decl* container, AST_Ptr type)
 {
     return new FuncDecl (name, container, type,
 			 new Environ (container->getEnviron ()));
-
 }
 
 class MethodDecl : public FuncDecl {
@@ -465,9 +479,15 @@ public:
     ClassDecl (const string& name, AST_Ptr params)
         : Decl (name, NULL, new Environ (outer_environ)), _params (params) {
     }
+    
     bool isClass() const 
     {
-    return true;
+        return true;
+    }
+
+    bool redefine() const
+    {
+    return false;
     }
 
 protected:
@@ -475,7 +495,6 @@ protected:
     bool isType () const {
 	return true;
     }
-    
     void printContainer () const {
     }
 
@@ -504,8 +523,8 @@ protected:
             if (params[i] == NULL)
                 throw domain_error ("attempt to pass null type parameter");
 
-	AST_Ptr id = make_id (getName ().c_str (), NULL);
-	id->addDecl (const_cast<ClassDecl*> (this));
+        AST_Ptr id = make_id (getName ().c_str (), NULL);
+        id->addDecl (const_cast<ClassDecl*> (this));
 
         return consTree (TYPE, id,
 			 AST::make_tree (TYPE_LIST, params, params+arity))
@@ -535,7 +554,7 @@ protected:
 
     AST_Ptr _params;
 };
-
+/** Kevin */
 Decl*
 makeClassDecl (const string& name, AST_Ptr params)
 {
@@ -546,7 +565,7 @@ class ModuleDecl : public Decl {
 public:
 
     ModuleDecl (const string& name)
-        :  Decl (name, NULL, new Environ (NULL)) {
+        :  Decl (name, NULL, outer_environ) {
     }
 
 protected:

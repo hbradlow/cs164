@@ -94,6 +94,9 @@ public:
     /** Kevin : True iff I represent a class */
     virtual bool isClass() const;
 
+    /** Kevin : True iff I can be redefined */
+    virtual bool redefine() const;
+
     /** True iff I represent a type. */
     virtual bool isType () const;
 
@@ -211,6 +214,7 @@ extern Decl* makeFuncDecl (const std::string& name,
                            Decl* container, AST_Ptr type);
 /** Declaration for a class NAME with ARITY type parameters. */
 extern Decl* makeClassDecl (const std::string& name, AST_Ptr params);
+
 /** Declaraton for the module MAIN.  This always has sequence number 0. */
 extern Decl* makeModuleDecl (const std::string& name);
 
@@ -224,7 +228,10 @@ extern void outputDecls ();
 /** Decls for built-in types. */
 extern Decl* intDecl;
 extern Decl* listDecl;
-extern Decl* tupleDecl;
+extern Decl* tuple0Decl;
+extern Decl* tuple1Decl;
+extern Decl* tuple2Decl;
+extern Decl* tuple3Decl;
 extern Decl* strDecl;
 extern Decl* dictDecl;
 extern Decl* boolDecl;
@@ -277,7 +284,7 @@ private:
 };
 
 /** The current outer (__main__) environment */
-extern const Environ* outer_environ;
+extern Environ* outer_environ;
 
 #endif
 

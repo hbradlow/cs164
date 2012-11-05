@@ -11,20 +11,6 @@
 
 using namespace std;
 
-//hbradlow
-class TargetList_AST : public AST_Tree {
-protected:
-    NODE_CONSTRUCTORS (TargetList_AST, AST_Tree);
-
-    void unifyWith(AST_Ptr right){
-        for_each_child(c,this){
-            c->unifyWith(right->child(c_i_));
-        } end_for;
-    }
-};
-
-NODE_FACTORY (TargetList_AST, TARGET_LIST);
-
 /*****   EXPR_LIST    *****/
 
 /** A list of expressions. */
@@ -33,20 +19,6 @@ protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
-    void check_defined(){
-        for_each_child(c, this)
-        {
-            c->assert_is_defined();
-            c->check_defined();
-        } end_for;
-    }
-    void resolveSimpleIds (const Environ* env)
-    {
-        for_each_child(c, this)
-        {
-            c->resolveSimpleIds(env);
-        } end_for;
-    }
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -118,15 +90,12 @@ protected:
         {
             NodePtr t = child(0);
             NodePtr i = AST::make_token(ID,8,"__init__",true);
-
-            Decl *tdecl = enclosing->getEnviron()->find_immediate(t->child(0)->as_string());
-            Decl *decl = tdecl->getEnviron()->find_immediate("__init__");
-
+            Decl *decl = t->getDecl()->getEnviron()->find_immediate("__init__");
             i->addDecl(decl);
             NodePtr expr_list = child(1);
 
             std::vector<NodePtr> new_v;
-            new_v.push_back(t->child(0));
+            new_v.push_back(t);
             NodePtr n = make_tree(NEW,new_v.begin(),new_v.end());
             expr_list->insert(0,n);
 
@@ -142,7 +111,6 @@ protected:
         child (1)->replace (k, expr);
     }
 
-    //hbradlow
     Type_Ptr
     getType ()
     {
@@ -165,15 +133,8 @@ protected:
     Type_Ptr getType ()
     {
         //return the first element of the expression list
-        std::vector<NodePtr> tl_v;
-        AST_Ptr tl = make_tree(TYPE_LIST,tl_v.begin(),tl_v.end());
-        std::vector<NodePtr> t_v;
-        t_v.push_back(child(1)->child(0)->child(0));
-        t_v.push_back(tl);
-        Type_Ptr t = make_tree(TYPE,t_v.begin(),t_v.end())->asType();
-        return t;
+        return child(1)->child(0)->child(0)->asType();
     }
-
 };
 NODE_FACTORY (Call1_AST, CALL1);
 
@@ -197,61 +158,9 @@ class Binop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (2*k, expr);
     }
-    
-    /** Kevin: Prevent operator from being checked during resolve */
-    void resolveSimpleIds(const Environ *env)
-    {
-        child(0)->resolveSimpleIds(env);
-        child(2)->resolveSimpleIds(env);
-        child(0)->unifyWith(child(2)); //hbradlow
-    }
-
-    //hbradlow
-    Type_Ptr getType(){
-        //FIXME
-        return child(0)->getType();
-    }
 
 };    
 NODE_FACTORY (Binop_AST, BINOP);
-
-/** Kevin : A compare. */
-class Compare_AST : public Callable{
-
-    NODE_CONSTRUCTORS (Compare_AST, Callable);
-
-    AST_Ptr calledExpr () {
-        return child (3);
-    }
-
-    int numActuals () {
-        return 2;
-    }
-
-    AST_Ptr actualParam (int k) {
-        return child(k * 2);
-    }
-
-    void setActual (int k, AST_Ptr expr) {
-        child (1)->replace (2*k, expr);
-    }
-    
-    /** Kevin: Prevent operator from being checked during resolve */
-    void resolveSimpleIds(const Environ *env)
-    {
-        child(0)->resolveSimpleIds(env);
-        child(2)->resolveSimpleIds(env);
-        child(0)->unifyWith(child(2)); //hbradlow
-    }
-    //hbradlow
-    Type_Ptr getType(){
-        return child(0)->getType();
-    }
-
-};    
-NODE_FACTORY (Compare_AST, COMPARE);
-
-
 
 /** A unary operator. */
 class Unop_AST : public Callable {
@@ -273,14 +182,6 @@ class Unop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (2*k, expr);
     }
-    /** Kevin: unop has different identifiers than normal call*/
-    void resolveSimpleIds(const Environ *env)
-    {
-        child(1)->resolveSimpleIds(env);
-    }
-    Type_Ptr getType(){
-        return child(1)->getType();
-    }
 
 };    
 NODE_FACTORY (Unop_AST, UNOP);
@@ -297,21 +198,19 @@ public:
 
     void collectDecls(Decl *enclosing)
     {
-        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if (decl != NULL)
-            error(loc(), "Trying to assign def to pre-defined variable");
-        decl = enclosing->addDefDecl(child(0)); 
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+        {
+            decl = enclosing->addDefDecl(child(0)); 
+        }
+        else 
+            error(loc(), "Redefinition of method"); 
         child(0)->addDecl(decl);
-        child(1)->collectDecls(decl);
+        child(1)->collectDecls(enclosing);
         child(2)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
         return child(2)->asType();
-    }
-
-    void collectParams (Decl* enclosing, int k) 
-    {
-        child(1)->collectParams(getDecl(), 0); 
     }
 
     void resolveSimpleIds(const Environ *env)
@@ -384,27 +283,9 @@ protected:
 NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
-<<<<<<< HEAD
-public:
-    void assert_none_here(int k){
-        error(loc(), "Cannot use None as a class name");
-    }
-
-    // Resolve my type
-    AST_Ptr 
-    resolveTypes(Decl* context, int& resolved, int& ambiguities, 
-    		 bool& errors) {
-    	context->print();
-    }
- 
-=======
->>>>>>> 0979ac85269ac8d34efbb221b08be0f2f7ed929e
     void collectDecls(Decl *enclosing)
     {
-        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if (decl != NULL)
-            error(loc(), "Trying to assign class to pre-defined variable");
-        decl = enclosing->addClassDecl(this);
+        Decl *decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
 
         if(decl->getName().compare("int")==0){
@@ -458,7 +339,7 @@ public:
     
     void append_init()
     {
-        for_each_child (c,this) {
+        for_each_child (c, this) {
             if(c->is_init()){
                 return;
             }
@@ -489,7 +370,12 @@ public:
         def_v.push_back(empty);
         def_v.push_back(block);
         NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
-        this->insert(0,def);
+        child(0)->print(cout,0);
+        child(0)->print(cout,0);
+        printf("\n");
+        child(0)->insert(0,def);
+        child(0)->print(cout,0);
+        printf("\n");
     }
 protected:
 

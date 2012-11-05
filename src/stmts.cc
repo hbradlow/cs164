@@ -27,6 +27,13 @@ protected:
 
 NODE_FACTORY (Println_AST, PRINTLN);
 
+class Print_AST : public Println_AST {
+protected:
+    NODE_CONSTRUCTORS (Print_AST, Println_AST);
+};
+
+NODE_FACTORY (Print_AST, PRINT);
+
 /***** STMT_LIST *****/
 
 /** A list of statements. */
@@ -60,26 +67,69 @@ public:
     {
         child(0)->addTargetDecls(enclosing);
     }
-
+    void resolveSimpleIds (const Environ *env)
+    {
+        for_each_child(c, this)
+        {
+           c->resolveSimpleTypeIds(env);
+           if (c_i_ == 0) 
+               continue;
+           c->resolveSimpleIds(env);
+        } end_for;
+        child(0)->unifyWith(child(1));
+    }
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
 };
 
 NODE_FACTORY (Assignment_AST, ASSIGN);
 
+/** Kevin : This entire class deals with parameter definitions */
 class FormalsList_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (FormalsList_AST, AST_Tree);
 
-    void collectDecls(Decl *enclosing)
+    void collectDecls (Decl* enclosing)
     {
         for_each_child(c, this)
         {
-            enclosing->addParamDecl(c, c_i_);
-        } end_for; 
+            c->collectParams(enclosing, c_i_);
+        } end_for;
+    }
+
+    void resolveSimpleIds (const Environ* env)
+    {
+        // Do nothing 
+        return;
     }
 };
 
 NODE_FACTORY (FormalsList_AST, FORMALS_LIST);
+
+/** Kevin : This deals with attributerefs */ 
+class AttributeRef_AST : public AST_Tree {
+protected:
+
+    NODE_CONSTRUCTORS (AttributeRef_AST, AST_Tree);
+
+    void resolveSimpleIds(const Environ *env) 
+    {
+        child(0)->resolveSimpleIds(env);
+    }
+
+    void resolve_reference (const Environ *env)
+    {
+        Decl *childDecl = env->find(child(0)->as_string());
+        if (childDecl != NULL)
+        {
+            Type_Ptr type = childDecl->getType()->binding();
+            string str = type->child(0)->as_string();
+            child(1)->create_attr_ref(env->find(str));
+        }
+
+    }
+};
+
+NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
 
 

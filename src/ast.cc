@@ -95,7 +95,7 @@ AST::isMissing ()
 }
 
 bool
-AST::isUnboundMethod ()
+AST::isBoundMethod ()
 {
     return false;
 }
@@ -105,10 +105,6 @@ AST::isUnboundMethod ()
 AST_Ptr
 AST::doOuterSemantics ()
 {
-    //rewrites
-    this->replace_none(); // 4.6
-    this->append_init(); // 4.2
-    
     for_each_child(c, this)
     {
         c->doOuterSemantics();
@@ -121,6 +117,16 @@ AST::collectDecls (Decl* enclosing)
 {
     for_each_child (c, this) {
         c->collectDecls (enclosing);
+    } end_for;
+}
+
+/** Kevin */
+void 
+AST::collectParams (Decl* enclosing, int k)
+{
+    for_each_child (c, this)
+    {
+        c->collectParams (enclosing, k); 
     } end_for;
 }
 
@@ -177,6 +183,7 @@ AST::freezeDecls (bool frozen)
 AST_Ptr
 AST::resolveTypes (Decl* context, int& resolved, int& ambiguities,  bool& errors)
 {
+    printf("HERE\n");
     for_each_child_var (c, this) {
         c = c->resolveTypes (context, resolved, ambiguities, errors);
     } end_for;
@@ -323,13 +330,48 @@ NODE_FACTORY (Empty_AST, EMPTY);
 //OUR CODE FROM HERE
 ///////////////////////////////////////////////////////////////////////////////////
 
+//hbradlow
+void AST::unifyWith(AST_Ptr right){
+    /* do nothing */
+}
+
 //rewrites
+void
+AST::rewrite_types(Decl* enclosing){
+    for_each_child (c, this) {
+        c->rewrite_types(enclosing);
+    } end_for;
+}
+AST_Ptr
+AST::rewrite_allocators(Decl* enclosing){
+    for_each_child_var (c, this) {
+        c = c->rewrite_allocators(enclosing);
+    } end_for;
+    return this;
+}
 void
 AST::append_init(){
     for_each_child (c, this) {
         c->append_init();
     } end_for;
 }
+
+void
+AST::resolve_reference (const Environ* env)
+{
+    for_each_child(c, this)
+    {
+        c->resolve_reference (env);
+    } end_for;
+}
+
+void
+AST::create_attr_ref(Decl* enclosing)
+{
+    // Default should do nothing
+    return;
+}
+
 void AST::replace_none(){
     int index = 0;
     for_each_child (c, this) {
@@ -356,18 +398,39 @@ void AST::replace_none(){
 }
 
 //checkers
+//hbradlow
 bool
 AST::is_init(){
     return false;
 }
 
+//hbradlow
 bool
 AST::is_none(){
     return false;
 }
 
+//hbradlow
 void
 AST::assert_none_here(int k){
     /* do nothing */
 }
 
+//hbradlow
+void
+AST::check_defined(){
+    for_each_child_var(c, this)
+    {
+        c->check_defined(); 
+    } end_for;
+}
+
+//hbradlow
+void
+AST::assert_is_defined(){
+    /* do nothing */
+}
+//hbradlow
+void 
+AST::attachDecl(Decl *enclosing){
+}

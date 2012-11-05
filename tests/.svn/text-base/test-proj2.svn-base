@@ -55,9 +55,20 @@ def Compile(prog, ast):
     code, Stdout, Stderr = Run("%s --phase=2 -o %s %s", compiler, ast, prog)
     return code == 0
 
+<<<<<<< HEAD
+def Unparse(ast, python, prefix=""):
+    code, out, err = Run("pyunparse --remove-extensions --alpha %s", ast)
+    if code != 0:
+        return False
+    outfile = open(python, "w")
+    outfile.write(prefix + out)
+    outfile.close()
+    return True
+=======
 def Unparse(ast, python):
     code, out, err = Run("pyunparse -o %s --remove-extensions --alpha %s", python, ast)
     return code == 0
+>>>>>>> bc5bb8cfb54b372ddd15c7f6804c9780beaade29
 
 def Execute(prog, inp):
     global Stdout, Stderr
