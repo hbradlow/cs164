@@ -112,7 +112,7 @@ protected:
         if (childDecl != NULL)
         {
             // This should work as soon as we implemente 4.4
-            child(1)->resolveSimpleIds(childDecl->getEnviron());
+            //child(1)->resolveSimpleIds(childDecl->getEnviron());
         }
     }
 };
