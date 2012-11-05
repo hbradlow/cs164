@@ -97,6 +97,9 @@ public:
      *  declarations for declarative regions nested within me. */
     virtual void collectDecls (Decl* enclosing);
 
+    /** Kevin : add Parameter declarations to enclosing */
+    virtual void collectParams (Decl* enclosing, int k);
+
     /** Assuming I am a target of an assignment, add any local
      *  declarations that would result from assignments to me to
      *  ENCLOSING, my enclosing construct.  (Used by overridings of

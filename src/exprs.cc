@@ -286,6 +286,11 @@ public:
         return child(2)->asType();
     }
 
+    void collectParams (Decl* enclosing, int k) 
+    {
+        child(1)->collectParams(getDecl(), 0); 
+    }
+
     void resolveSimpleIds(const Environ *env)
     {
         Unwind_Stack s;

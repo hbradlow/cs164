@@ -163,6 +163,12 @@ protected:
         addDecl(decl);
     }
     
+    void collectParams (Decl* enclosing, int k)
+    {
+        Decl *decl = enclosing->addParamDecl(this, k);
+        addDecl(decl);
+    }
+
     void unifyWith(AST_Ptr right){
         Unwind_Stack s;
         Type_Ptr t1 = this->getType();

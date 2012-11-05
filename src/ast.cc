@@ -124,6 +124,16 @@ AST::collectDecls (Decl* enclosing)
     } end_for;
 }
 
+/** Kevin */
+void 
+AST::collectParams (Decl* enclosing, int k)
+{
+    for_each_child (c, this)
+    {
+        c->collectParams (enclosing, k); 
+    } end_for;
+}
+
 void
 AST::addTargetDecls (Decl* enclosing)
 {

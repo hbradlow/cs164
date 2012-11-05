@@ -82,18 +82,24 @@ protected:
 
     NODE_CONSTRUCTORS (FormalsList_AST, AST_Tree);
 
-    void collectDecls(Decl *enclosing)
+    void collectParams (Decl *enclosing, int k)
     {
         for_each_child(c, this)
         {
-            c->addTargetDecls(enclosing);
-        } end_for;
-        /*
-        for_each_child(c, this)
-        {
-            enclosing->addParamDecl(c, c_i_);
+            c->collectParams(enclosing, c_i_);
         } end_for; 
-        */
+    }
+
+    void collectDecls (Decl* enclosing)
+    {
+        // Do nothing 
+        return;
+    }
+
+    void resolveSimpleIds (const Environ* env)
+    {
+        // Do nothing 
+        return;
     }
 };
 
