@@ -70,9 +70,10 @@ public:
     void resolveSimpleIds (const Environ *env)
     {
         child(0)->resolveSimpleTypeIds(env);
-        child(0)->resolve_reference(env);
         child(1)->resolveSimpleTypeIds(env);
         child(1)->resolveSimpleIds(env);
+        child(0)->resolve_reference(env);
+        child(1)->resolve_reference(env);
         child(0)->unifyWith(child(1));
     }
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
@@ -116,8 +117,12 @@ protected:
 
     void collectDecls (Decl* enclosing) 
     {
-        return;
     }
+
+    void addTargetDecls (Decl* enclosing)
+    {
+    }
+
     void resolve_reference (const Environ *env)
     {
         child(0)->resolveSimpleIds(env);
@@ -128,11 +133,6 @@ protected:
             string str = type->child(0)->as_string();
             child(1)->create_attr_ref(env->find(str));
         } else error(loc(), "Attribute of something that is not defined");
-
-    }
-
-    void addTargetDecls (Decl* enclosing)
-    {
     }
 };
 

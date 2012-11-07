@@ -25,19 +25,18 @@
             (assign 4
                 (id 4 b 14)
                 (int_literal 4 10))))
-    (assign 5
-        (id 5 c 18)
+    (assign 6
+        (id 6 c 18)
         (call1 0
             (id 0 __init__ 10)
-            (expr_list 5
-                (new 5
-                    (id 5 a 8)))))
-    (println 6
-        ()
-        (expr_list 6
-            (attributeref 6
-                (id 6 c)
-                (id 6 b)))))(moduledecl 0 __main__  (index_list 1 8 18))
+            (expr_list 6
+                (new 6
+                    (id 6 a 8)))))
+    (assign 7
+        (attributeref 7
+            (id 7 c 18)
+            (id 7 b 14))
+        (int_literal 7 10)))(moduledecl 0 __main__  (index_list 1 8 18))
 (classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (function_type 0
     (type_var 0 $#3)
@@ -55,6 +54,6 @@
     (id 0 int 1)
     (type_list 0)))
 (paramdecl 16 self 10  0 (type_var 0 $#7 15))
-(vardecl 18 c 0  (type 5
-    (id 5 a 8)
+(vardecl 18 c 0  (type 6
+    (id 6 a 8)
     (type_list 0)))
