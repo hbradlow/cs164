@@ -359,10 +359,7 @@ AST::append_init(){
 void
 AST::resolve_reference (const Environ* env)
 {
-    for_each_child(c, this)
-    {
-        c->resolve_reference (env);
-    } end_for;
+    // Do nothing
 }
 
 void
