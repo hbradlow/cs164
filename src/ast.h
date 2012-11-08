@@ -176,8 +176,11 @@ public:
     virtual AST_Ptr rewrite_allocators(Decl* enclosing);
     /* 4.4: Given a declaration of a class, this resolves the reference */
     virtual void resolve_reference(const Environ* env);
+    /* 4.5: Replace all attribute references with correctly linked node */
+    virtual AST_Ptr replace_attribute_refs();
     /* 4.6: replace all occurences of "None" with __None__() */
     virtual void replace_none();
+
 
     //hbradlow
     virtual void unifyWith(AST_Ptr right);

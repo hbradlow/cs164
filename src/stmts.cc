@@ -146,6 +146,20 @@ protected:
 
         } 
     }
+
+    AST_Ptr replace_attribute_refs()
+    {
+        // In case of multiple layers of references 
+        this->replace(1, child(1)->replace_attribute_refs());
+        // Create the new node
+        Decl *referencedDecl = child(1)->getDecl(0);
+        NodePtr newNode = make_id(referencedDecl->getName().c_str(), this->loc());
+        // Set the declaration of the new node to be the declaration that the reference 
+        // is decorated with 
+        newNode->addDecl(referencedDecl);
+
+        return newNode;
+    }
 };
 
 NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
