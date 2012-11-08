@@ -132,8 +132,9 @@ protected:
     {
         child(0)->resolveSimpleIds(env);
         Decl *childDecl = env->find(child(0)->as_string());
-        if (childDecl->isClass()) 
-            error(loc(), "Trying to reference statically");
+        // If decl is a class, the rewrite will take care of it
+        if (childDecl->isClass())
+            return;
         if (childDecl != NULL)
         {
             Type_Ptr type = childDecl->getType()->binding();
@@ -149,16 +150,19 @@ protected:
 
     AST_Ptr replace_attribute_refs()
     {
+        if (child(0)->getDecl(0)->isClass())
+        {
         // In case of multiple layers of references 
         this->replace(1, child(1)->replace_attribute_refs());
         // Create the new node
-        Decl *referencedDecl = child(1)->getDecl(0);
+        Decl *referencedDecl = child(0)->getDecl(0);
         NodePtr newNode = make_id(referencedDecl->getName().c_str(), this->loc());
         // Set the declaration of the new node to be the declaration that the reference 
         // is decorated with 
         newNode->addDecl(referencedDecl);
 
         return newNode;
+        } else return this;
     }
 };
 

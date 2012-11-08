@@ -169,11 +169,6 @@ protected:
     void collectDecls(Decl *enclosing)
     {
     }
-    //hbradlow
-    void assert_is_defined(){
-        if(this->getDecl()==NULL)
-            error(loc(),"Identifier not defined before use");
-    }
    
     void create_attr_ref (Decl *enclosing)
     {
