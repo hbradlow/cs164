@@ -133,10 +133,10 @@ protected:
         child(0)->resolveSimpleIds(env);
         Decl *childDecl = env->find(child(0)->as_string());
         // If decl is a class, the rewrite will take care of it
-        if (childDecl->isClass())
-            return;
         if (childDecl != NULL)
         {
+            if (childDecl->isClass())
+                return;
             Type_Ptr type = childDecl->getType()->binding();
             if (type->arity() == 0) 
             {
