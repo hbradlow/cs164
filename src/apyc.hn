@@ -319,6 +319,7 @@ _COMMENT: "#" (_ANY - '\n')* ;
 
 *:    _EOF 
                 { int tok = do_indent (""); 
+                  yyleng=1;  /* KLUDGE to fix bug. */
                   if (pop_source_file () || tok > 0) 
                       YYSET_TOKEN (tok);
                   else
@@ -413,7 +414,10 @@ primary: atom
     | call
     ;
 
-attributeref: primary "."! identifier 
+attributeref:
+      primary "."! identifier 
+                { $$ = $^(ATTRIBUTEREF, $*); }
+    | parameterized_type "."! identifier
                 { $$ = $^(ATTRIBUTEREF, $*); }
     ;
 
@@ -702,7 +706,7 @@ funcname:  identifier ;
 classdef: "class"^ name=identifier type_formals ":"! 
                 { check_class_placement (); incr (defn_depth); } 
                classbody
-                { decr (defn_depth);}
+                { decr (defn_depth); }
     ;
   
 type_formals: 

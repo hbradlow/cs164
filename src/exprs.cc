@@ -146,14 +146,17 @@ protected:
     Type_Ptr
     getType ()
     {
-        return child(0)->getType()->binding()->returnType();
+        Type_Ptr t = child(0)->getType()->binding()->returnType();
+        return t;
     }
 
     // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
     // USE THE METHODS ABOVE TO ADAPT IT TO PARTICULAR TYPES OF NODE.
 
 };
+
 NODE_FACTORY (Call_AST, CALL);
+
 
 /** A function call. */
 //hbradow - 4.3
@@ -317,10 +320,10 @@ public:
     void collectParams (Decl* enclosing, int k) 
     {
         child(1)->collectParams(getDecl(), 0); 
+        child(3)->collectParams(enclosing, 0); 
     }
     void resolveSimpleIds(const Environ *env)
     {
-        child(3)->resolveSimpleIds(env);
         Unwind_Stack s;
 
         AST_Ptr type = child(2);
@@ -329,7 +332,6 @@ public:
         {
             if(type->asType()==NULL)
             {
-                std::vector<NodePtr> dummy;
                 type = child(3)->getType();
             }
             else{
@@ -340,8 +342,10 @@ public:
             }
         }
         else{
-            std::vector<NodePtr> dummy;
-            type = make_tree(TYPE_VAR,dummy.begin(),dummy.end());
+            if(type->asType()==NULL)
+            {
+                return;
+            }
         }
 
         std::vector<AST_Ptr> types;
@@ -357,12 +361,6 @@ public:
         AST_Ptr function_type = make_tree(FUNCTION_TYPE,ft_vec.begin(),ft_vec.end());
 
         //This makes sure the return type is the same as the explicit type of the function def
-        this->print(cout,0);
-        printf("\n");
-        child(0)->print(cout,0);
-        printf("\n");
-        function_type->print(cout,0);
-        printf("\n");
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");

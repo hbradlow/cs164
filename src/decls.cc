@@ -547,8 +547,8 @@ protected:
             if (params[i] == NULL)
                 throw domain_error ("attempt to pass null type parameter");
 
-        AST_Ptr id = make_id (getName ().c_str (), NULL);
-        id->addDecl (const_cast<ClassDecl*> (this));
+	AST_Ptr id = make_id (getName ().c_str (), NULL);
+	id->addDecl (const_cast<ClassDecl*> (this));
 
         return consTree (TYPE, id,
 			 AST::make_tree (TYPE_LIST, params, params+arity))
@@ -567,9 +567,9 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	    Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
-	    addMember (decl);
-	    return decl;
+	Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
+	addMember (decl);
+	return decl;
     }
 
     /** Will */
@@ -595,7 +595,7 @@ class ModuleDecl : public Decl {
 public:
 
     ModuleDecl (const string& name)
-        :  Decl (name, NULL, outer_environ) {
+        :  Decl (name, NULL, new Environ (NULL)) {
     }
 
 protected:

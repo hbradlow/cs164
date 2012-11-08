@@ -69,9 +69,9 @@ Type::typeParam (int k)
 Type_Ptr
 Type::makeVar ()
 {
-    std::vector<NodePtr> test;
+    AST_Ptr dummy[1];
 
-    Type_Ptr result = AST::make_tree (TYPE_VAR, test.begin(), test.end())->asType ();
+    Type_Ptr result = AST::make_tree (TYPE_VAR, dummy, dummy)->asType ();
     result->addDecl (makeTypeVarDecl (result->as_string (), result));
     return result;
 }

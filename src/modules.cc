@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Environ* outer_environ;
+const Environ* outer_environ;
 
 /*****   MODULE    *****/
 

@@ -220,7 +220,6 @@ extern Decl* makeFuncDecl (const std::string& name,
                            Decl* container, AST_Ptr type);
 /** Declaration for a class NAME with ARITY type parameters. */
 extern Decl* makeClassDecl (const std::string& name, AST_Ptr params);
-
 /** Declaraton for the module MAIN.  This always has sequence number 0. */
 extern Decl* makeModuleDecl (const std::string& name);
 
@@ -290,7 +289,7 @@ private:
 };
 
 /** The current outer (__main__) environment */
-extern Environ* outer_environ;
+extern const Environ* outer_environ;
 
 #endif
 

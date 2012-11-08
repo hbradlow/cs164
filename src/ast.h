@@ -334,7 +334,6 @@ public:
      *  unification. */
     virtual Type_Ptr binding ();
 
-
     /** Unify THIS with TYPE, returning true iff successful, and
      *  recording all bindings at the end of BINDINGS, so that
      *  unbind(BINDINGS, k), where k is the initial size of BINDINGS,
