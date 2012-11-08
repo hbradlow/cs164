@@ -304,7 +304,7 @@ public:
             error(loc(), "Trying to assign def to pre-defined variable");
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
-        child(2)->collectDecls(enclosing);
+        child(3)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
         return child(2)->asType();
@@ -317,6 +317,7 @@ public:
     void resolveSimpleIds(const Environ *env)
     {
         child(3)->resolveSimpleIds(env);
+
         Unwind_Stack s;
 
         AST_Ptr type = child(2);
@@ -353,8 +354,6 @@ public:
         AST_Ptr function_type = make_tree(FUNCTION_TYPE,ft_vec.begin(),ft_vec.end());
 
         //This makes sure the return type is the same as the explicit type of the function def
-        this->print(cout,0);
-        printf("\n");
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
