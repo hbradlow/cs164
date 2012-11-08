@@ -144,7 +144,6 @@ protected:
             }
             string str = type->child(0)->as_string();
             child(1)->create_attr_ref(env->find(str));
-
         } 
     }
 

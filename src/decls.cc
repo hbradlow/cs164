@@ -555,7 +555,7 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	Decl* decl = makeMethodDecl (id->as_string (), this, NULL);
+	Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
 	addMember (decl);
 	return decl;
     }

@@ -355,10 +355,6 @@ public:
         //This makes sure the return type is the same as the explicit type of the function def
         this->print(cout,0);
         printf("\n");
-        child(0)->print(cout,0);
-        printf("\n");
-        function_type->print(cout,0);
-        printf("\n");
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
