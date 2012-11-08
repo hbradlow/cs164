@@ -1,5 +1,5 @@
 class d:
-    def a():
+    def a(self):
         print "hello"
 c = d()
 c.a()

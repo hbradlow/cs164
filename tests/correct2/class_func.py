@@ -1,5 +1,5 @@
 class a:
-    def g():
+    def g(self):
         pass
 
 b = a.g
