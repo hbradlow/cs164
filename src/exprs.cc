@@ -298,7 +298,8 @@ public:
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if (decl != NULL)
+        if (decl != NULL && )
+	    decl->printTypeParams();
             error(loc(), "Trying to assign def to pre-defined variable");
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
@@ -384,7 +385,6 @@ protected:
 NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
-<<<<<<< HEAD
 public:
     void assert_none_here(int k){
         error(loc(), "Cannot use None as a class name");
@@ -397,8 +397,6 @@ public:
     	context->print();
     }
  
-=======
->>>>>>> 0979ac85269ac8d34efbb221b08be0f2f7ed929e
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
