@@ -97,11 +97,17 @@ public:
      *  declarations for declarative regions nested within me. */
     virtual void collectDecls (Decl* enclosing);
 
+    /** Kevin : add Parameter declarations to enclosing */
+    virtual void collectParams (Decl* enclosing, int k);
+
     /** Assuming I am a target of an assignment, add any local
      *  declarations that would result from assignments to me to
      *  ENCLOSING, my enclosing construct.  (Used by overridings of
      *  collectDecls.) */
     virtual void addTargetDecls (Decl* enclosing);
+
+    /** Kevin : create the reference to the class attribute */
+    virtual void create_attr_ref (Decl* enclosing);
 
     /** Resolve all simple (non-qualified) identifiers in me, assuming
      *  that ENV defines declarations visible at my outer level. */
@@ -111,7 +117,6 @@ public:
      *  identifier.  Does nothing for other nodes. Assumes that
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleTypeIds (const Environ* env);
-    
     /** Replace any allocators in me with appropriate NEW nodes,
      *  returning the modified node. */
     virtual AST_Ptr resolveAllocators (const Environ* env);
@@ -159,6 +164,42 @@ public:
 
     /** Report unresolved overloaded names in me as errors. */
     virtual void checkResolved ();
+
+    //our stuff....
+
+    //rewrites
+    /* 4.1: (hbradlow) Rewrite ids that represent types as type nodes */
+    virtual void rewrite_types(Decl* enclosing);
+    /* 4.2: If this node is a class define, and there isn't already a __init__ method in the class, this function adds an empty __init__ method. */
+    virtual void append_init();
+    /* 4.3: Rewirte allocators */
+    virtual AST_Ptr rewrite_allocators(Decl* enclosing);
+    /* 4.4: Given a declaration of a class, this resolves the reference */
+    virtual void resolve_reference(const Environ* env);
+    /* 4.5: Replace all attribute references with correctly linked node */
+    virtual AST_Ptr replace_attribute_refs();
+    /* 4.6: replace all occurences of "None" with __None__() */
+    virtual void replace_none();
+
+
+    //hbradlow
+    virtual void unifyWith(AST_Ptr right);
+    //hbradlow
+    virtual void attachDecl(Decl *enclosing);
+    //hbradlow
+    virtual AST_Ptr getReturnNode();
+
+    //hbradlow - checkers
+    /* returns true if this node is a def node with name "__init__" */
+    virtual bool is_init();
+    /* returns true if this node is an id node with value "None" */
+    virtual bool is_none();
+    /* Assert that it is legal that a None value is at posision k */
+    virtual void assert_none_here(int k);
+    /* Assert that this node is defined */
+    virtual void assert_is_defined();
+
+    virtual void check_defined();
 
 protected:
 

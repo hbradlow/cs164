@@ -442,16 +442,74 @@ class ClassType_AST: public Type {
 protected:
 
     NODE_CONSTRUCTORS (ClassType_AST, Type);
-
+    Type_Ptr
+    asType ()
+    {
+        return this->freshen();
+    }
+    void collectDecls(Decl *enclosing){
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        addDecl(decl);
+    }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
     }
-
     void addDecl (Decl* decl) {
         child (0)->addDecl (decl);
     }
-
 };
 
 NODE_FACTORY (ClassType_AST, TYPE);
+
+class TypedId_AST : public Type
+{
+public:
+    NODE_CONSTRUCTORS (TypedId_AST, Type); 
+
+    void collectParams (Decl* enclosing, int k)
+    {
+        child(0)->collectParams(enclosing,k);
+    }
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t0 = this->getType();
+        Type_Ptr t1 = right->getType();
+        if(t1!=NULL)
+        {
+            int b = t0->unify(t1,s);
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
+    }
+
+    Type_Ptr
+    getType ()
+    {
+        return child(0)->getType();
+    }
+    void
+    resolveSimpleTypeIds (const Environ* env)
+    {
+        this->resolveSimpleIds(env);
+    }
+    void
+    resolveSimpleIds (const Environ* env)
+    {
+        Unwind_Stack s;
+        Type_Ptr t0 = child(0)->getType();
+        Type_Ptr t1 = child(1)->asType();
+        int b = t0->unify(t1,s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
+    }
+    void addTargetDecls(Decl* enclosing)
+    {
+        child(0)->addTargetDecls(enclosing);
+        child(1)->collectDecls(enclosing);
+    }
+};
+
+NODE_FACTORY (TypedId_AST, TYPED_ID);
 

@@ -73,6 +73,12 @@ protected:
 	    << ")";
     }
 
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
+
     TOKEN_CONSTRUCTORS(Int_Token, Typed_Token);
 
     Int_Token* post_make () {
@@ -88,6 +94,11 @@ protected:
     }
 
     Type_Ptr computeType () {
+        if(intDecl==NULL)
+        {
+            error(loc(),"int not defined");
+            return NULL;
+        }
         return intDecl->asType ();
     }
 
@@ -99,6 +110,10 @@ TOKEN_FACTORY(Int_Token, INT_LITERAL);
 
 /** Represents an identifier. */
 class Id_Token : public Typed_Token {
+public:
+    bool is_none(){
+        return strcmp(this->as_string().c_str(),"None") == 0;
+    }
 protected:
 
     void _print (ostream& out, int indent) {
@@ -121,6 +136,16 @@ protected:
             return _me[k];
     }
 
+    Type_Ptr
+    getType ()
+    {
+        this->assert_is_defined();
+        if(this->getDecl()!=NULL)
+            return this->getDecl()->getType();
+        else
+            return NULL;
+    }
+
     void addDecl (Decl* decl) {
         _me.push_back (decl);
     }
@@ -128,6 +153,57 @@ protected:
     void removeDecl (int k) {
         assert (k >= 0 && k < (int) _me.size ());
         _me.erase (_me.begin () + k);
+    }
+
+    void addTargetDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(as_string());
+        if (decl == NULL)
+            decl = enclosing->addVarDecl(this);
+        if (enclosing->isClass() && enclosing->getName() == as_string())
+            error(loc(), "Redefinition of class variable");
+        if (enclosing->isFunc() && enclosing->getName() == as_string())
+            error(loc(), "Redefinition of function variable");
+        addDecl(decl);
+    }
+    void collectDecls(Decl *enclosing)
+    {
+    }
+   
+    void create_attr_ref (Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find(as_string());
+        addDecl(decl);
+    }
+
+    void collectParams (Decl* enclosing, int k)
+    {
+        Decl *decl = enclosing->addParamDecl(this, k);
+        addDecl(decl);
+    }
+
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t1 = this->getType();
+        Type_Ptr t2 = right->getType();
+        if(t2!=NULL)
+        {
+            int b = t1->unify(t2,s);
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
+    }
+    void resolveSimpleIds (const Environ* env)
+    {
+        Decl *decl = env->find(as_string());
+        if (decl == NULL && !numDecls())
+        {
+            string str = "Use of undeclared identifier '";
+            str += as_string() + "'"; 
+            error(loc(), str.c_str()); 
+        }
+        addDecl(decl);
     }
 
 private:
@@ -140,6 +216,12 @@ TOKEN_FACTORY(Id_Token, ID);
 
 /** Represents a string. */
 class String_Token : public Typed_Token {
+public:
+    Type_Ptr
+    getType ()
+    {
+        return this->computeType();
+    }
 private:
     
     String_Token* post_make () {

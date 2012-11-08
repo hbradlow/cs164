@@ -88,6 +88,15 @@ public:
     /** True iff I represent a method. */
     virtual bool isMethod () const;
 
+    /** Kevin : True iff I represent a function or method */
+    virtual bool isFunc() const;
+
+    /** Kevin : True iff I represent a class */
+    virtual bool isClass() const;
+
+    /** Kevin : True iff I can be redefined */
+    virtual bool redefine() const;
+
     /** True iff I represent a type. */
     virtual bool isType () const;
 
@@ -124,6 +133,12 @@ public:
      *  members.  There must not already be one.  Returns the
      *  resulting declaration. */
     virtual Decl* addDefDecl (AST_Ptr id);
+
+    /** Kevin: Create a parameter of ID for function definition */
+    virtual Decl* addParamDecl (AST_Ptr id, int k);
+
+    /** Kevin: Create a class declaration with ID */
+    virtual Decl* addClassDecl (AST_Ptr id); 
 
     /** True iff the entity I represent can be assigned to or defined
      *  by assignment. */

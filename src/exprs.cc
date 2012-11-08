@@ -11,6 +11,20 @@
 
 using namespace std;
 
+//hbradlow
+class TargetList_AST : public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (TargetList_AST, AST_Tree);
+
+    void unifyWith(AST_Ptr right){
+        for_each_child(c,this){
+            c->unifyWith(right->child(c_i_));
+        } end_for;
+    }
+};
+
+NODE_FACTORY (TargetList_AST, TARGET_LIST);
+
 /*****   EXPR_LIST    *****/
 
 /** A list of expressions. */
@@ -19,6 +33,20 @@ protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
+    void check_defined(){
+        for_each_child(c, this)
+        {
+            c->assert_is_defined();
+            c->check_defined();
+        } end_for;
+    }
+    void resolveSimpleIds (const Environ* env)
+    {
+        for_each_child(c, this)
+        {
+            c->resolveSimpleIds(env);
+        } end_for;
+    }
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -51,7 +79,6 @@ protected:
     /** Set the Kth actual parameter in this call to EXPR. */
     virtual void setActual (int k, AST_Ptr expr) = 0;
 
-
 };
 
 /** A function call. */
@@ -72,8 +99,54 @@ protected:
         return child (1)->child (k);
     }
 
+    //hbradlow - 4.1
+    void rewrite_types(Decl* enclosing){
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        if(decl!=NULL && decl->isType()){
+            vector<NodePtr> dummy;
+            vector<NodePtr> type_v;
+            type_v.push_back(child(0));
+            type_v.push_back(make_tree(TYPE_LIST,dummy.begin(),dummy.end()));
+            NodePtr type = make_tree(TYPE,type_v.begin(),type_v.end());
+            type->collectDecls(enclosing);
+            this->replace(0,type);
+        }
+    }
+    //hbradlow - 4.3
+    AST_Ptr rewrite_allocators(Decl* enclosing){
+        if(child(0)->asType()!=NULL) 
+        {
+            NodePtr t = child(0);
+            NodePtr i = AST::make_token(ID,8,"__init__",true);
+
+            Decl *tdecl = enclosing->getEnviron()->find_immediate(t->child(0)->as_string());
+            Decl *decl = tdecl->getEnviron()->find_immediate("__init__");
+
+            i->addDecl(decl);
+            NodePtr expr_list = child(1);
+
+            std::vector<NodePtr> new_v;
+            new_v.push_back(t->child(0));
+            NodePtr n = make_tree(NEW,new_v.begin(),new_v.end());
+            expr_list->insert(0,n);
+
+            std::vector<NodePtr> call_v;
+            call_v.push_back(i);
+            call_v.push_back(expr_list);
+            return make_tree(CALL1,call_v.begin(),call_v.end());
+        }
+        return this;
+    }
+
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
+    }
+
+    //hbradlow
+    Type_Ptr
+    getType ()
+    {
+        return child(0)->getType()->binding()->returnType();
     }
 
     // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
@@ -82,6 +155,29 @@ protected:
 };
 
 NODE_FACTORY (Call_AST, CALL);
+
+
+/** A function call. */
+//hbradow - 4.3
+class Call1_AST : public Call_AST {
+protected:
+    NODE_CONSTRUCTORS (Call1_AST, Call_AST);
+
+    //hbradow - 4.3
+    Type_Ptr getType ()
+    {
+        //return the first element of the expression list
+        std::vector<NodePtr> tl_v;
+        AST_Ptr tl = make_tree(TYPE_LIST,tl_v.begin(),tl_v.end());
+        std::vector<NodePtr> t_v;
+        t_v.push_back(child(1)->child(0)->child(0));
+        t_v.push_back(tl);
+        Type_Ptr t = make_tree(TYPE,t_v.begin(),t_v.end())->asType();
+        return t;
+    }
+
+};
+NODE_FACTORY (Call1_AST, CALL1);
 
 /** A binary operator. */
 class Binop_AST : public Callable {
@@ -103,10 +199,61 @@ class Binop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (2*k, expr);
     }
+    
+    /** Kevin: Prevent operator from being checked during resolve */
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(0)->resolveSimpleIds(env);
+        child(2)->resolveSimpleIds(env);
+        child(0)->unifyWith(child(2)); //hbradlow
+    }
+
+    //hbradlow
+    Type_Ptr getType(){
+        //FIXME
+        return child(0)->getType();
+    }
 
 };    
-
 NODE_FACTORY (Binop_AST, BINOP);
+
+/** Kevin : A compare. */
+class Compare_AST : public Callable{
+
+    NODE_CONSTRUCTORS (Compare_AST, Callable);
+
+    AST_Ptr calledExpr () {
+        return child (3);
+    }
+
+    int numActuals () {
+        return 2;
+    }
+
+    AST_Ptr actualParam (int k) {
+        return child(k * 2);
+    }
+
+    void setActual (int k, AST_Ptr expr) {
+        child (1)->replace (2*k, expr);
+    }
+    
+    /** Kevin: Prevent operator from being checked during resolve */
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(0)->resolveSimpleIds(env);
+        child(2)->resolveSimpleIds(env);
+        child(0)->unifyWith(child(2)); //hbradlow
+    }
+    //hbradlow
+    Type_Ptr getType(){
+        return child(0)->getType();
+    }
+
+};    
+NODE_FACTORY (Compare_AST, COMPARE);
+
+
 
 /** A unary operator. */
 class Unop_AST : public Callable {
@@ -128,9 +275,255 @@ class Unop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (2*k, expr);
     }
+    /** Kevin: unop has different identifiers than normal call*/
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(1)->resolveSimpleIds(env);
+    }
+    Type_Ptr getType(){
+        return child(1)->getType();
+    }
 
 };    
-
 NODE_FACTORY (Unop_AST, UNOP);
 
 
+class Def_AST: public AST_Tree {
+public:
+    bool is_init(){
+        return strcmp(this->child(0)->as_string().c_str(),"__init__") == 0;
+    }
+    void assert_none_here(int k){
+        error(loc(), "Cannot use None as a method name");
+    }
+
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        if (decl != NULL)
+            error(loc(), "Trying to assign def to pre-defined variable");
+        decl = enclosing->addDefDecl(child(0)); 
+        child(0)->addDecl(decl);
+        child(2)->collectDecls(enclosing);
+    }
+    Type_Ptr getType(){
+        return child(2)->asType();
+    }
+
+    void collectParams (Decl* enclosing, int k) 
+    {
+        child(1)->collectParams(getDecl(), 0); 
+    }
+    void resolveSimpleIds(const Environ *env)
+    {
+        child(3)->resolveSimpleIds(env);
+        Unwind_Stack s;
+
+        AST_Ptr type = child(2);
+        //hbradlow: this figures out the supposed type of the function based off of its return statement
+        if(child(3)->getType()!=NULL)
+        {
+            if(type->asType()==NULL)
+            {
+                std::vector<NodePtr> dummy;
+                type = child(3)->getType();
+            }
+            else{
+                int b = type->asType()->unify(child(3)->getType(),s);
+                if(b==0){
+                    error(loc(),"Return types do not match");
+                }
+            }
+        }
+        else{
+            std::vector<NodePtr> dummy;
+            type = make_tree(TYPE_VAR,dummy.begin(),dummy.end());
+        }
+
+        std::vector<AST_Ptr> types;
+        for_each_child(c,child(1)){
+            c->resolveSimpleIds(env);
+            types.push_back(c->getType());
+        } end_for;
+        AST_Ptr type_list = make_tree(TYPE_LIST,types.begin(),types.end());
+
+        std::vector<AST_Ptr> ft_vec;
+        ft_vec.push_back(type);
+        ft_vec.push_back(type_list);
+        AST_Ptr function_type = make_tree(FUNCTION_TYPE,ft_vec.begin(),ft_vec.end());
+
+        //This makes sure the return type is the same as the explicit type of the function def
+        this->print(cout,0);
+        printf("\n");
+        child(0)->print(cout,0);
+        printf("\n");
+        function_type->print(cout,0);
+        printf("\n");
+        int b = child(0)->getType()->unify(function_type->asType(),s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
+    }
+
+    AST_Ptr doOuterSemantics()
+    {
+        /* Do the first collecting */
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           c->collectDecls(decl);
+        } end_for;
+        /* Do the internal stuff */
+        for_each_child(c, this)
+        {
+            c->doOuterSemantics();
+        }end_for;
+        /* Do the resolving */
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0) 
+                continue;
+            c->resolveSimpleIds(decl->getEnviron());
+        } end_for;
+        return this;
+    }
+
+private: 
+
+    Decl_Vector _me;
+    
+protected:
+
+    NODE_CONSTRUCTORS (Def_AST, AST_Tree);
+};
+NODE_FACTORY (Def_AST, DEF);
+
+/* Method is just a subtype of Def */
+class Method_AST: public Def_AST {
+protected:
+    NODE_CONSTRUCTORS (Method_AST, Def_AST);
+};
+NODE_FACTORY (Method_AST, METHOD);
+
+class Class_AST: public AST_Tree {
+    void collectDecls(Decl *enclosing)
+    {
+        Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
+        if (decl != NULL)
+            error(loc(), "Trying to assign class to pre-defined variable");
+        decl = enclosing->addClassDecl(this);
+        child(0)->addDecl(decl);
+
+        if(decl->getName().compare("int")==0){
+            intDecl = decl;
+        }
+        else if(decl->getName().compare("string")==0){
+            strDecl = decl;
+        }
+        else if(decl->getName().compare("bool")==0){
+            boolDecl = decl;
+        }
+        else if(decl->getName().compare("list")==0){
+            listDecl = decl;
+        }
+    }
+
+    void resolveSimpleIds(const Environ *env)
+    {
+    }
+
+   
+    AST_Ptr doOuterSemantics()
+    {
+        Decl *decl = child(0)->getDecl();
+        for_each_child(c, this)
+        {
+           c->collectDecls(decl);
+        } end_for;
+        for_each_child(c, this)
+        {
+            c->doOuterSemantics();
+        }end_for;
+        
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0)
+                continue;
+            c->resolveSimpleIds(decl->getEnviron());
+        } end_for;
+        return this;
+    }
+
+
+protected:
+    NODE_CONSTRUCTORS (Class_AST, AST_Tree);
+};
+NODE_FACTORY (Class_AST, CLASS);
+
+class ClassBlock_AST: public AST_Tree{
+public:
+    
+    void append_init()
+    {
+        for_each_child (c,this) {
+            if(c->is_init()){
+                return;
+            }
+        } end_for;
+
+        NodePtr i = make_token(ID,8,"__init__",true);
+        NodePtr s = make_token(ID,4,"self",true);
+        
+        std::vector<NodePtr> formals_v;
+        formals_v.push_back(s);
+        NodePtr formals = make_tree(FORMALS_LIST,formals_v.begin(),formals_v.end());
+        
+        std::vector<NodePtr> empty_v;
+        NodePtr empty = make_tree(EMPTY,empty_v.begin(),empty_v.end());
+
+
+        std::vector<NodePtr> stmt_v;
+        NodePtr stmt = make_tree(STMT_LIST,stmt_v.begin(),stmt_v.end());
+
+        std::vector<NodePtr> block_v;
+        block_v.push_back(stmt);
+        NodePtr block = make_tree(BLOCK,block_v.begin(),block_v.end());
+
+
+        std::vector<NodePtr> def_v;
+        def_v.push_back(i);
+        def_v.push_back(formals);
+        def_v.push_back(empty);
+        def_v.push_back(block);
+        NodePtr def = make_tree(DEF,def_v.begin(),def_v.end());
+        this->insert(0,def);
+    }
+protected:
+
+    NODE_CONSTRUCTORS (ClassBlock_AST, AST_Tree);
+
+    Decl* getDecl (int k = 0) {
+        return child (0)->getDecl ();
+    }
+
+    void addDecl (Decl* decl) {
+        child (0)->addDecl (decl);
+    }
+
+};
+NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
+
+//hbradlow
+class Block_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (Block_AST, AST_Tree);
+    Type_Ptr getType(){
+        for_each_child(c,this){
+            if(c->getReturnNode()!=NULL){
+                return c->getReturnNode()->child(0)->getType();
+            }
+        } end_for;
+        return NULL;
+    }
+};
+NODE_FACTORY (Block_AST, BLOCK);

@@ -67,7 +67,6 @@
     /** Create a comparison or binop node out of operator OP (an integer
      *  token value), and OPERANDS. */
     static AST_Ptr make_binop (const List_Ptr& operands, int op);
-
     /** Create an id out of the text and location of TOKEN, which must be a
      *  token. */
     static AST_Ptr make_id (AST_Ptr& token);
@@ -139,7 +138,11 @@
 %token BLOCK "@block"
 %token BREAK "break"
 %token CALL "@call"
+%token CALL1 "@call1"
+%token NEW "@new"
 %token CLASS_BLOCK "@@block"
+%token CLASS "class"
+%token RETURN "return"
 %token COMPARE "@compare"
 %token LEFT_COMPARE "@left_compare"
 %token CONTINUE "continue"

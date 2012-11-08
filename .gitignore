@@ -1,1 +1,11 @@
+#text editor files
+*.swp
 .svn
+
+#compiled files
+*.o
+*.pyc
+apyc-*
+apyc
+parser-sentinel
+horn-*

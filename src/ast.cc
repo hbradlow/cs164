@@ -85,7 +85,7 @@ AST::removeDecl (int k)
 Type_Ptr
 AST::getType ()
 {
-    throw logic_error ("node does not represent something with a type");
+    return NULL;
 }
 
 bool
@@ -105,6 +105,10 @@ AST::isBoundMethod ()
 AST_Ptr
 AST::doOuterSemantics ()
 {
+    for_each_child(c, this)
+    {
+        c->doOuterSemantics();
+    } end_for;
     return this;
 }
 
@@ -113,6 +117,16 @@ AST::collectDecls (Decl* enclosing)
 {
     for_each_child (c, this) {
         c->collectDecls (enclosing);
+    } end_for;
+}
+
+/** Kevin */
+void 
+AST::collectParams (Decl* enclosing, int k)
+{
+    for_each_child (c, this)
+    {
+        c->collectParams (enclosing, k); 
     } end_for;
 }
 
@@ -169,6 +183,7 @@ AST::freezeDecls (bool frozen)
 AST_Ptr
 AST::resolveTypes (Decl* context, int& resolved, int& ambiguities,  bool& errors)
 {
+    printf("HERE\n");
     for_each_child_var (c, this) {
         c = c->resolveTypes (context, resolved, ambiguities, errors);
     } end_for;
@@ -310,3 +325,122 @@ protected:
 };
 
 NODE_FACTORY (Empty_AST, EMPTY);
+
+///////////////////////////////////////////////////////////////////////////////////
+//OUR CODE FROM HERE
+///////////////////////////////////////////////////////////////////////////////////
+
+//hbradlow
+void AST::unifyWith(AST_Ptr right){
+    /* do nothing */
+}
+
+//rewrites
+void
+AST::rewrite_types(Decl* enclosing){
+    for_each_child (c, this) {
+        c->rewrite_types(enclosing);
+    } end_for;
+}
+AST_Ptr
+AST::rewrite_allocators(Decl* enclosing){
+    for_each_child_var (c, this) {
+        c = c->rewrite_allocators(enclosing);
+    } end_for;
+    return this;
+}
+void
+AST::append_init(){
+    for_each_child (c, this) {
+        c->append_init();
+    } end_for;
+}
+
+void
+AST::resolve_reference (const Environ* env)
+{
+    // Do nothing
+}
+
+void
+AST::create_attr_ref(Decl* enclosing)
+{
+    // Default should do nothing
+    return;
+}
+
+void AST::replace_none(){
+    int index = 0;
+    for_each_child (c, this) {
+        if(c->is_none()){
+            this->assert_none_here(index); // check to make sure its legal to have a None here
+
+            NodePtr i = AST::make_token(ID,8,"__None__",true);
+            i->set_loc(this->loc());
+
+            vector<NodePtr> expr_v;
+            NodePtr expr = make_tree(EXPR_LIST,expr_v.begin(),expr_v.end());
+            expr->set_loc(this->loc());
+
+            vector<NodePtr> call_v;
+            call_v.push_back(i);
+            call_v.push_back(expr);
+            NodePtr call = make_tree(CALL,call_v.begin(),call_v.end());
+
+            this->replace(index,call);
+        }
+        index++;
+        c->replace_none();
+    } end_for;
+}
+
+AST_Ptr AST::replace_attribute_refs()
+{
+    for_each_child(c, this)
+    {
+        this->replace(c_i_, c->replace_attribute_refs());
+    } end_for; 
+    return this;
+}
+//checkers
+//hbradlow
+bool
+AST::is_init(){
+    return false;
+}
+
+//hbradlow
+bool
+AST::is_none(){
+    return false;
+}
+
+//hbradlow
+void
+AST::assert_none_here(int k){
+    /* do nothing */
+}
+
+//hbradlow
+void
+AST::check_defined(){
+    for_each_child_var(c, this)
+    {
+        c->check_defined(); 
+    } end_for;
+}
+
+//hbradlow
+void
+AST::assert_is_defined(){
+    /* do nothing */
+}
+//hbradlow
+void 
+AST::attachDecl(Decl *enclosing){
+}
+//hbradlow
+AST_Ptr
+AST::getReturnNode(){
+    return NULL;
+}

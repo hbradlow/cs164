@@ -70,6 +70,7 @@ Environ::find(const string& name, Decl_Vector& defns) const
 void 
 Environ::define (Decl* decl)
 {
+    assert (find_immediate (decl->getName ()) == NULL);
     members.push_back (decl);
 }
 
