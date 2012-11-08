@@ -256,7 +256,15 @@ class Compare_AST : public Callable{
     }
     //hbradlow
     Type_Ptr getType(){
-        return child(0)->getType();
+        return this->computeType();
+    }
+    Type_Ptr computeType () {
+        if(boolDecl==NULL)
+        {
+            error(loc(),"bool not defined");
+            return NULL;
+        }
+        return boolDecl->asType ();
     }
 
 };    
@@ -543,6 +551,9 @@ protected:
     NODE_CONSTRUCTORS (Block_AST, AST_Tree);
     Type_Ptr getType(){
         for_each_child(c,this){
+            if(c->getType()!=NULL){
+                return c->getType();
+            }
             if(c->getReturnNode()!=NULL){
                 return c->getReturnNode()->child(0)->getType();
             }
@@ -551,3 +562,18 @@ protected:
     }
 };
 NODE_FACTORY (Block_AST, BLOCK);
+
+//hbradlow
+class If_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (If_AST, AST_Tree);
+    Type_Ptr getType(){
+        for_each_child(c,this){
+            if(c_i_ !=0 && c->getType()!=NULL){
+                return c->getType();
+            }
+        } end_for;
+        return NULL;
+    }
+};
+NODE_FACTORY (If_AST, IF);

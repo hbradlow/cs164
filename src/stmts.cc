@@ -48,7 +48,14 @@ protected:
         } end_for;
         return this;
     }
-
+    Type_Ptr getType(){
+        for_each_child(c,this){
+            if(c->getReturnNode()!=NULL){
+                return c->getReturnNode()->child(0)->getType();
+            }
+        } end_for;
+        return NULL;
+    }
 };
 
 NODE_FACTORY (StmtList_AST, STMT_LIST);
