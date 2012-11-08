@@ -134,6 +134,11 @@ public:
      *  resulting declaration. */
     virtual Decl* addDefDecl (AST_Ptr id);
 
+    /** Will 
+     * Identical to addDefDecl except it doesn't actually add the
+     * decl to the enclosing env, just returns it. */
+    virtual Decl* peekDefDecl (AST_Ptr id);
+
     /** Kevin: Create a parameter of ID for function definition */
     virtual Decl* addParamDecl (AST_Ptr id, int k);
 
@@ -156,10 +161,19 @@ public:
 
     virtual ~Decl ();
 
-protected:
+    /** Print my list of type parameters on the standard output,
+     *  if applicable, and otherwise do nothing. */
+    virtual void printTypeParams () const;
+
+    /** Print my type on the standard output, if applicable, and
+     *  otherwise do nothing. */
+    virtual void printType () const;
 
     /** The name of this type of Decl for external printing purposes. */
     virtual const char* declTypeName () const;
+
+
+protected:
 
     /** Print my container's index on the standard output, if
      *  applicable, and otherwise do nothing. */
@@ -168,14 +182,6 @@ protected:
     /** Print my position in my container, if applicable, on the
      *  standard output, and otherwise do nothing. */
     virtual void printPosition () const;
-
-    /** Print my type on the standard output, if applicable, and
-     *  otherwise do nothing. */
-    virtual void printType () const;
-
-    /** Print my list of type parameters on the standard output,
-     *  if applicable, and otherwise do nothing. */
-    virtual void printTypeParams () const;
 
     /** Print my index list of members or local definitions on the
      *  standard output, if applicable, and otherwise do nothing. */

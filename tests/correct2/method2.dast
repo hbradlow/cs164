@@ -1,0 +1,27 @@
+(module 0
+    (class 1
+        (id 1 C 1)
+        (type_formals_list 0)
+        (block 2
+            (def 2
+                (id 2 foo 5)
+                (formals_list 2
+                    (id 2 self 7))
+                ()
+                (block 3
+                    (println 3
+                        ()
+                        (expr_list 3
+                            (string_literal 3 "foo")))))))
+    (assign 5
+        (id 5 x 3)
+        (call 5
+            (id 5 C 1)
+            (expr_list 0))))(moduledecl 0 __main__  (index_list 1 3))
+(classdecl 1 C  (index_list) (index_list 5))
+(typevardecl 2 Any )
+(vardecl 3 x 0  (type_var 0 Any 2))
+(typevardecl 4 Any )
+(funcdecl 5 foo 1  (type_var 0 Any 4) (index_list 7))
+(typevardecl 6 Any )
+(paramdecl 7 self 5  0 (type_var 0 Any 6))
