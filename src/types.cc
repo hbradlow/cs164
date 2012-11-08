@@ -503,6 +503,7 @@ public:
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
         }
+        child(1)->resolveSimpleIds(env);
     }
     void addTargetDecls(Decl* enclosing)
     {
