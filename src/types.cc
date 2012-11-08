@@ -449,7 +449,7 @@ protected:
     }
     void collectDecls(Decl *enclosing){
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        addDecl(decl);
+        child(0)->addDecl(decl);
     }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
@@ -469,6 +469,7 @@ public:
     void collectParams (Decl* enclosing, int k)
     {
         child(0)->collectParams(enclosing,k);
+        child(1)->collectDecls(enclosing);
     }
     void unifyWith(AST_Ptr right){
         Unwind_Stack s;
