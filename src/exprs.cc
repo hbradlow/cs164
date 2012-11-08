@@ -151,7 +151,6 @@ protected:
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
             Type_Ptr t2 = func_type->child(1)->child(i)->asType();
-            
 
             Unwind_Stack s;
             int b = t1->unify(t2,s);
@@ -162,10 +161,6 @@ protected:
         Type_Ptr t = child(0)->getType()->binding()->returnType();
         return t;
     }
-
-    // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
-    // USE THE METHODS ABOVE TO ADAPT IT TO PARTICULAR TYPES OF NODE.
-
 };
 
 NODE_FACTORY (Call_AST, CALL);
