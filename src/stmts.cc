@@ -139,6 +139,8 @@ protected:
             Type_Ptr type = childDecl->getType()->binding();
             string str = type->child(0)->as_string();
             child(1)->create_attr_ref(env->find(str));
+            if (child(1)->getDecl(0)->isMethod() && !child(1)->isBoundMethod())
+                error(loc(), "Referencing function without call");
         } else error(loc(), "Attribute of something that is not defined");
     }
 };
