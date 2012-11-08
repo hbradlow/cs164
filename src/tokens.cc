@@ -199,6 +199,7 @@ protected:
         Decl *decl = env->find(as_string());
         if (decl == NULL && !numDecls())
         {
+            child(0)->child(0);
             string str = "Use of undeclared identifier '";
             str += as_string() + "'"; 
             error(loc(), str.c_str()); 

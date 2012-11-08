@@ -25,14 +25,13 @@ protected:
 
     /** Top-level semantic processing for the program. */
     AST_Ptr doOuterSemantics () {
-        outer_environ = new Environ (NULL);
-
         //rewrites
         this->replace_none(); // 4.6
         this->append_init(); // 4.2
 
         /* Create the module declaration */ 
         Decl *mod_decl = makeModuleDecl("__main__"); 
+        outer_environ = mod_decl->getEnviron();
 
         for_each_child_var(c, this)
         {

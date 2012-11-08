@@ -452,6 +452,9 @@ public:
     MethodDecl (const string& name, Decl* container, AST_Ptr type)
         :  FuncDecl (name, container, type,
 		     new Environ (container->getEnviron ()->get_enclosure ())) {
+            printf("making a method declaration with environment \n");
+            container->print();
+            printf("\n");
     }
 
 protected:
