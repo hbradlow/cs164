@@ -302,7 +302,6 @@ public:
             error(loc(), "Trying to assign def to pre-defined variable");
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
-        child(1)->collectDecls(decl);
         child(2)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
@@ -313,20 +312,35 @@ public:
     {
         child(1)->collectParams(getDecl(), 0); 
     }
-
     void resolveSimpleIds(const Environ *env)
     {
+        child(3)->resolveSimpleIds(env);
         Unwind_Stack s;
 
         AST_Ptr type = child(2);
-        if(type->asType()==NULL)
+        //hbradlow: this figures out the supposed type of the function based off of its return statement
+        if(child(3)->getType()!=NULL)
         {
+            if(type->asType()==NULL)
+            {
+                std::vector<NodePtr> dummy;
+                type = child(3)->getType();
+            }
+            else{
+                int b = type->asType()->unify(child(3)->getType(),s);
+                if(b==0){
+                    error(loc(),"Return types do not match");
+                }
+            }
+        }
+        else{
             std::vector<NodePtr> dummy;
             type = make_tree(TYPE_VAR,dummy.begin(),dummy.end());
         }
 
         std::vector<AST_Ptr> types;
         for_each_child(c,child(1)){
+            c->resolveSimpleIds(env);
             types.push_back(c->getType());
         } end_for;
         AST_Ptr type_list = make_tree(TYPE_LIST,types.begin(),types.end());
@@ -336,7 +350,13 @@ public:
         ft_vec.push_back(type_list);
         AST_Ptr function_type = make_tree(FUNCTION_TYPE,ft_vec.begin(),ft_vec.end());
 
-
+        //This makes sure the return type is the same as the explicit type of the function def
+        this->print(cout,0);
+        printf("\n");
+        child(0)->print(cout,0);
+        printf("\n");
+        function_type->print(cout,0);
+        printf("\n");
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
@@ -491,3 +511,17 @@ protected:
 };
 NODE_FACTORY (ClassBlock_AST, CLASS_BLOCK);
 
+//hbradlow
+class Block_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (Block_AST, AST_Tree);
+    Type_Ptr getType(){
+        for_each_child(c,this){
+            if(c->getReturnNode()!=NULL){
+                return c->getReturnNode()->child(0)->getType();
+            }
+        } end_for;
+        return NULL;
+    }
+};
+NODE_FACTORY (Block_AST, BLOCK);

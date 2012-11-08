@@ -1,6 +1,6 @@
 (module 0
     (class 1
-        (id 1 string 1)
+        (id 1 int 1)
         (type_formals_list 0)
         (block 0
             (def 0
@@ -12,44 +12,74 @@
                     (stmt_list 0)))
             (stmt_list 0)))
     (class 3
-        (id 3 d 8)
+        (id 3 string 6)
         (type_formals_list 0)
-        (block 4
+        (block 0
             (def 0
-                (id 0 __init__ 10)
+                (id 0 __init__ 8)
                 (formals_list 0
-                    (id 0 self 12))
+                    (id 0 self 10))
                 ()
                 (block 0
                     (stmt_list 0)))
-            (def 4
-                (id 4 a 14)
+            (stmt_list 0)))
+    (def 5
+        (id 5 f 12)
+        (formals_list 5
+            (id 5 a 14))
+        ()
+        (block 6
+            (def 6
+                (id 6 g 16)
                 (formals_list 0)
                 ()
-                (block 5
-                    (println 5
-                        ()
-                        (expr_list 5
-                            (string_literal 5 "hello")))))))
-    (call 6
-        (attributeref 6
-            (id 6 d 8)
-            (id 6 a 14))
-        (expr_list 0)))(moduledecl 0 __main__  (index_list 1 8))
-(classdecl 1 string  (index_list) (index_list 3))
+                (block 7
+                    (return 7
+                        (string_literal 7 "hello"))))
+            (return 8
+                (id 8 g 16))))
+    (assign 9
+        (id 9 b 18)
+        (call 9
+            (id 9 f 12)
+            (expr_list 9
+                (int_literal 9 3))))
+    (assign 10
+        (id 10 x 20)
+        (call 10
+            (id 10 b 18)
+            (expr_list 0))))(moduledecl 0 __main__  (index_list 1 6 12 18 20))
+(classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (function_type 0
-    (type_var 0 $#3)
+    (type_var 0 $#2)
     (type_list 0
         (type_var 0 $#1 4))) (index_list 5))
 (paramdecl 5 self 3  0 (type_var 0 $#1 4))
-(paramdecl 7 self 3  0 (type_var 0 $#2 6))
-(classdecl 8 d  (index_list) (index_list 10 14))
-(funcdecl 10 __init__ 8  (function_type 0
-    (type_var 0 $#8)
+(classdecl 6 string  (index_list) (index_list 8))
+(funcdecl 8 __init__ 6  (function_type 0
+    (type_var 0 $#5)
     (type_list 0
-        (type_var 0 $#5 11))) (index_list 12))
-(paramdecl 12 self 10  0 (type_var 0 $#5 11))
-(funcdecl 14 a 8  (function_type 0
-    (type_var 0 $#9)
+        (type_var 0 $#4 9))) (index_list 10))
+(paramdecl 10 self 8  0 (type_var 0 $#4 9))
+(funcdecl 12 f 0  (function_type 0
+    (function_type 0
+        (type 0
+            (id 0 string 6)
+            (type_list 0))
+        (type_list 0))
+    (type_list 0
+        (type_var 0 $#7 13))) (index_list 14 16))
+(paramdecl 14 a 12  0 (type_var 0 $#7 13))
+(funcdecl 16 g 12  (function_type 0
+    (type 0
+        (id 0 string 6)
+        (type_list 0))
     (type_list 0)) (index_list))
-(paramdecl 16 self 10  0 (type_var 0 $#7 15))
+(vardecl 18 b 0  (function_type 0
+    (type 0
+        (id 0 string 6)
+        (type_list 0))
+    (type_list 0)))
+(vardecl 20 x 0  (type 0
+    (id 0 string 6)
+    (type_list 0)))

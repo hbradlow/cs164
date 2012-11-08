@@ -132,4 +132,12 @@ protected:
 
 NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
 
-
+//hbradlow
+class Return_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (Return_AST, AST_Tree);
+    AST_Ptr getReturnNode(){
+        return this;
+    }
+};
+NODE_FACTORY (Return_AST, RETURN);

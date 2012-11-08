@@ -183,6 +183,8 @@ public:
     virtual void unifyWith(AST_Ptr right);
     //hbradlow
     virtual void attachDecl(Decl *enclosing);
+    //hbradlow
+    virtual AST_Ptr getReturnNode();
 
     //hbradlow - checkers
     /* returns true if this node is a def node with name "__init__" */

@@ -85,7 +85,7 @@ AST::removeDecl (int k)
 Type_Ptr
 AST::getType ()
 {
-    throw logic_error ("node does not represent something with a type");
+    return NULL;
 }
 
 bool
@@ -433,4 +433,9 @@ AST::assert_is_defined(){
 //hbradlow
 void 
 AST::attachDecl(Decl *enclosing){
+}
+//hbradlow
+AST_Ptr
+AST::getReturnNode(){
+    return NULL;
 }
