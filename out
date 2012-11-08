@@ -1,8 +1,8 @@
 (module 0
     (class 1
-        (id 1 d 1)
+        (id 1 int 1)
         (type_formals_list 0)
-        (block 2
+        (block 0
             (def 0
                 (id 0 __init__ 3)
                 (formals_list 0
@@ -10,37 +10,53 @@
                 ()
                 (block 0
                     (stmt_list 0)))
-            (def 2
-                (id 2 a 7)
-                (formals_list 0)
+            (stmt_list 0)))
+    (class 3
+        (id 3 c 8)
+        (type_formals_list 0)
+        (block 4
+            (def 0
+                (id 0 __init__ 10)
+                (formals_list 0
+                    (id 0 self 12))
                 ()
-                (block 3
-                    (println 3
-                        ()
-                        (expr_list 3
-                            (string_literal 3 "hello")))))))
-    (assign 4
-        (id 4 c 11)
+                (block 0
+                    (stmt_list 0)))
+            (assign 4
+                (id 4 a 14)
+                (int_literal 4 10))))
+    (assign 5
+        (id 5 d 18)
         (call1 0
-            (id 0 __init__ 3)
-            (expr_list 4
-                (new 4
-                    (id 4 d 1)))))
-    (call 5
-        (attributeref 5
-            (id 5 c 11)
-            (id 5 a 7))
-        (expr_list 0)))(moduledecl 0 __main__  (index_list 1 11))
-(classdecl 1 d  (index_list) (index_list 3 7))
+            (id 0 __init__ 10)
+            (expr_list 5
+                (new 5
+                    (id 5 c 8)))))
+    (assign 6
+        (id 6 l 20)
+        (attributeref 6
+            (id 6 d 18)
+            (id 6 a 14))))(moduledecl 0 __main__  (index_list 1 8 18 20))
+(classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (function_type 0
-    (type_var 0 $#4)
+    (type_var 0 $#3)
     (type_list 0
         (type_var 0 $#1 4))) (index_list 5))
 (paramdecl 5 self 3  0 (type_var 0 $#1 4))
-(funcdecl 7 a 1  (function_type 0
-    (type_var 0 $#5)
-    (type_list 0)) (index_list))
-(paramdecl 9 self 3  0 (type_var 0 $#3 8))
-(vardecl 11 c 0  (type 4
-    (id 4 d 1)
+(paramdecl 7 self 3  0 (type_var 0 $#2 6))
+(classdecl 8 c  (index_list) (index_list 10 14))
+(funcdecl 10 __init__ 8  (function_type 0
+    (type_var 0 $#8)
+    (type_list 0
+        (type_var 0 $#5 11))) (index_list 12))
+(paramdecl 12 self 10  0 (type_var 0 $#5 11))
+(instancedecl 14 a 8  (type 0
+    (id 0 int 1)
+    (type_list 0)))
+(paramdecl 16 self 10  0 (type_var 0 $#7 15))
+(vardecl 18 d 0  (type 5
+    (id 5 c 8)
+    (type_list 0)))
+(vardecl 20 l 0  (type 0
+    (id 0 int 1)
     (type_list 0)))
