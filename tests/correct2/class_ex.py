@@ -1,6 +1,4 @@
-class int:
-    pass
-class A: 
+class A:
     x=3+5
     def f(self):
         if self.x > 0:
