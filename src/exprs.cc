@@ -309,9 +309,11 @@ public:
 
             }
         }
-        decl = enclosing->addDefDecl(child(0)); 
-        child(0)->addDecl(decl);
-        child(2)->collectDecls(enclosing);
+        else {
+            decl = enclosing->addDefDecl(child(0)); 
+            child(0)->addDecl(decl);
+            //child(2)->collectDecls(enclosing);
+        }
     }
     Type_Ptr getType(){
         return child(2)->asType();
