@@ -298,9 +298,14 @@ public:
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if (decl != NULL && )
-	    decl->printTypeParams();
-            error(loc(), "Trying to assign def to pre-defined variable");
+        if (decl != NULL ) {
+            Decl* new_decl = enclosing->peekDefDecl(child(0)); 
+            if (not (decl->declTypeName() == new_decl->declTypeName())) {
+                decl->printTypeParams();
+                error(loc(), "Trying to assign def to pre-defined variable");
+
+            }
+        }
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
         child(2)->collectDecls(enclosing);

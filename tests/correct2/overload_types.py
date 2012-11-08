@@ -1,5 +1,5 @@
-def foo(int::x):
-    print x
+def foo(x::int):
+    print 10
 
-def foo(string::x):
+def foo(x::str):
     print 'hello'
