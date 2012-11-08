@@ -36,44 +36,51 @@
                     (stmt_list 0)))
             (stmt_list 0)))
     (def 1
-        (id 1 g 17)
-        (formals_list 0)
+        (id 1 f 17)
+        (formals_list 1
+            (id 1 a 21))
         ()
         (block 2
-            (println 2
+            (def 2
+                (id 2 g 19)
+                (formals_list 0)
                 ()
-                (expr_list 2
-                    (int_literal 2 3))))))(moduledecl 0 __main__  (index_list 1 6 11 17))
+                (block 0
+                    (stmt_list 0)))
+            (return 4
+                (id 4 g 23))))
+    (assign 5
+        (id 5 b 25)
+        (call 5
+            (id 5 f 17)
+            (expr_list 5
+                (int_literal 5 3))))
+    (assign 6
+        (id 6 x 27)
+        (call 6
+            (id 6 b 25)
+            (expr_list 0))))(moduledecl 0 __main__  (index_list 1 6 11 17 19 25 27))
 (classdecl 1 int  (index_list) (index_list 3))
-(funcdecl 3 __init__ 1  (function_type 0
-    ()
-    (type_list 0
-        (type 0
-            (id 0 int 1)
-            (type_list 0)))) (index_list 5))
+(funcdecl 3 __init__ 1  (type_var 0 $#0 2) (index_list 5))
 (paramdecl 5 self 3  0 (type 0
     (id 0 int 1)
     (type_list 0)))
 (classdecl 6 bool  (index_list) (index_list 8))
-(funcdecl 8 __init__ 6  (function_type 0
-    ()
-    (type_list 0
-        (type 0
-            (id 0 bool 6)
-            (type_list 0)))) (index_list 10))
+(funcdecl 8 __init__ 6  (type_var 0 $#2 7) (index_list 10))
 (paramdecl 10 self 8  0 (type 0
     (id 0 bool 6)
     (type_list 0)))
 (classdecl 11 string  (index_list) (index_list 13))
-(funcdecl 13 __init__ 11  (function_type 0
-    ()
-    (type_list 0
-        (type 0
-            (id 0 string 11)
-            (type_list 0)))) (index_list 15))
+(funcdecl 13 __init__ 11  (type_var 0 $#4 12) (index_list 15))
 (paramdecl 15 self 13  0 (type 0
     (id 0 string 11)
     (type_list 0)))
-(funcdecl 17 g 0  (function_type 0
-    ()
-    (type_list 0)) (index_list))
+(funcdecl 17 f 0  (function_type 0
+    (type_var 0 $#9 22)
+    (type_list 0
+        (type_var 0 $#8 20))) (index_list 21 23))
+(funcdecl 19 g 0  (type_var 0 $#7 18) (index_list))
+(paramdecl 21 a 17  0 (type_var 0 $#8 20))
+(funcdecl 23 g 17  (type_var 0 $#9 22) (index_list))
+(vardecl 25 b 0  (type_var 0 $#9 22))
+(vardecl 27 x 0  (type_var 0 $#11 26))

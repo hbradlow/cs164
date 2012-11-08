@@ -304,6 +304,7 @@ public:
             error(loc(), "Trying to assign def to pre-defined variable");
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
+        child(2)->collectDecls(enclosing);
         child(3)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
@@ -337,8 +338,10 @@ public:
             }
         }
         else{
-            std::vector<NodePtr> dummy;
-            type = make_tree(TYPE_VAR,dummy.begin(),dummy.end());
+            if(type->asType()==NULL)
+            {
+                return;
+            }
         }
 
         std::vector<AST_Ptr> types;
