@@ -312,19 +312,18 @@ public:
 
     void collectDecls(Decl *enclosing)
     {
+        printf(child(0)->as_string().c_str());
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if (decl != NULL ) {
-            Decl* new_decl = enclosing->peekDefDecl(child(0)); 
-            if (not (decl->declTypeName() == new_decl->declTypeName())) {
-                decl->printTypeParams();
-                error(loc(), "Trying to assign def to pre-defined variable");
-
-            }
+            if (!decl->isFunc())
+                error(loc(), "Trying to assign function to pre-defined variable");
+            child(0)->addDecl(decl);
+            decl->addSignature(child(1));
         }
         else {
             decl = enclosing->addDefDecl(child(0)); 
             child(0)->addDecl(decl);
-            //child(2)->collectDecls(enclosing);
+            decl->addSignature(child(1));
         }
     }
     Type_Ptr getType(){
@@ -377,14 +376,15 @@ public:
         //This makes sure the return type is the same as the explicit type of the function def
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
-            error(loc(),"Identifier already defined as a different type");
+            // This needs to be commented out until we deal with overloading
+            //error(loc(),"Identifier already defined as a different type");
         }
     }
 
     AST_Ptr doOuterSemantics()
     {
         /* Do the first collecting */
-        Decl *decl = child(0)->getDecl();
+        Decl *decl = child(0)->getDecl(0);
         for_each_child(c, this)
         {
            c->collectDecls(decl);

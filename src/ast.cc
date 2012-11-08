@@ -77,6 +77,12 @@ AST::addDecl (Decl*)
 }
 
 void
+AST::addOverload(Decl*)
+{
+    throw logic_error ("node does not represent a function");
+}
+
+void
 AST::removeDecl (int k)
 { 
     throw logic_error ("node does not represent a named entity");

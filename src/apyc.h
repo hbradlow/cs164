@@ -129,6 +129,9 @@ public:
      *  resulting declaration */
     virtual Decl* addVarDecl (AST_Ptr id);
 
+    /** Kevin : Add an overloading to the function */
+    virtual void addSignature (AST_Ptr new_sig);
+
     /** Create a declaration of ID appropriate for a 'def' to my
      *  members.  There must not already be one.  Returns the
      *  resulting declaration. */

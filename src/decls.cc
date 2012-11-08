@@ -184,12 +184,17 @@ Decl::addMember (Decl* new_member)
 	_members->define (new_member);
 }
 
-//
+void 
+Decl::addSignature (AST_Ptr new_sig)
+{
+    return;
+}
+
 Decl*
 Decl::addVarDecl (AST_Ptr) {
     UNIMPLEMENTED (addVarDecl);
 }
-//
+
 Decl*
 Decl::addDefDecl (AST_Ptr) {
     UNIMPLEMENTED (addDefDecl);
@@ -414,6 +419,12 @@ public:
     return false;
     }
 
+    void addSignature(AST_Ptr new_sig)
+    {
+        new_sig->print(cout, 0);
+        _overloads.push_back(new_sig);
+    }
+
 protected:
 
     const char* declTypeName () const {
@@ -436,18 +447,14 @@ protected:
         return decl;
     }
 
-    /** Will */
-    Decl* peekDefDecl (AST_Ptr id) {
-        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
-        return decl;
-    }
-
     Decl* addParamDecl (AST_Ptr id, int k)
     {
         Decl *decl = makeParamDecl (id->as_string(), this, k, Type::makeVar());
         addMember(decl);
         return decl;
     }
+
+    vector<AST_Ptr> _overloads;
 };
 
 Decl*
