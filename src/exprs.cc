@@ -425,7 +425,7 @@ class Class_AST: public AST_Tree {
         if(decl->getName().compare("int")==0){
             intDecl = decl;
         }
-        else if(decl->getName().compare("string")==0){
+        else if(decl->getName().compare("str")==0){
             strDecl = decl;
         }
         else if(decl->getName().compare("bool")==0){
