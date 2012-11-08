@@ -432,6 +432,7 @@ public:
     resolveTypes(Decl* context, int& resolved, int& ambiguities, 
     		 bool& errors) {
     	context->print();
+        return NULL;
     }
  
     void collectDecls(Decl *enclosing)
