@@ -305,7 +305,7 @@ protected:
         if (me == NULL)
             return this;
         else
-            return me->getAst ()->asType ()->Type::binding ();
+            return me->getAst()->asType ()->Type::binding ();
     }
 
     bool bind (Type_Ptr target, Unwind_Stack& bindings) {

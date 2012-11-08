@@ -421,7 +421,6 @@ public:
 
     void addSignature(AST_Ptr new_sig)
     {
-        new_sig->print(cout, 0);
         _overloads.push_back(new_sig);
     }
 

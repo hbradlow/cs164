@@ -146,7 +146,7 @@ protected:
     Type_Ptr
     getType ()
     {
-        Type_Ptr func_type = child(0)->getType()->binding();
+        Type_Ptr func_type = child(0)->getType()->binding()->freshen();
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
@@ -158,7 +158,7 @@ protected:
                 error(loc(),"Invalid types to function call");
             }
         }
-        Type_Ptr t = child(0)->getType()->binding()->returnType();
+        Type_Ptr t = func_type->returnType();
         return t;
     }
 };
@@ -308,7 +308,6 @@ public:
 
     void collectDecls(Decl *enclosing)
     {
-        printf(child(0)->as_string().c_str());
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if (decl != NULL ) {
             if (!decl->isFunc())
