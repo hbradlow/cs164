@@ -466,6 +466,10 @@ class TypedId_AST : public Type
 public:
     NODE_CONSTRUCTORS (TypedId_AST, Type); 
 
+    void collectParams (Decl* enclosing, int k)
+    {
+        child(0)->collectParams(enclosing,k);
+    }
     void unifyWith(AST_Ptr right){
         Unwind_Stack s;
         Type_Ptr t0 = this->getType();

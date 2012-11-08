@@ -1,4 +1,7 @@
+class string:
+    pass
 class d:
     def a():
         print "hello"
-d.a()
+c = d()
+c.a()

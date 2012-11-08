@@ -142,6 +142,7 @@
 %token NEW "@new"
 %token CLASS_BLOCK "@@block"
 %token CLASS "class"
+%token RETURN "return"
 %token COMPARE "@compare"
 %token LEFT_COMPARE "@left_compare"
 %token CONTINUE "continue"

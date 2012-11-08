@@ -13,6 +13,7 @@
 *.a
 #text editor files
 *.swp
+.svn
 
 #compiled files
 *.o

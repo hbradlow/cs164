@@ -85,7 +85,7 @@ AST::removeDecl (int k)
 Type_Ptr
 AST::getType ()
 {
-    throw logic_error ("node does not represent something with a type");
+    return NULL;
 }
 
 bool
@@ -359,10 +359,7 @@ AST::append_init(){
 void
 AST::resolve_reference (const Environ* env)
 {
-    for_each_child(c, this)
-    {
-        c->resolve_reference (env);
-    } end_for;
+    // Do nothing
 }
 
 void
@@ -397,6 +394,14 @@ void AST::replace_none(){
     } end_for;
 }
 
+AST_Ptr AST::replace_attribute_refs()
+{
+    for_each_child(c, this)
+    {
+        this->replace(c_i_, c->replace_attribute_refs());
+    } end_for; 
+    return this;
+}
 //checkers
 //hbradlow
 bool
@@ -433,4 +438,9 @@ AST::assert_is_defined(){
 //hbradlow
 void 
 AST::attachDecl(Decl *enclosing){
+}
+//hbradlow
+AST_Ptr
+AST::getReturnNode(){
+    return NULL;
 }

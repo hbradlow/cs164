@@ -1,5 +1,3 @@
-class int:
-    pass
 class c:
     def a():
         return
