@@ -146,7 +146,8 @@ protected:
     Type_Ptr
     getType ()
     {
-        return child(0)->getType()->binding()->returnType();
+        Type_Ptr t = child(0)->getType()->binding()->returnType();
+        return t;
     }
 
     // PUT COMMON CODE DEALING WITH TYPE-CHECKING or SCOPE RULES HERE.
@@ -305,7 +306,6 @@ public:
         decl = enclosing->addDefDecl(child(0)); 
         child(0)->addDecl(decl);
         child(2)->collectDecls(enclosing);
-        child(3)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
         return child(2)->asType();
@@ -314,11 +314,10 @@ public:
     void collectParams (Decl* enclosing, int k) 
     {
         child(1)->collectParams(getDecl(), 0); 
+        child(3)->collectParams(enclosing, 0); 
     }
     void resolveSimpleIds(const Environ *env)
     {
-        child(3)->resolveSimpleIds(env);
-
         Unwind_Stack s;
 
         AST_Ptr type = child(2);
@@ -327,7 +326,6 @@ public:
         {
             if(type->asType()==NULL)
             {
-                std::vector<NodePtr> dummy;
                 type = child(3)->getType();
             }
             else{
