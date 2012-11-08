@@ -72,6 +72,9 @@ public:
      *  if allowed. */
     virtual void addDecl (Decl* decl);
 
+    /** Add overload to function */
+    virtual void addOverload (Decl* new_member);
+
     /** Remove Kth declaration (0 <= K < numDecls()) of me. */
     virtual void removeDecl (int k);
 
