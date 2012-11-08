@@ -152,16 +152,16 @@ protected:
     {
         if (child(0)->getDecl(0)->isClass())
         {
-        // In case of multiple layers of references 
-        this->replace(1, child(1)->replace_attribute_refs());
-        // Create the new node
-        Decl *referencedDecl = child(0)->getDecl(0);
-        NodePtr newNode = make_id(referencedDecl->getName().c_str(), this->loc());
-        // Set the declaration of the new node to be the declaration that the reference 
-        // is decorated with 
-        newNode->addDecl(referencedDecl);
-
-        return newNode;
+            // In case of multiple layers of references 
+            this->replace(1, child(1)->replace_attribute_refs());
+            // Create the new node
+            Decl *classDecl = child(0)->getDecl(0);
+            Decl *referencedDecl = classDecl->getEnviron()->find_immediate(child(1)->as_string());
+            NodePtr newNode = make_id(referencedDecl->getName().c_str(), this->loc());
+            // Set the declaration of the new node to be the declaration that the reference 
+            // is decorated with 
+            newNode->addDecl(referencedDecl);
+            return newNode;
         } else return this;
     }
 };

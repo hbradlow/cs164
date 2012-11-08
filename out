@@ -1,6 +1,6 @@
 (module 0
     (class 1
-        (id 1 d 1)
+        (id 1 a 1)
         (type_formals_list 0)
         (block 2
             (def 0
@@ -11,42 +11,28 @@
                 (block 0
                     (stmt_list 0)))
             (def 2
-                (id 2 a 7)
+                (id 2 g 7)
                 (formals_list 0)
                 ()
-                (block 3
-                    (println 3
-                        ()
-                        (expr_list 3
-                            (string_literal 3 "hello")))))))
-    (assign 4
-        (id 4 c 11)
-        (call1 0
-            (id 0 __init__ 3)
-            (expr_list 4
-                (new 4
-                    (id 4 d 1)))))
-    (call 5
-        (attributeref 5
-            (id 5 c 11)
-            (id 5 a 7))
-        (expr_list 0)))(moduledecl 0 __main__  (index_list 1 11))
-(classdecl 1 d  (index_list) (index_list 3 7))
+                (block 0
+                    (stmt_list 0)))))
+    (assign 5
+        (id 5 b 11)
+        (id 5 g 7)))(moduledecl 0 __main__  (index_list 1 11))
+(classdecl 1 a  (index_list) (index_list 3 7))
 (funcdecl 3 __init__ 1  (function_type 0
     (type_var 0 $#4)
     (type_list 0
         (type 0
-            (id 0 d 1)
+            (id 0 a 1)
             (type_list 0)))) (index_list 5))
 (paramdecl 5 self 3  0 (type 0
-    (id 0 d 1)
+    (id 0 a 1)
     (type_list 0)))
-(funcdecl 7 a 1  (function_type 0
+(funcdecl 7 g 1  (function_type 0
     (type_var 0 $#5)
     (type_list 0)) (index_list))
 (paramdecl 9 self 3  0 (type 0
-    (id 0 d 1)
+    (id 0 a 1)
     (type_list 0)))
-(vardecl 11 c 0  (type 4
-    (id 4 d 1)
-    (type_list 0)))
+(vardecl 11 b 0  (type_var 0 $#6 10))
