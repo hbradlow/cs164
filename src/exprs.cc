@@ -146,14 +146,12 @@ protected:
     Type_Ptr
     getType ()
     {
-        vector<Type_Ptr> save;
-        for_each_child(c,child(0)->getType()->binding()->child(1)){
-            save.push_back(c->asType());
-        } end_for;
+        Type_Ptr func_type = child(0)->getType()->binding();
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
-            Type_Ptr t2 = child(0)->getType()->binding()->child(1)->child(i)->asType();
+            Type_Ptr t2 = func_type->child(1)->child(i)->asType();
+            
 
             Unwind_Stack s;
             int b = t1->unify(t2,s);
