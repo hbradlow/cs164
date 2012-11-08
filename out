@@ -44,23 +44,18 @@
         (block 19
             (native 19
                 (string_literal 19 "__getitem__str__"))))
-    (assign 1
-        (id 1 hello 23)
-        (string_literal 1 "there"))
-    (class 2
-        (id 2 c 24)
-        (type_formals_list 0)
-        (block 3
-            (def 0
-                (id 0 __init__ 26)
-                (formals_list 0
-                    (id 0 self 30))
-                ()
-                (block 0
-                    (stmt_list 0)))
-            (assign 3
-                (id 3 x 28)
-                (id 3 hello 23)))))(moduledecl 0 __main__  (index_list 1 6 11 17 23 24))
+    (def 1
+        (id 1 foo 23)
+        (formals_list 1
+            (typed_id 1
+                (id 1 x 25)
+                (type 1
+                    (id 1 int)
+                    (type_list 0))))
+        ()
+        (block 2
+            (return 2
+                (id 2 x 25)))))(moduledecl 0 __main__  (index_list 1 6 11 17 23))
 (classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (type_var 0 $#0 2) (index_list 5))
 (paramdecl 5 self 3  0 (type 0
@@ -79,14 +74,14 @@
 (funcdecl 17 __getitem__ 0  (type_var 0 $#6 16) (index_list 19 21))
 (paramdecl 19 S 17  0 (type_var 0 $#7 18))
 (paramdecl 21 k 17  1 (type_var 0 $#8 20))
-(vardecl 23 hello 0  (type 0
-    (id 0 str 11)
-    (type_list 0)))
-(classdecl 24 c  (index_list) (index_list 26 28))
-(funcdecl 26 __init__ 24  (type_var 0 $#10 25) (index_list 30))
-(instancedecl 28 x 24  (type 0
-    (id 0 str 11)
-    (type_list 0)))
-(paramdecl 30 self 26  0 (type 0
-    (id 0 c 24)
+(funcdecl 23 foo 0  (function_type 0
+    (type 1
+        (id 1 int)
+        (type_list 0))
+    (type_list 0
+        (type 1
+            (id 1 int)
+            (type_list 0)))) (index_list 25))
+(paramdecl 25 x 23  0 (type 1
+    (id 1 int)
     (type_list 0)))

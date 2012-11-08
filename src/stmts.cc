@@ -69,8 +69,8 @@ public:
     }
     void resolveSimpleIds (const Environ *env)
     {
-        child(0)->resolveSimpleTypeIds(env);
-        child(1)->resolveSimpleTypeIds(env);
+        //child(0)->resolveSimpleTypeIds(env);
+        //child(1)->resolveSimpleTypeIds(env);
         child(1)->resolveSimpleIds(env);
         child(0)->resolve_reference(env);
         child(1)->resolve_reference(env);
@@ -97,8 +97,10 @@ protected:
 
     void resolveSimpleIds (const Environ* env)
     {
-        // Do nothing 
-        return;
+        for_each_child(c,this)
+        {
+            c->resolveSimpleTypeIds(env); 
+        } end_for; 
     }
 };
 
