@@ -146,8 +146,10 @@ protected:
     Type_Ptr
     getType ()
     {
-        Type_Ptr t = child(0)->getType()->binding()->returnType();
-
+        vector<Type_Ptr> save;
+        for_each_child(c,child(0)->getType()->binding()->child(1)){
+            save.push_back(c->asType());
+        } end_for;
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
@@ -159,6 +161,7 @@ protected:
                 error(loc(),"Invalid types to function call");
             }
         }
+        Type_Ptr t = child(0)->getType()->binding()->returnType();
         return t;
     }
 
