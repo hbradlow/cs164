@@ -123,6 +123,11 @@ protected:
     {
     }
 
+    Type_Ptr getType()
+    {
+        return child(1)->getType();
+    }
+
     void resolve_reference (const Environ *env)
     {
         child(0)->resolveSimpleIds(env);
