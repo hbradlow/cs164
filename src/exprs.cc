@@ -99,10 +99,6 @@ protected:
         return child (1)->child (k);
     }
 
-    bool isBoundMethod()
-    {
-    return true;
-    }
     //hbradlow - 4.1
     void rewrite_types(Decl* enclosing){
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());

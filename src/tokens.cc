@@ -178,8 +178,6 @@ protected:
     void create_attr_ref (Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find(as_string());
-        if (decl == NULL) 
-            error(loc(), "Attribute does not exist");
         addDecl(decl);
     }
 

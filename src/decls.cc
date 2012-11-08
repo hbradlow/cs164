@@ -459,6 +459,13 @@ protected:
     bool isMethod () const {
 	return true;
     }
+    
+    Decl* addParamDecl (AST_Ptr id, int k)
+    {
+        Decl *decl = makeParamDecl (id->as_string(), this, k, Type::makeVar());
+        addMember(decl);
+        return decl;
+    }
 
 private:
 
