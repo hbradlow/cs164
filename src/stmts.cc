@@ -69,13 +69,11 @@ public:
     }
     void resolveSimpleIds (const Environ *env)
     {
-        for_each_child(c, this)
-        {
-           c->resolveSimpleTypeIds(env);
-           if (c_i_ == 0) 
-               continue;
-           c->resolveSimpleIds(env);
-        } end_for;
+        child(0)->resolveSimpleTypeIds(env);
+        child(1)->resolveSimpleTypeIds(env);
+        child(1)->resolveSimpleIds(env);
+        child(0)->resolve_reference(env);
+        child(1)->resolve_reference(env);
         child(0)->unifyWith(child(1));
     }
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
@@ -114,19 +112,57 @@ protected:
 
     void resolveSimpleIds(const Environ *env) 
     {
-        child(0)->resolveSimpleIds(env);
+        resolve_reference(env);
+    }
+
+    void collectDecls (Decl* enclosing) 
+    {
+    }
+
+    void addTargetDecls (Decl* enclosing)
+    {
+    }
+
+    Type_Ptr getType()
+    {
+        return child(1)->getType();
     }
 
     void resolve_reference (const Environ *env)
     {
+        child(0)->resolveSimpleIds(env);
         Decl *childDecl = env->find(child(0)->as_string());
+        // If decl is a class, the rewrite will take care of it
+        if (childDecl->isClass())
+            return;
         if (childDecl != NULL)
         {
             Type_Ptr type = childDecl->getType()->binding();
+            if (type->arity() == 0) 
+            {
+                error(loc(), "Attribute does not exit");
+            }
             string str = type->child(0)->as_string();
             child(1)->create_attr_ref(env->find(str));
-        }
 
+        } 
+    }
+
+    AST_Ptr replace_attribute_refs()
+    {
+        if (child(0)->getDecl(0)->isClass())
+        {
+            // In case of multiple layers of references 
+            this->replace(1, child(1)->replace_attribute_refs());
+            // Create the new node
+            Decl *classDecl = child(0)->getDecl(0);
+            Decl *referencedDecl = classDecl->getEnviron()->find_immediate(child(1)->as_string());
+            NodePtr newNode = make_id(referencedDecl->getName().c_str(), this->loc());
+            // Set the declaration of the new node to be the declaration that the reference 
+            // is decorated with 
+            newNode->addDecl(referencedDecl);
+            return newNode;
+        } else return this;
     }
 };
 

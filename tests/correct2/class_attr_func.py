@@ -3,5 +3,5 @@ class string:
 class d:
     def a():
         print "hello"
-b = d()
-b.a()
+c = d()
+c.a()

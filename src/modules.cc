@@ -55,7 +55,7 @@ protected:
 
         for_each_child_var(c, this) 
         {
-            c->resolve_reference(mod_decl->getEnviron());
+            this->replace(c_i_, c->replace_attribute_refs());
         } end_for;
 
         return this;
