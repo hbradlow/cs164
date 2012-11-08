@@ -176,3 +176,14 @@ protected:
     }
 };
 NODE_FACTORY (Return_AST, RETURN);
+
+class Get_Item_AST: public AST_Tree
+{
+    NODE_CONSTRUCTORS (Get_Item_AST, AST_Tree);
+protected:
+    Type_Ptr getType()
+    {
+        return child(0)->getType();
+    }
+};
+NODE_FACTORY(Get_Item_AST, SUBSCRIPTION);

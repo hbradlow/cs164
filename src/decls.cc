@@ -184,16 +184,21 @@ Decl::addMember (Decl* new_member)
 	_members->define (new_member);
 }
 
+//
 Decl*
 Decl::addVarDecl (AST_Ptr) {
     UNIMPLEMENTED (addVarDecl);
 }
-
+//
 Decl*
 Decl::addDefDecl (AST_Ptr) {
     UNIMPLEMENTED (addDefDecl);
 }
 
+Decl*
+Decl::peekDefDecl (AST_Ptr) {
+    UNIMPLEMENTED (peekDefDecl);
+}
 Decl*
 Decl::addClassDecl (AST_Ptr) 
 {
@@ -420,14 +425,20 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-        Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
-        addMember (decl);
-        return decl;
+	Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
+	addMember (decl);
+	return decl;
     }
 
     Decl* addDefDecl (AST_Ptr id) {
         Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
         addMember (decl);
+        return decl;
+    }
+
+    /** Will */
+    Decl* peekDefDecl (AST_Ptr id) {
+        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
         return decl;
     }
 
@@ -502,14 +513,6 @@ public:
     return false;
     }
 
-protected:
-
-    bool isType () const {
-	return true;
-    }
-    void printContainer () const {
-    }
-
     void printTypeParams () const {
         printf (" (index_list");
 	for_each_child (c, _params) {
@@ -521,6 +524,15 @@ protected:
 	} end_for;
 	printf (")");
     }
+
+protected:
+
+    bool isType () const {
+	return true;
+    }
+    void printContainer () const {
+    }
+
 
     const char* declTypeName () const {
         return "classdecl";
@@ -560,6 +572,12 @@ protected:
 	return decl;
     }
 
+    /** Will */
+    Decl* peekDefDecl (AST_Ptr id) {
+        Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
+        return decl;
+    }
+
     int getTypeArity () const {
 	return _params->arity ();
     }
@@ -590,9 +608,9 @@ protected:
     }
 
     Decl* addVarDecl (AST_Ptr id) {
-        Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
-        addMember (decl);
-        return decl;
+	Decl* decl = makeVarDecl (id->as_string (), this, Type::makeVar ());
+	addMember (decl);
+	return decl;
     }
 
     Decl* addDefDecl (AST_Ptr id) {
@@ -601,6 +619,11 @@ protected:
 	return decl;
     }
 
+    /** Will */
+    Decl* peekDefDecl (AST_Ptr id) {
+        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
+        return decl;
+    }
     /* Kevin */
     Decl* addClassDecl (AST_Ptr id) 
     {

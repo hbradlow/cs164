@@ -13,7 +13,8 @@ class int:
 class bool:
     pass
 
-class string:
+class str:
     pass
-
+def __getitem__(S, k):
+    native "__getitem__str__"
 

@@ -314,11 +314,19 @@ public:
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if (decl != NULL)
-            error(loc(), "Trying to assign def to pre-defined variable");
-        decl = enclosing->addDefDecl(child(0)); 
-        child(0)->addDecl(decl);
-        child(2)->collectDecls(enclosing);
+        if (decl != NULL ) {
+            Decl* new_decl = enclosing->peekDefDecl(child(0)); 
+            if (not (decl->declTypeName() == new_decl->declTypeName())) {
+                decl->printTypeParams();
+                error(loc(), "Trying to assign def to pre-defined variable");
+
+            }
+        }
+        else {
+            decl = enclosing->addDefDecl(child(0)); 
+            child(0)->addDecl(decl);
+            //child(2)->collectDecls(enclosing);
+        }
     }
     Type_Ptr getType(){
         return child(2)->asType();
@@ -415,6 +423,19 @@ protected:
 NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
+public:
+    void assert_none_here(int k){
+        error(loc(), "Cannot use None as a class name");
+    }
+
+    // Resolve my type
+    AST_Ptr 
+    resolveTypes(Decl* context, int& resolved, int& ambiguities, 
+    		 bool& errors) {
+    	context->print();
+        return NULL;
+    }
+ 
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
@@ -426,7 +447,7 @@ class Class_AST: public AST_Tree {
         if(decl->getName().compare("int")==0){
             intDecl = decl;
         }
-        else if(decl->getName().compare("string")==0){
+        else if(decl->getName().compare("str")==0){
             strDecl = decl;
         }
         else if(decl->getName().compare("bool")==0){

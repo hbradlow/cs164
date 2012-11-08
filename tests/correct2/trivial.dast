@@ -1,0 +1,36 @@
+(module 0
+    (assign 1
+        (id 1 a 2)
+        (int_literal 1 10))
+    (assign 2
+        (typed_id 2
+            (id 2 a 2)
+            (type 2
+                (id 2 int 4)
+                (type_list 0)))
+        (int_literal 2 11))
+    (assign 3
+        (typed_id 3
+            (id 3 a 2)
+            (type 3
+                (id 3 int 4)
+                (type_list 0)))
+        (int_literal 3 11))
+    (assign 4
+        (typed_id 4
+            (id 4 b 8)
+            (type 4
+                (id 4 bool 10)
+                (type_list 0)))
+        (id 4 a 2)))(moduledecl 0 __main__  (index_list 2 4 8 10))
+(typevardecl 1 Any )
+(vardecl 2 a 0  (type_var 3 int 6))
+(typevardecl 3 Any )
+(vardecl 4 int 0  (type_var 0 Any 3))
+(typevardecl 5 int )
+(typevardecl 6 int )
+(typevardecl 7 Any )
+(vardecl 8 b 0  (type_var 4 bool 11))
+(typevardecl 9 Any )
+(vardecl 10 bool 0  (type_var 0 Any 9))
+(typevardecl 11 bool )
