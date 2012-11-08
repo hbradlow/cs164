@@ -35,20 +35,37 @@
                 (block 0
                     (stmt_list 0)))
             (stmt_list 0)))
-    (def 1
-        (id 1 f 17)
-        (formals_list 1
-            (id 1 x 19))
-        ()
+    (class 1
+        (id 1 c 16)
+        (type_formals_list 0)
         (block 2
-            (return 2
-                (id 2 x 19))))
-    (assign 3
-        (id 3 a 21)
-        (call 3
-            (id 3 f 17)
-            (expr_list 3
-                (int_literal 3 3)))))(moduledecl 0 __main__  (index_list 1 6 11 17 21))
+            (def 0
+                (id 0 __init__ 18)
+                (formals_list 0
+                    (id 0 self 22))
+                ()
+                (block 0
+                    (stmt_list 0)))
+            (def 2
+                (id 2 g 20)
+                (formals_list 0)
+                ()
+                (block 0
+                    (stmt_list 0)))))
+    (assign 5
+        (id 5 x 24)
+        (call1 0
+            (id 0 __init__ 18)
+            (expr_list 5
+                (new 5
+                    (id 5 c 16)))))
+    (assign 6
+        (id 6 y 26)
+        (call 6
+            (attributeref 6
+                (id 6 x 24)
+                (id 6 g 20))
+            (expr_list 0))))(moduledecl 0 __main__  (index_list 1 6 11 16 24 26))
 (classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (type_var 0 $#0 2) (index_list 5))
 (paramdecl 5 self 3  0 (type 0
@@ -64,17 +81,13 @@
 (paramdecl 15 self 13  0 (type 0
     (id 0 string 11)
     (type_list 0)))
-(funcdecl 17 f 0  (function_type 0
-    (type 0
-        (id 0 int 1)
-        (type_list 0))
-    (type_list 0
-        (type 0
-            (id 0 int 1)
-            (type_list 0)))) (index_list 19))
-(paramdecl 19 x 17  0 (type 0
-    (id 0 int 1)
+(classdecl 16 c  (index_list) (index_list 18 20))
+(funcdecl 18 __init__ 16  (type_var 0 $#6 17) (index_list 22))
+(funcdecl 20 g 16  (type_var 0 $#7 19) (index_list))
+(paramdecl 22 self 18  0 (type 0
+    (id 0 c 16)
     (type_list 0)))
-(vardecl 21 a 0  (type 0
-    (id 0 int 1)
+(vardecl 24 x 0  (type 5
+    (id 5 c 16)
     (type_list 0)))
+(vardecl 26 y 0  (type_var 0 $#10 25))
