@@ -132,6 +132,8 @@ protected:
     {
         child(0)->resolveSimpleIds(env);
         Decl *childDecl = env->find(child(0)->as_string());
+        if (childDecl->isClass()) 
+            error(loc(), "Trying to reference statically");
         if (childDecl != NULL)
         {
             Type_Ptr type = childDecl->getType()->binding();
