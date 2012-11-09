@@ -328,11 +328,8 @@ public:
         if (decl != NULL ) {
             if (!decl->isFunc())
                 error(loc(), "Trying to assign function to pre-defined variable");
-            printf("OVERLOADING: \n"); decl->print(); printf("\n\n");
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
-            enclosing->printMembersList(); printf("\n\n");
-
         }
         else {
             decl = enclosing->addDefDecl(child(0)); 
