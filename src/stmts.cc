@@ -134,8 +134,14 @@ protected:
     {
         if (inside_call)
             return; 
-        Decl *classDecl = child(1)->getDecl();
-        if (classDecl->isMethod())
+        Decl *varDecl = child(1)->getDecl();
+        // If the declaration is not found, then there is a reference to something not in a class
+        if (varDecl == NULL)
+        {
+            error(loc(), "Assigning to something not in class");
+            return;
+        }
+        if (varDecl->isMethod())
             error(loc(), "Not calling bound method");
     }
 
