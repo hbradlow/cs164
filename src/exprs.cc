@@ -339,7 +339,7 @@ public:
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
-        child(2)->collectDecls(enclosing);
+        child(2)->resolveSimpleIds(enclosing->getEnviron());
     }
     Type_Ptr getType(){
         return child(2)->asType();
