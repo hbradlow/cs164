@@ -57,6 +57,11 @@ protected:
             this->replace(c_i_, c->replace_attribute_refs());
         } end_for;
 
+        for_each_child(c, this) 
+        {
+            c->check_bound_methods(false); 
+        } end_for; 
+
         return this;
     }
     

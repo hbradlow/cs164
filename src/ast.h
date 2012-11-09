@@ -72,8 +72,6 @@ public:
      *  if allowed. */
     virtual void addDecl (Decl* decl);
 
-    /** Add overload to function */
-    virtual void addOverload (Decl* new_member);
 
     /** Remove Kth declaration (0 <= K < numDecls()) of me. */
     virtual void removeDecl (int k);
@@ -99,6 +97,9 @@ public:
      *  environment in which I am nested.  This does not add
      *  declarations for declarative regions nested within me. */
     virtual void collectDecls (Decl* enclosing);
+
+    /** Kevin : Make sure that bound methods are called right away */
+    virtual void check_bound_methods (bool inside_call);
 
     /** Kevin : add Parameter declarations to enclosing */
     virtual void collectParams (Decl* enclosing, int k);

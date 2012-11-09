@@ -99,6 +99,14 @@ protected:
         return child (1)->child (k);
     }
 
+    void check_bound_methods (bool inside_call)
+    {
+        for_each_child(c,this)
+        {
+            c->check_bound_methods(true);
+        } end_for;
+    }
+
     //hbradlow - 4.1
     void rewrite_types(Decl* enclosing){
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
