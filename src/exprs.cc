@@ -8,6 +8,7 @@
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
+#include <algorithm>
 
 using namespace std;
 
@@ -20,6 +21,14 @@ protected:
         for_each_child(c,this){
             c->unifyWith(right->getType()->binding()->child(1)->child(c_i_));
         } end_for;
+    }
+
+    void addTargetDecls(Decl* enclosing)
+    {
+        for_each_child(c,this)
+        {
+            c->addTargetDecls(enclosing);
+        } end_for; 
     }
 };
 
