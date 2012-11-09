@@ -57,7 +57,12 @@ extern int maxPhase;
 class Decl {
 public:
 
+
     Decl (const std::string& name, Decl* container, Environ* members = NULL);
+
+    /** Print my index list of members or local definitions on the
+     *  standard output, if applicable, and otherwise do nothing. */
+    virtual void printMembersList () const;
         
     /** My index value (if I appear explicitly), and otherwise -1 to
      *  indicate that I am unindexed. */
@@ -185,10 +190,6 @@ protected:
     /** Print my position in my container, if applicable, on the
      *  standard output, and otherwise do nothing. */
     virtual void printPosition () const;
-
-    /** Print my index list of members or local definitions on the
-     *  standard output, if applicable, and otherwise do nothing. */
-    virtual void printMembersList () const;
 
 protected:
     bool _frozen;
