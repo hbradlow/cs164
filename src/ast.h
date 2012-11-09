@@ -203,7 +203,7 @@ public:
     /* returns true if this node is an id node with value "None" */
     virtual bool is_none();
     /* Assert that it is legal that a None value is at posision k */
-    virtual void assert_none_here(int k);
+    virtual bool assert_none_here(int k);
     /* Assert that this node is defined */
     virtual void assert_is_defined();
     //hbradlow

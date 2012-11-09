@@ -66,9 +66,13 @@ NODE_FACTORY (StmtList_AST, STMT_LIST);
 class Assignment_AST : public AST_Tree 
 {
 public:
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         if(k==0)
+        {
             error(loc(),"Cannot assign to None");
+            return false;
+        }
+        return true;
     }
 
     void collectDecls(Decl *enclosing)
@@ -92,6 +96,11 @@ class FormalsList_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (FormalsList_AST, AST_Tree);
+
+    bool assert_none_here(int k){
+        error(loc(), "Cannot use None as a method parameter");
+        return false;
+    }
 
     void collectDecls (Decl* enclosing)
     {

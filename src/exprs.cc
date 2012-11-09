@@ -358,8 +358,9 @@ public:
     bool is_init(){
         return strcmp(this->child(0)->as_string().c_str(),"__init__") == 0;
     }
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         error(loc(), "Cannot use None as a method name");
+        return false;
     }
 
     void collectDecls(Decl *enclosing)
@@ -475,8 +476,9 @@ NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
 public:
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         error(loc(), "Cannot use None as a class name");
+        return false;
     }
 
     // Resolve my type

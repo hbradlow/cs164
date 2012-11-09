@@ -383,21 +383,22 @@ void AST::replace_none(){
     int index = 0;
     for_each_child (c, this) {
         if(c->is_none()){
-            this->assert_none_here(index); // check to make sure its legal to have a None here
+            // check to make sure its legal to have a None here
+            if(this->assert_none_here(index)){
+                NodePtr i = AST::make_token(ID,8,"__None__",true);
+                i->set_loc(this->loc());
 
-            NodePtr i = AST::make_token(ID,8,"__None__",true);
-            i->set_loc(this->loc());
+                vector<NodePtr> expr_v;
+                NodePtr expr = make_tree(EXPR_LIST,expr_v.begin(),expr_v.end());
+                expr->set_loc(this->loc());
 
-            vector<NodePtr> expr_v;
-            NodePtr expr = make_tree(EXPR_LIST,expr_v.begin(),expr_v.end());
-            expr->set_loc(this->loc());
+                vector<NodePtr> call_v;
+                call_v.push_back(i);
+                call_v.push_back(expr);
+                NodePtr call = make_tree(CALL,call_v.begin(),call_v.end());
 
-            vector<NodePtr> call_v;
-            call_v.push_back(i);
-            call_v.push_back(expr);
-            NodePtr call = make_tree(CALL,call_v.begin(),call_v.end());
-
-            this->replace(index,call);
+                this->replace(index,call);
+            }
         }
         index++;
         c->replace_none();
@@ -426,9 +427,9 @@ AST::is_none(){
 }
 
 //hbradlow
-void
+bool
 AST::assert_none_here(int k){
-    /* do nothing */
+    return true;
 }
 
 //hbradlow
