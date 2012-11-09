@@ -441,6 +441,7 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
+        string def_name = id->as_string();
         Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
         addMember (decl);
         return decl;

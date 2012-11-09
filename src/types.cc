@@ -469,7 +469,7 @@ public:
     void collectParams (Decl* enclosing, int k)
     {
         child(0)->collectParams(enclosing,k);
-        child(1)->collectDecls(enclosing);
+        child(1)->resolveSimpleIds(enclosing->getEnviron());
     }
     void unifyWith(AST_Ptr right){
         Unwind_Stack s;
