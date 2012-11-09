@@ -630,7 +630,6 @@ protected:
             error(loc(),"Maximum tuple size is 3 - truncating tuple...");
             t = tuple3Decl->asType ();
         }
-        
         for_each_child(c,t->child(1)){
             Unwind_Stack s;
             this->child(c_i_)->getType()->unify(c->asType(),s);

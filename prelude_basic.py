@@ -17,7 +17,6 @@ class str:
     pass
 def __getitem__(S, k):
     native "__getitem__str__"
-"""
 class tuple0:
     def __init__(self::tuple0):
         native "__donotcall__"
@@ -33,4 +32,3 @@ class tuple2 of [$T1, $T2]:
 class tuple3 of [$T1, $T2, $T3]:
     def __init__(self::tuple3 of [$a, $b, $c]):
         native "__donotcall__"
-        """

@@ -515,8 +515,6 @@ public:
         Unwind_Stack s;
         Type_Ptr t0 = child(0)->getType();
         Type_Ptr t1 = child(1)->asType();
-        t1->asType()->print(cout,0);
-        printf("\n");
         int b = t0->unify(t1,s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
