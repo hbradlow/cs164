@@ -133,6 +133,11 @@ protected:
     void unifyWith(AST_Ptr right){
         Unwind_Stack s;
         Type_Ptr t1 = this->getType();
+        if (t1 == NULL)
+        {
+            error(loc(), "Attribute does not exist");
+            return;
+        }
         Type_Ptr t2 = right->getType();
         if(t2!=NULL)
         {
@@ -147,8 +152,8 @@ protected:
     {
         if (inside_call)
             return; 
-        Decl *classDecl = child(1)->getDecl();
-        if (classDecl->isMethod())
+        Decl *varDecl = child(1)->getDecl();
+        if (varDecl->isMethod())
             error(loc(), "Not calling bound method");
     }
 

@@ -1,4 +1,4 @@
 class a:
-    x::int = 10
+    x = 10
 b = a()
-b.x = "string"
+b.y = 20
