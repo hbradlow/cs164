@@ -492,6 +492,7 @@ public:
         else if(decl->getName().compare("range")==0){
             rangeDecl = decl;
         }
+
     }
    
     AST_Ptr doOuterSemantics()
@@ -507,16 +508,6 @@ public:
         }end_for;
         
         return this;
-    }
-
-    void resolveSimpleIds(const Environ* env) 
-    {
-        for_each_child(c, this)
-        {
-            if (c_i_ == 0) 
-                continue;
-            c->resolveSimpleIds(this->getEnviron()); 
-        }
     }
 
 protected:
