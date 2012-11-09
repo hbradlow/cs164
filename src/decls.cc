@@ -633,6 +633,11 @@ protected:
     {
     Decl *decl = makeClassDecl(id->child(0)->as_string(), id->child(1));
     addMember (decl);
+    for_each_child(c, id->child(1))
+    {
+        Decl *typeDecl = makeTypeVarDecl(c->as_string(), c);
+        c->addDecl(typeDecl);
+    } end_for;
     return decl;
     }
 
