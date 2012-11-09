@@ -548,7 +548,7 @@ protected:
     Type_Ptr asType (int arity, Type_Ptr* params0) const {
         AST_Ptr* params = (AST_Ptr*) params0;
         if (getTypeArity () != -1 && getTypeArity () != arity) {
-	    throw range_error ("wrong number of type parameters");
+            throw range_error ("wrong number of type parameters");
         }
         for (int i = 0; i < arity; i += 1)
             if (params[i] == NULL)

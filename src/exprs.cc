@@ -458,6 +458,27 @@ public:
         else if(decl->getName().compare("list")==0){
             listDecl = decl;
         }
+        else if(decl->getName().compare("tuple0")==0){
+            tuple0Decl = decl;
+        }
+        else if(decl->getName().compare("tuple1")==0){
+            tuple1Decl = decl;
+        }
+        else if(decl->getName().compare("tuple2")==0){
+            tuple2Decl = decl;
+        }
+        else if(decl->getName().compare("tuple3")==0){
+            tuple3Decl = decl;
+        }
+        else if(decl->getName().compare("dict")==0){
+            dictDecl = decl;
+        }
+        else if(decl->getName().compare("file")==0){
+            fileDecl = decl;
+        }
+        else if(decl->getName().compare("range")==0){
+            rangeDecl = decl;
+        }
     }
 
     void resolveSimpleIds(const Environ *env)
@@ -577,3 +598,26 @@ protected:
     }
 };
 NODE_FACTORY (If_AST, IF);
+
+//hbradlow
+class Tuple_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (Tuple_AST, AST_Tree);
+    Type_Ptr getType(){
+        return this->computeType();
+    }
+    Type_Ptr computeType () {
+        int arity = this->arity();
+        if(arity==0)
+            return tuple0Decl->asType ();
+        else if(arity==1)
+            return tuple1Decl->asType ();
+        else if(arity==2)
+            return tuple2Decl->asType ();
+        else if(arity==3)
+            return tuple3Decl->asType ();
+        error(loc(),"Maximum tuple size is 3");
+        return NULL;
+    }
+};
+NODE_FACTORY (Tuple_AST, TUPLE);
