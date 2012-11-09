@@ -509,6 +509,15 @@ public:
         return this;
     }
 
+    void resolveSimpleIds(const Environ* env) 
+    {
+        for_each_child(c, this)
+        {
+            if (c_i_ == 0) 
+                continue;
+            c->resolveSimpleIds(this->getEnviron()); 
+        }
+    }
 
 protected:
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);
