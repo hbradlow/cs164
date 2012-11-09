@@ -155,6 +155,10 @@ protected:
     getType ()
     {
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
+        func_type->print(cout, 0);
+        printf("\n");
+        child(0)->print(cout, 0);
+        printf("\n");
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
@@ -330,7 +334,6 @@ public:
                 error(loc(), "Trying to assign function to pre-defined variable");
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
-
         }
         else {
             decl = enclosing->addDefDecl(child(0)); 
@@ -505,7 +508,6 @@ public:
         
         return this;
     }
-
 
 protected:
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);

@@ -50,16 +50,6 @@ class tuple3 of [$T1, $T2, $T3]:
     def __init__(self::tuple3 of [$a, $b, $c]):
         native "__donotcall__"
 
-# The value None.  References to None are converted to calls __None__().
-
-def __None__():
-    native "__None__"
-
-# Type bool
-
-# truth replaces bool(...) in regular Python.  truth(x) is True iff x is a
-# true value, according to the Python spec.
-
 def truth(x)::bool:
     native "__truth__"
 
@@ -148,5 +138,17 @@ def __argv__()::list of str:
 # (We fake this with an instance of a class, using instance variables instead
 # of module members.)
 
-def __standard_file__(k::int)::file:
+def __standard_file__(x::int)::file:
     native "__standard_file__"
+
+class __sys__:
+
+    stdin::file = __standard_file__(0)
+    stdout::file = __standard_file__(1)
+    stderr::file = __standard_file__(2)
+
+    argv::list of str = __argv__()
+
+sys::__sys__ = __sys__()
+
+
