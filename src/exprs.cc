@@ -492,6 +492,7 @@ public:
         else if(decl->getName().compare("range")==0){
             rangeDecl = decl;
         }
+
     }
    
     AST_Ptr doOuterSemantics()
