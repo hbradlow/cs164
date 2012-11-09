@@ -18,6 +18,42 @@ Environ::Environ (const Environ* environ0, const Environ* enclosing)
     : members (environ0->members), enclosure (enclosing)
 {
 }
+Decl*
+Environ::find_overloaded(const string& name, vector<Type_Ptr> arg_types) const {
+    Decl* d = find_overloaded_immediate (name, arg_types);
+    if (d != NULL)
+        return d;
+    else if (enclosure == NULL)
+	return NULL;
+    else
+        return enclosure->find_overloaded(name, arg_types);
+}
+
+Decl*
+Environ::find_overloaded_immediate(const string& name, vector<Type_Ptr> arg_types) const {
+    for (Decl_Vector::const_iterator i = members.begin (); 
+	 i != members.end (); 
+	 i++) 
+    {
+	if (name == (*i)->getName ()) {
+	  bool match = true;
+	  int j = -1;
+	  printf("type arity: %d", (*i)->getTypeArity());
+	  /*
+	  for_each_child(c, (*i)->getTypeParams()) {
+	    j++;
+            Decl *decl = c->getDecl();
+            if (decl->getType() != arg_types[j]) {
+              match = false;
+              break;
+            }
+          } end_for;
+          if (match)
+            return *i;*/
+        }
+    }
+    return NULL;
+}
 
 Decl* 
 Environ::find_immediate (const string& name) const
@@ -70,7 +106,8 @@ Environ::find(const string& name, Decl_Vector& defns) const
 void 
 Environ::define (Decl* decl)
 {
-    assert (find_immediate (decl->getName ()) == NULL);
+    //Will commented out for overloading. May need to uncomment later
+    //assert (find_immediate (decl->getName ()) == NULL);
     members.push_back (decl);
 }
 
@@ -84,6 +121,16 @@ const Decl_Vector&
 Environ::get_members () const
 {
     return members;
+}
+
+void 
+Environ::printMembers() 
+{
+  for (int i = 0; i < get_members().size(); i++) {
+    printf("%d\n", i);
+    get_members()[i]->print();
+    printf("\n");
+  }
 }
 
 /* DEBUGGING */

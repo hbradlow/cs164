@@ -47,6 +47,12 @@ class AST : public CommonNode<AST, AST_Token, AST_Tree> {
 public:
     typedef std::map<std::string, AST_Ptr> AST_Map;
 
+    /** Will
+     * check if all redefinitions of me are correct uses of
+     * overloading. If not throw an error.
+     */
+    //virtual void checkOverloading();
+
     virtual int lineNumber ();
 
     /** Print my representation of as an AST on OUT.  Use INDENT as the
@@ -116,6 +122,8 @@ public:
     /** Resolve all simple (non-qualified) identifiers in me, assuming
      *  that ENV defines declarations visible at my outer level. */
     virtual void resolveSimpleIds (const Environ* env);
+
+    virtual void resolveOverloadIds(const Environ* env, std::vector<Type_Ptr> arg_types);
     
     /** Resolve all simple (non-qualified) type identifiers in a typed
      *  identifier.  Does nothing for other nodes. Assumes that

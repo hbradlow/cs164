@@ -78,7 +78,10 @@ public:
     {
         //child(0)->resolveSimpleTypeIds(env);
         //child(1)->resolveSimpleTypeIds(env);
+        printf("\nin assignment_ast resolving\n");
+        child(1)->print(cout,0);
         child(1)->resolveSimpleIds(env);
+        child(1)->print(cout,0);
         child(0)->resolve_reference(env);
         child(1)->resolve_reference(env);
         child(0)->unifyWith(child(1));

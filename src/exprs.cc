@@ -44,6 +44,8 @@ protected:
     {
         for_each_child(c, this)
         {
+            printf("in expr_list resolving\n");
+            c->print(cout,0);
             c->resolveSimpleIds(env);
         } end_for;
     }
@@ -146,6 +148,21 @@ protected:
         return this;
     }
 
+    void resolveSimpleIds (const Environ *env) { 
+      printf("\nin call_ast\n");
+      child(1)->resolveSimpleIds(env);
+      printf("\nresolved child(1)\n");
+      vector<Type_Ptr> arg_types;
+      for_each_child(c, child(1)) {
+        arg_types.push_back(c->getType());
+      } end_for;
+      printf("successfully got child types\n");
+      child(0)->print(cout,0);
+      printf("\n\n\n");
+      //child(0)->resolveSimpleIds(env);
+      child(0)->resolveOverloadIds(env, arg_types);
+    }
+
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
     }
@@ -153,9 +170,9 @@ protected:
     //hbradlow
     Type_Ptr
     getType ()
-    {
+    {   
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
-        for(int i = 0; i<this->numActuals(); i++)
+        for(int i = 0; i < this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
             Type_Ptr t2 = func_type->child(1)->child(i)->asType();
@@ -163,6 +180,8 @@ protected:
             Unwind_Stack s;
             int b = t1->unify(t2,s);
             if(b==0){
+                /*printf("bad types\n");
+                this->print(cout,0);*/
                 error(loc(),"Invalid types to function call");
             }
         }
@@ -328,10 +347,13 @@ public:
         if (decl != NULL ) {
             if (!decl->isFunc())
                 error(loc(), "Trying to assign function to pre-defined variable");
-            printf("OVERLOADING: \n"); decl->print(); printf("\n\n");
+            decl = enclosing->addDefDecl(child(0));
+            //printf("OVERLOADING: \n"); decl->print(); printf("\n\n");
+            
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
-            enclosing->printMembersList(); printf("\n\n");
+
+            //enclosing->printMembersList(); printf("\n\n");
 
         }
         else {

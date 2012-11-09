@@ -155,12 +155,17 @@ AST::resolveSimpleIds (const Environ* env)
         c->resolveSimpleIds (env);
     } end_for;
 }
-
+void
+AST::resolveOverloadIds(const Environ *env, vector<Type_Ptr> arg_types) 
+{
+    for_each_child (c, this) {
+        c->resolveSimpleIds (env);
+    } end_for;
+}
 void
 AST::resolveSimpleTypeIds (const Environ* env)
 {
     for_each_child (c, this) {
-        c->resolveSimpleTypeIds (env);
     } end_for;
 }
     

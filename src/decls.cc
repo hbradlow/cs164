@@ -85,6 +85,7 @@ void
 Decl::printTypeParams () const {
 }
 
+
 Type_Ptr 
 Decl::getType () const
 {
@@ -181,7 +182,19 @@ Decl::addMember (Decl* new_member)
     if (_members == NULL)
 	UNIMPLEMENTED (addMember);
     if (_members->find_immediate (new_member->getName ()) == NULL)
+    {
+        //printf("Adding member: %s\n", new_member->getName().c_str());
 	_members->define (new_member);
+	//printf("MEMBERS\n\n");
+	//_members->printMembers();
+    }
+    else { // may need to change this
+        //printf("Adding overloaded member: %s\n", new_member->getName().c_str());
+	_members->define (new_member);
+	//printf("MEMBERS\n\n");
+	//_members->printMembers();
+    }
+        
 }
 
 void 

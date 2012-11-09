@@ -267,6 +267,16 @@ public:
      *  enclosing Environs. */
     void find_immediate (const std::string& name, Decl_Vector& defns) const;
 
+    void printMembers();
+
+    
+    // Will - return the decl with name name, that accepts the
+    // given types of arguments
+    Decl *find_overloaded(const std::string& name, std::vector<Type_Ptr> arg_types) const;
+
+
+    Decl *find_overloaded_immediate(const std::string& name, std::vector<Type_Ptr> arg_types) const;
+
     /** An entry for NAME in me or enclosing Environs, or NULL if
      *  none. */
     Decl* find (const std::string& name) const;
