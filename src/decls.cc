@@ -563,8 +563,11 @@ protected:
     }
 
     Type_Ptr asType (int arity, Type_Ptr t0, Type_Ptr t1) const {
-        Type_Ptr params[] = { t0, t1 };
-        return asType (arity, params);
+        vector<Type_Ptr> params;
+        for(int i = 0; i<getTypeArity(); i++){
+            params.push_back(Type::makeVar());
+        }
+        return asType (getTypeArity(), &params[0]);
     }
 
     Decl* addVarDecl (AST_Ptr id) {

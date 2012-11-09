@@ -608,16 +608,26 @@ protected:
     }
     Type_Ptr computeType () {
         int arity = this->arity();
+        Type_Ptr t;
         if(arity==0)
-            return tuple0Decl->asType ();
+            t = tuple0Decl->asType ();
         else if(arity==1)
-            return tuple1Decl->asType ();
+            t = tuple1Decl->asType ();
         else if(arity==2)
-            return tuple2Decl->asType ();
+            t = tuple2Decl->asType ();
         else if(arity==3)
-            return tuple3Decl->asType ();
-        error(loc(),"Maximum tuple size is 3");
-        return NULL;
+            t = tuple3Decl->asType ();
+        else
+        {
+            error(loc(),"Maximum tuple size is 3 - truncating tuple...");
+            t = tuple3Decl->asType ();
+        }
+        
+        for_each_child(c,t->child(1)){
+            Unwind_Stack s;
+            this->child(c_i_)->getType()->unify(c->asType(),s);
+        } end_for;
+        return t;
     }
 };
 NODE_FACTORY (Tuple_AST, TUPLE);

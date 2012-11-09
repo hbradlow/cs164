@@ -445,11 +445,12 @@ protected:
     Type_Ptr
     asType ()
     {
-        return this->freshen();
+        return this;
     }
     void collectDecls(Decl *enclosing){
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         child(0)->addDecl(decl);
+        child(1)->collectDecls(enclosing);
     }
     Decl* getDecl (int k = 0) {
         return child (0)->getDecl ();
@@ -461,6 +462,19 @@ protected:
 
 NODE_FACTORY (ClassType_AST, TYPE);
 
+class TypeList_AST: public Type {
+protected:
+
+    NODE_CONSTRUCTORS (TypeList_AST, Type);
+    void collectDecls(Decl *enclosing){
+        for_each_child(c,this){
+            replace(c_i_,c->asType()->freshen());
+        } end_for;
+    }
+};
+
+NODE_FACTORY (TypeList_AST, TYPE_LIST);
+
 class TypedId_AST : public Type
 {
 public:
@@ -470,6 +484,7 @@ public:
     {
         child(0)->collectParams(enclosing,k);
         child(1)->resolveSimpleIds(enclosing->getEnviron());
+        child(1)->collectDecls(enclosing);
     }
     void unifyWith(AST_Ptr right){
         Unwind_Stack s;
@@ -500,6 +515,8 @@ public:
         Unwind_Stack s;
         Type_Ptr t0 = child(0)->getType();
         Type_Ptr t1 = child(1)->asType();
+        t1->asType()->print(cout,0);
+        printf("\n");
         int b = t0->unify(t1,s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");

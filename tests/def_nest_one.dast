@@ -1,0 +1,187 @@
+(module 0
+    (class 10
+        (id 10 int 1)
+        (type_formals_list 0)
+        (block 0
+            (def 0
+                (id 0 __init__ 3)
+                (formals_list 0
+                    (id 0 self 5))
+                ()
+                (block 0
+                    (stmt_list 0)))
+            (stmt_list 0)))
+    (class 13
+        (id 13 bool 6)
+        (type_formals_list 0)
+        (block 0
+            (def 0
+                (id 0 __init__ 8)
+                (formals_list 0
+                    (id 0 self 10))
+                ()
+                (block 0
+                    (stmt_list 0)))
+            (stmt_list 0)))
+    (class 16
+        (id 16 str 11)
+        (type_formals_list 0)
+        (block 0
+            (def 0
+                (id 0 __init__ 13)
+                (formals_list 0
+                    (id 0 self 15))
+                ()
+                (block 0
+                    (stmt_list 0)))
+            (stmt_list 0)))
+    (def 18
+        (id 18 __getitem__ 17)
+        (formals_list 18
+            (id 18 S 19)
+            (id 18 k 21))
+        ()
+        (block 19
+            (native 19
+                (string_literal 19 "__getitem__str__"))))
+    (class 21
+        (id 21 tuple0 22)
+        (type_formals_list 0)
+        (block 22
+            (def 22
+                (id 22 __init__ 24)
+                (formals_list 22
+                    (typed_id 22
+                        (id 22 self 26)
+                        (type 22
+                            (id 22 tuple0 22)
+                            (type_list 0))))
+                ()
+                (block 23
+                    (native 23
+                        (string_literal 23 "__donotcall__"))))))
+    (class 25
+        (id 25 tuple1 27)
+        (type_formals_list 25
+            (type_var 25 $T0))
+        (block 26
+            (def 26
+                (id 26 __init__ 29)
+                (formals_list 26
+                    (typed_id 26
+                        (id 26 self 31)
+                        (type 26
+                            (id 26 tuple1 27)
+                            (type_list 26
+                                (type_var 0 $#25 32)))))
+                ()
+                (block 27
+                    (native 27
+                        (string_literal 27 "__donotcall__"))))))
+    (class 29
+        (id 29 tuple2 34)
+        (type_formals_list 29
+            (type_var 29 $T1)
+            (type_var 29 $T2))
+        (block 30
+            (def 30
+                (id 30 __init__ 36)
+                (formals_list 30
+                    (typed_id 30
+                        (id 30 self 38)
+                        (type 30
+                            (id 30 tuple2 34)
+                            (type_list 30
+                                (type_var 0 $#29 39)
+                                (type_var 0 $#30 40)))))
+                ()
+                (block 31
+                    (native 31
+                        (string_literal 31 "__donotcall__"))))))
+    (class 33
+        (id 33 tuple3 43)
+        (type_formals_list 33
+            (type_var 33 $T1)
+            (type_var 33 $T2)
+            (type_var 33 $T3))
+        (block 34
+            (def 34
+                (id 34 __init__ 45)
+                (formals_list 34
+                    (typed_id 34
+                        (id 34 self 47)
+                        (type 34
+                            (id 34 tuple3 43)
+                            (type_list 34
+                                (type_var 0 $#35 48)
+                                (type_var 0 $#36 49)
+                                (type_var 0 $#37 50)))))
+                ()
+                (block 35
+                    (native 35
+                        (string_literal 35 "__donotcall__"))))))
+    (assign 1
+        (id 1 a 55)
+        (int_literal 1 10))
+    (assign 2
+        (id 2 a 55)
+        (int_literal 2 11))
+    (def 3
+        (id 3 b 57)
+        (formals_list 0)
+        ()
+        (block 4
+            (assign 4
+                (id 4 c 59)
+                (id 4 a 55)))))(moduledecl 0 __main__  (index_list 1 6 11 17 22 27 34 43 55 57))
+(classdecl 1 int  (index_list) (index_list 3))
+(funcdecl 3 __init__ 1  (type_var 0 $#12 2) (index_list 5))
+(paramdecl 5 self 3  0 (type 0
+    (id 0 int 1)
+    (type_list 0)))
+(classdecl 6 bool  (index_list) (index_list 8))
+(funcdecl 8 __init__ 6  (type_var 0 $#14 7) (index_list 10))
+(paramdecl 10 self 8  0 (type 0
+    (id 0 bool 6)
+    (type_list 0)))
+(classdecl 11 str  (index_list) (index_list 13))
+(funcdecl 13 __init__ 11  (type_var 0 $#16 12) (index_list 15))
+(paramdecl 15 self 13  0 (type 0
+    (id 0 str 11)
+    (type_list 0)))
+(funcdecl 17 __getitem__ 0  (type_var 0 $#18 16) (index_list 19 21))
+(paramdecl 19 S 17  0 (type_var 0 $#19 18))
+(paramdecl 21 k 17  1 (type_var 0 $#20 20))
+(classdecl 22 tuple0  (index_list) (index_list 24))
+(funcdecl 24 __init__ 22  (type_var 0 $#21 23) (index_list 26))
+(paramdecl 26 self 24  0 (type 0
+    (id 0 tuple0 22)
+    (type_list 0)))
+(classdecl 27 tuple1  (index_list ?) (index_list 29))
+(funcdecl 29 __init__ 27  (type_var 0 $#23 28) (index_list 31))
+(paramdecl 31 self 29  0 (type 0
+    (id 0 tuple1 27)
+    (type_list 0
+        (type_var 0 $#25 32))))
+(classdecl 34 tuple2  (index_list ? ?) (index_list 36))
+(funcdecl 36 __init__ 34  (type_var 0 $#27 35) (index_list 38))
+(paramdecl 38 self 36  0 (type 0
+    (id 0 tuple2 34)
+    (type_list 0
+        (type_var 0 $#29 39)
+        (type_var 0 $#30 40))))
+(classdecl 43 tuple3  (index_list ? ? ?) (index_list 45))
+(funcdecl 45 __init__ 43  (type_var 0 $#33 44) (index_list 47))
+(paramdecl 47 self 45  0 (type 0
+    (id 0 tuple3 43)
+    (type_list 0
+        (type_var 0 $#35 48)
+        (type_var 0 $#36 49)
+        (type_var 0 $#37 50))))
+(vardecl 55 a 0  (type 0
+    (id 0 int 1)
+    (type_list 0)))
+(funcdecl 57 b 0  (type_var 0 $#42 56) (index_list 59))
+(vardecl 59 c 57  (type 0
+    (id 0 int 1)
+    (type_list 0)))
