@@ -36,6 +36,15 @@ Decl::Decl (const std::string& name, Decl* container, Environ* members)
     allDecls.push_back (this);
     /* Allow name.c_str() to be used in the future without reallocation. */
     name.c_str ();
+    _built_in = false;
+}
+void 
+Decl::set_built_in(bool b){
+    _built_in = b;
+}
+bool
+Decl::is_built_in(){
+    return _built_in;
 }
         
 /* Print THIS on the standard output. */
@@ -509,7 +518,7 @@ public:
     ClassDecl (const string& name, AST_Ptr params)
         : Decl (name, NULL, new Environ (outer_environ)), _params (params) {
     }
-    
+
     bool isClass() const 
     {
         return true;
