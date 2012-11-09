@@ -18,7 +18,7 @@ protected:
 
     void unifyWith(AST_Ptr right){
         for_each_child(c,this){
-            c->unifyWith(right->child(c_i_));
+            c->unifyWith(right->getType()->binding()->child(1)->child(c_i_));
         } end_for;
     }
 };
@@ -239,7 +239,7 @@ NODE_FACTORY (Binop_AST, BINOP);
 
 /** Kevin : A compare. */
 class Compare_AST : public Callable{
-
+public:
     NODE_CONSTRUCTORS (Compare_AST, Callable);
 
     AST_Ptr calledExpr () {
@@ -281,7 +281,11 @@ class Compare_AST : public Callable{
 };    
 NODE_FACTORY (Compare_AST, COMPARE);
 
-
+class LeftCompare_AST : public Compare_AST {
+public:
+    NODE_CONSTRUCTORS (LeftCompare_AST, Compare_AST);
+};
+NODE_FACTORY (LeftCompare_AST, LEFT_COMPARE);
 
 /** A unary operator. */
 class Unop_AST : public Callable {
@@ -372,7 +376,7 @@ public:
         else{
             if(type->asType()==NULL)
             {
-                return;
+                type = Type::makeVar();
             }
         }
 
@@ -666,6 +670,8 @@ protected:
         } end_for;
 
         sort(typelist_v.begin(),typelist_v.end(),ListDisplay_AST::i_less_than_j);
+        if(typelist_v.size()==0)
+            typelist_v.push_back(Type::makeVar());
         NodePtr type_list = make_tree(TYPE_LIST,typelist_v.begin(),typelist_v.end());
         
         type_v.push_back(i);

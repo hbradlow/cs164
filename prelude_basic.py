@@ -152,3 +152,9 @@ class __sys__:
 sys::__sys__ = __sys__()
 
 
+def __None__():
+    native "__None__"
+def open(name::str)::file:
+    native "__open1__"
+def close(f::file):
+    native "__close__"
