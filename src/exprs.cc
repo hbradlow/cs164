@@ -155,6 +155,10 @@ protected:
     getType ()
     {
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
+        func_type->print(cout, 0);
+        printf("\n");
+        child(0)->print(cout, 0);
+        printf("\n");
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
@@ -489,11 +493,6 @@ public:
             rangeDecl = decl;
         }
     }
-
-    void resolveSimpleIds(const Environ *env)
-    {
-    }
-
    
     AST_Ptr doOuterSemantics()
     {
@@ -507,12 +506,6 @@ public:
             c->doOuterSemantics();
         }end_for;
         
-        for_each_child(c, this)
-        {
-            if (c_i_ == 0)
-                continue;
-            c->resolveSimpleIds(decl->getEnviron());
-        } end_for;
         return this;
     }
 
