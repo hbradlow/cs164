@@ -132,6 +132,15 @@ protected:
     {
     }
 
+    void check_bound_methods (bool inside_call) 
+    {
+        if (inside_call)
+            return; 
+        Decl *classDecl = child(1)->getDecl();
+        if (classDecl->isMethod())
+            error(loc(), "Not calling bound method");
+    }
+
     Type_Ptr getType()
     {
         return child(1)->getType();

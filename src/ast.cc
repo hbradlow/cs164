@@ -77,12 +77,6 @@ AST::addDecl (Decl*)
 }
 
 void
-AST::addOverload(Decl*)
-{
-    throw logic_error ("node does not represent a function");
-}
-
-void
 AST::removeDecl (int k)
 { 
     throw logic_error ("node does not represent a named entity");
@@ -133,6 +127,16 @@ AST::collectParams (Decl* enclosing, int k)
     for_each_child (c, this)
     {
         c->collectParams (enclosing, k); 
+    } end_for;
+}
+
+/** Kevin */
+void
+AST::check_bound_methods (bool inside_call)
+{
+    for_each_child(c, this) 
+    {
+        c->check_bound_methods(false);
     } end_for;
 }
 
