@@ -125,6 +125,9 @@ protected:
         if(child(0)->asType()!=NULL) 
         {
             NodePtr t = child(0);
+            if(t->child(0)->getDecl()->is_built_in()){
+                error(loc(),"Cannot allocate with a built in type");
+            }
             NodePtr i = AST::make_token(ID,8,"__init__",true);
 
             Decl *tdecl = enclosing->getEnviron()->find_immediate(t->child(0)->as_string());
@@ -455,6 +458,7 @@ public:
         decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
 
+        decl->set_built_in(true);
         if(decl->getName().compare("int")==0){
             intDecl = decl;
         }
@@ -487,6 +491,9 @@ public:
         }
         else if(decl->getName().compare("range")==0){
             rangeDecl = decl;
+        }
+        else{
+            decl->set_built_in(false);
         }
     }
    

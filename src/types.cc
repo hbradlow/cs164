@@ -487,9 +487,18 @@ public:
         child(1)->collectDecls(enclosing);
     }
     void unifyWith(AST_Ptr right){
+        //first unify my own explicit type
         Unwind_Stack s;
-        Type_Ptr t0 = this->getType();
-        Type_Ptr t1 = right->getType();
+        Type_Ptr t0 = child(0)->getType();
+        Type_Ptr t1 = child(1)->asType();
+        int b = t0->unify(t1,s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
+
+        //then unify with the right
+        t0 = this->getType();
+        t1 = right->getType();
         if(t1!=NULL)
         {
             int b = t0->unify(t1,s);
@@ -524,7 +533,7 @@ public:
     void addTargetDecls(Decl* enclosing)
     {
         child(0)->addTargetDecls(enclosing);
-        child(1)->collectDecls(enclosing);
+        child(1)->resolveSimpleIds(enclosing->getEnviron());
     }
 };
 

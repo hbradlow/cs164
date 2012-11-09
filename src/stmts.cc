@@ -130,6 +130,19 @@ protected:
     {
     }
 
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t1 = this->getType();
+        Type_Ptr t2 = right->getType();
+        if(t2!=NULL)
+        {
+            int b = t1->unify(t2,s);
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
+    }
+
     void check_bound_methods (bool inside_call) 
     {
         if (inside_call)
@@ -206,6 +219,22 @@ protected:
     Type_Ptr getType()
     {
         return child(0)->getType();
+    }
+
+    void unifyWith(AST_Ptr right){
+        Type_Ptr t1 = right->getType();
+        if(t1!=NULL)
+        {
+            int b = 0;
+            for_each_child(c,this->getType()->binding()->child(1)){
+                if(c->asType()->unifies(t1)){
+                    b = 1;
+                }
+            } end_for;
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
     }
 };
 NODE_FACTORY(Get_Item_AST, SUBSCRIPTION);
