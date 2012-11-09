@@ -24,7 +24,7 @@
                     (stmt_list 0)))
             (stmt_list 0)))
     (class 16
-        (id 16 string 11)
+        (id 16 str 11)
         (type_formals_list 0)
         (block 0
             (def 0
@@ -35,30 +35,40 @@
                 (block 0
                     (stmt_list 0)))
             (stmt_list 0)))
+    (def 18
+        (id 18 __getitem__ 17)
+        (formals_list 18
+            (id 18 S 19)
+            (id 18 k 21))
+        ()
+        (block 19
+            (native 19
+                (string_literal 19 "__getitem__str__"))))
+    (string_literal 20 "\012class tuple0:\012    def __init__(self::tuple0):\012        native \042__donotcall__\042\012\012class tuple1 of [$T0]:\012    def __init__(self::tuple1 of [$a]):\012        native \042__donotcall__\042\012\012class tuple2 of [$T1, $T2]:\012    def __init__(self::tuple2 of [$a, $b]):\012        native \042__donotcall__\042\012\012class tuple3 of [$T1, $T2, $T3]:\012    def __init__(self::tuple3 of [$a, $b, $c]):\012        native \042__donotcall__\042\012        ")
     (def 1
-        (id 1 foo 17)
+        (id 1 foo 23)
         (formals_list 1
             (typed_id 1
-                (id 1 x 19)
+                (id 1 x 25)
                 (type 1
-                    (id 1 int)
+                    (id 1 int 1)
                     (type_list 0))))
         ()
         (block 2
             (return 2
-                (id 2 x 19))))
+                (id 2 x 25))))
     (def 4
         (id 4 foo 23)
         (formals_list 4
             (typed_id 4
-                (id 4 x 25)
+                (id 4 x 27)
                 (type 4
-                    (id 4 int)
+                    (id 4 int 1)
                     (type_list 0))))
         ()
         (block 5
             (return 5
-                (id 5 x 25)))))(moduledecl 0 __main__  (index_list 1 6 11 17))
+                (id 5 x 25)))))(moduledecl 0 __main__  (index_list 1 6 11 17 23))
 (classdecl 1 int  (index_list) (index_list 3))
 (funcdecl 3 __init__ 1  (type_var 0 $#0 2) (index_list 5))
 (paramdecl 5 self 3  0 (type 0
@@ -69,31 +79,25 @@
 (paramdecl 10 self 8  0 (type 0
     (id 0 bool 6)
     (type_list 0)))
-(classdecl 11 string  (index_list) (index_list 13))
+(classdecl 11 str  (index_list) (index_list 13))
 (funcdecl 13 __init__ 11  (type_var 0 $#4 12) (index_list 15))
 (paramdecl 15 self 13  0 (type 0
-    (id 0 string 11)
+    (id 0 str 11)
     (type_list 0)))
-(funcdecl 17 foo 0  (function_type 0
-    (type 1
-        (id 1 int)
-        (type_list 0))
-    (type_list 0
-        (type 1
-            (id 1 int)
-            (type_list 0)))) (index_list 19))
-(paramdecl 19 x 17  0 (type 1
-    (id 1 int)
-    (type_list 0)))
-(funcdecl 21 foo 0  (type_var 0 $#8 20) (index_list))
+(funcdecl 17 __getitem__ 0  (type_var 0 $#6 16) (index_list 19 21))
+(paramdecl 19 S 17  0 (type_var 0 $#7 18))
+(paramdecl 21 k 17  1 (type_var 0 $#8 20))
 (funcdecl 23 foo 0  (function_type 0
     (type 4
-        (id 4 int)
+        (id 4 int 1)
         (type_list 0))
     (type_list 0
         (type 4
-            (id 4 int)
+            (id 4 int 1)
             (type_list 0)))) (index_list 25))
 (paramdecl 25 x 23  0 (type 4
-    (id 4 int)
+    (id 4 int 1)
+    (type_list 0)))
+(paramdecl 27 x 23  0 (type 4
+    (id 4 int 1)
     (type_list 0)))
