@@ -339,6 +339,7 @@ public:
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
+        child(2)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
         return child(2)->asType();
@@ -633,7 +634,6 @@ protected:
             error(loc(),"Maximum tuple size is 3 - truncating tuple...");
             t = tuple3Decl->asType ();
         }
-        
         for_each_child(c,t->child(1)){
             Unwind_Stack s;
             this->child(c_i_)->getType()->unify(c->asType(),s);

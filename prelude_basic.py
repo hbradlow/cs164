@@ -41,5 +41,3 @@ def __not__(x)::bool:
 
 True::bool = truth(1)
 False::bool = truth(0)
-
-
