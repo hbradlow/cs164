@@ -206,6 +206,10 @@ public:
     virtual void assert_none_here(int k);
     /* Assert that this node is defined */
     virtual void assert_is_defined();
+    //hbradlow
+    virtual bool is_attribute_ref();
+    //hbradlow
+    virtual void checkCalls();
 
     virtual void check_defined();
 

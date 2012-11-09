@@ -60,6 +60,7 @@ protected:
         for_each_child(c, this) 
         {
             c->check_bound_methods(false); 
+            c->checkCalls();
         } end_for; 
 
         return this;

@@ -121,6 +121,9 @@ protected:
     {
         resolve_reference(env);
     }
+    bool is_attribute_ref(){
+        return true;
+    }
 
     void collectDecls (Decl* enclosing) 
     {

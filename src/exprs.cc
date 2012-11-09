@@ -149,18 +149,42 @@ protected:
         return this;
     }
 
+    void insertActual (int k, AST_Ptr expr) {
+        child (1)->insert (k, expr);
+    }
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
     }
 
     //hbradlow
+    void checkCalls ()
+    {
+        //hbradlow: Hack to check the types of calls that are not assigned to anything
+        this->getType();
+    }
+    //hbradlow
     Type_Ptr
     getType ()
     {
-        Type_Ptr func_type = child(0)->getType()->binding()->freshen();
+        vector<Type_Ptr> actual_types;
+        if(child(0)->is_attribute_ref()){
+            actual_types.push_back(child(0)->child(0)->getType()->binding());
+        }
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
+            actual_types.push_back(t1);
+        }
+
+        Type_Ptr func_type = child(0)->getType()->binding()->freshen();
+        if(func_type->child(1)->arity()!=actual_types.size()){
+            error(loc(),"Incorrect number of arguements");
+            Type_Ptr t = func_type->returnType();
+            return t;
+        }
+        for(int i = 0; i<actual_types.size(); i++)
+        {
+            Type_Ptr t1 = actual_types[i];
             Type_Ptr t2 = func_type->child(1)->child(i)->asType();
 
             Unwind_Stack s;

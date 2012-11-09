@@ -454,3 +454,15 @@ AST_Ptr
 AST::getReturnNode(){
     return NULL;
 }
+//hbradlow
+bool
+AST::is_attribute_ref(){
+    return false;
+}
+//hbradlow
+void
+AST::checkCalls(){
+    for_each_child(c,this){
+        c->checkCalls();
+    } end_for;
+}
