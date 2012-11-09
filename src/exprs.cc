@@ -155,10 +155,6 @@ protected:
     getType ()
     {
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
-        func_type->print(cout, 0);
-        printf("\n");
-        child(0)->print(cout, 0);
-        printf("\n");
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
@@ -340,7 +336,7 @@ public:
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
-        child(2)->collectDecls(enclosing);
+        child(2)->resolveSimpleIds(enclosing->getEnviron());
     }
     Type_Ptr getType(){
         return child(2)->asType();
@@ -492,7 +488,6 @@ public:
         else if(decl->getName().compare("range")==0){
             rangeDecl = decl;
         }
-
     }
    
     AST_Ptr doOuterSemantics()
