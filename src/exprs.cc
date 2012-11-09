@@ -336,6 +336,7 @@ public:
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
+        child(2)->collectDecls(enclosing);
     }
     Type_Ptr getType(){
         return child(2)->asType();

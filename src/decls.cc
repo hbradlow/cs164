@@ -481,6 +481,12 @@ protected:
     Decl* addParamDecl (AST_Ptr id, int k)
     {
         Decl *decl = makeParamDecl (id->as_string(), this, k, Type::makeVar());
+        if (k == 0) 
+        {
+            // This is the first parameter, thus it should have the type self for static 
+            // analysis 
+            decl->setType(this->getContainer()->asType());
+        }
         addMember(decl);
         return decl;
     }

@@ -32,3 +32,11 @@ class tuple2 of [$T1, $T2]:
 class tuple3 of [$T1, $T2, $T3]:
     def __init__(self::tuple3 of [$a, $b, $c]):
         native "__donotcall__"
+def truth(x)::bool:
+    native "__truth__"
+
+def __not__(x)::bool:
+    native "__not__"
+
+True::bool = truth(1)
+False::bool = truth(0)
