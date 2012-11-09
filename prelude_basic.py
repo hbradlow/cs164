@@ -152,3 +152,5 @@ class __sys__:
 sys::__sys__ = __sys__()
 
 
+def __None__():
+    native "__None__"
