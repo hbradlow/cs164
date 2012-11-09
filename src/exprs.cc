@@ -391,7 +391,7 @@ public:
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
             // This needs to be commented out until we deal with overloading
-            //error(loc(),"Identifier already defined as a different type");
+              //error(loc(),"Identifier already defined as a different type");
         }
     }
 
