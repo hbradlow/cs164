@@ -125,6 +125,9 @@ protected:
         if(child(0)->asType()!=NULL) 
         {
             NodePtr t = child(0);
+            if(t->child(0)->getDecl()->is_built_in()){
+                error(loc(),"Cannot allocate with a built in type");
+            }
             NodePtr i = AST::make_token(ID,8,"__init__",true);
 
             Decl *tdecl = enclosing->getEnviron()->find_immediate(t->child(0)->as_string());
@@ -155,10 +158,6 @@ protected:
     getType ()
     {
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
-        func_type->print(cout, 0);
-        printf("\n");
-        child(0)->print(cout, 0);
-        printf("\n");
         for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
@@ -459,6 +458,7 @@ public:
         decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
 
+        decl->set_built_in(true);
         if(decl->getName().compare("int")==0){
             intDecl = decl;
         }
@@ -492,7 +492,9 @@ public:
         else if(decl->getName().compare("range")==0){
             rangeDecl = decl;
         }
-
+        else{
+            decl->set_built_in(false);
+        }
     }
    
     AST_Ptr doOuterSemantics()
