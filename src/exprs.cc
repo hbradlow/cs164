@@ -181,6 +181,11 @@ protected:
         Type_Ptr t = func_type->returnType();
         return t;
     }
+
+    Decl* getDecl(int k)
+    {
+        return NULL;
+    }
 };
 
 NODE_FACTORY (Call_AST, CALL);
@@ -203,6 +208,11 @@ protected:
         t_v.push_back(tl);
         Type_Ptr t = make_tree(TYPE,t_v.begin(),t_v.end())->asType();
         return t;
+    }
+
+    Decl* getDecl(int k)
+    {
+        return NULL;
     }
 
 };

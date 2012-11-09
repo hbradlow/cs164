@@ -184,6 +184,11 @@ protected:
 
     AST_Ptr replace_attribute_refs()
     {
+        if (child(0)->getDecl(0) == NULL)
+        {
+            // This is a A().x type, so it doesn't get replaced. 
+            return this;
+        }
         if (child(0)->getDecl(0)->isClass())
         {
             // In case of multiple layers of references 
