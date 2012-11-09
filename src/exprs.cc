@@ -503,12 +503,6 @@ public:
             c->doOuterSemantics();
         }end_for;
         
-        for_each_child(c, this)
-        {
-            if (c_i_ == 0)
-                continue;
-            c->resolveSimpleIds(decl->getEnviron());
-        } end_for;
         return this;
     }
 
@@ -561,7 +555,7 @@ protected:
     NODE_CONSTRUCTORS (ClassBlock_AST, AST_Tree);
 
     Decl* getDecl (int k = 0) {
-        return child (0)->getDecl ();
+        return child (0)->getDecl (k);
     }
 
     void addDecl (Decl* decl) {
