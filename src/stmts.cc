@@ -130,7 +130,7 @@ protected:
     void resolveSimpleIds(const Environ *env) 
     {
         child(0)->resolveSimpleIds(env);
-        resolve_reference(child(0)->getDecl(0)->getContainer()->getEnviron());
+        resolve_reference(env);
     }
     bool is_attribute_ref(){
         return true;
@@ -192,11 +192,20 @@ protected:
 
     void resolve_reference (const Environ *env)
     {
-        Decl *childDecl = env->find(child(1)->as_string());
+        Decl *childDecl = env->find(child(0)->as_string());
         // If decl is a class, the rewrite will take care of it
         if (childDecl != NULL)
         {
-            child(1)->create_attr_ref(childDecl);
+            if (childDecl->isClass())
+                return;
+            Type_Ptr type = childDecl->getType()->binding();
+            if (type->arity() == 0) 
+            {
+                string str = "Attribute '" + childDecl->getName() + "' does not exist.";
+                error(loc(), str.c_str());
+            }
+            string str = type->child(0)->as_string();
+            child(1)->create_attr_ref(env->find(str));
         } 
     }
 
@@ -223,8 +232,10 @@ protected:
     }
     Decl* getDecl(int k) 
     {
-        resolve_reference(child(0)->getDecl(0)->getContainer()->getEnviron());
-        return child(1)->getDecl(k);
+        Decl *decl = child(1)->getDecl(0);
+        if (decl) 
+            return decl;
+        return child(0)->getDecl(0)->getContainer()->getEnviron()->find(child(1)->as_string()); 
     }
 };
 

@@ -77,6 +77,8 @@ def __sub__(x::int, y::int)::int:
 
 def __mul__(x::int, y::int)::int:
     native "__mul__int__"
+def __mul__(x::str, y::int)::str:
+    native "__lmul__str__"
 
 def __floordiv__(x::int, y::int)::int:
     native "__floordiv__int__"

@@ -293,7 +293,19 @@ class Binop_AST : public Callable {
     {
         child(0)->resolveSimpleIds(env);
         child(2)->resolveSimpleIds(env);
-        child(0)->unifyWith(child(2)); //hbradlow
+        Decl_Vector decls = env->find_overloadings(child(3)->as_string()); 
+        for (Decl_Vector::const_iterator i = decls.begin(); i != decls.end(); i++) {
+            Type_Ptr func_type = (*i)->getType();   
+            func_type = func_type->binding()->freshen();
+            Type_Ptr arg1 = func_type->child(1)->child(0)->asType();
+            Type_Ptr arg2 = func_type->child(1)->child(1)->asType();
+            Unwind_Stack s1;
+            Unwind_Stack s2; 
+            int result1 = arg1->unify(child(0)->getType(),s1);
+            int result2 = arg2->unify(child(2)->getType(),s2);
+            if (result1 && result2) 
+                child(3)->addDecl(*i);
+        }
     }
 
     //hbradlow
