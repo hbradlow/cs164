@@ -235,7 +235,15 @@ class Get_Item_AST: public AST_Tree
 protected:
     Type_Ptr getType()
     {
-        return child(0)->getType();
+        string id = child(0)->getType()->binding()->child(0)->as_string();
+        if(strcmp("dict",id.c_str())==0)
+        {
+            return child(0)->getType()->binding()->child(1)->child(1)->asType();
+        }
+        else 
+        {
+            return child(0)->getType();
+        }
     }
 
     void unifyWith(AST_Ptr right){
