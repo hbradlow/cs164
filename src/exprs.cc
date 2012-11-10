@@ -194,7 +194,13 @@ protected:
             actual_types.push_back(t1);
         }
 
-        Type_Ptr func_type = child(0)->getType()->binding()->freshen();
+        Type_Ptr func_type = child(0)->getType();
+        if(func_type==NULL){
+            error(loc(),"Function not defined");
+            return NULL;
+        }
+        func_type = func_type->binding()->freshen();
+
         if(func_type->child(1)->arity()!=actual_types.size()){
             error(loc(),"Incorrect number of arguments");
             Type_Ptr t = func_type->returnType();
