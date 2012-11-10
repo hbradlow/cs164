@@ -129,6 +129,8 @@ public:
     /** Add DECL to the end of my list of member Decls. */
     virtual void addMember (Decl* new_member);
 
+    virtual void addMemberDef (Decl* new_member);
+
     /** Create a declaration of ID appropriate for a variable declaration to
      *  my members.  There must not already be one. Returns the
      *  resulting declaration */
@@ -280,8 +282,14 @@ public:
      *  empty if it is nowhere defined. */
     void find(const std::string& name, Decl_Vector& defns) const;
 
+    /** Find all functions */
+    Decl_Vector find_overloadings(const std::string& name) const;
+
     /** Define DECL in me by its name.  */
     void define (Decl* decl);
+
+    /** Handles overloading */
+    void defineDef (Decl* decl);
 
     /** The environment enclosing me (passed to my constructor), if
      *  any. */

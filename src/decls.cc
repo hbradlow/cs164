@@ -193,6 +193,14 @@ Decl::addMember (Decl* new_member)
 	_members->define (new_member);
 }
 
+void
+Decl::addMemberDef (Decl* new_member)
+{
+    if (_members == NULL) 
+    UNIMPLEMENTED (addMemberDef);
+    _members->defineDef(new_member);
+}
+
 void 
 Decl::addSignature (AST_Ptr new_sig)
 {
@@ -452,7 +460,7 @@ protected:
     Decl* addDefDecl (AST_Ptr id) {
         string def_name = id->child(0)->as_string();
         Decl* decl = makeFuncDecl (def_name, this, Type::makeVar());
-        addMember (decl);
+        addMemberDef (decl);
         return decl;
     }
 
@@ -588,7 +596,7 @@ protected:
     Decl* addDefDecl (AST_Ptr id) {
     string name = id->child(0)->as_string();
 	Decl* decl = makeMethodDecl (name, this, Type::makeVar());
-	addMember (decl);
+	addMemberDef (decl);
     int counter = 0;
     for_each_child(c, id->child(1))
     {
@@ -637,7 +645,7 @@ protected:
     Decl* addDefDecl (AST_Ptr id) {
     string name = id->child(0)->as_string();
 	Decl* decl = makeFuncDecl (name, this, Type::makeVar ());
-	addMember (decl);
+	addMemberDef (decl);
 	return decl;
     }
 
