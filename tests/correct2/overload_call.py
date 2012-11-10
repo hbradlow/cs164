@@ -3,3 +3,6 @@ def foo(x::int):
 
 def foo(x::str):
     return x + 'hello'
+
+foo(10)
+foo("hello")

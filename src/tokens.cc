@@ -200,7 +200,6 @@ protected:
         {
             int b = t1->unify(t2,s);
             if(b==0){
-                child(10);
                 error(loc(),"Incompatible types in tokens.cc");
             }
         }

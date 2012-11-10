@@ -224,6 +224,113 @@ protected:
     {
         return NULL;
     }
+    void collectDecls(Decl* enclosing)
+    {
+        Decl_Vector dv = enclosing->getEnviron()->find_overloadings (child(0)->as_string());
+        AST_Ptr current_sig = child(1);
+        int children = 0; 
+        for_each_child(c, current_sig)
+        {
+            children++; 
+        }end_for;
+        for (Decl_Vector::const_iterator i = dv.begin();
+                i != dv.end(); 
+                i++)
+        {
+            AST_Ptr prev_sig = (*i)->getSignature(); 
+            int old_children = 0;
+            bool match = true;
+            for_each_child(c, prev_sig)
+            {
+                old_children++;
+                if (c_i_ >= children)
+                {
+                    match = false; 
+                    break;
+                }
+                if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                {
+                    match = false; 
+                    break;
+                }
+                if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                {
+                    continue;
+                }
+                if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                {
+                    match = false;
+                } 
+            } end_for;
+            if (match && old_children == children) 
+            {
+                child(0)->addDecl(*i);
+                return;
+            }
+        }
+    }
+    void resolveSimpleIds(const Environ *env)
+    {
+        for_each_child(c, this)
+        {
+            c->resolveSimpleIds(env);
+        }end_for; 
+        string name; 
+        Decl* childDecl = child(0)->getDecl(0);
+        if (childDecl)
+            name = childDecl->getName(); 
+        else
+            name = child(0)->as_string();
+
+        Decl_Vector dv = env->find_overloadings (name);
+        AST_Ptr current_sig = child(1);
+        int children = 0; 
+        for_each_child(c, current_sig)
+        {
+            children++; 
+        }end_for;
+        for (Decl_Vector::const_iterator i = dv.begin();
+                i != dv.end(); 
+                i++)
+        {
+            AST_Ptr prev_sig = (*i)->getSignature(); 
+            int old_children = 0;
+            bool match = true;
+            for_each_child(c, prev_sig)
+            {
+                old_children++;
+                if (c_i_ >= children)
+                {
+                    match = false; 
+                    break;
+                }
+                if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                {
+                    match = false; 
+                    break;
+                }
+                if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                {
+                    continue;
+                }
+                if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                {
+                    match = false;
+                } 
+            } end_for;
+            if (match && old_children == children) 
+            {
+                if (child(0)->numDecls() > 0) 
+                    child(0)->removeDecl(0);
+                child(0)->addDecl(*i);
+                (*i)->print();
+                printf("%i\n", child(0)->numDecls());
+                child(0)->print(cout, 0);
+                printf("\n");
+                return;
+            }
+        }
+    }
 };
 
 NODE_FACTORY (Call_AST, CALL);

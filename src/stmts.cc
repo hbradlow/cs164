@@ -237,6 +237,10 @@ protected:
             return decl;
         return child(0)->getDecl(0)->getContainer()->getEnviron()->find(child(1)->as_string()); 
     }
+    void addDecl(Decl* decl) 
+    {
+        child(1)->addDecl(decl);
+    }
 };
 
 NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
