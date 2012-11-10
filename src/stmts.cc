@@ -172,6 +172,10 @@ protected:
     Type_Ptr getType()
     {
         Decl *classDecl = child(0)->getDecl(0); 
+        if (classDecl == NULL)
+        {
+            return NULL;
+        }
         const Environ *innerEnv;
         if (classDecl->isClass())
         {

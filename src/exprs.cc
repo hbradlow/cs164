@@ -398,7 +398,7 @@ public:
             decl->addSignature(child(1));
         }
         else {
-            decl = enclosing->addDefDecl(child(0)); 
+            decl = enclosing->addDefDecl(this); 
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
@@ -746,6 +746,7 @@ protected:
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
 
 //hbradlow
+
 class DictDisplay_AST: public AST_Tree {
 protected:
     NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);

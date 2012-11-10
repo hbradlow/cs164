@@ -450,8 +450,8 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-        string def_name = id->as_string();
-        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
+        string def_name = id->child(0)->as_string();
+        Decl* decl = makeFuncDecl (def_name, this, Type::makeVar());
         addMember (decl);
         return decl;
     }
@@ -586,15 +586,17 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
+    string name = id->child(0)->as_string();
+	Decl* decl = makeMethodDecl (name, this, Type::makeVar());
 	addMember (decl);
+    int counter = 0;
+    for_each_child(c, id->child(1))
+    {
+        counter++; 
+    } end_for;
+    if (counter==0)
+        error(id->loc(), "Making static class method");
 	return decl;
-    }
-
-    /** Will */
-    Decl* peekDefDecl (AST_Ptr id) {
-        Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
-        return decl;
     }
 
     int getTypeArity () const {
@@ -633,16 +635,12 @@ protected:
     }
 
     Decl* addDefDecl (AST_Ptr id) {
-	Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar ());
+    string name = id->child(0)->as_string();
+	Decl* decl = makeFuncDecl (name, this, Type::makeVar ());
 	addMember (decl);
 	return decl;
     }
 
-    /** Will */
-    Decl* peekDefDecl (AST_Ptr id) {
-        Decl* decl = makeFuncDecl (id->as_string (), this, Type::makeVar());
-        return decl;
-    }
     /* Kevin */
     Decl* addClassDecl (AST_Ptr id) 
     {
