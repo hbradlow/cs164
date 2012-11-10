@@ -202,8 +202,6 @@ protected:
         }
         func_type = func_type->binding()->freshen();
 
-        func_type->print(cout,0);
-        printf("\n");
         if(func_type->child(1)->arity()!=actual_types.size()){
             error(loc(), "Bad number of params");
             return NULL;

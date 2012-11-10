@@ -24,6 +24,9 @@ protected:
 	return "println";
     }
     void checkCalls(){
+        for_each_child(c,this){
+            c->checkCalls();
+        } end_for;
         if(child(0)->isMissing())
             return;
         string t = child(0)->getType()->binding()->child(0)->as_string();
