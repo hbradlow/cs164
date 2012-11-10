@@ -748,16 +748,6 @@ NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
 //hbradlow
 
 class DictDisplay_AST: public AST_Tree {
-<<<<<<< HEAD
-public:
-    static bool i_less_than_j (NodePtr i,NodePtr j) 
-    {
-        int index_i = i->getDecl()->getIndex();
-        int index_j = j->getDecl()->getIndex();
-        return (index_i<index_j); 
-    }
-=======
->>>>>>> 3bb9fc0b8b93bf7d516601e5e046ee03934d9f00
 protected:
     NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);
 

@@ -311,7 +311,8 @@ protected:
     bool bind (Type_Ptr target, Unwind_Stack& bindings) {
         assert (_binding == NULL && target != NULL);
         Decl* me = getDecl ();
-        assert (me != NULL);
+        if (me == NULL)
+          error(loc(), "Bad binding");
         TypeVar_AST* canonical = 
             dynamic_cast<TypeVar_AST*> (me->getAst ().data ());
         if (canonical == this) {
