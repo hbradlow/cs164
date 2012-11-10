@@ -185,11 +185,6 @@ protected:
     getType ()
     {
         Type_Ptr t; 
-        Decl_Vector decls = child(0)->getDecl(0)->getContainer()->getEnviron()->find_overloadings(child(0)->as_string()); 
-        for (Decl_Vector::const_iterator i = decls.begin(); i != decls.end(); i++) {
-            printf((*i)->getName().c_str());
-            printf("\n");
-       
         vector<Type_Ptr> actual_types;
         if(child(0)->is_attribute_ref()){
             actual_types.push_back(child(0)->child(0)->getType()->binding());
@@ -207,10 +202,9 @@ protected:
         }
         func_type = func_type->binding()->freshen();
 
-        bool worked = true;
         if(func_type->child(1)->arity()!=actual_types.size()){
-            worked = false;
-            continue;
+            error(loc(), "Bad number of params");
+            return NULL;
         }
         for(unsigned int i = 0; i<actual_types.size(); i++)
         {
@@ -220,15 +214,10 @@ protected:
             Unwind_Stack s;
             int b = t1->unify(t2,s);
             if(b==0){
-                worked = false;
+                error(loc(), "Something went wrong");
             }
         }
-        if (worked)
-        {
         t = func_type->returnType();
-        break;
-        } 
-        }
         return t;
     }
     Decl* getDecl(int k)
@@ -412,13 +401,6 @@ public:
 
     void collectDecls(Decl *enclosing)
     {
-        Decl_Vector decls = enclosing->getEnviron()->find_overloadings(child(0)->as_string());
-        printf("looking for overloadings\n");
-        for (Decl_Vector::const_iterator i = decls.begin(); i != decls.end(); i++)
-        {
-            printf((*i)->getName().c_str());
-            printf("\n");
-        }
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if (decl != NULL && !decl->isFunc() ) {
             error(loc(), "Trying to assign function to pre-defined variable");
