@@ -138,9 +138,6 @@ protected:
         for_each_child(c,this){
             c->rewrite_allocators(enclosing);
         } end_for;
-        /*
-        child(0)->resolveSimpleIds(enclosing->getEnviron());
-        */
 
         if(child(0)->asType()!=NULL) 
         {
@@ -199,7 +196,7 @@ protected:
 
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
         if(func_type->child(1)->arity()!=actual_types.size()){
-            error(loc(),"Incorrect number of arguements");
+            error(loc(),"Incorrect number of arguments");
             Type_Ptr t = func_type->returnType();
             return t;
         }
@@ -248,7 +245,7 @@ protected:
 
     Decl* getDecl(int k)
     {
-        return NULL;
+        return child(0)->getDecl(0);
     }
 
 };
@@ -395,7 +392,7 @@ public:
             decl->addSignature(child(1));
         }
         else {
-            decl = enclosing->addDefDecl(child(0)); 
+            decl = enclosing->addDefDecl(this); 
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
@@ -719,7 +716,8 @@ protected:
         // only add each type to the list once
         // I use the set to make sure that duplicate types are not added
         for_each_child(c,this){
-            int index = c->getType()->binding()->getDecl()->getIndex();
+            Type_Ptr ty = c->getType();
+            int index = ty->binding()->getDecl()->getIndex();
             if(typelist_set.count(index)==0)
             {
                 typelist_set.insert(index);
@@ -742,7 +740,9 @@ protected:
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
 
 //hbradlow
+
 class DictDisplay_AST: public AST_Tree {
+<<<<<<< HEAD
 public:
     static bool i_less_than_j (NodePtr i,NodePtr j) 
     {
@@ -750,6 +750,8 @@ public:
         int index_j = j->getDecl()->getIndex();
         return (index_i<index_j); 
     }
+=======
+>>>>>>> 3bb9fc0b8b93bf7d516601e5e046ee03934d9f00
 protected:
     NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);
 
@@ -758,29 +760,11 @@ protected:
         vector<NodePtr> typelist_v;
         set<int> typelist_set;
 
-        NodePtr i = listDecl->asType()->child(0);
+        Type_Ptr type = dictDecl->asType()->freshen();
+        Unwind_Stack s;
+        child(0)->child(0)->getType()->unify(type->child(1)->child(0)->asType(),s);
+        child(0)->child(1)->getType()->unify(type->child(1)->child(1)->asType(),s);
 
-        // hbradlow
-        // only add each type to the list once
-        // I use the set to make sure that duplicate types are not added
-        for_each_child(c,this){
-            int index = c->getType()->binding()->getDecl()->getIndex();
-            if(typelist_set.count(index)==0)
-            {
-                typelist_set.insert(index);
-                typelist_v.push_back(c->getType()->binding());
-            }
-        } end_for;
-
-        sort(typelist_v.begin(),typelist_v.end(),ListDisplay_AST::i_less_than_j);
-        if(typelist_v.size()==0)
-            typelist_v.push_back(Type::makeVar());
-        NodePtr type_list = make_tree(TYPE_LIST,typelist_v.begin(),typelist_v.end());
-        
-        type_v.push_back(i);
-        type_v.push_back(type_list);
-        Type_Ptr type = make_tree(TYPE,type_v.begin(),type_v.end())->asType();
-        
         return type;
     }
 };
