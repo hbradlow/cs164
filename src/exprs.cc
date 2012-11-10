@@ -206,7 +206,7 @@ protected:
             Type_Ptr t = func_type->returnType();
             return t;
         }
-        for(int i = 0; i<actual_types.size(); i++)
+        for(unsigned int i = 0; i<actual_types.size(); i++)
         {
             Type_Ptr t1 = actual_types[i];
             Type_Ptr t2 = func_type->child(1)->child(i)->asType();
@@ -728,37 +728,6 @@ protected:
         } end_for;
 
         return type;
-        /*
-        vector<NodePtr> type_v;
-        vector<NodePtr> typelist_v;
-        set<int> typelist_set;
-
-        NodePtr i = listDecl->asType()->child(0);
-
-        // hbradlow
-        // only add each type to the list once
-        // I use the set to make sure that duplicate types are not added
-        for_each_child(c,this){
-            Type_Ptr ty = c->getType();
-            int index = ty->binding()->getDecl()->getIndex();
-            if(typelist_set.count(index)==0)
-            {
-                typelist_set.insert(index);
-                typelist_v.push_back(c->getType()->binding());
-            }
-        } end_for;
-
-        sort(typelist_v.begin(),typelist_v.end(),ListDisplay_AST::i_less_than_j);
-        if(typelist_v.size()==0)
-            typelist_v.push_back(Type::makeVar());
-        NodePtr type_list = make_tree(TYPE_LIST,typelist_v.begin(),typelist_v.end());
-        
-        type_v.push_back(i);
-        type_v.push_back(type_list);
-        Type_Ptr type = make_tree(TYPE,type_v.begin(),type_v.end())->asType();
-        
-        return type;
-        */
     }
 };
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
