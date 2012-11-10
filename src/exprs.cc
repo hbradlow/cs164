@@ -413,6 +413,41 @@ public:
 
     //hbradlow
     Type_Ptr getType(){
+        /*
+        Unwind_Stack s;
+        int b = child(0)->getType()->unify(child(2)->getType(),s);
+        if(b==0)
+        {
+            if(strcmp("*",child(1)->as_string().c_str())==0)
+            {
+                NodePtr i = make_token(ID,3,"int",true);
+                NodePtr s = make_token(ID,3,"str",true);
+
+                vector<NodePtr> ti_v;
+                vector<NodePtr> ts_v;
+                vector<NodePtr> dummy;
+
+                ti_v.push_back(i);
+                ti_v.push_back(make_tree(TYPE_LIST,dummy.begin(),dummy.end()));
+
+                ti_v.push_back(s);
+                ts_v.push_back(make_tree(TYPE_LIST,dummy.begin(),dummy.end()));
+
+                Type_Ptr ti = make_tree(TYPE,ti_v.begin(),ti_v.end())->asType();
+                Type_Ptr ts = make_tree(TYPE,ts_v.begin(),ts_v.end())->asType();
+
+                if(child(0)->getType()==NULL && child(2)->getType()!=NULL && child(2)->getType()->unify(ti,s))
+                    return ts;
+                else if(child(2)->getType()==NULL && child(0)->getType()!=NULL && child(0)->getType()->unify(ti,s))
+                    return ts;
+                else if(child(0)->getType()->unify(ts,s) && child(2)->getType()->unify(ti,s))
+                    return ts;
+                else if(child(0)->getType()->unify(ti,s) && child(2)->getType()->unify(ts,s))
+                    return ts;
+            }
+            error(loc(),"Binop needs two of the same type");
+        }
+        */
         return child(0)->getType();
     }
 

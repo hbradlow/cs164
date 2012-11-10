@@ -234,7 +234,8 @@ Decl::addMemberDef (Decl* new_member, AST_Ptr id)
             {
                 continue;
             }
-            if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+            current_sig->child(c_i_)->getType()->resolveSimpleIds(new_member->getEnviron());
+            if (!current_sig->child(c_i_)->getType()->unifies(c->getType()))
             {
                 match = false;
             } 
