@@ -196,6 +196,10 @@ Decl::addMember (Decl* new_member)
 void
 Decl::addMemberDef (Decl* new_member, AST_Ptr id)
 {
+    // All I have to say is prepare yourself for a nightmare.
+    // If it makes you feel any better I pitty whoever needs to read 
+    // this almost as much as I hate myself for writing it. 
+    // Anyway, here there be dragons. You have been warned. 
     if (_members == NULL) 
     UNIMPLEMENTED (addMemberDef);
     Decl_Vector dv = new_member->getContainer()->getEnviron()->find_overloadings (new_member->getName());
@@ -217,6 +221,11 @@ Decl::addMemberDef (Decl* new_member, AST_Ptr id)
         {
             old_children++;
             if (c_i_ >= children)
+            {
+                match = false; 
+                break;
+            }
+            if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
             {
                 match = false; 
                 break;

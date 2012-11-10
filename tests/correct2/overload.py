@@ -1,6 +1,6 @@
 def f(x):
     return x+3
-def f(x::string):
+def f(x::str):
     return x
 def g(y):
     return y

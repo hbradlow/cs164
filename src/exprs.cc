@@ -184,6 +184,12 @@ protected:
     Type_Ptr
     getType ()
     {
+        Type_Ptr t; 
+        Decl_Vector decls = child(0)->getDecl(0)->getContainer()->getEnviron()->find_overloadings(child(0)->as_string()); 
+        for (Decl_Vector::const_iterator i = decls.begin(); i != decls.end(); i++) {
+            printf((*i)->getName().c_str());
+            printf("\n");
+       
         vector<Type_Ptr> actual_types;
         if(child(0)->is_attribute_ref()){
             actual_types.push_back(child(0)->child(0)->getType()->binding());
@@ -201,10 +207,10 @@ protected:
         }
         func_type = func_type->binding()->freshen();
 
+        bool worked = true;
         if(func_type->child(1)->arity()!=actual_types.size()){
-            error(loc(),"Incorrect number of arguments");
-            Type_Ptr t = func_type->returnType();
-            return t;
+            worked = false;
+            continue;
         }
         for(unsigned int i = 0; i<actual_types.size(); i++)
         {
@@ -214,13 +220,17 @@ protected:
             Unwind_Stack s;
             int b = t1->unify(t2,s);
             if(b==0){
-                error(loc(),"Invalid types to function call");
+                worked = false;
             }
         }
-        Type_Ptr t = func_type->returnType();
+        if (worked)
+        {
+        t = func_type->returnType();
+        break;
+        } 
+        }
         return t;
     }
-
     Decl* getDecl(int k)
     {
         return NULL;
@@ -390,6 +400,13 @@ public:
 
     void collectDecls(Decl *enclosing)
     {
+        Decl_Vector decls = enclosing->getEnviron()->find_overloadings(child(0)->as_string());
+        printf("looking for overloadings\n");
+        for (Decl_Vector::const_iterator i = decls.begin(); i != decls.end(); i++)
+        {
+            printf((*i)->getName().c_str());
+            printf("\n");
+        }
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if (decl != NULL && !decl->isFunc() ) {
             error(loc(), "Trying to assign function to pre-defined variable");
@@ -397,7 +414,6 @@ public:
         else {
             decl = enclosing->addDefDecl(this); 
             child(0)->addDecl(decl);
-            decl->addSignature(child(1));
         }
         child(2)->resolveSimpleIds(enclosing->getEnviron());
     }
@@ -451,8 +467,7 @@ public:
         //This makes sure the return type is the same as the explicit type of the function def
         int b = child(0)->getType()->unify(function_type->asType(),s);
         if(b==0){
-            // This needs to be commented out until we deal with overloading
-              //error(loc(),"Identifier already defined as a different type");
+              error(loc(),"Identifier already defined as a different type");
         }
     }
 

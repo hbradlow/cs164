@@ -36,12 +36,16 @@ Decl_Vector
 Environ::find_overloadings (const string& name) const
 {
     Decl_Vector return_value; 
+    int counter = 0;
     for (Decl_Vector::const_iterator i = members.begin (); 
 	 i != members.end (); 
 	 i++) 
     {
 	if (name == (*i)->getName ())
+    {
+        counter++;
 	    return_value.push_back(*i);
+    }
     }
     return return_value;
 }
