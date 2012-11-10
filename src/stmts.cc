@@ -81,6 +81,7 @@ public:
     }
     void resolveSimpleIds (const Environ *env)
     {
+        child(0)->resolveSimpleIds(env);
         child(1)->resolveSimpleIds(env);
         child(0)->unifyWith(child(1));
     }
@@ -147,7 +148,8 @@ protected:
         Type_Ptr t1 = this->getType();
         if (t1 == NULL)
         {
-            error(loc(), "Attribute does not exist");
+            string str = "Attribute '" + this->child(1)->as_string() + "' does not exist.";
+            error(loc(), str.c_str());
             return;
         }
         Type_Ptr t2 = right->getType();
@@ -198,7 +200,8 @@ protected:
             Type_Ptr type = childDecl->getType()->binding();
             if (type->arity() == 0) 
             {
-                error(loc(), "Attribute does not exit");
+                string str = "Attribute '" + childDecl->getName() + "' does not exist.";
+                error(loc(), str.c_str());
             }
             string str = type->child(0)->as_string();
             child(1)->create_attr_ref(env->find(str));
