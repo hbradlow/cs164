@@ -739,6 +739,7 @@ protected:
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
 
 //hbradlow
+/*
 class DictDisplay_AST: public AST_Tree {
 protected:
     NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);
@@ -780,4 +781,4 @@ protected:
         return type;
     }
 };
-NODE_FACTORY (DictDisplay_AST, DICT_DISPLAY);
+NODE_FACTORY (DictDisplay_AST, DICT_DISPLAY);*/
