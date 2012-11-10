@@ -391,11 +391,8 @@ public:
     void collectDecls(Decl *enclosing)
     {
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
-        if (decl != NULL ) {
-            if (!decl->isFunc())
-                error(loc(), "Trying to assign function to pre-defined variable");
-            child(0)->addDecl(decl);
-            decl->addSignature(child(1));
+        if (decl != NULL && !decl->isFunc() ) {
+            error(loc(), "Trying to assign function to pre-defined variable");
         }
         else {
             decl = enclosing->addDefDecl(this); 

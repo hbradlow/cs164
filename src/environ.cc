@@ -32,6 +32,20 @@ Environ::find_immediate (const string& name) const
     return NULL;
 }
 
+Decl_Vector
+Environ::find_overloadings (const string& name) const
+{
+    Decl_Vector return_value; 
+    for (Decl_Vector::const_iterator i = members.begin (); 
+	 i != members.end (); 
+	 i++) 
+    {
+	if (name == (*i)->getName ())
+	    return_value.push_back(*i);
+    }
+    return return_value;
+}
+
 void
 Environ::find_immediate (const string& name, Decl_Vector& defns) const
 {
@@ -72,6 +86,12 @@ Environ::define (Decl* decl)
 {
     assert (find_immediate (decl->getName ()) == NULL);
     members.push_back (decl);
+}
+
+void 
+Environ::defineDef (Decl* decl)
+{
+    members.push_back(decl);
 }
 
 const Environ* 
