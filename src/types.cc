@@ -428,7 +428,11 @@ protected:
             return false;
         return true;
     }
-
+    
+    Decl* getDecl(int k) 
+    {
+        return child(0)->child(0)->getDecl(k);
+    }
     NODE_CONSTRUCTORS (FunctionType_AST, Type);
 
 };
