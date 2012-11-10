@@ -201,7 +201,6 @@ protected:
             return NULL;
         }
         func_type = func_type->binding()->freshen();
-
         if(func_type->child(1)->arity()!=actual_types.size()){
             error(loc(), "Bad number of params");
             return NULL;
@@ -243,28 +242,32 @@ protected:
             int old_children = 0;
             bool match = true;
             if(prev_sig!=NULL){
-                for_each_child(c, prev_sig)
-                {
-                    old_children++;
-                    if (c_i_ >= children)
+                if(prev_sig->arity()==current_sig->arity()){
+                    for_each_child(c, prev_sig)
                     {
-                        match = false; 
-                        break;
-                    }
-                    if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
-                    {
-                        match = false; 
-                        break;
-                    }
-                    if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
-                    {
-                        continue;
-                    }
-                    if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
-                    {
-                        match = false;
-                    } 
-                } end_for;
+                        old_children++;
+                        if (c_i_ >= children)
+                        {
+                            match = false; 
+                            break;
+                        }
+                        if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                        {
+                            match = false; 
+                            break;
+                        }
+                        if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                        {
+                            continue;
+                        }
+                        if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                        {
+                            match = false;
+                        } 
+                    } end_for;
+                }
+                else
+                    match = false;
             }
             if (match && old_children == children) 
             {
@@ -301,33 +304,35 @@ protected:
             int old_children = 0;
             bool match = true;
             if(prev_sig!=NULL){
-                for_each_child(c, prev_sig)
-                {
-                    old_children++;
-                    if (c_i_ >= children)
+                if(prev_sig->arity()==current_sig->arity()){
+                    for_each_child(c, prev_sig)
                     {
-                        match = false; 
-                        break;
-                    }
-                    if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
-                    {
-                        match = false; 
-                        break;
-                    }
-                    if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
-                    {
-                        continue;
-                    }
-                    if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
-                    {
-                        match = false;
-                    } 
-                } end_for;
+                        old_children++;
+                        if (c_i_ >= children)
+                        {
+                            match = false; 
+                            break;
+                        }
+                        if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                        {
+                            match = false; 
+                            break;
+                        }
+                        if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                        {
+                            continue;
+                        }
+                        if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                        {
+                            match = false;
+                        } 
+                    } end_for;
+                }
+                else
+                    match = false;
             }
             if (match && old_children == children) 
             {
-                if (child(0)->numDecls() > 0) 
-                    child(0)->removeDecl(0);
                 child(0)->addDecl(*i);
                 return;
             }
