@@ -587,6 +587,20 @@ protected:
 
     Decl* addDefDecl (AST_Ptr id) {
 	Decl* decl = makeMethodDecl (id->as_string (), this, Type::makeVar());
+	Type_Ptr meth_type = decl->getType();
+        if (meth_type->numParams() < 0) {
+          string name = decl->getName();
+          Type_Ptr type = getType();
+          decl->print();
+          printf("\ntype\n");
+          if (type != NULL) {
+            type->print(cout,0);
+          }
+          if (getTypeArity() == 0 and name != "__init__") {
+            //decl->print();
+            //throw range_error("Bound method with no parameters");
+          }
+        }
 	addMember (decl);
 	return decl;
     }

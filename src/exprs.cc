@@ -698,15 +698,16 @@ NODE_FACTORY (Tuple_AST, TUPLE);
 
 //hbradlow
 class ListDisplay_AST: public AST_Tree {
-protected:
-    NODE_CONSTRUCTORS (ListDisplay_AST, AST_Tree);
-
+public:
     static bool i_less_than_j (NodePtr i,NodePtr j) 
     {
         int index_i = i->getDecl()->getIndex();
         int index_j = j->getDecl()->getIndex();
         return (index_i<index_j); 
     }
+protected:
+    NODE_CONSTRUCTORS (ListDisplay_AST, AST_Tree);
+
     Type_Ptr getType(){
         vector<NodePtr> type_v;
         vector<NodePtr> typelist_v;
@@ -742,15 +743,16 @@ NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
 
 //hbradlow
 class DictDisplay_AST: public AST_Tree {
-protected:
-    NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);
-
+public:
     static bool i_less_than_j (NodePtr i,NodePtr j) 
     {
         int index_i = i->getDecl()->getIndex();
         int index_j = j->getDecl()->getIndex();
         return (index_i<index_j); 
     }
+protected:
+    NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);
+
     Type_Ptr getType(){
         vector<NodePtr> type_v;
         vector<NodePtr> typelist_v;
