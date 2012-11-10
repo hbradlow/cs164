@@ -193,6 +193,16 @@ protected:
                 error(loc(),"Incompatible types");
             }
         }
+        else{
+            t2 = right->asType();
+            if(t2!=NULL)
+            {
+                int b = t1->unify(t2,s);
+                if(b==0){
+                    error(loc(),"Incompatible types");
+                }
+            }
+        }
     }
     void resolveSimpleIds (const Environ* env)
     {

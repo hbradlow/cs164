@@ -737,3 +737,47 @@ protected:
     }
 };
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
+
+//hbradlow
+class DictDisplay_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (DictDisplay_AST, AST_Tree);
+
+    static bool i_less_than_j (NodePtr i,NodePtr j) 
+    {
+        int index_i = i->getDecl()->getIndex();
+        int index_j = j->getDecl()->getIndex();
+        return (index_i<index_j); 
+    }
+    Type_Ptr getType(){
+        vector<NodePtr> type_v;
+        vector<NodePtr> typelist_v;
+        set<int> typelist_set;
+
+        NodePtr i = listDecl->asType()->child(0);
+
+        // hbradlow
+        // only add each type to the list once
+        // I use the set to make sure that duplicate types are not added
+        for_each_child(c,this){
+            int index = c->getType()->binding()->getDecl()->getIndex();
+            if(typelist_set.count(index)==0)
+            {
+                typelist_set.insert(index);
+                typelist_v.push_back(c->getType()->binding());
+            }
+        } end_for;
+
+        sort(typelist_v.begin(),typelist_v.end(),ListDisplay_AST::i_less_than_j);
+        if(typelist_v.size()==0)
+            typelist_v.push_back(Type::makeVar());
+        NodePtr type_list = make_tree(TYPE_LIST,typelist_v.begin(),typelist_v.end());
+        
+        type_v.push_back(i);
+        type_v.push_back(type_list);
+        Type_Ptr type = make_tree(TYPE,type_v.begin(),type_v.end())->asType();
+        
+        return type;
+    }
+};
+NODE_FACTORY (DictDisplay_AST, DICT_DISPLAY);

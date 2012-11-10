@@ -534,10 +534,6 @@ public:
         {
             int b = t0->unify(t1,s);
             if(b==0){
-                t0->print(cout,0);
-                printf("\n");
-                t1->print(cout,0);
-                printf("\n");
                 error(loc(),"Incompatible types");
             }
         }
