@@ -196,8 +196,6 @@ protected:
             if (childDecl->isClass())
                 return;
             Type_Ptr type = childDecl->getType()->binding();
-            childDecl->print();
-            childDecl->getType()->getDecl()->print();
             if (type->arity() == 0) 
             {
                 error(loc(), "Attribute does not exit");
@@ -244,6 +242,7 @@ NODE_FACTORY (Return_AST, RETURN);
 
 class Get_Item_AST: public AST_Tree
 {
+public:
     NODE_CONSTRUCTORS (Get_Item_AST, AST_Tree);
 protected:
     Type_Ptr getType()
@@ -252,6 +251,10 @@ protected:
         if(strcmp("dict",id.c_str())==0)
         {
             return child(0)->getType()->binding()->child(1)->child(1)->asType();
+        }
+        else if(strcmp("str",id.c_str())==0)
+        {
+            return child(0)->getType()->binding();
         }
         else 
         {
@@ -276,6 +279,12 @@ protected:
     }
 };
 NODE_FACTORY(Get_Item_AST, SUBSCRIPTION);
+
+class Slice_Item_AST: public Get_Item_AST
+{
+    NODE_CONSTRUCTORS (Slice_Item_AST, Get_Item_AST);
+};
+NODE_FACTORY(Slice_Item_AST, SLICING);
 
 class For_Stmt_AST: public AST_Tree 
 {

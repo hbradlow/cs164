@@ -537,12 +537,22 @@ public:
                 error(loc(),"Incompatible types");
             }
         }
+        else{
+            t1 = right->asType();
+            if(t1!=NULL)
+            {
+                int b = t0->unify(t1,s);
+                if(b==0){
+                    error(loc(),"Incompatible types");
+                }
+            }
+        }
     }
 
     Type_Ptr
     getType ()
     {
-        return child(0)->getType();
+        return child(1)->asType();
     }
     void
     resolveSimpleTypeIds (const Environ* env)
