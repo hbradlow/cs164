@@ -149,18 +149,16 @@ protected:
     }
 
     void resolveSimpleIds (const Environ *env) { 
-      printf("\nin call_ast\n");
       child(1)->resolveSimpleIds(env);
-      printf("\nresolved child(1)\n");
       vector<Type_Ptr> arg_types;
       for_each_child(c, child(1)) {
         arg_types.push_back(c->getType());
       } end_for;
-      printf("successfully got child types\n");
       child(0)->print(cout,0);
-      printf("\n\n\n");
-      //child(0)->resolveSimpleIds(env);
-      child(0)->resolveOverloadIds(env, arg_types);
+      for_each_child(c, this) {
+          if (c_i_ == 0) 
+            c->resolveOverloadIds(env, arg_types);
+      } end_for;
     }
 
     void setActual (int k, AST_Ptr expr) {

@@ -158,9 +158,16 @@ AST::resolveSimpleIds (const Environ* env)
 void
 AST::resolveOverloadIds(const Environ *env, vector<Type_Ptr> arg_types) 
 {
-    for_each_child (c, this) {
-        c->resolveSimpleIds (env);
-    } end_for;
+      printf("\nIn id_token.resolveOverloadIds looking for %s\n", as_string().c_str());
+      Decl * decl = env->find_overloaded(as_string(), arg_types);
+      decl->print();
+      if (decl == NULL && !numDecls())
+      {
+          string str = "Use of undeclared identifier '";
+          str += as_string() + "'"; 
+          error(loc(), str.c_str()); 
+      }
+      addDecl(decl);
 }
 void
 AST::resolveSimpleTypeIds (const Environ* env)

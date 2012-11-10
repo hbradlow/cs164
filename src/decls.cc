@@ -197,6 +197,10 @@ Decl::addMember (Decl* new_member)
         
 }
 
+AST_Ptr Decl::getParamTypes() {
+  return NULL;
+}
+
 void 
 Decl::addSignature (AST_Ptr new_sig)
 {
@@ -419,6 +423,20 @@ public:
     FuncDecl (const string& name, Decl* container, AST_Ptr type,
 	Environ* env)
         :  TypedDecl (name, container, type, env) {
+    }
+
+    /** Will overloading */
+    AST_Ptr getParamTypes() {
+      AST_Ptr my_type = getType()->binding();
+      for_each_child(c1, my_type) {
+        if (c1_i_ == 1) {
+          printf("paramtypes: \n");
+          c1->print(cout,0);
+          printf("\n");
+          return c1;
+        }
+      } end_for; 
+      return NULL;
     }
 
     /** Kevin */

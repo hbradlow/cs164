@@ -23,8 +23,10 @@ Environ::find_overloaded(const string& name, vector<Type_Ptr> arg_types) const {
     Decl* d = find_overloaded_immediate (name, arg_types);
     if (d != NULL)
         return d;
-    else if (enclosure == NULL)
+    else if (enclosure == NULL) {
+      printf("Returned a null decl\n");
 	return NULL;
+    }
     else
         return enclosure->find_overloaded(name, arg_types);
 }
@@ -38,18 +40,16 @@ Environ::find_overloaded_immediate(const string& name, vector<Type_Ptr> arg_type
 	if (name == (*i)->getName ()) {
 	  bool match = true;
 	  int j = -1;
-	  printf("type arity: %d", (*i)->getTypeArity());
-	  /*
-	  for_each_child(c, (*i)->getTypeParams()) {
+	  (*i)->print();
+	  for_each_child(c, (*i)->getParamTypes()) {
 	    j++;
-            Decl *decl = c->getDecl();
-            if (decl->getType() != arg_types[j]) {
+	    if (!c->asType()->unifies(arg_types[j])) {
               match = false;
               break;
             }
           } end_for;
           if (match)
-            return *i;*/
+            return *i;
         }
     }
     return NULL;

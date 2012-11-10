@@ -60,6 +60,12 @@ public:
 
     Decl (const std::string& name, Decl* container, Environ* members = NULL);
 
+    /** Will 
+     * return the type_list node containing my 
+     * parameter types.
+     */
+    virtual AST_Ptr getParamTypes() ;
+
     /** Print my index list of members or local definitions on the
      *  standard output, if applicable, and otherwise do nothing. */
     virtual void printMembersList () const;
