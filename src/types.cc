@@ -466,6 +466,32 @@ class TypeList_AST: public Type {
 protected:
 
     NODE_CONSTRUCTORS (TypeList_AST, Type);
+    static bool i_less_than_j (NodePtr i,NodePtr j) 
+    {
+        int index_i = i->getDecl()->getIndex();
+        int index_j = j->getDecl()->getIndex();
+        return (index_i<index_j); 
+    }
+    void resolveSimpleIds(const Environ* env){
+        for_each_child(c,this){
+            c->resolveSimpleIds(env);
+        } end_for;
+
+        //Need this to get all of lists workgin
+        /*
+        vector<NodePtr> kids;
+        for_each_child(c,this){
+            kids.push_back(c);
+        } end_for;
+
+        sort(kids.begin(),kids.end(),TypeList_AST::i_less_than_j);
+
+        for_each_child(c,this){
+            replace(c_i_,kids[c_i_]);
+        } end_for;
+        */
+    }
+
     void collectDecls(Decl *enclosing){
         for_each_child(c,this){
             replace(c_i_,c->asType()->freshen());
@@ -487,13 +513,27 @@ public:
         child(1)->collectDecls(enclosing);
     }
     void unifyWith(AST_Ptr right){
+        //first unify my own explicit type
         Unwind_Stack s;
-        Type_Ptr t0 = this->getType();
-        Type_Ptr t1 = right->getType();
+        Type_Ptr t0 = child(0)->getType();
+        Type_Ptr t1 = child(1)->asType();
+
+        int b = t0->unify(t1,s);
+        if(b==0){
+            error(loc(),"Identifier already defined as a different type");
+        }
+
+        //then unify with the right
+        t0 = this->getType();
+        t1 = right->getType();
         if(t1!=NULL)
         {
             int b = t0->unify(t1,s);
             if(b==0){
+                t0->print(cout,0);
+                printf("\n");
+                t1->print(cout,0);
+                printf("\n");
                 error(loc(),"Incompatible types");
             }
         }
@@ -515,8 +555,6 @@ public:
         Unwind_Stack s;
         Type_Ptr t0 = child(0)->getType();
         Type_Ptr t1 = child(1)->asType();
-        t1->asType()->print(cout,0);
-        printf("\n");
         int b = t0->unify(t1,s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
@@ -526,7 +564,7 @@ public:
     void addTargetDecls(Decl* enclosing)
     {
         child(0)->addTargetDecls(enclosing);
-        child(1)->collectDecls(enclosing);
+        child(1)->resolveSimpleIds(enclosing->getEnviron());
     }
 };
 

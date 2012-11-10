@@ -8,6 +8,7 @@
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
+#include <algorithm>
 
 using namespace std;
 
@@ -18,8 +19,16 @@ protected:
 
     void unifyWith(AST_Ptr right){
         for_each_child(c,this){
-            c->unifyWith(right->child(c_i_));
+            c->unifyWith(right->getType()->binding()->child(1)->child(c_i_));
         } end_for;
+    }
+
+    void addTargetDecls(Decl* enclosing)
+    {
+        for_each_child(c,this)
+        {
+            c->addTargetDecls(enclosing);
+        } end_for; 
     }
 };
 
@@ -111,6 +120,10 @@ protected:
 
     //hbradlow - 4.1
     void rewrite_types(Decl* enclosing){
+        for_each_child(c,this){
+            c->rewrite_types(enclosing);
+        } end_for;
+
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if(decl!=NULL && decl->isType()){
             vector<NodePtr> dummy;
@@ -124,9 +137,17 @@ protected:
     }
     //hbradlow - 4.3
     AST_Ptr rewrite_allocators(Decl* enclosing){
+        for_each_child(c,this){
+            c->rewrite_allocators(enclosing);
+        } end_for;
+
+        child(0)->resolveSimpleIds(enclosing->getEnviron());
         if(child(0)->asType()!=NULL) 
         {
             NodePtr t = child(0);
+            if(t->child(0)->getDecl()->is_built_in()){
+                error(loc(),"Cannot allocate with a built in type");
+            }
             NodePtr i = AST::make_token(ID,8,"__init__",true);
 
             Decl *tdecl = enclosing->getEnviron()->find_immediate(t->child(0)->as_string());
@@ -143,7 +164,8 @@ protected:
             std::vector<NodePtr> call_v;
             call_v.push_back(i);
             call_v.push_back(expr_list);
-            return make_tree(CALL1,call_v.begin(),call_v.end());
+            AST_Ptr tree = make_tree(CALL1,call_v.begin(),call_v.end());
+            return tree;
         }
         return this;
     }
@@ -161,18 +183,42 @@ protected:
       } end_for;
     }
 
+    void insertActual (int k, AST_Ptr expr) {
+        child (1)->insert (k, expr);
+    }
     void setActual (int k, AST_Ptr expr) {
         child (1)->replace (k, expr);
     }
 
     //hbradlow
+    void checkCalls ()
+    {
+        //hbradlow: Hack to check the types of calls that are not assigned to anything
+        this->getType();
+    }
+    //hbradlow
     Type_Ptr
     getType ()
-    {   
-        Type_Ptr func_type = child(0)->getType()->binding()->freshen();
-        for(int i = 0; i < this->numActuals(); i++)
+    {
+        vector<Type_Ptr> actual_types;
+        if(child(0)->is_attribute_ref()){
+            actual_types.push_back(child(0)->child(0)->getType()->binding());
+        }
+        for(int i = 0; i<this->numActuals(); i++)
         {
             Type_Ptr t1 = this->actualParam(i)->getType();
+            actual_types.push_back(t1);
+        }
+
+        Type_Ptr func_type = child(0)->getType()->binding()->freshen();
+        if(func_type->child(1)->arity()!=actual_types.size()){
+            error(loc(),"Incorrect number of arguements");
+            Type_Ptr t = func_type->returnType();
+            return t;
+        }
+        for(int i = 0; i<actual_types.size(); i++)
+        {
+            Type_Ptr t1 = actual_types[i];
             Type_Ptr t2 = func_type->child(1)->child(i)->asType();
 
             Unwind_Stack s;
@@ -185,6 +231,11 @@ protected:
         }
         Type_Ptr t = func_type->returnType();
         return t;
+    }
+
+    Decl* getDecl(int k)
+    {
+        return NULL;
     }
 };
 
@@ -208,6 +259,11 @@ protected:
         t_v.push_back(tl);
         Type_Ptr t = make_tree(TYPE,t_v.begin(),t_v.end())->asType();
         return t;
+    }
+
+    Decl* getDecl(int k)
+    {
+        return NULL;
     }
 
 };
@@ -253,7 +309,7 @@ NODE_FACTORY (Binop_AST, BINOP);
 
 /** Kevin : A compare. */
 class Compare_AST : public Callable{
-
+public:
     NODE_CONSTRUCTORS (Compare_AST, Callable);
 
     AST_Ptr calledExpr () {
@@ -295,7 +351,11 @@ class Compare_AST : public Callable{
 };    
 NODE_FACTORY (Compare_AST, COMPARE);
 
-
+class LeftCompare_AST : public Compare_AST {
+public:
+    NODE_CONSTRUCTORS (LeftCompare_AST, Compare_AST);
+};
+NODE_FACTORY (LeftCompare_AST, LEFT_COMPARE);
 
 /** A unary operator. */
 class Unop_AST : public Callable {
@@ -335,8 +395,9 @@ public:
     bool is_init(){
         return strcmp(this->child(0)->as_string().c_str(),"__init__") == 0;
     }
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         error(loc(), "Cannot use None as a method name");
+        return false;
     }
 
     void collectDecls(Decl *enclosing)
@@ -345,20 +406,15 @@ public:
         if (decl != NULL ) {
             if (!decl->isFunc())
                 error(loc(), "Trying to assign function to pre-defined variable");
-            decl = enclosing->addDefDecl(child(0));
-            //printf("OVERLOADING: \n"); decl->print(); printf("\n\n");
-            
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
-
-            //enclosing->printMembersList(); printf("\n\n");
-
         }
         else {
             decl = enclosing->addDefDecl(child(0)); 
             child(0)->addDecl(decl);
             decl->addSignature(child(1));
         }
+        child(2)->resolveSimpleIds(enclosing->getEnviron());
     }
     Type_Ptr getType(){
         return child(2)->asType();
@@ -391,7 +447,7 @@ public:
         else{
             if(type->asType()==NULL)
             {
-                return;
+                type = Type::makeVar();
             }
         }
 
@@ -457,8 +513,9 @@ NODE_FACTORY (Method_AST, METHOD);
 
 class Class_AST: public AST_Tree {
 public:
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         error(loc(), "Cannot use None as a class name");
+        return false;
     }
 
     // Resolve my type
@@ -477,6 +534,7 @@ public:
         decl = enclosing->addClassDecl(this);
         child(0)->addDecl(decl);
 
+        decl->set_built_in(true);
         if(decl->getName().compare("int")==0){
             intDecl = decl;
         }
@@ -510,12 +568,10 @@ public:
         else if(decl->getName().compare("range")==0){
             rangeDecl = decl;
         }
+        else{
+            decl->set_built_in(false);
+        }
     }
-
-    void resolveSimpleIds(const Environ *env)
-    {
-    }
-
    
     AST_Ptr doOuterSemantics()
     {
@@ -529,15 +585,8 @@ public:
             c->doOuterSemantics();
         }end_for;
         
-        for_each_child(c, this)
-        {
-            if (c_i_ == 0)
-                continue;
-            c->resolveSimpleIds(decl->getEnviron());
-        } end_for;
         return this;
     }
-
 
 protected:
     NODE_CONSTRUCTORS (Class_AST, AST_Tree);
@@ -587,7 +636,7 @@ protected:
     NODE_CONSTRUCTORS (ClassBlock_AST, AST_Tree);
 
     Decl* getDecl (int k = 0) {
-        return child (0)->getDecl ();
+        return child (0)->getDecl (k);
     }
 
     void addDecl (Decl* decl) {
@@ -653,7 +702,6 @@ protected:
             error(loc(),"Maximum tuple size is 3 - truncating tuple...");
             t = tuple3Decl->asType ();
         }
-        
         for_each_child(c,t->child(1)){
             Unwind_Stack s;
             this->child(c_i_)->getType()->unify(c->asType(),s);
@@ -662,3 +710,47 @@ protected:
     }
 };
 NODE_FACTORY (Tuple_AST, TUPLE);
+
+//hbradlow
+class ListDisplay_AST: public AST_Tree {
+protected:
+    NODE_CONSTRUCTORS (ListDisplay_AST, AST_Tree);
+
+    static bool i_less_than_j (NodePtr i,NodePtr j) 
+    {
+        int index_i = i->getDecl()->getIndex();
+        int index_j = j->getDecl()->getIndex();
+        return (index_i<index_j); 
+    }
+    Type_Ptr getType(){
+        vector<NodePtr> type_v;
+        vector<NodePtr> typelist_v;
+        set<int> typelist_set;
+
+        NodePtr i = listDecl->asType()->child(0);
+
+        // hbradlow
+        // only add each type to the list once
+        // I use the set to make sure that duplicate types are not added
+        for_each_child(c,this){
+            int index = c->getType()->binding()->getDecl()->getIndex();
+            if(typelist_set.count(index)==0)
+            {
+                typelist_set.insert(index);
+                typelist_v.push_back(c->getType()->binding());
+            }
+        } end_for;
+
+        sort(typelist_v.begin(),typelist_v.end(),ListDisplay_AST::i_less_than_j);
+        if(typelist_v.size()==0)
+            typelist_v.push_back(Type::makeVar());
+        NodePtr type_list = make_tree(TYPE_LIST,typelist_v.begin(),typelist_v.end());
+        
+        type_v.push_back(i);
+        type_v.push_back(type_list);
+        Type_Ptr type = make_tree(TYPE,type_v.begin(),type_v.end())->asType();
+        
+        return type;
+    }
+};
+NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);

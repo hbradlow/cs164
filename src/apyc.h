@@ -185,6 +185,9 @@ public:
 
     /** The name of this type of Decl for external printing purposes. */
     virtual const char* declTypeName () const;
+    
+    virtual bool is_built_in();
+    virtual void set_built_in(bool b);
 
 
 protected:
@@ -199,6 +202,7 @@ protected:
 
 protected:
     bool _frozen;
+    bool _built_in;
 
 private:
     int _index;

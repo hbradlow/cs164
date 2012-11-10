@@ -5,6 +5,7 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
+#include <sstream>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -65,9 +66,13 @@ NODE_FACTORY (StmtList_AST, STMT_LIST);
 class Assignment_AST : public AST_Tree 
 {
 public:
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         if(k==0)
+        {
             error(loc(),"Cannot assign to None");
+            return false;
+        }
+        return true;
     }
 
     void collectDecls(Decl *enclosing)
@@ -79,7 +84,6 @@ public:
         //child(0)->resolveSimpleTypeIds(env);
         //child(1)->resolveSimpleTypeIds(env);
         printf("\nin assignment_ast resolving\n");
-        child(1)->print(cout,0);
         child(1)->resolveSimpleIds(env);
         child(1)->print(cout,0);
         child(0)->resolve_reference(env);
@@ -96,6 +100,11 @@ class FormalsList_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (FormalsList_AST, AST_Tree);
+
+    bool assert_none_here(int k){
+        error(loc(), "Cannot use None as a method parameter");
+        return false;
+    }
 
     void collectDecls (Decl* enclosing)
     {
@@ -126,6 +135,9 @@ protected:
     {
         resolve_reference(env);
     }
+    bool is_attribute_ref(){
+        return true;
+    }
 
     void collectDecls (Decl* enclosing) 
     {
@@ -135,12 +147,30 @@ protected:
     {
     }
 
+    void unifyWith(AST_Ptr right){
+        Unwind_Stack s;
+        Type_Ptr t1 = this->getType();
+        if (t1 == NULL)
+        {
+            error(loc(), "Attribute does not exist");
+            return;
+        }
+        Type_Ptr t2 = right->getType();
+        if(t2!=NULL)
+        {
+            int b = t1->unify(t2,s);
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
+    }
+
     void check_bound_methods (bool inside_call) 
     {
         if (inside_call)
             return; 
-        Decl *classDecl = child(1)->getDecl();
-        if (classDecl->isMethod())
+        Decl *varDecl = child(1)->getDecl();
+        if (varDecl->isMethod())
             error(loc(), "Not calling bound method");
     }
 
@@ -170,6 +200,11 @@ protected:
 
     AST_Ptr replace_attribute_refs()
     {
+        if (child(0)->getDecl(0) == NULL)
+        {
+            // This is a A().x type, so it doesn't get replaced. 
+            return this;
+        }
         if (child(0)->getDecl(0)->isClass())
         {
             // In case of multiple layers of references 
@@ -206,5 +241,47 @@ protected:
     {
         return child(0)->getType();
     }
+
+    void unifyWith(AST_Ptr right){
+        Type_Ptr t1 = right->getType();
+        if(t1!=NULL)
+        {
+            int b = 0;
+            for_each_child(c,this->getType()->binding()->child(1)){
+                if(c->asType()->unifies(t1)){
+                    b = 1;
+                }
+            } end_for;
+            if(b==0){
+                error(loc(),"Incompatible types");
+            }
+        }
+    }
 };
 NODE_FACTORY(Get_Item_AST, SUBSCRIPTION);
+
+class For_Stmt_AST: public AST_Tree 
+{
+    NODE_CONSTRUCTORS (For_Stmt_AST, AST_Tree);
+public: 
+    void collectDecls(Decl* enclosing)
+    {
+        string name;
+        stringstream out;
+        out << lineNumber();
+        name = "for" + out.str();
+        _myDecl = makeFuncDecl(name, enclosing, Type::makeVar());
+        enclosing->addMember(_myDecl);
+        child(0)->addTargetDecls(_myDecl);
+    }
+    void resolveSimpleIds(const Environ* env)
+    {
+        for_each_child(c,this)
+        {
+            c->resolveSimpleIds(_myDecl->getEnviron());
+        } end_for;
+    }
+    Decl* _myDecl;
+};
+
+NODE_FACTORY(For_Stmt_AST, FOR);
