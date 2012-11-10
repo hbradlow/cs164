@@ -259,9 +259,13 @@ protected:
         {
             return child(0)->getType()->binding();
         }
-        else 
+        else if(strcmp("list",id.c_str())==0)
         {
-            return child(0)->getType();
+            return child(0)->getType()->binding()->child(1)->child(0)->asType();
+        }
+        else{
+            error(loc(),"Cannot use __getitem__ on something other than str, dict, list");
+            return NULL;
         }
     }
 
@@ -269,12 +273,8 @@ protected:
         Type_Ptr t1 = right->getType();
         if(t1!=NULL)
         {
-            int b = 0;
-            for_each_child(c,this->getType()->binding()->child(1)){
-                if(c->asType()->unifies(t1)){
-                    b = 1;
-                }
-            } end_for;
+            Unwind_Stack s;
+            int b = this->getType()->unify(right->getType(),s);
             if(b==0){
                 error(loc(),"Incompatible types");
             }
@@ -286,6 +286,10 @@ NODE_FACTORY(Get_Item_AST, SUBSCRIPTION);
 class Slice_Item_AST: public Get_Item_AST
 {
     NODE_CONSTRUCTORS (Slice_Item_AST, Get_Item_AST);
+    Type_Ptr getType()
+    {
+        return child(0)->getType()->binding();
+    }
 };
 NODE_FACTORY(Slice_Item_AST, SLICING);
 

@@ -1,5 +1,5 @@
 class c:
-    def a():
+    def a(self):
         return
     z = 11
 d = c()

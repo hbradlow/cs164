@@ -1,2 +1,2 @@
-a::list of [str, int] = [1,2,"hello"]
-a[0] = 1
+a::list of [str] = ["hello"]
+a[0] = "this"

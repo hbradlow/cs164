@@ -716,6 +716,23 @@ protected:
         vector<NodePtr> typelist_v;
         set<int> typelist_set;
 
+        Type_Ptr type = listDecl->asType()->freshen();
+        Type_Ptr first_type = Type::makeVar();
+        if(arity()>0)
+            first_type = child(0)->getType();
+        Unwind_Stack s;
+        first_type->unify(type->child(1)->child(0)->asType(),s);
+        for_each_child(c,this){
+            if(!first_type->unifies(c->getType()))
+                error(loc(),"Lists must be homogeneous");
+        } end_for;
+
+        return type;
+        /*
+        vector<NodePtr> type_v;
+        vector<NodePtr> typelist_v;
+        set<int> typelist_set;
+
         NodePtr i = listDecl->asType()->child(0);
 
         // hbradlow
@@ -741,6 +758,7 @@ protected:
         Type_Ptr type = make_tree(TYPE,type_v.begin(),type_v.end())->asType();
         
         return type;
+        */
     }
 };
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
