@@ -82,8 +82,6 @@ public:
     void resolveSimpleIds (const Environ *env)
     {
         child(1)->resolveSimpleIds(env);
-        child(0)->resolve_reference(env);
-        child(1)->resolve_reference(env);
         child(0)->unifyWith(child(1));
     }
     NODE_CONSTRUCTORS (Assignment_AST, AST_Tree); 
@@ -137,6 +135,7 @@ protected:
 
     void collectDecls (Decl* enclosing) 
     {
+
     }
 
     void addTargetDecls (Decl* enclosing)
@@ -172,6 +171,14 @@ protected:
 
     Type_Ptr getType()
     {
+        Decl *classDecl = child(0)->getDecl(0); 
+        const Environ *innerEnv;
+        if (classDecl->isClass())
+        {
+           innerEnv = classDecl->getEnviron(); 
+        }
+        else innerEnv = classDecl->getContainer()->getEnviron();
+        child(1)->resolveSimpleIds(innerEnv);
         return child(1)->getType();
     }
 
@@ -185,6 +192,8 @@ protected:
             if (childDecl->isClass())
                 return;
             Type_Ptr type = childDecl->getType()->binding();
+            childDecl->print();
+            childDecl->getType()->getDecl()->print();
             if (type->arity() == 0) 
             {
                 error(loc(), "Attribute does not exit");
@@ -273,7 +282,7 @@ public:
         string name;
         stringstream out;
         out << lineNumber();
-        name = "for" + out.str();
+        name = "___for___" + out.str();
         _myDecl = makeFuncDecl(name, enclosing, Type::makeVar());
         enclosing->addMember(_myDecl);
         child(0)->addTargetDecls(_myDecl);

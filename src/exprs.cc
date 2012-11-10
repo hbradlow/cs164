@@ -138,9 +138,6 @@ protected:
         for_each_child(c,this){
             c->rewrite_allocators(enclosing);
         } end_for;
-        /*
-        child(0)->resolveSimpleIds(enclosing->getEnviron());
-        */
 
         if(child(0)->asType()!=NULL) 
         {
@@ -199,7 +196,7 @@ protected:
 
         Type_Ptr func_type = child(0)->getType()->binding()->freshen();
         if(func_type->child(1)->arity()!=actual_types.size()){
-            error(loc(),"Incorrect number of arguements");
+            error(loc(),"Incorrect number of arguments");
             Type_Ptr t = func_type->returnType();
             return t;
         }
@@ -248,7 +245,7 @@ protected:
 
     Decl* getDecl(int k)
     {
-        return NULL;
+        return child(0)->getDecl(0);
     }
 
 };
@@ -719,7 +716,8 @@ protected:
         // only add each type to the list once
         // I use the set to make sure that duplicate types are not added
         for_each_child(c,this){
-            int index = c->getType()->binding()->getDecl()->getIndex();
+            Type_Ptr ty = c->getType();
+            int index = ty->binding()->getDecl()->getIndex();
             if(typelist_set.count(index)==0)
             {
                 typelist_set.insert(index);
