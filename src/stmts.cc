@@ -5,6 +5,7 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
+#include <sstream>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -65,9 +66,13 @@ NODE_FACTORY (StmtList_AST, STMT_LIST);
 class Assignment_AST : public AST_Tree 
 {
 public:
-    void assert_none_here(int k){
+    bool assert_none_here(int k){
         if(k==0)
+        {
             error(loc(),"Cannot assign to None");
+            return false;
+        }
+        return true;
     }
 
     void collectDecls(Decl *enclosing)
@@ -91,6 +96,11 @@ class FormalsList_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (FormalsList_AST, AST_Tree);
+
+    bool assert_none_here(int k){
+        error(loc(), "Cannot use None as a method parameter");
+        return false;
+    }
 
     void collectDecls (Decl* enclosing)
     {
@@ -120,6 +130,9 @@ protected:
     void resolveSimpleIds(const Environ *env) 
     {
         resolve_reference(env);
+    }
+    bool is_attribute_ref(){
+        return true;
     }
 
     void collectDecls (Decl* enclosing) 
@@ -183,6 +196,11 @@ protected:
 
     AST_Ptr replace_attribute_refs()
     {
+        if (child(0)->getDecl(0) == NULL)
+        {
+            // This is a A().x type, so it doesn't get replaced. 
+            return this;
+        }
         if (child(0)->getDecl(0)->isClass())
         {
             // In case of multiple layers of references 
@@ -237,3 +255,29 @@ protected:
     }
 };
 NODE_FACTORY(Get_Item_AST, SUBSCRIPTION);
+
+class For_Stmt_AST: public AST_Tree 
+{
+    NODE_CONSTRUCTORS (For_Stmt_AST, AST_Tree);
+public: 
+    void collectDecls(Decl* enclosing)
+    {
+        string name;
+        stringstream out;
+        out << lineNumber();
+        name = "for" + out.str();
+        _myDecl = makeFuncDecl(name, enclosing, Type::makeVar());
+        enclosing->addMember(_myDecl);
+        child(0)->addTargetDecls(_myDecl);
+    }
+    void resolveSimpleIds(const Environ* env)
+    {
+        for_each_child(c,this)
+        {
+            c->resolveSimpleIds(_myDecl->getEnviron());
+        } end_for;
+    }
+    Decl* _myDecl;
+};
+
+NODE_FACTORY(For_Stmt_AST, FOR);
