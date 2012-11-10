@@ -41,6 +41,7 @@ Environ::find_overloaded_immediate(const string& name, vector<Type_Ptr> arg_type
 	  bool match = true;
 	  int j = -1;
 	  (*i)->print();
+	  (*i)->getParamTypes()->print(cout,0);
 	  for_each_child(c, (*i)->getParamTypes()) {
 	    j++;
 	    if (!c->asType()->unifies(arg_types[j])) {
