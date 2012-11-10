@@ -118,6 +118,10 @@ protected:
 
     //hbradlow - 4.1
     void rewrite_types(Decl* enclosing){
+        for_each_child(c,this){
+            c->rewrite_types(enclosing);
+        } end_for;
+
         Decl *decl = enclosing->getEnviron()->find_immediate(child(0)->as_string());
         if(decl!=NULL && decl->isType()){
             vector<NodePtr> dummy;
@@ -134,6 +138,8 @@ protected:
         for_each_child(c,this){
             c->rewrite_allocators(enclosing);
         } end_for;
+
+        child(0)->resolveSimpleIds(enclosing->getEnviron());
         if(child(0)->asType()!=NULL) 
         {
             NodePtr t = child(0);
@@ -157,8 +163,6 @@ protected:
             call_v.push_back(i);
             call_v.push_back(expr_list);
             AST_Ptr tree = make_tree(CALL1,call_v.begin(),call_v.end());
-            tree->print(cout,0);
-            printf("\n");
             return tree;
         }
         return this;
