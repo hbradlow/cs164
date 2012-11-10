@@ -190,7 +190,7 @@ protected:
         {
             int b = t1->unify(t2,s);
             if(b==0){
-                error(loc(),"Incompatible types");
+                error(loc(),"Incompatible types in tokens.cc");
             }
         }
         else{
