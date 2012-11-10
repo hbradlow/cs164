@@ -23,7 +23,13 @@ protected:
     const char* externalName () {
 	return "println";
     }
-
+    void checkCalls(){
+        if(child(0)->isMissing())
+            return;
+        string t = child(0)->getType()->binding()->child(0)->as_string();
+        if(strcmp("file",t.c_str())!=0)
+            error(loc(),"Cannot use non-file object for print");
+    }
 };
 
 NODE_FACTORY (Println_AST, PRINTLN);
