@@ -197,8 +197,7 @@ protected:
     void resolveSimpleIds (const Environ* env)
     {
         Decl *decl = env->find(as_string());
-        printf("\nIn id_token looking for %s\n", as_string().c_str());
-        decl->print();
+        //printf("\nIn id_token looking for %s\n", as_string().c_str());
         if (decl == NULL && !numDecls())
         {
             string str = "Use of undeclared identifier '";
