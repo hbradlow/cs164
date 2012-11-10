@@ -226,6 +226,8 @@ protected:
     }
     void collectDecls(Decl* enclosing)
     {
+        child(1)->resolveSimpleIds(enclosing->getEnviron());
+
         Decl_Vector dv = enclosing->getEnviron()->find_overloadings (child(0)->as_string());
         AST_Ptr current_sig = child(1);
         int children = 0; 
@@ -240,28 +242,37 @@ protected:
             AST_Ptr prev_sig = (*i)->getSignature(); 
             int old_children = 0;
             bool match = true;
-            for_each_child(c, prev_sig)
-            {
-                old_children++;
-                if (c_i_ >= children)
+            if(prev_sig!=NULL){
+                for_each_child(c, prev_sig)
                 {
-                    match = false; 
-                    break;
-                }
-                if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
-                {
-                    match = false; 
-                    break;
-                }
-                if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
-                {
-                    continue;
-                }
-                if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
-                {
-                    match = false;
-                } 
-            } end_for;
+                    old_children++;
+                    if (c_i_ >= children)
+                    {
+                        match = false; 
+                        break;
+                    }
+                    if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                    {
+                        match = false; 
+                        break;
+                    }
+                    if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                    {
+                        continue;
+                    }
+                    printf("START\n");
+                    current_sig->print(cout,0);
+                    printf("\n");
+                    current_sig->child(c_i_)->print(cout,0);
+                    printf("\n");
+                    current_sig->child(c_i_)->getType()->binding()->print(cout,0);
+                    printf("\n");
+                    if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                    {
+                        match = false;
+                    } 
+                } end_for;
+            }
             if (match && old_children == children) 
             {
                 child(0)->addDecl(*i);
@@ -296,37 +307,35 @@ protected:
             AST_Ptr prev_sig = (*i)->getSignature(); 
             int old_children = 0;
             bool match = true;
-            for_each_child(c, prev_sig)
-            {
-                old_children++;
-                if (c_i_ >= children)
+            if(prev_sig!=NULL){
+                for_each_child(c, prev_sig)
                 {
-                    match = false; 
-                    break;
-                }
-                if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
-                {
-                    match = false; 
-                    break;
-                }
-                if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
-                {
-                    continue;
-                }
-                if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
-                {
-                    match = false;
-                } 
-            } end_for;
+                    old_children++;
+                    if (c_i_ >= children)
+                    {
+                        match = false; 
+                        break;
+                    }
+                    if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                    {
+                        match = false; 
+                        break;
+                    }
+                    if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                    {
+                        continue;
+                    }
+                    if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                    {
+                        match = false;
+                    } 
+                } end_for;
+            }
             if (match && old_children == children) 
             {
                 if (child(0)->numDecls() > 0) 
                     child(0)->removeDecl(0);
                 child(0)->addDecl(*i);
-                (*i)->print();
-                printf("%i\n", child(0)->numDecls());
-                child(0)->print(cout, 0);
-                printf("\n");
                 return;
             }
         }

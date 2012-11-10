@@ -13,7 +13,7 @@
 
 using namespace std;
 
-const string PRELUDE_NAME = "prelude_basic.py";
+const string PRELUDE_NAME = "prelude.py";
 
 int errCount;
 int maxPhase;

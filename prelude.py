@@ -229,11 +229,13 @@ def __getitem__(D::dict of [str, $b], x::str)::$b:
 def len(D::dict of [int, $b])::int:
     native "__len__dict__"
 
+"""
 def len(D::dict of [bool, $b])::int:
     native "__len__dict__"
 
 def len(D::dict of [str, $b])::int:
     native "__len__dict__"
+"""
 
 # Backwards from regular Python
 def __contains__(x::int, D::dict of [int, $b])::bool:
