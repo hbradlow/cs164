@@ -47,9 +47,6 @@ Environ::find_overloaded_immediate(const string& name, vector<Type_Ptr> arg_type
 	    if (!c->asType()->unifies(arg_types[j])) {
               match = false;
             }
-            else {
-              break;
-            }
           } end_for;
           if (match)
             return *i;
