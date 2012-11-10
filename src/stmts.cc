@@ -40,6 +40,9 @@ NODE_FACTORY (Println_AST, PRINTLN);
 class Print_AST : public Println_AST {
 protected:
     NODE_CONSTRUCTORS (Print_AST, Println_AST);
+    const char* externalName () {
+	return "print";
+    }
 };
 
 NODE_FACTORY (Print_AST, PRINT);
