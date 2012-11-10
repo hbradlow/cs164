@@ -131,6 +131,9 @@ protected:
     }
     //hbradlow - 4.3
     AST_Ptr rewrite_allocators(Decl* enclosing){
+        for_each_child(c,this){
+            c->rewrite_allocators(enclosing);
+        } end_for;
         if(child(0)->asType()!=NULL) 
         {
             NodePtr t = child(0);
@@ -153,7 +156,10 @@ protected:
             std::vector<NodePtr> call_v;
             call_v.push_back(i);
             call_v.push_back(expr_list);
-            return make_tree(CALL1,call_v.begin(),call_v.end());
+            AST_Ptr tree = make_tree(CALL1,call_v.begin(),call_v.end());
+            tree->print(cout,0);
+            printf("\n");
+            return tree;
         }
         return this;
     }
