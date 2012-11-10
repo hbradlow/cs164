@@ -78,8 +78,6 @@ public:
     void collectDecls(Decl *enclosing)
     {
         child(0)->addTargetDecls(enclosing);
-        child(0)->print(cout,0);
-        printf("\n");
     }
     void resolveSimpleIds (const Environ *env)
     {
@@ -366,6 +364,7 @@ NODE_FACTORY(While_AST, WHILE);
 
 class If_AST: public Block_Scope
 {
+public:
     NODE_CONSTRUCTORS (If_AST, Block_Scope);
     void collectDecls(Decl* enclosing)
     {
@@ -406,3 +405,33 @@ class If_AST: public Block_Scope
     }
 };
 NODE_FACTORY(If_AST, IF);
+
+class IfExpr_AST: public AST_Tree
+{
+    NODE_CONSTRUCTORS (IfExpr_AST, AST_Tree);
+    Type_Ptr getType(){
+        Type_Ptr t1 = child(1)->getType();
+        Type_Ptr t2 = child(2)->getType();
+        if(t1==NULL && t2==NULL)
+        {
+            return NULL;
+        }
+        if((t1!=NULL && t2==NULL) || (t1==NULL && t2!=NULL))
+        {
+            if(child(2)->arity()==0)
+                return NULL;
+            else{
+                error(loc(),"If statement must return same type for each branch");
+                return t1;
+            }
+        }
+        Unwind_Stack s;
+        int b = t1->unify(t2,s);
+        if(b==0){
+            error(loc(),"If statement must return same type for each branch");
+            return t1;
+        }
+        return t1;
+    }
+};
+NODE_FACTORY(IfExpr_AST, IF_EXPR);

@@ -522,10 +522,21 @@ public:
         Unwind_Stack s;
         Type_Ptr t0 = child(0)->getType();
         Type_Ptr t1 = child(1)->asType();
+        if(t1->getDecl()==NULL)
+        {
+            error(loc(),"Type undefined");
+            return;
+        }
+        else if(!t1->getDecl()->isClass())
+        {
+            error(loc(),"Cannot use non type as type");
+            return;
+        }
 
         int b = t0->unify(t1,s);
         if(b==0){
             error(loc(),"Identifier already defined as a different type");
+            return;
         }
 
         //then unify with the right
@@ -536,6 +547,7 @@ public:
             int b = t0->unify(t1,s);
             if(b==0){
                 error(loc(),"Incompatible types");
+                return;
             }
         }
         else{
@@ -545,6 +557,7 @@ public:
                 int b = t0->unify(t1,s);
                 if(b==0){
                     error(loc(),"Incompatible types");
+                    return;
                 }
             }
         }

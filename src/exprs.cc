@@ -260,13 +260,6 @@ protected:
                     {
                         continue;
                     }
-                    printf("START\n");
-                    current_sig->print(cout,0);
-                    printf("\n");
-                    current_sig->child(c_i_)->print(cout,0);
-                    printf("\n");
-                    current_sig->child(c_i_)->getType()->binding()->print(cout,0);
-                    printf("\n");
                     if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
                     {
                         match = false;
@@ -374,7 +367,7 @@ NODE_FACTORY (Call1_AST, CALL1);
 
 /** A binary operator. */
 class Binop_AST : public Callable {
-
+public:
     NODE_CONSTRUCTORS (Binop_AST, Callable);
 
     AST_Ptr calledExpr () {
@@ -415,12 +408,50 @@ class Binop_AST : public Callable {
 
     //hbradlow
     Type_Ptr getType(){
-        //FIXME
         return child(0)->getType();
     }
 
 };    
 NODE_FACTORY (Binop_AST, BINOP);
+
+class And_AST : public Binop_AST{
+public:
+    NODE_CONSTRUCTORS (And_AST, Binop_AST);
+    void resolveSimpleIds(const Environ *env)
+    {
+        for_each_child(c,this){
+            c->resolveSimpleIds(env);
+        } end_for;
+    }
+    Type_Ptr getType(){
+        Unwind_Stack s;
+        int b = child(0)->getType()->unify(child(1)->getType(),s);
+        if(b==0){
+            error(loc(),"Binop must have same values for both children");
+        }
+        return child(0)->getType();
+    }
+};
+NODE_FACTORY (And_AST, AND);
+class Or_AST : public Binop_AST{
+public:
+    NODE_CONSTRUCTORS (Or_AST, Binop_AST);
+    void resolveSimpleIds(const Environ *env)
+    {
+        for_each_child(c,this){
+            c->resolveSimpleIds(env);
+        } end_for;
+    }
+    Type_Ptr getType(){
+        Unwind_Stack s;
+        int b = child(0)->getType()->unify(child(1)->getType(),s);
+        if(b==0){
+            error(loc(),"Binop must have same values for both children");
+        }
+        return child(0)->getType();
+    }
+};
+NODE_FACTORY (Or_AST, OR);
 
 /** Kevin : A compare. */
 class Compare_AST : public Callable{
@@ -853,8 +884,10 @@ protected:
 
         Type_Ptr type = dictDecl->asType()->freshen();
         Unwind_Stack s;
-        child(0)->child(0)->getType()->unify(type->child(1)->child(0)->asType(),s);
-        child(0)->child(1)->getType()->unify(type->child(1)->child(1)->asType(),s);
+        if(arity()!=0){
+            child(0)->child(0)->getType()->unify(type->child(1)->child(0)->asType(),s);
+            child(0)->child(1)->getType()->unify(type->child(1)->child(1)->asType(),s);
+        }
 
         return type;
     }
