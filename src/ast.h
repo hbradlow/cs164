@@ -98,6 +98,8 @@ public:
      *  declarations for declarative regions nested within me. */
     virtual void collectDecls (Decl* enclosing);
 
+    virtual void collectDeclsTransparent (Decl* enclosing);
+
     /** Kevin : Make sure that bound methods are called right away */
     virtual void check_bound_methods (bool inside_call);
 

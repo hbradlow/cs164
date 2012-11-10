@@ -120,6 +120,15 @@ AST::collectDecls (Decl* enclosing)
     } end_for;
 }
 
+void
+AST::collectDeclsTransparent (Decl* enclosing)
+{
+    for_each_child(c,this) 
+    {
+        c->collectDeclsTransparent(enclosing); 
+    } end_for; 
+}
+
 /** Kevin */
 void 
 AST::collectParams (Decl* enclosing, int k)

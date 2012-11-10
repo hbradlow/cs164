@@ -649,20 +649,6 @@ protected:
 };
 NODE_FACTORY (Block_AST, BLOCK);
 
-//hbradlow
-class If_AST: public AST_Tree {
-protected:
-    NODE_CONSTRUCTORS (If_AST, AST_Tree);
-    Type_Ptr getType(){
-        for_each_child(c,this){
-            if(c_i_ !=0 && c->getType()!=NULL){
-                return c->getType();
-            }
-        } end_for;
-        return NULL;
-    }
-};
-NODE_FACTORY (If_AST, IF);
 
 //hbradlow
 class Tuple_AST: public AST_Tree {

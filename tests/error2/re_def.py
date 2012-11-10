@@ -1,4 +1,5 @@
-def f():
-    print "hi" 
-def f():
+def f(x):
+    print "hi"
+
+def f(y):
     print "there"

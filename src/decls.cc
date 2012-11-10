@@ -194,17 +194,59 @@ Decl::addMember (Decl* new_member)
 }
 
 void
-Decl::addMemberDef (Decl* new_member)
+Decl::addMemberDef (Decl* new_member, AST_Ptr id)
 {
     if (_members == NULL) 
     UNIMPLEMENTED (addMemberDef);
+    Decl_Vector dv = new_member->getContainer()->getEnviron()->find_overloadings (new_member->getName());
     _members->defineDef(new_member);
+    AST_Ptr current_sig = new_member->getSignature();
+    int children = 0; 
+    for_each_child(c, current_sig)
+    {
+        children++; 
+    }end_for;
+    for (Decl_Vector::const_iterator i = dv.begin();
+            i != dv.end(); 
+            i++)
+    {
+        AST_Ptr prev_sig = (*i)->getSignature(); 
+        int old_children = 0;
+        bool match = true;
+        for_each_child(c, prev_sig)
+        {
+            old_children++;
+            if (c_i_ >= children)
+            {
+                match = false; 
+                break;
+            }
+            if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+            {
+                continue;
+            }
+            if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+            {
+                match = false;
+            } 
+        } end_for;
+        if (match && old_children == children) 
+        {
+            error(id->loc(), "Overloading to same signature");
+        }
+    }
 }
 
 void 
 Decl::addSignature (AST_Ptr new_sig)
 {
     return;
+}
+
+AST_Ptr
+Decl::getSignature()
+{
+    return NULL;
 }
 
 Decl*
@@ -421,8 +463,9 @@ class FuncDecl : public TypedDecl {
 public:
 
     FuncDecl (const string& name, Decl* container, AST_Ptr type,
-	Environ* env)
+	Environ* env, AST_Ptr signature)
         :  TypedDecl (name, container, type, env) {
+            _signature = signature;
     }
 
     /** Kevin */
@@ -438,7 +481,12 @@ public:
 
     void addSignature(AST_Ptr new_sig)
     {
-        _overloads.push_back(new_sig);
+        _signature = new_sig;
+    }
+
+    AST_Ptr getSignature() 
+    {
+        return _signature;
     }
 
 protected:
@@ -459,8 +507,8 @@ protected:
 
     Decl* addDefDecl (AST_Ptr id) {
         string def_name = id->child(0)->as_string();
-        Decl* decl = makeFuncDecl (def_name, this, Type::makeVar());
-        addMemberDef (decl);
+        Decl* decl = makeFuncDecl (def_name, this, Type::makeVar(), id->child(1));
+        addMemberDef (decl, id);
         return decl;
     }
 
@@ -471,22 +519,22 @@ protected:
         return decl;
     }
 
-    vector<AST_Ptr> _overloads;
+    AST_Ptr _signature; 
 };
 
 Decl*
-makeFuncDecl (const string& name, Decl* container, AST_Ptr type)
+makeFuncDecl (const string& name, Decl* container, AST_Ptr type, AST_Ptr signature)
 {
     return new FuncDecl (name, container, type,
-			 new Environ (container->getEnviron ()));
+			 new Environ (container->getEnviron ()), signature);
 }
 
 class MethodDecl : public FuncDecl {
 public:
 
-    MethodDecl (const string& name, Decl* container, AST_Ptr type)
+    MethodDecl (const string& name, Decl* container, AST_Ptr type, AST_Ptr signature)
         :  FuncDecl (name, container, type,
-		     new Environ (container->getEnviron ()->get_enclosure ())) {
+		     new Environ (container->getEnviron ()->get_enclosure ()), signature) {
     }
 
 protected:
@@ -515,9 +563,9 @@ private:
 };
 
 Decl*
-makeMethodDecl (const string& name, Decl* cls, AST_Ptr type)
+makeMethodDecl (const string& name, Decl* cls, AST_Ptr type, AST_Ptr signature)
 {
-    return new MethodDecl (name, cls, type);
+    return new MethodDecl (name, cls, type, signature);
 }
 
 class ClassDecl : public Decl {
@@ -595,8 +643,8 @@ protected:
 
     Decl* addDefDecl (AST_Ptr id) {
     string name = id->child(0)->as_string();
-	Decl* decl = makeMethodDecl (name, this, Type::makeVar());
-	addMemberDef (decl);
+	Decl* decl = makeMethodDecl (name, this, Type::makeVar(), id->child(1));
+	addMemberDef (decl, id);
     int counter = 0;
     for_each_child(c, id->child(1))
     {
@@ -644,8 +692,8 @@ protected:
 
     Decl* addDefDecl (AST_Ptr id) {
     string name = id->child(0)->as_string();
-	Decl* decl = makeFuncDecl (name, this, Type::makeVar ());
-	addMemberDef (decl);
+	Decl* decl = makeFuncDecl (name, this, Type::makeVar (), id->child(1));
+	addMemberDef (decl, id);
 	return decl;
     }
 

@@ -129,7 +129,7 @@ public:
     /** Add DECL to the end of my list of member Decls. */
     virtual void addMember (Decl* new_member);
 
-    virtual void addMemberDef (Decl* new_member);
+    virtual void addMemberDef (Decl* new_member, AST_Ptr id);
 
     /** Create a declaration of ID appropriate for a variable declaration to
      *  my members.  There must not already be one. Returns the
@@ -139,6 +139,7 @@ public:
     /** Kevin : Add an overloading to the function */
     virtual void addSignature (AST_Ptr new_sig);
 
+    virtual AST_Ptr getSignature ();
     /** Create a declaration of ID appropriate for a 'def' to my
      *  members.  There must not already be one.  Returns the
      *  resulting declaration. */
@@ -227,7 +228,7 @@ extern Decl* makeTypeVarDecl (const std::string& name, AST_Ptr canonical);
 /** Declaration of function NAME of type TYPE, nested inside the
  *  function or module CONTAINER. */
 extern Decl* makeFuncDecl (const std::string& name,
-                           Decl* container, AST_Ptr type);
+                           Decl* container, AST_Ptr type, AST_Ptr signature);
 /** Declaration for a class NAME with ARITY type parameters. */
 extern Decl* makeClassDecl (const std::string& name, AST_Ptr classPtr, AST_Ptr params);
 /** Declaraton for the module MAIN.  This always has sequence number 0. */

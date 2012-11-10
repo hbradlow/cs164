@@ -293,9 +293,28 @@ class Slice_Item_AST: public Get_Item_AST
 };
 NODE_FACTORY(Slice_Item_AST, SLICING);
 
-class For_Stmt_AST: public AST_Tree 
+
+class Block_Scope: public AST_Tree
 {
-    NODE_CONSTRUCTORS (For_Stmt_AST, AST_Tree);
+public: 
+    NODE_CONSTRUCTORS(Block_Scope, AST_Tree);
+    void collectDeclsTransparent(Decl* enclosing)
+    {
+        this->collectDecls(enclosing);
+    }
+    void resolveSimpleIds(const Environ* env)
+    {
+        for_each_child(c,this)
+        {
+            c->resolveSimpleIds(_mydecl->getEnviron());
+        } end_for;
+    }
+    Decl* _mydecl;
+};
+
+class For_Stmt_AST: public Block_Scope
+{
+    NODE_CONSTRUCTORS (For_Stmt_AST, Block_Scope);
 public: 
     void collectDecls(Decl* enclosing)
     {
@@ -303,18 +322,57 @@ public:
         stringstream out;
         out << lineNumber();
         name = "___for___" + out.str();
-        _myDecl = makeFuncDecl(name, enclosing, Type::makeVar());
-        enclosing->addMember(_myDecl);
-        child(0)->addTargetDecls(_myDecl);
+        _mydecl = makeFuncDecl(name, enclosing, Type::makeVar(), NULL);
+        enclosing->addMember(_mydecl);
+        child(0)->addTargetDecls(_mydecl);
     }
-    void resolveSimpleIds(const Environ* env)
-    {
-        for_each_child(c,this)
-        {
-            c->resolveSimpleIds(_myDecl->getEnviron());
-        } end_for;
-    }
-    Decl* _myDecl;
 };
 
 NODE_FACTORY(For_Stmt_AST, FOR);
+
+class While_AST: public Block_Scope
+{
+    NODE_CONSTRUCTORS (While_AST, Block_Scope);    
+    void collectDecls(Decl* enclosing)
+    {
+        string name;
+        stringstream out;
+        out << lineNumber();
+        name = "___while___" + out.str();
+        _mydecl = makeFuncDecl(name, enclosing, Type::makeVar(), NULL);
+        enclosing->addMember(_mydecl);
+        for_each_child(c, this)
+        {
+            c->collectDeclsTransparent(_mydecl);
+        } end_for;
+    }
+};
+
+NODE_FACTORY(While_AST, WHILE);
+
+class If_AST: public Block_Scope
+{
+    NODE_CONSTRUCTORS (If_AST, Block_Scope);
+    void collectDecls(Decl* enclosing)
+    {
+        string name;
+        stringstream out;
+        out << lineNumber();
+        name = "___if___" + out.str();
+        _mydecl = makeFuncDecl(name, enclosing, Type::makeVar(), NULL);
+        enclosing->addMember(_mydecl);
+        for_each_child(c, this)
+        {
+            c->collectDeclsTransparent(_mydecl);
+        } end_for;
+    }
+    Type_Ptr getType(){
+        for_each_child(c,this){
+            if(c_i_ !=0 && c->getType()!=NULL){
+                return c->getType();
+            }
+        } end_for;
+        return NULL;
+    }
+};
+NODE_FACTORY(If_AST, IF);

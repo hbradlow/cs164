@@ -169,6 +169,16 @@ protected:
     void collectDecls(Decl *enclosing)
     {
     }
+
+    void collectDeclsTransparent(Decl *enclosing) 
+    {
+        Decl *myDecl = enclosing->getEnviron()->find(as_string());
+        if (myDecl == NULL) 
+        {
+            this->addTargetDecls(enclosing);
+        }
+        else addDecl(myDecl);
+    }
    
     void create_attr_ref (Decl *enclosing)
     {
