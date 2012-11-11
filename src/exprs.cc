@@ -361,16 +361,16 @@ protected:
                             match = false; 
                             break;
                         }
-                        if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                        if (c->getType() == NULL && current_sig->child(c_i_)->getType() != NULL)
                         {
                             match = false; 
                             break;
                         }
-                        if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                        if (current_sig->child(c_i_)->getType() == NULL && c->getType() == NULL)
                         {
                             continue;
                         }
-                        if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                        if (current_sig->child(c_i_)->getType()->unifies(c->getType()))
                         {
                             match = false;
                         } 
