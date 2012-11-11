@@ -184,7 +184,7 @@ protected:
     Type_Ptr
     getType ()
     {
-        Type_Ptr t; 
+        Type_Ptr t;
         vector<Type_Ptr> actual_types;
         if(child(0)->is_attribute_ref()){
             actual_types.push_back(child(0)->child(0)->getType()->binding());
@@ -194,7 +194,6 @@ protected:
             Type_Ptr t1 = this->actualParam(i)->getType();
             actual_types.push_back(t1);
         }
-
         Type_Ptr func_type = child(0)->getType();
         if(func_type==NULL){
             error(loc(),"Function not defined");
@@ -213,11 +212,60 @@ protected:
             Unwind_Stack s;
             int b = t1->unify(t2,s);
             if(b==0){
+                t = this->getOverloadedType(); 
+                if (t == NULL)
                 error(loc(), "Something went wrong");
+                else
+                {
+                return t;
+                }
             }
         }
         t = func_type->returnType();
         return t;
+    }
+
+    Type_Ptr getOverloadedType()
+    {
+        Type_Ptr t; 
+        vector<Type_Ptr> actual_types;
+        if(child(0)->is_attribute_ref()){
+            actual_types.push_back(child(0)->child(0)->getType()->binding());
+        }
+        for(int i = 0; i<this->numActuals(); i++)
+        {
+            Type_Ptr t1 = this->actualParam(i)->getType();
+            actual_types.push_back(t1);
+        }
+        Decl_Vector dv = child(0)->getDecl(0)->getContainer()->getEnviron()->find_overloadings(child(0)->as_string());
+        for (Decl_Vector::const_iterator j = dv.begin();
+                j != dv.end(); 
+                j++)
+        {
+            bool matches = true;
+            Type_Ptr func_type = (*j)->getType();
+            if(func_type==NULL){
+                matches = false;
+            }
+            func_type = func_type->binding()->freshen();
+            if(func_type->child(1)->arity()!=actual_types.size()){
+                matches = false;
+            }
+            for(unsigned int i = 0; i<actual_types.size(); i++)
+            {
+                Type_Ptr t1 = actual_types[i];
+                Type_Ptr t2 = func_type->child(1)->child(i)->asType();
+
+                Unwind_Stack s;
+                int b = t1->unify(t2,s);
+                if(b==0){
+                    matches=false;
+                }
+            }
+            if (matches)
+            return func_type->returnType();
+        }
+        return NULL;
     }
     Decl* getDecl(int k)
     {
@@ -240,7 +288,7 @@ protected:
         {
             AST_Ptr prev_sig = (*i)->getSignature(); 
             int old_children = 0;
-            bool match = true;
+            bool match = false;
             if(prev_sig!=NULL){
                 if(prev_sig->arity()==current_sig->arity()){
                     for_each_child(c, prev_sig)
@@ -248,26 +296,26 @@ protected:
                         old_children++;
                         if (c_i_ >= children)
                         {
-                            match = false; 
+                            match = true; 
                             break;
                         }
-                        if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+                        if (c->getType() == NULL && current_sig->child(c_i_)->getType() != NULL)
                         {
-                            match = false; 
+                            match = true; 
                             break;
                         }
-                        if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+                        if (current_sig->child(c_i_)->getType() == NULL && c->getType() == NULL)
                         {
                             continue;
                         }
-                        if (current_sig->child(c_i_)->getType()->child(0)->as_string() != c->getType()->child(0)->as_string())
+                        if (current_sig->child(c_i_)->getType()->unifies(c->getType()))
                         {
-                            match = false;
+                            match = true;
                         } 
                     } end_for;
                 }
                 else
-                    match = false;
+                    match = true;
             }
             if (match && old_children == children) 
             {
@@ -617,8 +665,6 @@ public:
         //hbradlow: this figures out the supposed type of the function based off of its return statement
         if(child(3)->getType()!=NULL)
         {
-            child(3)->getType()->print(cout,0);
-            printf("\n");
             if(type->asType()==NULL)
             {
                 type = child(3)->getType();
@@ -680,6 +726,7 @@ public:
         child(0)->getDecl(0)->checkIfOverloaded(this);
         return this;
     }
+
 
 private: 
 
