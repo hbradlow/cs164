@@ -274,55 +274,6 @@ protected:
     void collectDecls(Decl* enclosing)
     {
         child(1)->resolveSimpleIds(enclosing->getEnviron());
-
-        Decl_Vector dv = enclosing->getEnviron()->find_overloadings (child(0)->as_string());
-        AST_Ptr current_sig = child(1);
-        int children = 0; 
-        for_each_child(c, current_sig)
-        {
-            children++; 
-        }end_for;
-        for (Decl_Vector::const_iterator i = dv.begin();
-                i != dv.end(); 
-                i++)
-        {
-            AST_Ptr prev_sig = (*i)->getSignature(); 
-            int old_children = 0;
-            bool match = false;
-            if(prev_sig!=NULL){
-                if(prev_sig->arity()==current_sig->arity()){
-                    for_each_child(c, prev_sig)
-                    {
-                        old_children++;
-                        if (c_i_ >= children)
-                        {
-                            match = true; 
-                            break;
-                        }
-                        if (c->getType() == NULL && current_sig->child(c_i_)->getType() != NULL)
-                        {
-                            match = true; 
-                            break;
-                        }
-                        if (current_sig->child(c_i_)->getType() == NULL && c->getType() == NULL)
-                        {
-                            continue;
-                        }
-                        if (current_sig->child(c_i_)->getType()->unifies(c->getType()))
-                        {
-                            match = true;
-                        } 
-                    } end_for;
-                }
-                else
-                    match = true;
-            }
-            if (match && old_children == children) 
-            {
-                child(0)->addDecl(*i);
-                return;
-            }
-        }
     }
     void resolveSimpleIds(const Environ *env)
     {
@@ -352,7 +303,6 @@ protected:
             int old_children = 0;
             bool match = true;
             if(prev_sig!=NULL){
-                if(prev_sig->arity()==current_sig->arity()){
                     for_each_child(c, prev_sig)
                     {
                         old_children++;
@@ -370,17 +320,27 @@ protected:
                         {
                             continue;
                         }
-                        if (current_sig->child(c_i_)->getType()->unifies(c->getType()))
+                        if (!current_sig->child(c_i_)->getType()->unifies(c->getType()))
                         {
                             match = false;
                         } 
                     } end_for;
                 }
-                else
-                    match = false;
-            }
             if (match && old_children == children) 
             {
+                /*
+                printf("matching in resolveids %i %i\n", old_children, children);
+                printf("this\n");
+                this->print(cout,0);
+                printf("\n");
+                printf("child\n");
+                child(0)->print(cout, 0);
+                printf("\n");
+                (*i)->print();
+                printf("\n");
+                printf("\n");*/
+                if (child(0)->numDecls())
+                    child(0)->removeDecl(0);
                 child(0)->addDecl(*i);
                 return;
             }
