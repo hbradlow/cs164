@@ -233,35 +233,31 @@ Decl::checkIfOverloaded(AST_Ptr id)
                 match = false; 
                 break;
             }
-            if (c->asType() == NULL && current_sig->child(c_i_)->asType() != NULL)
+            if (c->getType() == NULL && current_sig->child(c_i_)->getType() != NULL)
             {
                 match = false; 
                 break;
             }
-            if (current_sig->child(c_i_)->asType() == NULL && c->asType() == NULL)
+            if (current_sig->child(c_i_)->getType() == NULL && c->getType() == NULL)
             {
                 continue;
             }
             Unwind_Stack s;
-            if (!current_sig->child(c_i_)->getType()->binding()->unify(c->getType()->binding(), s))
+            if (!current_sig->child(c_i_)->getType()->unify(c->getType(), s))
             {
                 match = false;
             } 
         } end_for;
         if (match && old_children == children) 
         {
-            prev_sig->print(cout, 0);
+            prev_sig->child(0)->getType()->print(cout, 0);
             printf("\n");
-            printf("\n");
-            current_sig->print(cout, 0);
-            printf("\n");
+            current_sig->child(0)->getType()->print(cout, 0);
             printf("\n");
             error(id->loc(), "Overloading to same signature");
             prev_sig->child(0)->getType()->binding()->print(cout, 0);
             printf("\n");
-            printf("\n");
             current_sig->child(0)->getType()->binding()->print(cout, 0);
-            printf("\n");
             printf("\n");
         }
     }

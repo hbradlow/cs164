@@ -213,6 +213,10 @@ protected:
             Unwind_Stack s;
             int b = t1->unify(t2,s);
             if(b==0){
+                t1->print(cout,0);
+                printf("\n");
+                t2->print(cout,0);
+                printf("\n");
                 error(loc(), "Something went wrong");
             }
         }
@@ -448,6 +452,8 @@ public:
             error(loc(),"Binop needs two of the same type");
         }
         */
+        Unwind_Stack s;
+        int b = child(0)->getType()->unify(child(2)->getType(),s);
         return child(0)->getType();
     }
 
@@ -615,6 +621,8 @@ public:
         //hbradlow: this figures out the supposed type of the function based off of its return statement
         if(child(3)->getType()!=NULL)
         {
+            child(3)->getType()->print(cout,0);
+            printf("\n");
             if(type->asType()==NULL)
             {
                 type = child(3)->getType();
@@ -672,6 +680,7 @@ public:
                 continue;
             c->resolveSimpleIds(decl->getEnviron());
         } end_for;
+        this->resolveSimpleIds(decl->getContainer()->getEnviron());
         child(0)->getDecl(0)->checkIfOverloaded(this);
         return this;
     }
