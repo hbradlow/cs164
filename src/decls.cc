@@ -250,15 +250,7 @@ Decl::checkIfOverloaded(AST_Ptr id)
         } end_for;
         if (match && old_children == children) 
         {
-            prev_sig->child(0)->getType()->print(cout, 0);
-            printf("\n");
-            current_sig->child(0)->getType()->print(cout, 0);
-            printf("\n");
             error(id->loc(), "Overloading to same signature");
-            prev_sig->child(0)->getType()->binding()->print(cout, 0);
-            printf("\n");
-            current_sig->child(0)->getType()->binding()->print(cout, 0);
-            printf("\n");
         }
     }
 }

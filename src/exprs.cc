@@ -213,10 +213,6 @@ protected:
             Unwind_Stack s;
             int b = t1->unify(t2,s);
             if(b==0){
-                t1->print(cout,0);
-                printf("\n");
-                t2->print(cout,0);
-                printf("\n");
                 error(loc(), "Something went wrong");
             }
         }
