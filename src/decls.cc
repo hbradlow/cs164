@@ -204,7 +204,13 @@ Decl::addMemberDef (Decl* new_member, AST_Ptr id)
     UNIMPLEMENTED (addMemberDef);
     Decl_Vector dv = new_member->getContainer()->getEnviron()->find_overloadings (new_member->getName());
     _members->defineDef(new_member);
-    AST_Ptr current_sig = new_member->getSignature();
+}
+
+void
+Decl::checkIfOverloaded(AST_Ptr id)
+{
+    Decl_Vector dv = this->getContainer()->getEnviron()->find_overloadings (this->getName());
+    AST_Ptr current_sig = this->getSignature();
     int children = 0; 
     for_each_child(c, current_sig)
     {
@@ -215,6 +221,8 @@ Decl::addMemberDef (Decl* new_member, AST_Ptr id)
             i++)
     {
         AST_Ptr prev_sig = (*i)->getSignature(); 
+        if (prev_sig == current_sig)
+            continue;
         int old_children = 0;
         bool match = true;
         for_each_child(c, prev_sig)
@@ -234,15 +242,27 @@ Decl::addMemberDef (Decl* new_member, AST_Ptr id)
             {
                 continue;
             }
-            current_sig->child(c_i_)->getType()->resolveSimpleIds(new_member->getEnviron());
-            if (!current_sig->child(c_i_)->getType()->unifies(c->getType()))
+            Unwind_Stack s;
+            if (!current_sig->child(c_i_)->getType()->binding()->unify(c->getType()->binding(), s))
             {
                 match = false;
             } 
         } end_for;
         if (match && old_children == children) 
         {
+            prev_sig->print(cout, 0);
+            printf("\n");
+            printf("\n");
+            current_sig->print(cout, 0);
+            printf("\n");
+            printf("\n");
             error(id->loc(), "Overloading to same signature");
+            prev_sig->child(0)->getType()->binding()->print(cout, 0);
+            printf("\n");
+            printf("\n");
+            current_sig->child(0)->getType()->binding()->print(cout, 0);
+            printf("\n");
+            printf("\n");
         }
     }
 }

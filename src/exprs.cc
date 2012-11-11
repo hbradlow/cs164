@@ -672,6 +672,7 @@ public:
                 continue;
             c->resolveSimpleIds(decl->getEnviron());
         } end_for;
+        child(0)->getDecl(0)->checkIfOverloaded(this);
         return this;
     }
 

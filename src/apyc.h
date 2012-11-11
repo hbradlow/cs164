@@ -130,7 +130,7 @@ public:
     virtual void addMember (Decl* new_member);
 
     virtual void addMemberDef (Decl* new_member, AST_Ptr id);
-
+    virtual void checkIfOverloaded(AST_Ptr id);
     /** Create a declaration of ID appropriate for a variable declaration to
      *  my members.  There must not already be one. Returns the
      *  resulting declaration */
