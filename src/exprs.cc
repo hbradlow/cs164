@@ -200,9 +200,18 @@ protected:
             return NULL;
         }
         func_type = func_type->binding()->freshen();
-        if(func_type->child(1)->arity()!=actual_types.size()){
-            error(loc(), "Bad number of params");
-            return NULL;
+        if(func_type->arity()>=2)
+        {
+            if(func_type->child(1)->arity()!=actual_types.size()){
+                error(loc(), "Bad number of params");
+                return NULL;
+            }
+        }
+        else
+        {
+            func_type->print(cout,0);
+            printf("\n");
+            return func_type;
         }
         for(unsigned int i = 0; i<actual_types.size(); i++)
         {
@@ -497,7 +506,7 @@ public:
         }
         */
         Unwind_Stack s;
-        int b = child(0)->getType()->unify(child(2)->getType(),s);
+        child(0)->getType()->unify(child(2)->getType(),s);
         return child(0)->getType();
     }
 
