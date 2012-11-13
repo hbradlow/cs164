@@ -1,0 +1,11 @@
+apyc.o: apyc.cc apyc.h ast.h horn-common.h
+ast.o: ast.cc apyc.h ast.h horn-common.h apyc-parser.hh
+decls.o: decls.cc apyc.h ast.h horn-common.h apyc-parser.hh
+environ.o: environ.cc apyc.h ast.h horn-common.h
+exprs.o: exprs.cc apyc.h ast.h horn-common.h apyc-parser.hh
+modules.o: modules.cc apyc.h ast.h horn-common.h apyc-parser.hh
+stmts.o: stmts.cc apyc.h ast.h horn-common.h apyc-parser.hh
+tokens.o: tokens.cc apyc.h ast.h horn-common.h apyc-parser.hh
+types.o: types.cc apyc.h ast.h horn-common.h apyc-parser.hh
+apyc-parser.o: apyc-parser.cc horn-parse-lex.cc horn-common.h apyc.h \
+ ast.h apyc-parser.hh apyc-lexer.cc

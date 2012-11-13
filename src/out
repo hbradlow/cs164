@@ -1,0 +1,24 @@
+(module 0
+    (class 1
+        (id 1 a 1)
+        (type_formals_list 0)
+        (block 2
+            (assign 2
+                (id 2 b 3)
+                (int_literal 2 10))))
+    (assign 4
+        (id 4 c 5)
+        (call 4
+            (id 4 a 1)
+            (expr_list 0)))
+    (println 5
+        ()
+        (expr_list 5
+            (attributeref 5
+                (id 5 c 5)
+                (id 5 b)))))(moduledecl 0 __main__  (index_list 1 5))
+(classdecl 1 a  (index_list) (index_list 3))
+(typevardecl 2 Any )
+(instancedecl 3 b 1  (type_var 0 Any 2))
+(typevardecl 4 Any )
+(vardecl 5 c 0  (type_var 0 Any 4))

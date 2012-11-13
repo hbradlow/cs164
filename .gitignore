@@ -1,0 +1,30 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.dast
+*.ast
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+out
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+#text editor files
+*.swp
+.svn
+
+#compiled files
+*.o
+*.pyc
+apyc-*
+apyc
+parser-sentinel
+horn-*
+
+#pyunparse
+
