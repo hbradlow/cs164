@@ -10,4 +10,5 @@
 
 using namespace std;
 
-// FILL IN
+void native(string s){
+}
