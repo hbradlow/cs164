@@ -11,6 +11,15 @@
 
 using namespace std;
 
+/* Write the line to out, preceded by i tabs.
+ */
+void writeIndented(ostream& out, string line, int i) {
+  while (i > 0) {
+    out << "\t";
+    i--;
+  }
+}
+
 /* Definitions of methods in base class AST. */
 
 int AST::current_mark = 0;

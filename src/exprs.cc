@@ -625,6 +625,12 @@ protected:
 class IfExpr_AST : public BalancedExpr {
 protected:
 
+    void outerCodeGen (ostream& out, int depth) {
+      out << "if "; child(1)->outerCodeGen(out); out << " {";
+      writeLine(out, 
+
+    }
+
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
 };              
