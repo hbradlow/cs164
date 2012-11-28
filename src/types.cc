@@ -481,7 +481,7 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out, int i){
         out << "void*";
     }
 
@@ -585,8 +585,8 @@ protected:
     }        
 
     //hbradlow
-    void outerCodeGen(ostream& out){
-        child(0)->outerCodeGen(out);
+    void outerCodeGen(ostream& out,int i){
+        child(0)->outerCodeGen(out,i);
     }
 
 };

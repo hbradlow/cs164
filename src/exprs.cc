@@ -53,9 +53,9 @@ protected:
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out, int i){
         for_each_child(c,this){
-            c->outerCodeGen(out);
+            c->outerCodeGen(out,i);
         } end_for;
     }
 
@@ -179,10 +179,10 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
-        child(0)->outerCodeGen(out);
+    void outerCodeGen(ostream& out, int i){
+        child(0)->outerCodeGen(out,i);
         out << "(";
-        child(1)->outerCodeGen(out);
+        child(1)->outerCodeGen(out,i);
         out << ")";
     }
 };

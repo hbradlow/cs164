@@ -207,9 +207,9 @@ public:
     virtual AST_Ptr convertNone (bool definingContext);
 
     /** Generate code for me on OUT. */
-    virtual void outerCodeGen (std::ostream& out);
+    virtual void outerCodeGen (std::ostream& out, int i);
     //hbradlow
-    virtual void defCodeGen (std::ostream& out);
+    virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void classCodeGen (std::ostream& out);
 
@@ -545,7 +545,7 @@ extern AST_Ptr consTree (int syntax, const AST_Ptr& c0, const AST_Ptr& c1,
 
 /* Write the line to out, preceded by i tabs, then end the line.
  */
-void writeIndented(std::ostream& out, std::string line, int i);
+void writeIndented(std::ostream& out, int i);
 
 #endif
 
