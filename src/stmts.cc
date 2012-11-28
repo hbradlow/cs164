@@ -180,6 +180,9 @@ protected:
         out << "(";
         child(1)->outerCodeGen(out,i);
         out << "){\n";
+        for_each_child(c,child(3)){
+            c->outerCodeGen(out,i+1);
+        } end_for;
         out << "}\n";
     }
 };
@@ -513,8 +516,30 @@ protected:
         return this;
     }
 
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        out << "return ";
+        child(0)->outerCodeGen(out,i);
+        out << ";\n";
+    }
+
 };
 
 NODE_FACTORY (Return_AST, RETURN);
 
 
+/**  return EXPR */
+class Native_AST : public AST_Tree {
+protected:
+
+    NODE_CONSTRUCTORS (Native_AST, AST_Tree);
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        out << "native(";
+        child(0)->outerCodeGen(out,i);
+        out << ");\n";
+    }
+
+};
+
+NODE_FACTORY (Native_AST, NATIVE);
