@@ -271,16 +271,6 @@ void
 AST::classCodeGen (ostream& out,int i)
 {
 }
-//hbradlow
-void
-AST::defCodeGen (ostream& out, int i)
-{
-}
-//hbradlow
-void
-AST::classCodeGen (ostream& out,int i)
-{
-}
 
 bool
 AST::errorReported ()
