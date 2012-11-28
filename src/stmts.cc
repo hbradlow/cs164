@@ -183,6 +183,7 @@ protected:
         for_each_child(c,child(3)){
             c->outerCodeGen(out,i+1);
         } end_for;
+        writeIndented(out,i);
         out << "}\n";
     }
 };
@@ -310,6 +311,20 @@ protected:
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
         replace (2, child (2)->resolveTypes (getDecl (), resolved, ambiguities));
         return this;
+    }
+
+    void classCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        out << "class ";
+        child(0)->outerCodeGen(out,i);
+        out << "{\n";
+        for_each_child(c,child(2)){
+            c->outerCodeGen(out,i+1);
+        } end_for;
+        for_each_child(c,child(2)){
+            c->defCodeGen(out,i+1);
+        } end_for;
+        out << "};\n";
     }
 
 private:

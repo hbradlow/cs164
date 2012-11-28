@@ -211,7 +211,7 @@ public:
     //hbradlow
     virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow
-    virtual void classCodeGen (std::ostream& out);
+    virtual void classCodeGen (std::ostream& out,int i);
 
 protected:
 
