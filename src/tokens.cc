@@ -277,6 +277,11 @@ protected:
                              consTree (EXPR_LIST));
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        out << as_string();
+    }
+
 private:
 
     Decl_Vector _me;

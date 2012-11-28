@@ -52,6 +52,13 @@ protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        for_each_child(c,this){
+            c->outerCodeGen(out);
+        } end_for;
+    }
+
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -171,6 +178,13 @@ protected:
                 ->Callable::resolveTypes (context, resolved, ambiguities);
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        child(0)->outerCodeGen(out);
+        out << "(";
+        child(1)->outerCodeGen(out);
+        out << ")";
+    }
 };
 
 NODE_FACTORY (Call_AST, CALL);

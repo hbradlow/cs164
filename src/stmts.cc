@@ -13,7 +13,7 @@ using namespace std;
 
 /***** PRINT *****/
 
-/**       */
+/**********/
 class Print_AST : public AST_Tree {
 protected:
 
@@ -44,7 +44,6 @@ protected:
         out << ";\n";
     }
 };
-
 NODE_FACTORY (Print_AST, PRINT);
 
 
@@ -170,6 +169,16 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void defCodeGen(ostream& out){
+        child(2)->outerCodeGen(out);
+        out << " ";
+        child(0)->outerCodeGen(out);
+        out << "(";
+        child(1)->outerCodeGen(out);
+        out << "){\n";
+        out << "}\n";
+    }
 };
 
 NODE_FACTORY (Def_AST, DEF);
@@ -218,6 +227,18 @@ protected:
 
         for_each_child (c, this) {
             c->collectTypeVarDecls (enclosing);
+        } end_for;
+    }
+    
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        for_each_child(c,this){
+            if(c_i_!=0){
+                out << ",";
+            }
+            c->getType()->outerCodeGen(out);
+            out << " ";
+            c->outerCodeGen(out);
         } end_for;
     }
 
@@ -366,6 +387,12 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        //hbradlow: NOT COMPLETE! I just copied from ID
+        child(0)->outerCodeGen(out);
+    }
+
 };
 
 NODE_FACTORY (TypedId_AST, TYPED_ID);
@@ -401,6 +428,15 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        child(0)->getType()->outerCodeGen(out);
+        out << " ";
+        child(0)->outerCodeGen(out);
+        out << " = ";
+        child(1)->outerCodeGen(out);
+        out << ";\n";
+    }
 };
 
 NODE_FACTORY (Assign_AST, ASSIGN);

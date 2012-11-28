@@ -208,6 +208,10 @@ public:
 
     /** Generate code for me on OUT. */
     virtual void outerCodeGen (std::ostream& out);
+    //hbradlow
+    virtual void defCodeGen (std::ostream& out);
+    //hbradlow
+    virtual void classCodeGen (std::ostream& out);
 
 protected:
 

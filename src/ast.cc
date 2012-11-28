@@ -251,6 +251,16 @@ void
 AST::outerCodeGen (ostream& out)
 {
 }
+//hbradlow
+void
+AST::defCodeGen (ostream& out)
+{
+}
+//hbradlow
+void
+AST::classCodeGen (ostream& out)
+{
+}
 
 /* Definitions of methods in base class AST_Tree. */
 
