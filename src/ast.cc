@@ -248,7 +248,7 @@ AST::convertNone (bool)
 }
 
 void
-AST::outerCodeGen (ostream&)
+AST::outerCodeGen (ostream& out)
 {
 }
 

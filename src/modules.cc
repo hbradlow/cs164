@@ -38,9 +38,13 @@ protected:
     // This is a placeholder!  Replace it.
     void outerCodeGen (ostream& out) {
         out << "#include \"runtime.h\"\n"
-            << "int main(int argc, char* argv[]) {\n"
-            << "    cout << \"Hello, world!\" << endl;\n"
-            << "}\n";
+            << "int main(int argc, char* argv[]) {\n";
+
+        for_each_child(c,this){
+            c->outerCodeGen(out);
+        } end_for;
+
+        out << "}\n";
     }
 
     NODE_CONSTRUCTORS (Module_AST, AST_Tree);

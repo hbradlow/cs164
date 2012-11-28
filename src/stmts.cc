@@ -28,6 +28,21 @@ protected:
         }
         return this;
     }
+
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        out << "cout ";
+        int first = 1;
+        for_each_child(c,child(1)){
+            out << " << ";
+            if(!first){
+                out << "\" \" << ";
+            }
+            first = 0;
+            c->outerCodeGen(out);
+        } end_for;
+        out << ";\n";
+    }
 };
 
 NODE_FACTORY (Print_AST, PRINT);
@@ -45,6 +60,21 @@ protected:
 
     const char* externalName () {
 	return "println";
+    }
+
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        out << "cout << ";
+        int first = 1;
+        for_each_child(c,child(1)){
+            if(!first){
+                out << "\" \" << ";
+            }
+            first = 0;
+            c->outerCodeGen(out);
+            out << " << ";
+        } end_for;
+        out << "endl;\n";
     }
 
 };

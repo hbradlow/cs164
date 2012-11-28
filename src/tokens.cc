@@ -111,6 +111,10 @@ protected:
 
     long value;
 
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        out << value;
+    }
 };
 
 TOKEN_FACTORY(Int_Token, INT_LITERAL);
@@ -370,6 +374,11 @@ private:
     static const String_Token raw_factory;
 
     string literal_text;
+
+    //hbradlow
+    void outerCodeGen(ostream& out){
+        out << "\"" << string_text() << "\"";
+    }
 };
 
 TOKEN_FACTORY(String_Token, STRING);
