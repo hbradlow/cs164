@@ -626,8 +626,9 @@ class IfExpr_AST : public BalancedExpr {
 protected:
 
     void outerCodeGen (ostream& out, int depth) {
-      out << "if "; child(1)->outerCodeGen(out); out << " {";
-      writeLine(out, 
+      writeIndented(out, depth);
+      child(1)->outerCodeGen(out, depth); 
+      out << " {";
 
     }
 
@@ -643,7 +644,13 @@ NODE_FACTORY (IfExpr_AST, IF_EXPR);
 /** E1 and E2 */
 class And_AST : public BalancedExpr {
 protected:
+    
+    void outerCodeGen(ostream& out, int depth) {
+      child(1)->outerCodeGen(out, depth);
+      out << " && ";
+      child(2)->outerCodeGen(out, depth);
 
+    }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
 
 };

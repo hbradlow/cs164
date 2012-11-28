@@ -18,6 +18,7 @@ void writeIndented(ostream& out, string line, int i) {
     out << "\t";
     i--;
   }
+  out << line;
 }
 
 /* Definitions of methods in base class AST. */
