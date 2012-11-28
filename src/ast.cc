@@ -26,7 +26,7 @@ writeIndented(ostream& out, int i) {
 int AST::current_mark = 0;
 
 AST::AST ()
-    : _mark (0)
+    : _mark (0), _erroneous (false)
 {
 }
 
@@ -270,6 +270,18 @@ AST::defCodeGen (ostream& out, int i)
 void
 AST::classCodeGen (ostream& out,int i)
 {
+}
+
+bool
+AST::errorReported ()
+{
+    return _erroneous;
+}
+
+void
+AST::recordError ()
+{
+    _erroneous = true;
 }
 
 /* Definitions of methods in base class AST_Tree. */
