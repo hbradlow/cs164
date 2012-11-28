@@ -112,7 +112,7 @@ protected:
     long value;
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
         out << value;
     }
 };
@@ -278,7 +278,7 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
         out << as_string();
     }
 
@@ -381,7 +381,7 @@ private:
     string literal_text;
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
         out << "\"" << string_text() << "\"";
     }
 };

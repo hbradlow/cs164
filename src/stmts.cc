@@ -30,7 +30,8 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
         out << "cout ";
         int first = 1;
         for_each_child(c,child(1)){
@@ -39,7 +40,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            c->outerCodeGen(out);
+            c->outerCodeGen(out,i);
         } end_for;
         out << ";\n";
     }
@@ -62,7 +63,8 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
         out << "cout << ";
         int first = 1;
         for_each_child(c,child(1)){
@@ -70,7 +72,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            c->outerCodeGen(out);
+            c->outerCodeGen(out,i);
             out << " << ";
         } end_for;
         out << "endl;\n";
@@ -170,12 +172,13 @@ protected:
     }
 
     //hbradlow
-    void defCodeGen(ostream& out){
-        child(2)->outerCodeGen(out);
+    void defCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        child(2)->outerCodeGen(out,i);
         out << " ";
-        child(0)->outerCodeGen(out);
+        child(0)->outerCodeGen(out,i);
         out << "(";
-        child(1)->outerCodeGen(out);
+        child(1)->outerCodeGen(out,i);
         out << "){\n";
         out << "}\n";
     }
@@ -231,14 +234,14 @@ protected:
     }
     
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
         for_each_child(c,this){
             if(c_i_!=0){
                 out << ",";
             }
-            c->getType()->outerCodeGen(out);
+            c->getType()->outerCodeGen(out,i);
             out << " ";
-            c->outerCodeGen(out);
+            c->outerCodeGen(out,i);
         } end_for;
     }
 
@@ -388,9 +391,9 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
         //hbradlow: NOT COMPLETE! I just copied from ID
-        child(0)->outerCodeGen(out);
+        child(0)->outerCodeGen(out,i);
     }
 
 };
@@ -429,12 +432,13 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
-        child(0)->getType()->outerCodeGen(out);
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        child(0)->getType()->outerCodeGen(out,i);
         out << " ";
-        child(0)->outerCodeGen(out);
+        child(0)->outerCodeGen(out,i);
         out << " = ";
-        child(1)->outerCodeGen(out);
+        child(1)->outerCodeGen(out,i);
         out << ";\n";
     }
 };
