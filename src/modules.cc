@@ -37,8 +37,16 @@ protected:
     /** Top-level code generation routine.  */
     // This is a placeholder!  Replace it.
     void outerCodeGen (ostream& out) {
-        out << "#include \"runtime.h\"\n"
-            << "int main(int argc, char* argv[]) {\n";
+        out << "#include \"runtime.h\"\n";
+
+        for_each_child(c,this){
+            c->classCodeGen(out);
+        } end_for;
+        for_each_child(c,this){
+            c->defCodeGen(out);
+        } end_for;
+
+        out << "int main(int argc, char* argv[]) {\n";
 
         for_each_child(c,this){
             c->outerCodeGen(out);
