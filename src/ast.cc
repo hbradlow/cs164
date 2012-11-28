@@ -13,7 +13,8 @@ using namespace std;
 
 /* Write the line to out, preceded by i tabs.
  */
-void writeIndented(ostream& out, string line, int i) {
+void 
+writeIndented(ostream& out, string line, int i) {
   while (i > 0) {
     out << "\t";
     i--;
