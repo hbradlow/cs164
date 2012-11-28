@@ -13,9 +13,10 @@ using namespace std;
 
 /* Write the line to out, preceded by i tabs.
  */
-void writeIndented(ostream& out, string line, int i) {
+void 
+writeIndented(ostream& out, int i) {
   while (i > 0) {
-    out << "\t";
+    out << "    ";
     i--;
   }
   out << line;
@@ -258,7 +259,17 @@ AST::convertNone (bool)
 }
 
 void
-AST::outerCodeGen (ostream& out)
+AST::outerCodeGen (ostream& out,int i)
+{
+}
+//hbradlow
+void
+AST::defCodeGen (ostream& out, int i)
+{
+}
+//hbradlow
+void
+AST::classCodeGen (ostream& out)
 {
 }
 

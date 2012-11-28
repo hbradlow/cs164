@@ -181,7 +181,7 @@ main (int argc, char* argv[])
             closeStdout ();
         } else {
             openStdout (coutName);
-            tree->outerCodeGen (cout);
+            tree->outerCodeGen (cout,0);
             if (maxPhase == 4) {
                 closeStdout ();
                 makeExecutable (coutName, executableName);

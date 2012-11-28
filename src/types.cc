@@ -480,6 +480,11 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        out << "void*";
+    }
+
 private:
 
     Decl* _me;
@@ -578,6 +583,11 @@ protected:
             addDecl (decl);
         }
     }        
+
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        child(0)->outerCodeGen(out,i);
+    }
 
 };
 

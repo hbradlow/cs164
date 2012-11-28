@@ -13,7 +13,7 @@ using namespace std;
 
 /***** PRINT *****/
 
-/**       */
+/**********/
 class Print_AST : public AST_Tree {
 protected:
 
@@ -30,7 +30,8 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
         out << "cout ";
         int first = 1;
         for_each_child(c,child(1)){
@@ -39,12 +40,11 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            c->outerCodeGen(out);
+            c->outerCodeGen(out,i);
         } end_for;
         out << ";\n";
     }
 };
-
 NODE_FACTORY (Print_AST, PRINT);
 
 
@@ -63,7 +63,8 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out){
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
         out << "cout << ";
         int first = 1;
         for_each_child(c,child(1)){
@@ -71,7 +72,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            c->outerCodeGen(out);
+            c->outerCodeGen(out,i);
             out << " << ";
         } end_for;
         out << "endl;\n";
@@ -170,6 +171,17 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void defCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        child(2)->outerCodeGen(out,i);
+        out << " ";
+        child(0)->outerCodeGen(out,i);
+        out << "(";
+        child(1)->outerCodeGen(out,i);
+        out << "){\n";
+        out << "}\n";
+    }
 };
 
 NODE_FACTORY (Def_AST, DEF);
@@ -218,6 +230,18 @@ protected:
 
         for_each_child (c, this) {
             c->collectTypeVarDecls (enclosing);
+        } end_for;
+    }
+    
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        for_each_child(c,this){
+            if(c_i_!=0){
+                out << ",";
+            }
+            c->getType()->outerCodeGen(out,i);
+            out << " ";
+            c->outerCodeGen(out,i);
         } end_for;
     }
 
@@ -366,6 +390,12 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        //hbradlow: NOT COMPLETE! I just copied from ID
+        child(0)->outerCodeGen(out,i);
+    }
+
 };
 
 NODE_FACTORY (TypedId_AST, TYPED_ID);
@@ -401,6 +431,16 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        child(0)->getType()->outerCodeGen(out,i);
+        out << " ";
+        child(0)->outerCodeGen(out,i);
+        out << " = ";
+        child(1)->outerCodeGen(out,i);
+        out << ";\n";
+    }
 };
 
 NODE_FACTORY (Assign_AST, ASSIGN);
