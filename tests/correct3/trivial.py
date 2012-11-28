@@ -1,4 +1,6 @@
-def f()::int:
-    return 2
-a = 3
+def f(b::int):
+    return b*3
+def __init__()::__sys__:
+    pass
+a = f(200)
 print a

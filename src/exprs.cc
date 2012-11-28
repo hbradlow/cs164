@@ -247,6 +247,16 @@ protected:
         replace (2*k, expr);
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        child(3)->outerCodeGen(out,i);
+        out << "(";
+        child(0)->outerCodeGen(out,i);
+        out << ",";
+        child(2)->outerCodeGen(out,i);
+        out << ")";
+    }
+
 };    
 
 NODE_FACTORY (Binop_AST, BINOP);

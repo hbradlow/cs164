@@ -6,11 +6,13 @@
 *.ast
 *.dSYM
 out*
+exec*
 
 # Compiled Dynamic libraries
 *.so
 *.dylib
 out
+exec
 
 # Compiled Static libraries
 *.lai

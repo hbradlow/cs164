@@ -174,10 +174,7 @@ protected:
     //hbradlow
     void defCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        if(child(2)->arity()==0)
-            out << "void";
-        else
-            child(2)->outerCodeGen(out,i);
+        getDecl()->getType()->child(0)->asType()->binding()->outerCodeGen(out,i);
         out << " ";
         child(0)->outerCodeGen(out,i);
         out << "(";
@@ -317,10 +314,17 @@ protected:
     }
 
     void classCodeGen(ostream& out,int i){
+        if(strcmp(getDecl()->getName().c_str(),"int")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"dict")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"bool")==0)
+            return;
         writeIndented(out,i);
         out << "class ";
         child(0)->outerCodeGen(out,i);
         out << "{\n";
+        out << "public:\n";
         for_each_child(c,child(2)){
             c->outerCodeGen(out,i+1);
         } end_for;
@@ -455,7 +459,7 @@ protected:
     //hbradlow
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        child(0)->getType()->outerCodeGen(out,i);
+        child(0)->getType()->binding()->outerCodeGen(out,i);
         out << " ";
         child(0)->outerCodeGen(out,i);
         out << " = ";
@@ -553,9 +557,9 @@ protected:
     NODE_CONSTRUCTORS (Native_AST, AST_Tree);
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        out << "native(";
-        child(0)->outerCodeGen(out,i);
-        out << ");\n";
+        out << "NATIVE";
+        out << child(0)->as_string();
+        out << ";\n";
     }
 
 };

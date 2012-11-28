@@ -61,7 +61,7 @@ def __None__():
 # truth replaces bool(...) in regular Python.  truth(x) is True iff x is a
 # true value, according to the Python spec.
 
-def truth(x)::bool:
+def truth(x::int)::bool:
     native "__truth__"
 
 def __not__(x)::bool:
@@ -207,11 +207,12 @@ def read(f::file)::str:
 # of module members.)
 
 class __sys__:
-    stdin::file = __standard_file__(0)
-    stdout::file = __standard_file__(1)
-    stderr::file = __standard_file__(2)
+    #stdin::file = __standard_file__(0)
+    #stdout::file = __standard_file__(1)
+    #stderr::file = __standard_file__(2)
 
-    argv::list of str = __argv__()
+    #argv::list of str = __argv__()
+    pass
 
 sys::__sys__ = __sys__()
 

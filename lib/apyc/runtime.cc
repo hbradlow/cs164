@@ -10,5 +10,3 @@
 
 using namespace std;
 
-void native(string s){
-}

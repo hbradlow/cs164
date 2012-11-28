@@ -437,8 +437,9 @@ protected:
             if (getDecl () != NULL)
                 out << " " << getDecl ()->getIndex ();
             out << ")";
-        } else
+        } else{
             print (me, out, indent);
+        }
     }
 
     string as_string () const {
@@ -593,6 +594,14 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        if(strcmp(child(0)->as_string().c_str(),"dict")==0){
+            out << "map<";
+            child(1)->child(0)->outerCodeGen(out,i);
+            out << ", ";
+            child(1)->child(1)->outerCodeGen(out,i);
+            out << ">";
+            return;
+        }
         child(0)->outerCodeGen(out,i);
     }
 
