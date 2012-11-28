@@ -29,6 +29,9 @@ public:
  *  FORMAT and the trailing arguments as
  *  for the printf family. */
 extern void error (const char* loc, const char* format, ...);
+/** Print an error message as for error(loc, format, ...), using
+ *  NODE->loc() as the location.  Reports only one error per node. */
+extern void error (AST_Ptr node, const char* format, ...);
 /** Print an error message (without file or line number indications)
  *  composed from FORMAT and the trailing arguments as for the printf
  *  family. */

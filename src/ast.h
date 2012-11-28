@@ -212,6 +212,12 @@ public:
     virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);
+    /** True if an error has been reported on me. */
+    bool errorReported ();
+
+    /** Indicate that an error has been reported on this node (to
+     *  avoid multiple error messages. */
+    void recordError ();
 
 protected:
 
@@ -257,6 +263,10 @@ private:
      *  traversal's sequence number.  Hence, we can tell if this node
      *  has been visited during the current traversal. */
     int _mark;
+
+    /** Set to true to indicate that an error has been flagged on this
+     *  node.  Used to avoid multiple error messages on a node. */
+    bool _erroneous;
 
 };
 
@@ -326,6 +336,9 @@ public:
     bool isType () {
         return true;
     }
+
+    /** Reports an erroneous type reference. */
+    Type_Ptr getType ();
 
     /** My arity, if I am a function type.  Otherwise -1. */
     virtual int numParams ();
