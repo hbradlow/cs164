@@ -174,7 +174,10 @@ protected:
     //hbradlow
     void defCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        child(2)->outerCodeGen(out,i);
+        if(child(2)->arity()==0)
+            out << "void";
+        else
+            child(2)->outerCodeGen(out,i);
         out << " ";
         child(0)->outerCodeGen(out,i);
         out << "(";
