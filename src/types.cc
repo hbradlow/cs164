@@ -490,6 +490,13 @@ protected:
 
     //hbradlow
     void innerCodeGen(ostream& out, int i){
+        //hbradlow: not sure what the best way to handle generic types is
+        /*
+        if(as_string().find("#")!=-1)
+            out << "void*";
+        else
+            out << as_string();
+        */
         out << "void*";
     }
     //hbradlow
@@ -613,6 +620,15 @@ protected:
             return;
         }
         child(0)->innerCodeGen(out,i);
+        if(child(1)->arity()){
+            out << "<";
+            for_each_child(c,child(1)){
+                if(c_i_!=0)
+                    out << ",";
+                c->innerCodeGen(out,i);
+            } end_for;
+            out << ">";
+        }
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){

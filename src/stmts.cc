@@ -44,10 +44,10 @@ protected:
 
     NODE_CONSTRUCTORS (If_AST, AST_Tree);
     
-    void outerCodeGen(ostream& out, int depth) {
-      writeIndented(out, depth);
+    //wskinner
+    void innerCodeGen(ostream& out, int depth) {
       out << "if (";
-      child(0)->outerCodeGen(out, depth);
+      child(0)->innerCodeGen(out, depth);
       out << ") {" << endl;
       child(1)->outerCodeGen(out, depth);
       writeIndented(out, depth);
@@ -57,6 +57,10 @@ protected:
       child(2)->outerCodeGen(out, depth);
       writeIndented(out, depth);
       out << "}" << endl;
+    }
+    void outerCodeGen(ostream& out, int depth){
+        writeIndented(out, depth);
+        innerCodeGen(out,depth);
     }
 };
 NODE_FACTORY (If_AST, IF);
@@ -233,6 +237,8 @@ protected:
     void defCodeGen(ostream& out,int i){
         writeIndented(out,i);
         getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
+        if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
+            out << "*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
@@ -386,6 +392,16 @@ protected:
             return;
         if(strcmp(getDecl()->getName().c_str(),"bool")==0)
             return;
+        if(child(1)->arity()){
+            writeIndented(out,i);
+            out << "template<";
+            for_each_child(c,child(1)){
+                if(c_i_!=0)
+                    out << ",";
+                out << "typename " << c->as_string();
+            } end_for;
+            out << ">\n";
+        }
         writeIndented(out,i);
         out << "class ";
         child(0)->innerCodeGen(out,i);

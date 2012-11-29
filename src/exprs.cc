@@ -579,6 +579,23 @@ protected:
         return this;
     }        
 
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "tuple" << arity() << "(";
+        for_each_child(c,this){
+            if(c_i_!=0)
+                out << ",";
+            c->innerCodeGen(out,i);
+        } end_for;
+        out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
 };
 
 NODE_FACTORY (Tuple_AST, TUPLE);

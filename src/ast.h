@@ -569,6 +569,10 @@ extern AST_Ptr consTree (int syntax, const AST_Ptr& c0, const AST_Ptr& c1,
 /* Write the line to out, preceded by i tabs.
  */
 void writeIndented(std::ostream& out, int i);
+//hbradlow
+std::string strReplace(std::string &s,
+                        std::string toReplace,
+                        std::string replaceWith);
 
 #endif
 

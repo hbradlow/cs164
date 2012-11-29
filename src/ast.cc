@@ -11,6 +11,14 @@
 
 using namespace std;
 
+//hbradlow
+std::string strReplace(std::string &s,
+                        std::string toReplace,
+                        std::string replaceWith)
+{
+        return(s.replace(s.find(toReplace), toReplace.length(), replaceWith));
+}
+
 /* Write the line to out, preceded by i tabs.
  */
 void 
