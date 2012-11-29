@@ -12,6 +12,7 @@
 using namespace std;
 
 
+
 /***** WHILE ******/
 /* while Cond E1
  */
@@ -45,13 +46,16 @@ protected:
     
     void outerCodeGen(ostream& out, int depth) {
       writeIndented(out, depth);
-      out << "if ";
+      out << "if (";
       child(0)->outerCodeGen(out, depth);
-      out << " {" << endl;
-      child(1)->outerCodeGen(out, depth+1);
+      out << ") {" << endl;
+      child(1)->outerCodeGen(out, depth);
+      writeIndented(out, depth);
       out << "}" << endl;
+      writeIndented(out, depth);
       out << "else {" << endl;
-      child(2)->outerCodeGen(out, depth+1);
+      child(2)->outerCodeGen(out, depth);
+      writeIndented(out, depth);
       out << "}" << endl;
     }
 };
@@ -533,6 +537,30 @@ class For_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (For_AST, AST_Tree);
+
+    //wskinner
+    void outerCodeGen(ostream& out, int depth) {
+      /* First construct an array out of exprs, and retrieve the length.
+       * Then iterate over the array using a regular C-style for loop.
+       * This is not at all efficient but it is correct.
+       *
+      AST_Ptr exprsarray = child(1)->asList();
+      string target = child(0)->asStr();
+      string arrname = getNewId();
+      string type = exprsarray->getType();
+      string newid = getNewId();
+      int length = exprsarray->getLength();
+
+      out << type << " " << target << endl;
+      out << type << "[] " << newid << " = ";
+      exprsarray->genInitialize(arrname);
+      string iter = getNewId();
+      out << "for (int " << iter << " = 0; " << iter << " < " << itoa(length)
+          << "; " << iter << "++) {" << endl;
+      out << target << " = " << arrname << "[" << iter << "]" << endl;
+      child(2)->outerCodeGen(out, depth+1);
+      out << "}" << endl;*/
+    }
 
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
         int errs0 = numErrors ();

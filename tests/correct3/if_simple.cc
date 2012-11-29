@@ -49,7 +49,7 @@ public:
 };
 class __sys__{
 public:
-    void* __init__(void* self){
+        void* __init__(void* self){
     }
 };
 void* __None__(){
@@ -224,6 +224,13 @@ bool __isnot__(void* x,void* y){
     NATIVE__isnot__;
 }
 void* foo(int x){
+    if (__eq__(x,2)) {
+                cout << "true" << endl;
+        cout << "also true" << endl;
+}
+else {
+                cout << "false" << endl;
+}
 }
 int main(int argc, char* argv[]) {
     bool True = truth(1);
