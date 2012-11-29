@@ -212,6 +212,8 @@ public:
     virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);
+    //hbradlow
+    virtual bool needsPointer();
     /** True if an error has been reported on me. */
     bool errorReported ();
 

@@ -272,6 +272,12 @@ AST::classCodeGen (ostream& out,int i)
 {
 }
 
+//hbradlow
+bool 
+AST::needsPointer(){
+    return false;
+}
+
 bool
 AST::errorReported ()
 {

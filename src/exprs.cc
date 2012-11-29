@@ -185,6 +185,7 @@ protected:
         child(1)->outerCodeGen(out,i);
         out << ")";
     }
+
 };
 
 NODE_FACTORY (Call_AST, CALL);
@@ -200,7 +201,17 @@ protected:
     Type_Ptr computeType () {
         return calledExpr ()->getType ()->binding ()->paramType (0);
     }
+    
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        out << "new ";
+        child(1)->child(0)->child(0)->outerCodeGen(out,i);
+    }
 
+    //hbradlow
+    bool needsPointer(){
+        return true;
+    }
 };
 
 NODE_FACTORY (Call1_AST, CALL1);
@@ -272,7 +283,6 @@ protected:
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
-
 };
 
 NODE_FACTORY (Compare_AST, COMPARE);
@@ -651,6 +661,14 @@ protected:
 
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        child(0)->outerCodeGen(out,i);
+        out << " ? ";
+        child(1)->outerCodeGen(out,i);
+        out << " : ";
+        child(2)->outerCodeGen(out,i);
+    }
 };              
 
 
@@ -663,7 +681,7 @@ class And_AST : public BalancedExpr {
 protected:
 
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
-
+    
 };
 
 NODE_FACTORY (And_AST, AND);

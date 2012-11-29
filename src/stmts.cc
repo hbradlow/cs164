@@ -460,6 +460,8 @@ protected:
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
         child(0)->getType()->binding()->outerCodeGen(out,i);
+        if(child(1)->needsPointer())
+            out << "*";
         out << " ";
         child(0)->outerCodeGen(out,i);
         out << " = ";

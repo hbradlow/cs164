@@ -8,25 +8,25 @@
 #define _RUNTIME_H_
 
 #define NATIVE__donotcall__
-#define NATIVE__None__ return NULL
-#define NATIVE__truth__ return x==0
-#define NATIVE__not__ return x!=0
+#define NATIVE__None__              return NULL
+#define NATIVE__truth__             return x==0
+#define NATIVE__not__               return x!=0
 #define NATIVE__xrange__
 #define NATIVE__len__range__
-#define NATIVE__add__int__
-#define NATIVE__sub__int__
-#define NATIVE__mul__int__ return x*y;
+#define NATIVE__add__int__          return x+y
+#define NATIVE__sub__int__          return x-y
+#define NATIVE__mul__int__          return x*y
 #define NATIVE__floordiv__int__
-#define NATIVE__mod__int__
+#define NATIVE__mod__int__          return x%y
 #define NATIVE__pow__int__
-#define NATIVE__neg__int__
-#define NATIVE__pos__int__
-#define NATIVE__lt__int__
-#define NATIVE__gt__int__
-#define NATIVE__le__int__
-#define NATIVE__ge__int__
-#define NATIVE__eq__int__
-#define NATIVE__ne__int__
+#define NATIVE__neg__int__          return -x ? x>0 : x
+#define NATIVE__pos__int__          return -x ? x<0 : x
+#define NATIVE__lt__int__           return x<y 
+#define NATIVE__gt__int__           return x>y
+#define NATIVE__le__int__           return x<=y
+#define NATIVE__ge__int__           return x>=y
+#define NATIVE__eq__int__           return x==y
+#define NATIVE__ne__int__           return x!=y
 #define NATIVE__toint__str__
 #define NATIVE__add__str__
 #define NATIVE__lmul__str__
