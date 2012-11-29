@@ -177,6 +177,7 @@ protected:
         getDecl()->getType()->child(0)->asType()->binding()->outerCodeGen(out,i);
         out << " ";
         child(0)->outerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
         child(1)->outerCodeGen(out,i);
         out << "){\n";
@@ -312,7 +313,6 @@ protected:
         replace (2, child (2)->resolveTypes (getDecl (), resolved, ambiguities));
         return this;
     }
-
     void classCodeGen(ostream& out,int i){
         if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
@@ -327,9 +327,6 @@ protected:
         out << "public:\n";
         for_each_child(c,child(2)){
             c->outerCodeGen(out,i+1);
-        } end_for;
-        for_each_child(c,child(2)){
-            c->defCodeGen(out,i+1);
         } end_for;
         out << "};\n";
     }

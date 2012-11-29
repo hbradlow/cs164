@@ -265,6 +265,9 @@ AST::outerCodeGen (ostream& out,int i)
 void
 AST::defCodeGen (ostream& out, int i)
 {
+    for_each_child(c, this){
+        c->defCodeGen(out,i);
+    } end_for;
 }
 //hbradlow
 void
