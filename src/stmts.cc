@@ -11,17 +11,40 @@
 
 using namespace std;
 
+
+/***** WHILE ******/
+/* while Cond E1
+ */
+//wskinner
+class While_AST : public AST_Tree {
+  protected:
+  
+    NODE_CONSTRUCTORS(While_AST, AST_Tree);
+    
+    void outerCodeGen(ostream& out, int depth) {
+      writeIndented(out, depth);
+      out << "while ";
+      child(0)->outerCodeGen(out, depth);
+      out << " {" << endl;
+      child(1)->outerCodeGen(out, depth);
+      writeIndented(out, depth);
+      out << "}" << endl;
+    }
+};
+NODE_FACTORY (While_AST, WHILE);
+
 /***** IF *****/
 
 /* if Cond: E1, else : E2
  */
+//wskinner
 class If_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (If_AST, AST_Tree);
     
-    //wskinner
     void outerCodeGen(ostream& out, int depth) {
+      writeIndented(out, depth);
       out << "if ";
       child(0)->outerCodeGen(out, depth);
       out << " {" << endl;
@@ -115,6 +138,7 @@ protected:
   
     //wskinner
     void outerCodeGen(ostream& out, int depth) {
+      writeIndented(out, depth);
       for_each_child(c, this) {
         c->outerCodeGen(out, depth);
       } end_for;
