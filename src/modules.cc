@@ -42,6 +42,7 @@ protected:
         for_each_child(c,this){
             c->classCodeGen(out,i);
         } end_for;
+
         for_each_child(c,this){
             c->defCodeGen(out,i);
         } end_for;

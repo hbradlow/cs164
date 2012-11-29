@@ -174,6 +174,7 @@ protected:
     //hbradlow
     void outerCodeGen(ostream& out, int i){
         child(0)->outerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
         child(1)->outerCodeGen(out,i);
         out << ")";
@@ -254,6 +255,7 @@ protected:
     //hbradlow
     void outerCodeGen(ostream& out, int i){
         child(3)->outerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex();
         out << "(";
         child(0)->outerCodeGen(out,i);
         out << ",";
