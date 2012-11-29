@@ -11,6 +11,29 @@
 
 using namespace std;
 
+/***** IF *****/
+
+/* if Cond: E1, else : E2
+ */
+class If_AST : public AST_Tree {
+protected:
+
+    NODE_CONSTRUCTORS (If_AST, AST_Tree);
+    
+    //wskinner
+    void outerCodeGen(ostream& out, int depth) {
+      out << "if ";
+      child(0)->outerCodeGen(out, depth);
+      out << " {" << endl;
+      child(1)->outerCodeGen(out, depth+1);
+      out << "}" << endl;
+      out << "else {" << endl;
+      child(2)->outerCodeGen(out, depth+1);
+      out << "}" << endl;
+    }
+};
+NODE_FACTORY (If_AST, IF);
+
 /***** PRINT *****/
 
 /**********/
@@ -89,6 +112,13 @@ class StmtList_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (StmtList_AST, AST_Tree);
+  
+    //wskinner
+    void outerCodeGen(ostream& out, int depth) {
+      for_each_child(c, this) {
+        c->outerCodeGen(out, depth);
+      } end_for;
+    }
 
     AST_Ptr doOuterSemantics () {
         for_each_child_var (c, this) {

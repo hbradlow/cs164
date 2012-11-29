@@ -279,7 +279,13 @@ class Compare_AST : public Binop_AST {
 protected:
 
     NODE_CONSTRUCTORS (Compare_AST, Binop_AST);
-
+/*
+    void outerCodeGeneration(ostream& out, int depth) {
+      out << "(";
+      child(0)->outerCodeGen(out, depth);
+      out << ")";
+    }
+*/
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
@@ -670,9 +676,8 @@ protected:
         child(2)->outerCodeGen(out,i);
     }
 };              
-
-
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
+
 
 /***** AND *****/
 
