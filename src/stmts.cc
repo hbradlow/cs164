@@ -23,7 +23,7 @@ protected:
         AST_Tree::resolveTypes (context, resolved, ambiguities);
         if (!child (0)->isMissing ()) {
             if (!child (0)->getType ()->unify (fileDecl->asType ())) {
-                error (loc (), "target argument in print must be file");
+                error (this, "target argument in print must be file");
             }
         }
         return this;
@@ -128,7 +128,7 @@ protected:
         AST_Ptr body = child (3);
         string name = id->as_string ();
         if (undefinable (name)) {
-            error (loc (), "may not define %s as a function", name.c_str ());
+            error (this, "may not define %s as a function", name.c_str ());
         }
         Decl* me = enclosing->addDefDecl(child(0), params->arity ());
         id->addDecl (me);
@@ -157,12 +157,12 @@ protected:
         formals->resolveTypes (me, resolved, ambiguities);
         if (!returnType->isMissing ()) {
             if (!funcType->returnType ()->unify (returnType->asType ())) 
-                error (loc (), "inconsistent return type");
+                error (this, "inconsistent return type");
         }
         for (size_t i = 0; i < formals->arity (); i += 1) {
             if (!formals->child (i)->getType ()
                 ->unify (funcType->paramType (i))) {
-                error (loc (), "inconsistent parameter type");
+                error (this, "inconsistent parameter type");
             }
         }
         body->resolveTypes (me, resolved, ambiguities);
@@ -174,7 +174,7 @@ protected:
     //hbradlow
     void defCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        child(2)->outerCodeGen(out,i);
+        getDecl()->getType()->child(0)->asType()->binding()->outerCodeGen(out,i);
         out << " ";
         child(0)->outerCodeGen(out,i);
         out << "(";
@@ -183,6 +183,7 @@ protected:
         for_each_child(c,child(3)){
             c->outerCodeGen(out,i+1);
         } end_for;
+        writeIndented(out,i);
         out << "}\n";
     }
 };
@@ -200,7 +201,7 @@ protected:
     void collectDecls (Decl* enclosing) {
         AST_Ptr params = child (1);
         if (params->arity () == 0) {
-            error (loc (), "method must have at least one parameter");
+            error (this, "method must have at least one parameter");
             params->insert (0, make_id ("__self__", loc ()));
         }
         Def_AST::collectDecls (enclosing);
@@ -227,7 +228,7 @@ protected:
             AST_Ptr id = c->getId ();
             string name = id->as_string ();
             if (undefinable (name))
-                error (loc (), "may not use %s as a parameter", name.c_str ());
+                error (this, "may not use %s as a parameter", name.c_str ());
             c->addDecl (enclosing->addParamDecl(id, c_i_));
         } end_for;
 
@@ -276,13 +277,13 @@ protected:
         const Environ* env = enclosing->getEnviron ();
 
         if (undefinable (name)) {
-            error (loc (), "may not define %s as a function", name.c_str ());
+            error (this, "may not define %s as a function", name.c_str ());
         }
 
         Decl* me = makeClassDecl (name, params);
 
         if (env->find_immediate (name) != NULL) {
-            error (id->loc (), "attempt to redefine %s", name.c_str ());
+            error (id, "attempt to redefine %s", name.c_str ());
         } else {
             enclosing->addMember (me);
         }
@@ -310,6 +311,27 @@ protected:
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
         replace (2, child (2)->resolveTypes (getDecl (), resolved, ambiguities));
         return this;
+    }
+
+    void classCodeGen(ostream& out,int i){
+        if(strcmp(getDecl()->getName().c_str(),"int")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"dict")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"bool")==0)
+            return;
+        writeIndented(out,i);
+        out << "class ";
+        child(0)->outerCodeGen(out,i);
+        out << "{\n";
+        out << "public:\n";
+        for_each_child(c,child(2)){
+            c->outerCodeGen(out,i+1);
+        } end_for;
+        for_each_child(c,child(2)){
+            c->defCodeGen(out,i+1);
+        } end_for;
+        out << "};\n";
     }
 
 private:
@@ -341,7 +363,7 @@ protected:
         for_each_child (c, this) {
             string name = c->as_string ();
             if (env->find_immediate (name) != NULL) {
-                error (c->loc (), "duplicate type parameter: %s",
+                error (c, "duplicate type parameter: %s",
                        name.c_str ());
             } else {
                 c->addDecl (enclosing->addTypeVarDecl (c));
@@ -389,7 +411,7 @@ protected:
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
         getId ()->resolveTypes (context, resolved, ambiguities);
         if (!getId ()->setType (child (1)->asType ())) 
-            error (loc (), "incompatible type assignment");
+            error (this, "incompatible type assignment");
         return this;
     }
 
@@ -422,9 +444,9 @@ protected:
         AST_Tree::resolveTypes (context, resolved, ambiguities);
         if (!child (0)->getType ()->unify (child (1)->getType ())
             && errs0 == numErrors ())
-            error (loc (), "type mismatch in assignment");
+            error (this, "type mismatch in assignment");
         if (!setType (child (1)->getType ()) && errs0 == numErrors ())
-            error (loc (), "type mismatch in assignment");
+            error (this, "type mismatch in assignment");
         return this;
     }
     
@@ -437,7 +459,9 @@ protected:
     //hbradlow
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        child(0)->getType()->outerCodeGen(out,i);
+        child(0)->getType()->binding()->outerCodeGen(out,i);
+        if(child(1)->needsPointer())
+            out << "*";
         out << " ";
         child(0)->outerCodeGen(out,i);
         out << " = ";
@@ -476,10 +500,10 @@ protected:
         else {
             eltType = Type::makeVar ();
             if (!seqType->unify (listDecl->asType (1, eltType)))
-                error (loc (), "value cannot be iterated over");
+                error (this, "value cannot be iterated over");
         }
         if (!eltType->unify (child (0)->getType ())) {
-            error (loc (), "for loop target does not match element type");
+            error (this, "for loop target does not match element type");
         } 
 
         return this;
@@ -511,7 +535,7 @@ protected:
         if (! expr->isMissing ()) {
             Type_Ptr returnType = context->getType ()->returnType ();
             if (!returnType->unify (expr->getType ()))
-                error (loc (), "inconsistent return type");
+                error (this, "inconsistent return type");
         }
         return this;
     }
@@ -535,9 +559,9 @@ protected:
     NODE_CONSTRUCTORS (Native_AST, AST_Tree);
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        out << "native(";
-        child(0)->outerCodeGen(out,i);
-        out << ");\n";
+        out << "NATIVE";
+        out << child(0)->as_string();
+        out << ";\n";
     }
 
 };

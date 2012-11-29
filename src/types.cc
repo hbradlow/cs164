@@ -31,7 +31,7 @@ AST::resolveTypes (Decl* context)
     } while (errors == numErrors () &&
              (resolved != resolved0 || ambiguities != ambiguities0));
     if (ambiguities > 0)
-        error (loc (), 
+        error (this, 
                "unresolved overloadings in left side of attribute reference");
     return r;
 }
@@ -49,6 +49,13 @@ AST::resolveTypesOuter (Decl* context)
 
 
 /*****    TYPE    *****/
+
+Type_Ptr
+Type::getType ()
+{
+    error (this, "a type may not be used as a value in this dialect");
+    return makeVar ();
+}
 
 int
 Type::numParams ()
@@ -430,8 +437,9 @@ protected:
             if (getDecl () != NULL)
                 out << " " << getDecl ()->getIndex ();
             out << ")";
-        } else
+        } else{
             print (me, out, indent);
+        }
     }
 
     string as_string () const {
@@ -472,7 +480,7 @@ protected:
             string name = as_string ();
             _me = env->find_immediate (name);
             if (_me == NULL) {
-                error (loc (), "the type variable %s is undefined",
+                error (this, "the type variable %s is undefined",
                        name.c_str ());
                 _me = makeTypeVarDecl (name, this);
             }
@@ -574,10 +582,10 @@ protected:
         string name = getId ()->as_string ();
         Decl* decl = env->find (name);
         if (decl == NULL) {
-            error (loc (), "undefined type: %s", name.c_str ());
+            error (this, "undefined type: %s", name.c_str ());
             addDecl (makeUnknownDecl (name, true));
         } else if (!decl->isType ()) {
-            error (loc (), "%s is not a type", name.c_str ());
+            error (this, "%s is not a type", name.c_str ());
             addDecl (makeUnknownDecl (name, true));
         } else {
             addDecl (decl);
@@ -586,6 +594,14 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        if(strcmp(child(0)->as_string().c_str(),"dict")==0){
+            out << "map<";
+            child(1)->child(0)->outerCodeGen(out,i);
+            out << ", ";
+            child(1)->child(1)->outerCodeGen(out,i);
+            out << ">";
+            return;
+        }
         child(0)->outerCodeGen(out,i);
     }
 

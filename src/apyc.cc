@@ -31,16 +31,33 @@ static int errCount;
 int maxPhase;
 static string execPrefix;
 
+void verror(const char* loc, const char* format, va_list ap)
+{
+    fprintf (stderr, "%s: ", yyprinted_location (loc).c_str ());
+    vfprintf (stderr, format, ap);
+    fprintf (stderr, "\n");
+    errCount += 1;
+}
+
 void
 error (const char* loc, const char* format, ...)
 {
     va_list ap;
     va_start (ap, format);
-    fprintf (stderr, "%s: ", yyprinted_location (loc).c_str ());
-    vfprintf (stderr, format, ap);
+    verror (loc, format, ap);
     va_end (ap);
-    fprintf (stderr, "\n");
-    errCount += 1;
+}
+
+void
+error (AST_Ptr node, const char* format, ...)
+{
+    if (!node->errorReported ()) {
+        node->recordError ();
+        va_list ap;
+        va_start (ap, format);
+        verror (node->loc (), format, ap);
+        va_end (ap);
+    }
 }
 
 void

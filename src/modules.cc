@@ -40,7 +40,7 @@ protected:
         out << "#include \"runtime.h\"\n";
 
         for_each_child(c,this){
-            c->classCodeGen(out);
+            c->classCodeGen(out,i);
         } end_for;
         for_each_child(c,this){
             c->defCodeGen(out,i);

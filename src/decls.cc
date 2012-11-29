@@ -177,7 +177,7 @@ Decl::asType (int arity, Type_Ptr*) const
 Type_Ptr
 Decl::asBaseType () const
 {
-    UNIMPLEMENTED (asBaseType);
+    return NULL;
 }
 
 Type_Ptr
@@ -224,7 +224,7 @@ Decl::addParamDecl (AST_Ptr id, int k) {
     const Environ* env = getEnviron ();
     Decl* old = env->find_immediate (name);
     if (old != NULL) {
-	error (id->loc (), "multiply defined formal parameter: %s",
+	error (id, "multiply defined formal parameter: %s",
 	       name.c_str ());
 	return old;
     }
@@ -256,7 +256,7 @@ Decl::addDefDecl (AST_Ptr id, int k) {
     Decl* decl = newDefDecl (id, k);
     Decl* old = getEnviron ()->find_immediate (id->as_string());
     if (old != NULL && !old->isOverloadable()) {
-        error (id->loc (), "invalid attempt to overload %s",
+        error (id, "invalid attempt to overload %s",
                id->as_string().c_str());
     } else {
         addMember (decl);

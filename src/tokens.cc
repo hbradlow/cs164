@@ -98,7 +98,7 @@ protected:
         errno = 0;
         value = strtol (text.c_str (), (char**) NULL, 0);
         if (errno != 0 || value > (1L<<30)) {
-            error (loc (), "literal value out of range: %s",
+            error (this, "literal value out of range: %s",
                    text.c_str ());
             value = 0;
         }
@@ -164,14 +164,14 @@ protected:
     void addTargetDecls (Decl* enclosing) {
         string name = as_string ();
         if (undefinable (name)) {
-            error (loc (), "attempt to redefine %s", name.c_str ());
+            error (this, "attempt to redefine %s", name.c_str ());
             return;
         }       
         Decl* old = enclosing->getEnviron ()->find_immediate (name);
         if (old == NULL) {
             addDecl (enclosing->addVarDecl(this));
         } else if (! old->assignable ()) {
-            error (loc (), "attempt to assign to non-assignable object: %s",
+            error (this, "attempt to assign to non-assignable object: %s",
                    name.c_str ());
             addDecl (old);
         } else {
@@ -188,7 +188,7 @@ protected:
         Decl_Vector defns;
         env->find (name, defns);
         if (defns.empty ()) {
-            error (loc (), "undefined identifier: %s", name.c_str ());
+            error (this, "undefined identifier: %s", name.c_str ());
             addDecl (makeUnknownDecl (name, false));
             return this;
         }
@@ -219,12 +219,12 @@ protected:
             }
         }
         if (_me.size () == 0)
-            error (loc (), "%s has no definition consistent with the context",
+            error (this, "%s has no definition consistent with the context",
                    as_string ().c_str ());
         else if (_me.size () == 1) {
             resolved += 1;
             if (!setType (_me[0]->getType ()))
-                error (loc (),
+                error (this,
                        "%s has no definition consistent with the context",
                        as_string ().c_str ());
         } else {
@@ -241,31 +241,41 @@ protected:
             Decl_Vector defns;
             objectType->getEnviron ()->find_immediate (name, defns);
             if (defns.empty ())
-                error (loc (), "object has no attribute named %s",
+                error (this, "object has no attribute named %s",
                        name.c_str ());
             else {
                 for (size_t i = 0; i < defns.size (); i += 1)
                     addDecl (defns[i]);
             }
         }
-        if (numDecls () == 0)
+        if (numDecls () == 0) {
             addDecl (makeUnknownDecl (name, false));
-        else
+            if (_type == NULL)
+                setType (getDecl ()->getType ());
+            return;
+        } else
             ambiguities += numDecls () - 1;
 
         if (numDecls () > 1 || getDecl ()->isMethod ())
             resolveTypes (NULL, resolved, ambiguities);
         else {
             vector<Type_Ptr> typePair;
+            Type_Ptr objectBaseType =
+                objectType->binding ()->getDecl ()->asBaseType ();
+            if (objectBaseType == NULL) {
+                error (this, "object has no (known) members");
+                return;
+            }
             typePair.push_back (getDecl ()->getType ());
-            typePair.push_back (objectType->getDecl ()->asBaseType ());
+            typePair.push_back (objectBaseType);
             Type::freshen (typePair);
-            if (!typePair[1]->unify(objectType) || !setType (typePair[0]))
-                error (loc (),
+            if (!typePair[1]->unify(objectType) || !setType (typePair[0])) {
+                error (this,
                        "attribute %s has no definition that fits the context.",
                        as_string ().c_str ());
-            else
-                setType (Type::makeVar ());
+                if (_type == NULL)
+                    setType (Type::makeVar ());
+            }
         }
     }
 

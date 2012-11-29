@@ -92,25 +92,25 @@ public:
         funcType = calledExpr ()->getType ()->binding ();
 
         if (!makeFuncType (numActuals (), funcType)) {
-            error (loc (), 
+            error (this,
                    "called object is not a %d-parameter function",
                    numActuals ());
             return this;
         }
 
         if (!setType (computeType ())) {
-            error (loc (), "inappropriate function return type");
+            error (this, "inappropriate function return type");
             return this;
         }
 
         funcType = funcType->binding ();
         if (funcType->numParams () != numActuals ()) {
-            error (loc (), "wrong number of parameters to function");
+            error (this, "wrong number of parameters to function");
             return this;
         }
         for (int i = 0; i < numActuals (); i += 1) {
             if (!actualParam (i)->getType ()->unify (funcType->paramType (i))) {
-                error (loc (), "non-matching parameter type (parameter #%d)",
+                error (this, "non-matching parameter type (parameter #%d)",
                        i);
                 break;
             }
@@ -171,6 +171,14 @@ protected:
                 ->Callable::resolveTypes (context, resolved, ambiguities);
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        child(0)->outerCodeGen(out,i);
+        out << "(";
+        child(1)->outerCodeGen(out,i);
+        out << ")";
+    }
+
 };
 
 NODE_FACTORY (Call_AST, CALL);
@@ -186,7 +194,17 @@ protected:
     Type_Ptr computeType () {
         return calledExpr ()->getType ()->binding ()->paramType (0);
     }
+    
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        out << "new ";
+        child(1)->child(0)->child(0)->outerCodeGen(out,i);
+    }
 
+    //hbradlow
+    bool needsPointer(){
+        return true;
+    }
 };
 
 NODE_FACTORY (Call1_AST, CALL1);
@@ -201,7 +219,7 @@ protected:
 
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
         if (!setType (child (0)->asType ())) {
-            error (loc (), "inconsistent types");
+            error (this, "inconsistent types");
         }
         return this;
     }
@@ -233,6 +251,16 @@ protected:
         replace (2*k, expr);
     }
 
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        child(3)->outerCodeGen(out,i);
+        out << "(";
+        child(0)->outerCodeGen(out,i);
+        out << ",";
+        child(2)->outerCodeGen(out,i);
+        out << ")";
+    }
+
 };    
 
 NODE_FACTORY (Binop_AST, BINOP);
@@ -248,7 +276,6 @@ protected:
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
-
 };
 
 NODE_FACTORY (Compare_AST, COMPARE);
@@ -286,11 +313,11 @@ class Unop_AST : public Callable {
     }
 
     AST_Ptr actualParam (int k) {
-        return child(k * 2);
+        return child(2*k + 1);
     }
 
     void setActual (int k, AST_Ptr expr) {
-        replace (2*k, expr);
+        replace (2*k + 1, expr);
     }
 
 };    
@@ -425,7 +452,7 @@ protected:
         Decl_Vector defns;
         members->find_immediate (name, defns);
         if (defns.empty ()) {
-            error (loc (), "no definition of %s in type", name.c_str ());
+            error (this, "no definition of %s in type", name.c_str ());
             id->addDecl (makeUnknownDecl (name, false));
         }
         for (size_t i = 0; i < defns.size (); i += 1)
@@ -446,7 +473,7 @@ protected:
         }
 
         if (!setType (id->getType ()))
-            error (loc (),
+            error (this,
                    "attribute %s has no definition that fits the context.",
                    name.c_str ());
         return this;
@@ -468,7 +495,7 @@ protected:
     void checkNoBoundMethodValues () {
         child (0)->checkNoBoundMethodValues ();
         if (getDecl () != NULL && getDecl ()->isMethod ())
-            error (loc (), "bound method value outside a call");
+            error (this, "bound method value outside a call");
     }    
 
 };
@@ -486,14 +513,14 @@ protected:
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
         Typed_Tree::resolveTypes (context, resolved, ambiguities);
         if (arity () > 3)
-            error (loc (), "tuple has too many elements (max 3)");
+            error (this, "tuple has too many elements (max 3)");
         Type_Ptr componentTypes[3];
         for (size_t i = 0; i < arity (); i += 1)
             componentTypes[i] = child (i)->getType ();
         Type_Ptr tupleType =
             tupleDecl[arity ()]->asType (arity (), componentTypes);
         if (!setType (tupleType))
-            error (loc (), "type mismatch on tuple");
+            error (this, "type mismatch on tuple");
         return this;
     }        
 
@@ -544,13 +571,13 @@ protected:
             componentType = child (0)->getType ();
         for (size_t i = 1; i < arity (); i += 1)
             if (!componentType->unify (child (i)->getType ())) {
-                error (child (i)->loc (), "type mismatch in list display");
+                error (child (i), "type mismatch in list display");
                 break;
             }
         Type_Ptr listType =
             listDecl->asType (1, componentType);
         if (!setType (listType))
-            error (loc (), "type mismatch on list display");
+            error (this, "type mismatch on list display");
         return this;
     }    
 
@@ -579,18 +606,18 @@ protected:
         }
         for (size_t i = 1; i < arity (); i += 1) {
             if (!keyType->unify (child (i)->child (0)->getType ())) {
-                error (child (i)->loc (), "key type mismatch in dict display");
+                error (child (i), "key type mismatch in dict display");
                 break;
             }
             if (!valType->unify (child (i)->child (1)->getType ())) {
-                error (child (i)->loc (), "value type mismatch in dict display");
+                error (child (i), "value type mismatch in dict display");
                 break;
             }
         }
         Type_Ptr dictType =
             dictDecl->asType (2, keyType, valType);
         if (!setType (dictType))
-            error (loc (), "type mismatch on dict display");
+            error (this, "type mismatch on dict display");
         return this;
     }
 
@@ -611,7 +638,7 @@ protected:
         int k = arity ();
         Typed_Tree::resolveTypes (context, resolved, ambiguities);
         if (!child (k - 2)->getType ()->unify (child (k - 1)->getType ()))
-            error (loc (), "types of alternatives do not match");
+            error (this, "types of alternatives do not match");
         if (!setType (child (k - 1)->getType ()))
             error (loc (), "inconsistent types");
         return this;
@@ -633,10 +660,22 @@ protected:
 
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
+<<<<<<< HEAD
 }; 
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
 
 class If_AST
+=======
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        child(0)->outerCodeGen(out,i);
+        out << " ? ";
+        child(1)->outerCodeGen(out,i);
+        out << " : ";
+        child(2)->outerCodeGen(out,i);
+    }
+};              
+>>>>>>> 501b49502554e622f33fe8b2922634e45edbe01a
 
 
 
@@ -653,7 +692,7 @@ protected:
 
     }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
-
+    
 };
 
 NODE_FACTORY (And_AST, AND);
