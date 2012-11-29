@@ -19,7 +19,6 @@ writeIndented(ostream& out, int i) {
     out << "    ";
     i--;
   }
-  out << line;
 }
 
 /* Definitions of methods in base class AST. */

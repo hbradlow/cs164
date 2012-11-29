@@ -545,11 +545,7 @@ extern AST_Ptr consTree (int syntax, const AST_Ptr& c0, const AST_Ptr& c1,
 
 /* Write the line to out, preceded by i tabs.
  */
-<<<<<<< HEAD
-void writeIndented(std::ostream& out, std::string line, int i);
-=======
 void writeIndented(std::ostream& out, int i);
->>>>>>> d3019311574b84e5f40d751347c9c7fb0e0fc516
 
 #endif
 
