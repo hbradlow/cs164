@@ -53,10 +53,16 @@ protected:
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
     //hbradlow
-    void outerCodeGen(ostream& out, int i){
+    void innerCodeGen(ostream& out, int i){
         for_each_child(c,this){
-            c->outerCodeGen(out,i);
+            c->innerCodeGen(out,i);
         } end_for;
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 };
@@ -179,12 +185,23 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out, int i){
-        child(0)->outerCodeGen(out,i);
+    void innerCodeGen(ostream& out, int i){
+        child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
-        child(1)->outerCodeGen(out,i);
+        for_each_child(c,child(1)){
+            if(c_i_!=0){
+                out << ",";
+            }
+            c->innerCodeGen(out,i);
+        } end_for;
         out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 };
@@ -204,9 +221,15 @@ protected:
     }
     
     //hbradlow
-    void outerCodeGen(ostream& out, int i){
+    void innerCodeGen(ostream& out, int i){
         out << "new ";
-        child(1)->child(0)->child(0)->outerCodeGen(out,i);
+        child(1)->child(0)->child(0)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
     //hbradlow
@@ -260,14 +283,20 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out, int i){
-        child(3)->outerCodeGen(out,i);
+    void innerCodeGen(ostream& out, int i){
+        child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex();
         out << "(";
-        child(0)->outerCodeGen(out,i);
+        child(0)->innerCodeGen(out,i);
         out << ",";
-        child(2)->outerCodeGen(out,i);
+        child(2)->innerCodeGen(out,i);
         out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 };    
@@ -507,6 +536,18 @@ protected:
             error (this, "bound method value outside a call");
     }    
 
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(0)->innerCodeGen(out,i);
+        out << "->";
+        child(1)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
 };
 
 NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
@@ -664,12 +705,18 @@ protected:
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
     //hbradlow
-    void outerCodeGen(ostream& out, int i){
-        child(0)->outerCodeGen(out,i);
+    void innerCodeGen(ostream& out, int i){
+        child(0)->innerCodeGen(out,i);
         out << " ? ";
-        child(1)->outerCodeGen(out,i);
+        child(1)->innerCodeGen(out,i);
         out << " : ";
-        child(2)->outerCodeGen(out,i);
+        child(2)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 };              
 

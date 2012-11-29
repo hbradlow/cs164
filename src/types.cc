@@ -489,8 +489,14 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out, int i){
+    void innerCodeGen(ostream& out, int i){
         out << "void*";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 private:
@@ -593,16 +599,44 @@ protected:
     }        
 
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
+    void innerCodeGen(ostream& out,int i){
         if(strcmp(child(0)->as_string().c_str(),"dict")==0){
             out << "map<";
-            child(1)->child(0)->outerCodeGen(out,i);
+            child(1)->child(0)->innerCodeGen(out,i);
             out << ", ";
-            child(1)->child(1)->outerCodeGen(out,i);
+            child(1)->child(1)->innerCodeGen(out,i);
             out << ">";
             return;
         }
-        child(0)->outerCodeGen(out,i);
+        if(strcmp(child(0)->as_string().c_str(),"str")==0){
+            out << "string";
+            return;
+        }
+        child(0)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
+    //hbradlow
+    bool needsPointer(){
+        if(strcmp(child(0)->as_string().c_str(),"str")==0){
+            return false;
+        }
+        else if(strcmp(child(0)->as_string().c_str(),"int")==0){
+            return false;
+        }
+        else if(strcmp(child(0)->as_string().c_str(),"bool")==0){
+            return false;
+        }
+        else if(strcmp(child(0)->as_string().c_str(),"str")==0){
+            return false;
+        }
+        else
+            return true;
     }
 
 };

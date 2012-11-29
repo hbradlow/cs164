@@ -7,6 +7,9 @@
 #ifndef _RUNTIME_H_
 #define _RUNTIME_H_
 
+#include <sstream>
+#include <string>
+
 #define NATIVE__donotcall__
 #define NATIVE__None__              return NULL
 #define NATIVE__truth__             return x==0
@@ -16,7 +19,7 @@
 #define NATIVE__add__int__          return x+y
 #define NATIVE__sub__int__          return x-y
 #define NATIVE__mul__int__          return x*y
-#define NATIVE__floordiv__int__
+#define NATIVE__floordiv__int__     return (int)(x/y)
 #define NATIVE__mod__int__          return x%y
 #define NATIVE__pow__int__
 #define NATIVE__neg__int__          return -x ? x>0 : x
@@ -29,8 +32,14 @@
 #define NATIVE__ne__int__           return x!=y
 #define NATIVE__toint__str__
 #define NATIVE__add__str__
-#define NATIVE__lmul__str__
-#define NATIVE__rmul__str__
+#define NATIVE__lmul__str__         std::stringstream ss; \
+                                    for(int i = 0; i<y; i++) \
+                                        ss << x; \
+                                    return ss.str()
+#define NATIVE__rmul__str__         std::stringstream ss; \
+                                    for(int i = 0; i<x; i++) \
+                                        ss << y; \
+                                    return ss.str()
 #define NATIVE__lt__str__
 #define NATIVE__gt__str__
 #define NATIVE__le__str__

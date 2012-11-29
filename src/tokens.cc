@@ -112,8 +112,14 @@ protected:
     long value;
 
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
+    void innerCodeGen(ostream& out,int i){
         out << value;
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 };
 
@@ -288,8 +294,14 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
+    void innerCodeGen(ostream& out,int i){
         out << as_string();
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 private:
@@ -391,8 +403,14 @@ private:
     string literal_text;
 
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
+    void innerCodeGen(ostream& out,int i){
         out << "\"" << string_text() << "\"";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 };
 

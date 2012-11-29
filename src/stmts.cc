@@ -40,7 +40,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            c->outerCodeGen(out,i);
+            c->innerCodeGen(out,i);
         } end_for;
         out << ";\n";
     }
@@ -72,7 +72,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            c->outerCodeGen(out,i);
+            c->innerCodeGen(out,i);
             out << " << ";
         } end_for;
         out << "endl;\n";
@@ -174,12 +174,12 @@ protected:
     //hbradlow
     void defCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        getDecl()->getType()->child(0)->asType()->binding()->outerCodeGen(out,i);
+        getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         out << " ";
-        child(0)->outerCodeGen(out,i);
+        child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
-        child(1)->outerCodeGen(out,i);
+        child(1)->innerCodeGen(out,i);
         out << "){\n";
         for_each_child(c,child(3)){
             c->outerCodeGen(out,i+1);
@@ -239,15 +239,23 @@ protected:
     }
     
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
+    void innerCodeGen(ostream& out,int i){
         for_each_child(c,this){
             if(c_i_!=0){
                 out << ",";
             }
-            c->getType()->outerCodeGen(out,i);
+            c->getType()->binding()->innerCodeGen(out,i);
+            if(c->getType()->binding()->needsPointer())
+                out << "*";
             out << " ";
-            c->outerCodeGen(out,i);
+            c->innerCodeGen(out,i);
         } end_for;
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 };
@@ -322,7 +330,7 @@ protected:
             return;
         writeIndented(out,i);
         out << "class ";
-        child(0)->outerCodeGen(out,i);
+        child(0)->innerCodeGen(out,i);
         out << "{\n";
         out << "public:\n";
         for_each_child(c,child(2)){
@@ -413,9 +421,15 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
+    void innerCodeGen(ostream& out,int i){
         //hbradlow: NOT COMPLETE! I just copied from ID
-        child(0)->outerCodeGen(out,i);
+        child(0)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
     }
 
 };
@@ -454,15 +468,19 @@ protected:
     }
 
     //hbradlow
-    void outerCodeGen(ostream& out,int i){
-        writeIndented(out,i);
-        child(0)->getType()->binding()->outerCodeGen(out,i);
+    void innerCodeGen(ostream& out,int i){
+        child(0)->getType()->binding()->innerCodeGen(out,i);
         if(child(1)->needsPointer())
             out << "*";
         out << " ";
-        child(0)->outerCodeGen(out,i);
+        child(0)->innerCodeGen(out,i);
         out << " = ";
-        child(1)->outerCodeGen(out,i);
+        child(1)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
         out << ";\n";
     }
 };
@@ -537,10 +555,15 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "return ";
+        child(0)->innerCodeGen(out,i);
+    }
+    //hbradlow
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        out << "return ";
-        child(0)->outerCodeGen(out,i);
+        innerCodeGen(out,i);
         out << ";\n";
     }
 
@@ -554,10 +577,15 @@ class Native_AST : public AST_Tree {
 protected:
 
     NODE_CONSTRUCTORS (Native_AST, AST_Tree);
-    void outerCodeGen(ostream& out,int i){
-        writeIndented(out,i);
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
         out << "NATIVE";
         out << child(0)->as_string();
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
         out << ";\n";
     }
 

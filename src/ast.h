@@ -207,7 +207,15 @@ public:
     virtual AST_Ptr convertNone (bool definingContext);
 
     /** Generate code for me on OUT. */
+    //hbradlow
+    //outerCodeGen called on statements that are on their own lines
     virtual void outerCodeGen (std::ostream& out, int i);
+    //hbradlow
+    //innerCodeGen called on statements that are within outer statements
+    //Example:
+    //a = x+2
+    //The assignment is the outer statement, (id a), (binop) etc are inner statements
+    virtual void innerCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow

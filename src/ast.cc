@@ -257,8 +257,18 @@ AST::convertNone (bool)
     return this;
 }
 
+//outerCodeGen called on statements that are on their own lines
 void
 AST::outerCodeGen (ostream& out,int i)
+{
+}
+//hbradlow
+//innerCodeGen called on statements that are within outer statements
+//Example:
+//a = x+2
+//The assignment is the outer statement, (id a), (binop) etc are inner statements
+void
+AST::innerCodeGen (ostream& out,int i)
 {
 }
 //hbradlow
