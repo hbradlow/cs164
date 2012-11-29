@@ -52,13 +52,6 @@ protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
-    //hbradlow
-    void outerCodeGen(ostream& out, int i){
-        for_each_child(c,this){
-            c->outerCodeGen(out,i);
-        } end_for;
-    }
-
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -664,27 +657,30 @@ protected:
 /**  E1 if Cond else E2  */
 class IfExpr_AST : public BalancedExpr {
 protected:
+    void outerCodeGen (ostream& out, int depth) {
+      printf("generating if code\n");
+      writeIndented(out, depth);
+      child(1)->outerCodeGen(out, depth); 
+      out << " {";
+    }
 
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
-    //hbradlow
-    void outerCodeGen(ostream& out, int i){
-        child(0)->outerCodeGen(out,i);
-        out << " ? ";
-        child(1)->outerCodeGen(out,i);
-        out << " : ";
-        child(2)->outerCodeGen(out,i);
-    }
-};              
+}; 
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
-
 
 /***** AND *****/
 
 /** E1 and E2 */
 class And_AST : public BalancedExpr {
 protected:
+    
+    void outerCodeGen(ostream& out, int depth) {
+      child(1)->outerCodeGen(out, depth);
+      out << " && ";
+      child(2)->outerCodeGen(out, depth);
 
+    }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
     
 };
