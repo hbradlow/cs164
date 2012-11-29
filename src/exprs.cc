@@ -64,7 +64,6 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
-
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -310,7 +309,13 @@ class Compare_AST : public Binop_AST {
 protected:
 
     NODE_CONSTRUCTORS (Compare_AST, Binop_AST);
-
+/*
+    void outerCodeGeneration(ostream& out, int depth) {
+      out << "(";
+      child(0)->outerCodeGen(out, depth);
+      out << ")";
+    }
+*/
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
@@ -718,9 +723,7 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
-};              
-
-
+}; 
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
 
 /***** AND *****/
@@ -728,7 +731,13 @@ NODE_FACTORY (IfExpr_AST, IF_EXPR);
 /** E1 and E2 */
 class And_AST : public BalancedExpr {
 protected:
+    
+    void outerCodeGen(ostream& out, int depth) {
+      child(1)->outerCodeGen(out, depth);
+      out << " && ";
+      child(2)->outerCodeGen(out, depth);
 
+    }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
     
 };
