@@ -134,6 +134,9 @@ public:
 
 /** A function call. */
 class Call_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (Call_AST, Callable);
@@ -192,6 +195,7 @@ protected:
             if(c_i_!=0){
                 out << ",";
             }
+            //out << "TYPE_" << c_i_ << local_count;
             c->innerCodeGen(out,i);
         } end_for;
         out << ")";
@@ -202,10 +206,39 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        /*
+         * hbradlow:
+         * Not sure about this stuff...
+         * Probably kevin will redo this with the function static link stuff
+        local_count = global_count++;
+        for_each_child(c,child(1)){
+            writeIndented(out,i);
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "* ";
+            out << "TYPE_" << c_i_ << local_count;
+            out << " = ";
+            out << "(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "*) ";
+            out << "malloc(sizeof(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "));\n";
+
+            writeIndented(out,i);
+            out << "*TYPE_" << c_i_ << local_count;
+            out << " = ";
+            c->innerCodeGen(out,i);
+            out << ";\n";
+        } end_for;
+        */
+    }
 
 };
 
 NODE_FACTORY (Call_AST, CALL);
+int Call_AST::global_count;
 
 /***** CALL1 *****/
 

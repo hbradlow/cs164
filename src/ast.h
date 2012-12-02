@@ -217,6 +217,8 @@ public:
     //The assignment is the outer statement, (id a), (binop) etc are inner statements
     virtual void innerCodeGen (std::ostream& out, int i);
     //hbradlow
+    virtual void memCodeGen(std::ostream& out, int i);
+    //hbradlow
     virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);

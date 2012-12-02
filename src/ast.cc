@@ -281,6 +281,14 @@ AST::innerCodeGen (ostream& out,int i)
 }
 //hbradlow
 void
+AST::memCodeGen (ostream& out,int i)
+{
+    for_each_child(c, this){
+        c->memCodeGen(out,i);
+    } end_for;
+}
+//hbradlow
+void
 AST::defCodeGen (ostream& out, int i)
 {
     for_each_child(c, this){

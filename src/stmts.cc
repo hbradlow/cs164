@@ -85,6 +85,7 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        this->memCodeGen(out,i);
         writeIndented(out,i);
         out << "cout ";
         int first = 1;
@@ -118,6 +119,7 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        this->memCodeGen(out,i);
         writeIndented(out,i);
         out << "cout << ";
         int first = 1;
@@ -408,9 +410,12 @@ protected:
         out << "{\n";
         out << "public:\n";
         for_each_child(c,child(2)){
-            c->outerCodeGen(out,i+1);
+            c->defCodeGen(out,i+1);
         } end_for;
         out << "};\n";
+        for_each_child(c,child(2)){
+            c->classCodeGen(out,i);
+        } end_for;
     }
 
 private:
@@ -553,9 +558,13 @@ protected:
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        this->memCodeGen(out,i);
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";
+    }
+    //hbradlow
+    void classCodeGen(ostream& out,int i){
     }
 };
 
