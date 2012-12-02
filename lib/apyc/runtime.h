@@ -73,5 +73,24 @@
 
 using namespace std;
 
+/** 
+ * Kevin 
+ */
+class Frame
+{
+    Frame(Frame* static_link, map<string, void*> locals);
+    map<string, void*> locals;
+    Frame* enclosing;
+public:
+    virtual void setVar(string name, void* value);
+    virtual void* getVar(string name); 
+};
+
+class Closure {
+    Closure(void* (*fp) (), Frame* frame);
+public:
+    void* (*fp) ();
+    Frame* frame;
+};
 
 #endif
