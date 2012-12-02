@@ -85,7 +85,6 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        this->memCodeGen(out,i);
         writeIndented(out,i);
         out << "cout ";
         int first = 1;
@@ -119,7 +118,6 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        this->memCodeGen(out,i);
         writeIndented(out,i);
         out << "cout << ";
         int first = 1;
@@ -387,6 +385,13 @@ protected:
         replace (2, child (2)->resolveTypes (getDecl (), resolved, ambiguities));
         return this;
     }
+    //hbradlow
+    void outerClassCodeGen(ostream& out,int i,AST_Ptr c){
+        for_each_child(c,child(2)){
+            c->innerClassCodeGen(out,i,this);
+        } end_for;
+    }
+    //hbradlow
     void classCodeGen(ostream& out,int i){
         if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
@@ -413,9 +418,6 @@ protected:
             c->defCodeGen(out,i+1);
         } end_for;
         out << "};\n";
-        for_each_child(c,child(2)){
-            c->classCodeGen(out,i);
-        } end_for;
     }
 
 private:
@@ -558,13 +560,39 @@ protected:
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        this->memCodeGen(out,i);
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";
     }
     //hbradlow
-    void classCodeGen(ostream& out,int i){
+    void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
+        writeIndented(out,i);
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "* ";
+        out << "CLASS_VARIABLE";
+        out << " = ";
+        out << "(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "*) ";
+        out << "malloc(sizeof(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "));\n";
+
+        writeIndented(out,i);
+        out << "*CLASS_VARIABLE";
+        out << " = ";
+        child(1)->innerCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "classVariables[";
+        out << "\"";
+        c->child(0)->innerCodeGen(out,i);
+        out << ".";
+        child(0)->innerCodeGen(out,i);
+        out << "\"] = ";
+        out << "CLASS_VARIABLE";
+        out << ";\n";
     }
 };
 

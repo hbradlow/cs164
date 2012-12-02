@@ -300,6 +300,16 @@ void
 AST::classCodeGen (ostream& out,int i)
 {
 }
+//hbradlow
+void 
+AST::outerClassCodeGen (std::ostream& out,int i,AST_Ptr c)
+{
+}
+//hbradlow
+void 
+AST::innerClassCodeGen (std::ostream& out,int i,AST_Ptr c)
+{
+}
 
 //hbradlow
 bool 

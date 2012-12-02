@@ -9,5 +9,3 @@
 #include "runtime.h"
 
 using namespace std;
-
-map<string,void*> classVariables;

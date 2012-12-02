@@ -207,7 +207,7 @@ protected:
         out << ";\n";
     }
     //hbradlow
-    void memCodeGen(ostream& out, int i){
+    void memcodegen(ostream& out, int i){
         /*
          * hbradlow:
          * Not sure about this stuff...
@@ -576,9 +576,19 @@ protected:
 
     //hbradlow
     void innerCodeGen(ostream& out, int i){
+        /*
         child(0)->innerCodeGen(out,i);
         out << "->";
         child(1)->innerCodeGen(out,i);
+        */
+        out << "*(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)";
+        out << "(classVariables.find(\"";
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << ".";
+        child(1)->innerCodeGen(out,i);
+        out << "\")->second)";
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){

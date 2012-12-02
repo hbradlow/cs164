@@ -1,4 +1,4 @@
 class a:
-    b = 10
+    b = 123
 c = a()
 print c.b

@@ -48,6 +48,12 @@ protected:
         } end_for;
 
         out << "int main(int argc, char* argv[]) {\n";
+        writeIndented(out,i+1);
+        out << "map<string,void*> classVariables;\n";
+
+        for_each_child(c,this){
+            c->outerClassCodeGen(out,i+1,this);
+        } end_for;
 
         for_each_child(c,this){
             c->outerCodeGen(out,i+1);
