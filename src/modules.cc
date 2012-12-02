@@ -38,7 +38,7 @@ protected:
     // This is a placeholder!  Replace it.
     void outerCodeGen (ostream& out, int i) {
         out << "#include \"runtime.h\"\n";
-
+        out << "Frame static_frame = new Frame(NULL);\n";
         for_each_child(c,this){
             c->classCodeGen(out,i);
         } end_for;
@@ -50,7 +50,6 @@ protected:
         out << "int main(int argc, char* argv[]) {\n";
         writeIndented(out,i+1);
         out << "map<string,void*> classVariables;\n";
-
         for_each_child(c,this){
             c->outerClassCodeGen(out,i+1,this);
         } end_for;

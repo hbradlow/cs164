@@ -250,6 +250,14 @@ protected:
         } end_for;
         writeIndented(out,i);
         out << "}\n";
+        out << "Closure "; 
+        child(0)->innerCodeGen(out, i); 
+        out << "__" << child(0)->getDecl()->getIndex();
+        out << "_closure = new Closure(";
+        child(0)->innerCodeGen(out, i);
+        out << "__" << child(0)->getDecl()->getIndex(); 
+        out << ", Frame(static_frame));\n";
+        addToStaticFrame(out, i);
     }
 };
 
@@ -554,7 +562,7 @@ protected:
         if(child(1)->needsPointer())
             out << "*";
         out << " ";
-        child(0)->innerCodeGen(out,i);
+        child(0)->innerCodeGen(out, i);
         out << " = ";
         child(1)->innerCodeGen(out,i);
     }
@@ -562,6 +570,12 @@ protected:
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
         innerCodeGen(out,i);
+        out << ";\n";
+        writeIndented(out,i);
+        out << "static_frame[\"";
+        child(0)->innerCodeGen(out,i);
+        out << "\"] = ";
+        child(0)->innerCodeGen(out, i);
         out << ";\n";
     }
     //hbradlow

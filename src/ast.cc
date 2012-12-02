@@ -316,7 +316,19 @@ bool
 AST::needsPointer(){
     return false;
 }
-
+//kevin
+void 
+AST::addToStaticFrame(std::ostream& out, int i)
+{
+    writeIndented(out,i);
+    out << "static_frame.setVar(\"";
+    child(0)->innerCodeGen(out,i);
+    out << "__" << child(0)->getDecl()->getIndex();
+    out << "\", (void*)&";
+    child(0)->innerCodeGen(out, i);
+    out << "__" << child(0)->getDecl()->getIndex() << "_closure";
+    out << ");\n";
+}
 bool
 AST::errorReported ()
 {

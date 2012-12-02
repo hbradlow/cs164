@@ -78,19 +78,21 @@ using namespace std;
  */
 class Frame
 {
-    Frame(Frame* static_link, map<string, void*> locals);
+private:
     map<string, void*> locals;
-    Frame* enclosing;
+    const Frame* enclosing;
+
 public:
+    Frame(const Frame* static_link);
     virtual void setVar(string name, void* value);
-    virtual void* getVar(string name); 
+    virtual void* getVar(string name) const;
 };
 
 class Closure {
-    Closure(void* (*fp) (), Frame* frame);
+    Closure(void* (*fp) (), Frame frame);
 public:
     void* (*fp) ();
-    Frame* frame;
+    Frame frame;
 };
 
 #endif

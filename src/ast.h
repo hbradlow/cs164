@@ -228,6 +228,8 @@ public:
     virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
     //hbradlow
     virtual bool needsPointer();
+    //kevin
+    virtual void addToStaticFrame(std::ostream& out, int i);
     /** True if an error has been reported on me. */
     bool errorReported ();
 

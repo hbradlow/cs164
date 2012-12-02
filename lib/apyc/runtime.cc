@@ -20,24 +20,18 @@ Frame::setVar(string name, void* value)
 }
 
 void* 
-Frame::getVar(string name)
+Frame::getVar(string name) const
 {
     if (this->locals.count(name) == 0) 
-        return this->enclosing->getVar(name);
-    else if (this->locals == NULL) // This is a redundant check
-        return NULL; 
+        return enclosing->getVar(name);
     else
         return this->locals.find(name)->second;
 }
-
-Frame::Frame(Frame* static_link, map<string, void*> locals)
+Frame::Frame(const Frame* static_link) : enclosing(static_link)
 {
-    this->enclosing = static_link;
-    this->locals = locals;
+    this->locals = std::map<string, void*>();
 }
-Closure::Closure(void* (*fp) (), Frame* frame)
+Closure::Closure(void* (*fp) (), Frame frame) : fp(fp), frame(frame)
 {
-    this->fp = fp;
-    this->frame = frame;
 }
 
