@@ -329,7 +329,9 @@ AST::addToStaticFrame(std::ostream& out, int i)
     out << "static_frame.setVar(\"";
     child(0)->innerCodeGen(out,i);
     out << "__" << child(0)->getDecl()->getIndex();
-    out << "\", (void*)&";
+    out << "\", (";
+    child(0)->getDecl()->getType()->child(0)->innerCodeGen(out,i);
+    out << "*)&";
     child(0)->innerCodeGen(out, i);
     out << "__" << child(0)->getDecl()->getIndex() << "_closure";
     out << ");\n";

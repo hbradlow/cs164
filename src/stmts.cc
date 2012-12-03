@@ -236,13 +236,26 @@ protected:
     //hbradlow
     void closureCodeGen(ostream& out, int i){
         writeIndented(out,i);
+        out << "vector<string> ";
+        child(0)->innerCodeGen(out, i); 
+        out << child(0)->getDecl()->getIndex() << "__VECTOR;\n";
+        for_each_child(c,child(1)){
+            writeIndented(out,i);
+            child(0)->innerCodeGen(out, i); 
+            out << child(0)->getDecl()->getIndex() << "__VECTOR.push_back(\"";
+            c->innerCodeGen(out,i);
+            out << "\");\n";
+        } end_for;
+        writeIndented(out,i);
         out << "Closure* "; 
         child(0)->innerCodeGen(out, i); 
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_closure = new Closure(";
         child(0)->innerCodeGen(out, i);
         out << "__" << child(0)->getDecl()->getIndex(); 
-        out << ", Frame(static_frame));\n";
+        out << ", Frame(static_frame),";
+        child(0)->innerCodeGen(out, i);
+        out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
         addToStaticFrame(out, i);
     }
     //hbradlow
@@ -255,7 +268,7 @@ protected:
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
-        child(1)->innerCodeGen(out,i);
+        out << "Frame* frame";
         out << "){\n";
         for_each_child(c,child(3)){
             c->outerCodeGen(out,i+1);
@@ -263,38 +276,6 @@ protected:
         writeIndented(out,i);
         out << "}\n";
 
-
-        writeIndented(out,i);
-        out << "class ";
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
-        out << "_CLOSURE : public Closure{\n";
-        writeIndented(out,i);
-        out << "public:\n";
-        writeIndented(out,i+1);
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
-        out << "_CLOSURE(Frame frame): frame(frame){\n";
-        writeIndented(out,i+2);
-        out << "fp = ";
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
-        out << ";\n";
-        writeIndented(out,i+1);
-        out << "}\n";
-        writeIndented(out,i+1);
-        out << "void* (*fp) (";
-        for_each_child(c,child(1)){
-            if(c_i_!=0){
-                out << ",";
-            }
-            c->getType()->binding()->innerCodeGen(out,i);
-            if(c->getType()->binding()->needsPointer())
-                out << "*";
-        } end_for;
-        out << ")\n;";
-        writeIndented(out,i);
-        out << "};\n";
     }
 };
 
@@ -607,14 +588,13 @@ protected:
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        child(1)->memCodeGen(out,i);
         writeIndented(out,i);
-        innerCodeGen(out,i);
-        out << ";\n";
-        writeIndented(out,i);
-        out << "static_frame[\"";
-        child(0)->innerCodeGen(out,i);
-        out << "\"] = ";
+        out << "static_frame.setVar(\"";
         child(0)->innerCodeGen(out, i);
+        out << "\",";
+        child(1)->innerCodeGen(out,i);
+        out << ")";
         out << ";\n";
     }
     //hbradlow

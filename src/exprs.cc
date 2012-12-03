@@ -207,32 +207,17 @@ protected:
         out << ";\n";
     }
     //hbradlow
-    void memcodegen(ostream& out, int i){
-        /*
-         * hbradlow:
-         * Not sure about this stuff...
-         * Probably kevin will redo this with the function static link stuff
-        local_count = global_count++;
+    void memCodeGen(ostream& out, int i){
         for_each_child(c,child(1)){
             writeIndented(out,i);
-            c->getType()->binding()->innerCodeGen(out,i);
-            out << "* ";
-            out << "TYPE_" << c_i_ << local_count;
-            out << " = ";
-            out << "(";
-            c->getType()->binding()->innerCodeGen(out,i);
-            out << "*) ";
-            out << "malloc(sizeof(";
-            c->getType()->binding()->innerCodeGen(out,i);
-            out << "));\n";
-
-            writeIndented(out,i);
-            out << "*TYPE_" << c_i_ << local_count;
-            out << " = ";
-            c->innerCodeGen(out,i);
-            out << ";\n";
+            child(0)->innerCodeGen(out,i);
+            out << "__" << child(0)->getDecl()->getIndex() << "_CLOSURE->frame.setVar(";
+            child(0)->innerCodeGen(out,i);
+            out << child(0)->getDecl()->getIndex() << "__VECTOR[" << c_i_ << "]";
+            out << ",";
+            child(0)->innerCodeGen(out,i);
+            out << ");\n";
         } end_for;
-        */
     }
 
 };
@@ -329,6 +314,26 @@ protected:
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE->frame.setVar(";
+        child(3)->innerCodeGen(out,i);
+        out << child(3)->getDecl()->getIndex() << "__VECTOR[" << "0" << "]";
+        out << ",";
+        child(0)->innerCodeGen(out,i);
+        out << ");\n";
+
+        writeIndented(out,i);
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE->frame.setVar(";
+        child(3)->innerCodeGen(out,i);
+        out << child(3)->getDecl()->getIndex() << "__VECTOR[" << "1" << "]";
+        out << ",";
+        child(2)->innerCodeGen(out,i);
+        out << ");\n";
     }
 
 };    

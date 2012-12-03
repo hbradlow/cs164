@@ -52,7 +52,7 @@ protected:
         writeIndented(out,i+1);
         out << "map<string,void*> classVariables;\n";
         for_each_child(c,this){
-            c->outerClassCodeGen(out,i+1,this);
+            c->closureCodeGen(out,i+1);
         } end_for;
 
         for_each_child(c,this){

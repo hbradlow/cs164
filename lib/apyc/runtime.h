@@ -1,6 +1,6 @@
-/* -*- mode: C++; c-file-style: "stroustrup"; indent-tabs-mode: nil; -*- */
+/* -*- mode: C++; c-file-st*((int*)frame->getVar("y")le: "stroustrup"; indent-tabs-mode: nil; -*- */
 
-/* APYC Runtime Library Headers */
+/* APYC Runtime Librar*((int*)frame->getVar("y") Headers */
 
 /* Authors:  YOUR NAMES HERE */
 
@@ -9,37 +9,38 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 #define NATIVE__donotcall__
-#define NATIVE__None__              return NULL
-#define NATIVE__truth__             return x==0
-#define NATIVE__not__               return x!=0
+#define NATIVE__None__              //return NULL
+#define NATIVE__truth__             //return *((int*)frame->getVar("x"))==0
+#define NATIVE__not__               //return *((int*)frame->getVar("x"))!=0
 #define NATIVE__xrange__
 #define NATIVE__len__range__
-#define NATIVE__add__int__          return x+y
-#define NATIVE__sub__int__          return x-y
-#define NATIVE__mul__int__          return x*y
-#define NATIVE__floordiv__int__     return (int)(x/y)
-#define NATIVE__mod__int__          return x%y
+#define NATIVE__add__int__          //return *((int*)frame->getVar("x"))+*((int*)frame->getVar("y"))
+#define NATIVE__sub__int__          //return *((int*)frame->getVar("x"))-*((int*)frame->getVar("y"))
+#define NATIVE__mul__int__          //return *((int*)frame->getVar("x"))**((int*)frame->getVar("y"))
+#define NATIVE__floordiv__int__     //return (int)(*((int*)frame->getVar("x"))/ *((int*)frame->getVar("y")))
+#define NATIVE__mod__int__          //return *((int*)frame->getVar("x"))%*((int*)frame->getVar("y"))
 #define NATIVE__pow__int__
-#define NATIVE__neg__int__          return -x ? x>0 : x
-#define NATIVE__pos__int__          return -x ? x<0 : x
-#define NATIVE__lt__int__           return x<y 
-#define NATIVE__gt__int__           return x>y
-#define NATIVE__le__int__           return x<=y
-#define NATIVE__ge__int__           return x>=y
-#define NATIVE__eq__int__           return x==y
-#define NATIVE__ne__int__           return x!=y
+#define NATIVE__neg__int__          //return -*((int*)frame->getVar("x")) ? *((int*)frame->getVar("x"))>0 : *((int*)frame->getVar("x"))
+#define NATIVE__pos__int__          //return -*((int*)frame->getVar("x")) ? *((int*)frame->getVar("x"))<0 : *((int*)frame->getVar("x"))
+#define NATIVE__lt__int__           //return *((int*)frame->getVar("x"))<*((int*)frame->getVar("y")) 
+#define NATIVE__gt__int__           //return *((int*)frame->getVar("x"))>*((int*)frame->getVar("y"))
+#define NATIVE__le__int__           //return *((int*)frame->getVar("x"))<=*((int*)frame->getVar("y"))
+#define NATIVE__ge__int__           //return *((int*)frame->getVar("x"))>=*((int*)frame->getVar("y"))
+#define NATIVE__eq__int__           //return *((int*)frame->getVar("x"))==*((int*)frame->getVar("y"))
+#define NATIVE__ne__int__           //return *((int*)frame->getVar("x"))!=*((int*)frame->getVar("y"))
 #define NATIVE__toint__str__
 #define NATIVE__add__str__
 #define NATIVE__lmul__str__         std::stringstream ss; \
-                                    for(int i = 0; i<y; i++) \
-                                        ss << x; \
-                                    return ss.str()
+                                    for(int i = 0; i<*((int*)frame->getVar("y")); i++) \
+                                        ss << *((int*)frame->getVar("x")); \
+                                    //return ss.str()
 #define NATIVE__rmul__str__         std::stringstream ss; \
-                                    for(int i = 0; i<x; i++) \
-                                        ss << y; \
-                                    return ss.str()
+                                    for(int i = 0; i<*((int*)frame->getVar("x")); i++) \
+                                        ss << *((int*)frame->getVar("y")); \
+                                    //return ss.str()
 #define NATIVE__lt__str__
 #define NATIVE__gt__str__
 #define NATIVE__le__str__
@@ -90,9 +91,11 @@ public:
 
 class Closure {
 public:
-    Closure(void* (*fp) (Frame*), Frame frame);
-    void* (*fp) (void*);
+    Closure(void* (*fp) (Frame*), Frame frame, std::vector<string> args);
+    void* (*fp) (Frame*);
     Frame frame;
+    std::vector<string> args; 
+
 };
 
 #endif

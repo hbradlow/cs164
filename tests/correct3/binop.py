@@ -5,9 +5,9 @@ d = 8%5
 e = 900+100
 f = 9/3
 
-print a
-print b
-print c
-print d
-print e
-print f
+#print a
+#print b
+#print c
+#print d
+#print e
+#print f
