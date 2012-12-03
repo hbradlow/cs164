@@ -303,6 +303,14 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
+    //hbradlow
+    void valueCodeGen(ostream& out,int i){
+        out << "*(";
+        getType()->binding()->innerCodeGen(out,i);
+        out << "*)frame->getVar(\"";
+        innerCodeGen(out,i);
+        out << "\")";
+    }
 
 private:
 

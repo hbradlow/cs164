@@ -280,9 +280,18 @@ AST::innerCodeGen (ostream& out,int i)
 {
 }
 //hbradlow
+void 
+AST::valueCodeGen (std::ostream& out,int i)
+{
+    innerCodeGen(out,i);
+}
+//hbradlow
 void
 AST::closureCodeGen (ostream& out,int i)
 {
+    for_each_child(c,this){
+        c->closureCodeGen(out,i);
+    } end_for;
 }
 //hbradlow
 void
@@ -326,9 +335,9 @@ void
 AST::addToStaticFrame(std::ostream& out, int i)
 {
     writeIndented(out,i);
-    out << "static_frame.setVar(\"";
+    out << "frame->setVar(\"";
     child(0)->innerCodeGen(out,i);
-    out << "__" << child(0)->getDecl()->getIndex();
+    out << "__" << child(0)->getDecl()->getIndex() << "_closure";
     out << "\", (";
     child(0)->getDecl()->getType()->child(0)->innerCodeGen(out,i);
     out << "*)&";

@@ -214,7 +214,7 @@ class __sys__:
     #argv::list of str = __argv__()
     pass
 
-sys::__sys__ = __sys__()
+#sys::__sys__ = __sys__()
 
 # Type dict
 

@@ -228,6 +228,10 @@ public:
     virtual void innerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
     //hbradlow
     virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
+
+    //hbradlow
+    virtual void valueCodeGen (std::ostream& out,int i);
+
     //hbradlow
     virtual bool needsPointer();
     //kevin

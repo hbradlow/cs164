@@ -48,7 +48,7 @@ protected:
 
         out << "int main(int argc, char* argv[]) {\n";
         writeIndented(out,i+1);
-        out << "Frame static_frame = new Frame(NULL);\n";
+        out << "Frame* frame = new Frame(NULL);\n";
         writeIndented(out,i+1);
         out << "map<string,void*> classVariables;\n";
         for_each_child(c,this){

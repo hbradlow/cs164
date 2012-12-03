@@ -189,16 +189,15 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out, int i){
         child(0)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
+        /*
+        child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
-        out << "(";
-        for_each_child(c,child(1)){
-            if(c_i_!=0){
-                out << ",";
-            }
-            //out << "TYPE_" << c_i_ << local_count;
-            c->innerCodeGen(out,i);
-        } end_for;
+        out << "(&";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame";
         out << ")";
+        */
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
@@ -208,16 +207,41 @@ protected:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        local_count = global_count++;
+
+
         for_each_child(c,child(1)){
             writeIndented(out,i);
+            child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+            out << " ";
             child(0)->innerCodeGen(out,i);
-            out << "__" << child(0)->getDecl()->getIndex() << "_CLOSURE->frame.setVar(";
+            out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
+            out << " = ";
+            c->innerCodeGen(out,i);
+            out << ";\n";
+
+            writeIndented(out,i);
+            child(0)->innerCodeGen(out,i);
+            out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame->setVar(";
             child(0)->innerCodeGen(out,i);
             out << child(0)->getDecl()->getIndex() << "__VECTOR[" << c_i_ << "]";
-            out << ",";
+            out << ",&";
             child(0)->innerCodeGen(out,i);
+            out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
             out << ");\n";
         } end_for;
+
+        writeIndented(out,i);
+        child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        out << " ";
+        child(0)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << " = ";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex() << "(";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame)";
+        out << ";\n";
     }
 
 };
@@ -279,6 +303,9 @@ NODE_FACTORY (New_AST, NEW);
 
 /** A binary operator. */
 class Binop_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (Binop_AST, Callable);
@@ -302,12 +329,16 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out, int i){
         child(3)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
+
+        /*
+        child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex();
-        out << "(";
-        child(0)->innerCodeGen(out,i);
-        out << ",";
-        child(2)->innerCodeGen(out,i);
+        out << "(&";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame";
         out << ")";
+        */
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
@@ -317,26 +348,89 @@ protected:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        out << "\n";
+
+        local_count = global_count++;
         writeIndented(out,i);
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << " ";
         child(3)->innerCodeGen(out,i);
-        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE->frame.setVar(";
+        out << "_" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
+        child(0)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
         child(3)->innerCodeGen(out,i);
-        out << child(3)->getDecl()->getIndex() << "__VECTOR[" << "0" << "]";
-        out << ",";
-        child(0)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->args";
+        out << "[" << "0" << "]";
+        out << ",&";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << ");\n";
 
         writeIndented(out,i);
+        child(2)->getType()->binding()->innerCodeGen(out,i);
+        out << " ";
         child(3)->innerCodeGen(out,i);
-        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE->frame.setVar(";
-        child(3)->innerCodeGen(out,i);
-        out << child(3)->getDecl()->getIndex() << "__VECTOR[" << "1" << "]";
-        out << ",";
+        out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
         child(2)->innerCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->args";
+
+        out << "[" << "1" << "]";
+        out << ",&";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << ");\n";
+
+        writeIndented(out,i);
+        child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        out << " ";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "(";
+
+        out << "(((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame))";
+        out << ";\n";
+        
+        out << "\n";
     }
 
 };    
+int Binop_AST::global_count;
 
 NODE_FACTORY (Binop_AST, BINOP);
 

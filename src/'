@@ -120,9 +120,6 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        for_each_child(c,child(1)){
-            c->memCodeGen(out,i);
-        } end_for;
         writeIndented(out,i);
         out << "cout << ";
         int first = 1;
@@ -133,7 +130,7 @@ protected:
             first = 0;
             out << "*(";
             c->getType()->binding()->innerCodeGen(out,i);
-            out << "*)frame->getVar(\"";
+            out << "*)static_frame.getVar(\"";
             c->innerCodeGen(out,i);
             out << "\")";
             out << " << ";
@@ -269,7 +266,7 @@ protected:
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE (";
 
-        out << "new Frame(frame),";
+        out << "Frame(static_frame),";
         child(0)->innerCodeGen(out, i);
         out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
         addToStaticFrame(out, i);
@@ -303,7 +300,7 @@ protected:
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE(";
-        out << "Frame* frame,vector<string> args){\n";
+        out << "Frame frame,vector<string> args){\n";
         writeIndented(out,i+2);
         out << "fp = ";
         child(0)->innerCodeGen(out,i);
@@ -316,8 +313,10 @@ protected:
         writeIndented(out,i+1);
         out << "}\n";
         writeIndented(out,i+1);
-
-        getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->arity())
+            child(2)->innerCodeGen(out,i);
+        else
+            out << "void*";
         out << " (*fp) (";
         out << "Frame*";
         out << ");\n";
@@ -637,7 +636,7 @@ protected:
     void outerCodeGen(ostream& out,int i){
         child(1)->memCodeGen(out,i);
         writeIndented(out,i);
-        out << "frame->setVar(\"";
+        out << "static_frame.setVar(\"";
         child(0)->innerCodeGen(out, i);
         out << "\",";
         out << "&";
