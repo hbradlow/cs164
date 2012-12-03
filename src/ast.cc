@@ -281,6 +281,11 @@ AST::innerCodeGen (ostream& out,int i)
 }
 //hbradlow
 void
+AST::closureCodeGen (ostream& out,int i)
+{
+}
+//hbradlow
+void
 AST::memCodeGen (ostream& out,int i)
 {
     for_each_child(c, this){
@@ -329,6 +334,7 @@ AST::addToStaticFrame(std::ostream& out, int i)
     out << "__" << child(0)->getDecl()->getIndex() << "_closure";
     out << ");\n";
 }
+
 bool
 AST::errorReported ()
 {

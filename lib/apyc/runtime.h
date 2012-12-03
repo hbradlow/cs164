@@ -89,9 +89,9 @@ public:
 };
 
 class Closure {
-    Closure(void* (*fp) (), Frame frame);
 public:
-    void* (*fp) ();
+    Closure(void* (*fp) (Frame*), Frame frame);
+    void* (*fp) (void*);
     Frame frame;
 };
 

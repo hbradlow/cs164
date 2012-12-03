@@ -31,7 +31,7 @@ Frame::Frame(const Frame* static_link) : enclosing(static_link)
 {
     this->locals = std::map<string, void*>();
 }
-Closure::Closure(void* (*fp) (), Frame frame) : fp(fp), frame(frame)
+Closure::Closure(void* (*fp) (Frame*), Frame frame) : fp(fp), frame(frame)
 {
 }
 
