@@ -256,6 +256,8 @@ protected:
         writeComment(out,i,"Create a temp variable to store the value");
         writeIndented(out,i);
         c->getType()->binding()->innerCodeGen(out,i);
+        if(c->needsPointer())
+            out << "*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
@@ -294,8 +296,10 @@ protected:
     
     //hbradlow
     void innerCodeGen(ostream& out, int i){
-        out << "new ";
-        child(1)->child(0)->child(0)->innerCodeGen(out,i);
+        out << "(*";
+        child(0)->innerCodeGen(out,i);
+        out << "_0_2" << child(0)->getDecl()->getIndex();
+        out << ")";
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
@@ -325,6 +329,17 @@ protected:
             error (this, "inconsistent types");
         }
         return this;
+    }
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+    }
+    void valueCodeGen(ostream& out, int i){
+        out << "new ";
+        child(0)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    bool needsPointer(){
+        return true;
     }
 
 };
