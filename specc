@@ -1,0 +1,146 @@
+-----------------------------------------------------------
+    - HOW TO DEAL WITH LISTS, DICTS, ETC. 
+    -------------------------------------------------------
+    So we are going to need to create classes for these 
+    before we do anything else, so that we can then use 
+    these as c++ types throughout. 
+
+    They should all subclasss a common type, Object, and 
+    we need them FOR ALL LITERALS to deal with print, so 
+    we need them for int's and strings as well. 
+
+    I'm probably missing some of the details, especially 
+    with classes, but I think this should work in general. 
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+    - VAR ASSIGN TO CONSTANT 
+    -------------------------------------------------------
+    a = 10 
+    -------------------------------------------------------
+    Our_Integer_Wrapper a_counter = 10; 
+    frame->setVar("a", &a_counter);
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+    - VAR ASSIGN TO VAR 
+    -------------------------------------------------------
+    b = a
+    -------------------------------------------------------
+    type_of_a b_counter = (type_of_a)(*frame->getVar("a"));
+    frame->setVar("b", &b_counter);
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+    - VAR ASSIGN TO FUNCTION CALL 
+    -------------------------------------------------------
+    a = b() 
+    ------------------------------------------------------- 
+    // Generate code for r.h.s of assignment, in this case
+    // a function, as defined below and assign it to 
+    // return_value_of_b
+    frame->setVar("a", &return_value_of_b);
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+    - FUNCTION DEFINITION
+    ------------------------------------------------------
+    def a(x):
+        ...
+    -------------------------------------------------------
+    - Outside of main
+    -------------------------------------------------------
+    class closure_a_counter
+    {
+        return_type_of_a (*fp) (Frame *frame);
+        vector<string> args; 
+        Frame* frame; 
+    };
+
+    return_type_of_a a_func_rep(Frame *frame)
+    {
+        // Create a new frame so that the locals aren't 
+        // added to the outer frame 
+        frame = new Frame(frame);
+        // Generate code for function body as usual
+    }
+    -------------------------------------------------------
+    - Inside of main
+    -------------------------------------------------------
+    // Create a new closure of the class just made
+    closure_a_counter* a_closure_rep = new closure_a_counter(new Frame(frame));
+    
+    // Add the names of the arguments to the closure
+    for_each_argument_to_a: a_func_rep->args.push_back(argument_to_a_i);
+
+    // Add the closure to the current frame
+    frame->setVar("a_closure_rep", a_closure_rep);
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+    - FUNCTION CALL 
+    -------------------------------------------------------
+    f(10, a, b())
+    -------------------------------------------------------
+    // Generate instance variables for all the args 
+    Our_Integer_Wrapper f_arg_0 = 10; 
+    type_of_a f_arg_1 = frame.getVar("a_counter");
+    return_type_of_b f_arg_2 = /* Code to call b(), just as this was generated */
+
+    // Get the closure for the function from the frame
+    f_closure_rep* f_call_rep = (f_closure_rep*)frame.getVar("f_closure_rep")
+    
+    // Add the arguments to the frame of the closure 
+    for_each_arg_in_f_call_rep->args: f_call_rep->frame->setVar(args[i], &f_arg_i));
+
+    // Actually execute the call
+    f_call_rep->fp(f_call_rep->frame);
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+    - CLASSS DEF 
+    -------------------------------------------------------
+    def A: 
+        x = 10
+        def y(...):
+            ...
+    a = A()
+    b = a.x;
+    -------------------------------------------------------
+    - OUTSIDE MAIN  
+    -------------------------------------------------------
+    class A_class
+    {
+        Our_Integer_Wrapper x;
+        y_return_type A_y(...);
+        A_Class();
+    };
+    A_class::A_class()
+    {
+        Our_Integer_Wrapper x = Our_Integer_Wrapper(10);         
+    }
+    A_Class::A_y(...)
+    {
+        ...     
+    }
+    -------------------------------------------------------
+    - INSIDE MAIN  
+    -------------------------------------------------------
+    A_Class* a_counter = new A_Class();
+    frame->setVar("a_counter", a_counter);
+
+    type_of_a.x b_counter = (*((A_Class*)frame->getVar("a_counter")).)x;
+    frame->setVar("b_counter", &b_counter);
+-----------------------------------------------------------
+
+    
+
+
+
+    
