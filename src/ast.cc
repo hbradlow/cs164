@@ -325,6 +325,11 @@ AST::innerClassCodeGen (std::ostream& out,int i,AST_Ptr c)
 {
 }
 
+void 
+AST::generateFunctionCall(std::ostream& out, int i){}
+void 
+AST::generateArgs(std::ostream& out, int i, int c_i_){}
+
 //hbradlow
 bool 
 AST::needsPointer(){

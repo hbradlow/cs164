@@ -209,28 +209,16 @@ protected:
     void memCodeGen(ostream& out, int i){
         local_count = global_count++;
 
-
         for_each_child(c,child(1)){
             writeIndented(out,i);
-            child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
-            out << " ";
-            child(0)->innerCodeGen(out,i);
-            out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
-            out << " = ";
-            c->innerCodeGen(out,i);
-            out << ";\n";
-
-            writeIndented(out,i);
-            child(0)->innerCodeGen(out,i);
-            out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame->setVar(";
-            child(0)->innerCodeGen(out,i);
-            out << child(0)->getDecl()->getIndex() << "__VECTOR[" << c_i_ << "]";
-            out << ",&";
-            child(0)->innerCodeGen(out,i);
-            out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
-            out << ");\n";
+            generateArgs(out, i, c_i_);
         } end_for;
+        
+        generateFunctionCall(out, i);
+    }
 
+    void generateFunctionCall(ostream& out, int i)
+    {
         writeIndented(out,i);
         child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
         out << " ";
@@ -244,6 +232,26 @@ protected:
         out << ";\n";
     }
 
+    void generateArgs(ostream& out, int i, int c_i_)
+    {
+        child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        out << " ";
+        child(0)->innerCodeGen(out,i);
+        out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << " = ";
+        child(c_i_)->innerCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame->setVar(";
+        child(0)->innerCodeGen(out,i);
+        out << child(0)->getDecl()->getIndex() << "__VECTOR[" << c_i_ << "]";
+        out << ",&";
+        child(0)->innerCodeGen(out,i);
+        out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << ");\n";
+    }
 };
 
 NODE_FACTORY (Call_AST, CALL);
@@ -352,6 +360,13 @@ protected:
 
         local_count = global_count++;
         writeIndented(out,i);
+        generateArgs(out, i, 0);
+        generateFunctionCall(out, i);
+        
+        out << "\n";
+    }
+    void generateArgs(ostream& out, int i, int c_i_)
+    {
         child(0)->getType()->binding()->innerCodeGen(out,i);
         out << " ";
         child(3)->innerCodeGen(out,i);
@@ -408,7 +423,9 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << ");\n";
-
+    }
+    void generateFuctionCall(ostream& out, int i)
+    {
         writeIndented(out,i);
         child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
         out << " ";
@@ -425,8 +442,7 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame))";
         out << ";\n";
-        
-        out << "\n";
+    
     }
 
 };    

@@ -229,6 +229,9 @@ public:
     //hbradlow
     virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
 
+    virtual void generateFunctionCall(std::ostream& out, int i); 
+    virtual void generateArgs(std::ostream& out, int i, int c_i_);
+
     //hbradlow
     virtual void valueCodeGen (std::ostream& out,int i);
 
