@@ -207,6 +207,9 @@ protected:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
         local_count = global_count++;
 
         writeComment(out,i,"Generate the args");
@@ -227,10 +230,10 @@ protected:
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
         out << " = ";
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex() << "(";
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame)";
+        writeClosure(out,i,child(0));
+        out << "->fp" << "(";
+        writeClosure(out,i,child(0));
+        out << "->frame)";
         out << ";\n";
 
         writeComment(out,i,"Add it to the current frame");
@@ -252,20 +255,20 @@ protected:
 
         writeComment(out,i,"Create a temp variable to store the value");
         writeIndented(out,i);
-        child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        c->getType()->binding()->innerCodeGen(out,i);
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
         out << " = ";
-        c->innerCodeGen(out,i);
+        c->valueCodeGen(out,i);
         out << ";\n";
 
         writeComment(out,i,"Add it to the closures frame");
         writeIndented(out,i);
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame->setVar(";
-        child(0)->innerCodeGen(out,i);
-        out << child(0)->getDecl()->getIndex() << "__VECTOR[" << c_i_ << "]";
+        writeClosure(out,i,child(0));
+        out << "->frame->setVar(";
+        writeClosure(out,i,child(0));
+        out << "->args[" << c_i_ << "]";
         out << ",&";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();

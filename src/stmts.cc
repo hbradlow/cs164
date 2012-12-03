@@ -283,6 +283,9 @@ protected:
     }
     //hbradlow
     void defCodeGen(ostream& out,int i){
+        writeComment(out,i,"----------------------------start--------------------");
+        writeComment(out,i,"Function stuff");
+
         writeIndented(out,i);
         getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
@@ -292,12 +295,7 @@ protected:
         out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
         out << "Frame* frame";
-        out << "){\n";
-        for_each_child(c,child(3)){
-            c->outerCodeGen(out,i+1);
-        } end_for;
-        writeIndented(out,i);
-        out << "}\n";
+        out << ");\n";
 
         writeIndented(out,i);
         out << "class ";
@@ -330,6 +328,24 @@ protected:
         out << ");\n";
         writeIndented(out,i);
         out << "};\n";
+        
+        writeIndented(out,i);
+        getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
+        if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex();
+        out << "(";
+        out << "Frame* frame";
+        out << "){\n";
+        for_each_child(c,child(3)){
+            c->outerCodeGen(out,i+1);
+        } end_for;
+        writeIndented(out,i);
+        out << "}\n";
+        writeComment(out,i,"----------------------------end----------------------");
+
     }
 };
 
@@ -781,10 +797,11 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out,int i){
         out << "return ";
-        child(0)->innerCodeGen(out,i);
+        child(0)->valueCodeGen(out,i);
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        child(0)->memCodeGen(out,i);
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";

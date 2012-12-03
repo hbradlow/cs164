@@ -592,6 +592,7 @@ std::string strReplace(std::string &s,
                         std::string replaceWith);
 void writeComment(std::ostream& out, int i, std::string c);
 //hbradlow
+void writeClosure(std::ostream& out, int i, AST_Ptr c);
 
 #endif
 

@@ -18,7 +18,19 @@ std::string strReplace(std::string &s,
 {
         return(s.replace(s.find(toReplace), toReplace.length(), replaceWith));
 }
-
+/* Write the line to out, preceded by i tabs.
+ */
+void 
+writeClosure(ostream& out, int i, AST_Ptr c){
+    out << "((";
+    c->innerCodeGen(out,i);
+    out << "__" << c->getDecl()->getIndex();
+    out << "_CLOSURE";
+    out << "*)(frame->getVar(\"";
+    c->innerCodeGen(out,i);
+    out << "__" << c->getDecl()->getIndex();
+    out << "_closure\")))";
+}
 /* Write the line to out, preceded by i tabs.
  */
 void 
