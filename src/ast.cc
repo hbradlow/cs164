@@ -22,6 +22,16 @@ std::string strReplace(std::string &s,
 /* Write the line to out, preceded by i tabs.
  */
 void 
+writeComment(ostream& out, int i, std::string c) {
+  while (i > 0) {
+    out << "    ";
+    i--;
+  }
+  out << "//" << c << "\n";
+}
+/* Write the line to out, preceded by i tabs.
+ */
+void 
 writeIndented(ostream& out, int i) {
   while (i > 0) {
     out << "    ";
@@ -328,7 +338,7 @@ AST::innerClassCodeGen (std::ostream& out,int i,AST_Ptr c)
 void 
 AST::generateFunctionCall(std::ostream& out, int i){}
 void 
-AST::generateArgs(std::ostream& out, int i, int c_i_){}
+AST::generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c){}
 
 //hbradlow
 bool 
@@ -343,9 +353,8 @@ AST::addToStaticFrame(std::ostream& out, int i)
     out << "frame->setVar(\"";
     child(0)->innerCodeGen(out,i);
     out << "__" << child(0)->getDecl()->getIndex() << "_closure";
-    out << "\", (";
-    child(0)->getDecl()->getType()->child(0)->innerCodeGen(out,i);
-    out << "*)&";
+    out << "\", ";
+    out << "";
     child(0)->innerCodeGen(out, i);
     out << "__" << child(0)->getDecl()->getIndex() << "_closure";
     out << ");\n";

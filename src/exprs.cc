@@ -209,9 +209,9 @@ protected:
     void memCodeGen(ostream& out, int i){
         local_count = global_count++;
 
+        writeComment(out,i,"Generate the args");
         for_each_child(c,child(1)){
-            writeIndented(out,i);
-            generateArgs(out, i, c_i_);
+            generateArgs(out, i, c_i_, c);
         } end_for;
         
         generateFunctionCall(out, i);
@@ -232,16 +232,21 @@ protected:
         out << ";\n";
     }
 
-    void generateArgs(ostream& out, int i, int c_i_)
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
     {
+        writeComment(out,i,"Generate an argument to the function call");
+
+        writeComment(out,i,"Create a temp variable to store the value");
+        writeIndented(out,i);
         child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
         out << " = ";
-        child(c_i_)->innerCodeGen(out,i);
+        c->innerCodeGen(out,i);
         out << ";\n";
 
+        writeComment(out,i,"Add it to the closures frame");
         writeIndented(out,i);
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame->setVar(";
@@ -359,14 +364,18 @@ protected:
         out << "\n";
 
         local_count = global_count++;
-        writeIndented(out,i);
-        generateArgs(out, i, 0);
+        generateArgs(out, i, 0, this);
         generateFunctionCall(out, i);
         
         out << "\n";
     }
-    void generateArgs(ostream& out, int i, int c_i_)
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
     {
+        writeComment(out,i,"Generate the arguments to the call");
+        writeComment(out,i,"Binops have two args");
+
+        writeComment(out,i,"Create first dummy variable");
+        writeIndented(out,i);
         child(0)->getType()->binding()->innerCodeGen(out,i);
         out << " ";
         child(3)->innerCodeGen(out,i);
@@ -404,6 +413,7 @@ protected:
         child(2)->innerCodeGen(out,i);
         out << ";\n";
 
+        writeComment(out,i,"Create second dummy variable");
         writeIndented(out,i);
         out << "((";
         child(3)->innerCodeGen(out,i);
@@ -423,9 +433,7 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << ");\n";
-    }
-    void generateFuctionCall(ostream& out, int i)
-    {
+
         writeIndented(out,i);
         child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
         out << " ";
@@ -442,7 +450,22 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame))";
         out << ";\n";
-    
+    }
+    void generateFuctionCall(ostream& out, int i)
+    {
+        writeComment(out,i,"Perform Function Call");
+
+        writeIndented(out,i);
+        child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        out << " ";
+        child(3)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "(";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame)";
+        out << ";\n";
     }
 
 };    

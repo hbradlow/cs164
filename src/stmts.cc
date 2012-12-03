@@ -244,6 +244,9 @@ protected:
 
     //hbradlow
     void closureCodeGen(ostream& out, int i){
+        writeComment(out,i,"Create the closure for a function");
+
+        writeComment(out,i,"Create the vector of argument names");
         writeIndented(out,i);
         out << "vector<string> ";
         child(0)->innerCodeGen(out, i); 
@@ -257,6 +260,7 @@ protected:
         } end_for;
         writeIndented(out,i);
 
+        writeComment(out,i,"Create the closure");
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE* ";

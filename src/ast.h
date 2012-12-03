@@ -230,7 +230,7 @@ public:
     virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
 
     virtual void generateFunctionCall(std::ostream& out, int i); 
-    virtual void generateArgs(std::ostream& out, int i, int c_i_);
+    virtual void generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c);
 
     //hbradlow
     virtual void valueCodeGen (std::ostream& out,int i);
@@ -590,6 +590,8 @@ void writeIndented(std::ostream& out, int i);
 std::string strReplace(std::string &s,
                         std::string toReplace,
                         std::string replaceWith);
+void writeComment(std::ostream& out, int i, std::string c);
+//hbradlow
 
 #endif
 
