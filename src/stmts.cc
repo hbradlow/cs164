@@ -244,6 +244,7 @@ protected:
 
     //hbradlow
     void closureCodeGen(ostream& out, int i){
+        writeComment(out,i,"-------------start----------------");
         writeComment(out,i,"Create the closure for a function");
 
         writeComment(out,i,"Create the vector of argument names");
@@ -258,9 +259,10 @@ protected:
             c->innerCodeGen(out,i);
             out << "\");\n";
         } end_for;
-        writeIndented(out,i);
 
         writeComment(out,i,"Create the closure");
+
+        writeIndented(out,i);
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE* ";
@@ -277,6 +279,7 @@ protected:
         child(0)->innerCodeGen(out, i);
         out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
         addToStaticFrame(out, i);
+        writeComment(out,i,"-------------end----------------");
     }
     //hbradlow
     void defCodeGen(ostream& out,int i){
