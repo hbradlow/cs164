@@ -239,11 +239,13 @@ public:
     //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);
     //hbradlow
-    virtual void closureCodeGen (std::ostream& out,int i);
+    virtual void closureCodeGen (std::ostream& out,int i,std::string closure="");
     //hbradlow
     virtual void innerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
     //hbradlow
     virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
+    //hbradlow
+    virtual void assignCodeGen (std::ostream& out,int i,AST_Ptr c,std::string lhs="");
 
     virtual void generateFunctionCall(std::ostream& out, int i); 
     virtual void generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c);
@@ -253,6 +255,8 @@ public:
 
     //hbradlow
     virtual bool needsPointer();
+    //hbradlow
+    virtual bool needsCastPointer();
     //kevin
     virtual void addToStaticFrame(std::ostream& out, int i);
     /** True if an error has been reported on me. */

@@ -239,7 +239,9 @@ protected:
         out << " = ";
         out << "(";
         this->getType()->binding()->innerCodeGen(out,i);
-        out << "*)";
+        if(this->getType()->binding()->needsCastPointer())
+            out << "*";
+        out << ")";
         writeClosure(out,i,child(0));
         out << "->fp" << "(";
         writeClosure(out,i,child(0));
@@ -1015,6 +1017,11 @@ protected:
         return this;
     }
 
+    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+        for_each_child(ch,this){
+            ch->assignCodeGen(out,i,c->child(ch_i_),lhs);
+        } end_for;
+    }
 };
 
 NODE_FACTORY (TargetList_AST, TARGET_LIST);
@@ -1143,13 +1150,22 @@ NODE_FACTORY (IfExpr_AST, IF_EXPR);
 class And_AST : public BalancedExpr {
 protected:
     
+    void innerCodeGen(ostream& out, int depth) {
+        child(0)->innerCodeGen(out, depth);
+        out << " && ";
+        child(1)->innerCodeGen(out, depth);
+    }
     void outerCodeGen(ostream& out, int depth) {
-      child(1)->outerCodeGen(out, depth);
-      out << " && ";
-      child(2)->outerCodeGen(out, depth);
-
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
     }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
+    void valueCodeGen(ostream& out, int i){
+        child(0)->valueCodeGen(out, i);
+        out << " && ";
+        child(1)->valueCodeGen(out, i);
+    }
     
 };
 
@@ -1163,8 +1179,40 @@ protected:
 
     NODE_CONSTRUCTORS (Or_AST, BalancedExpr);
 
+    void innerCodeGen(ostream& out, int depth) {
+        child(0)->innerCodeGen(out, depth);
+        out << " || ";
+        child(1)->innerCodeGen(out, depth);
+    }
+    void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
+    }
+    void valueCodeGen(ostream& out, int i){
+        child(0)->valueCodeGen(out, i);
+        out << " || ";
+        child(1)->valueCodeGen(out, i);
+    }
 };
 
 NODE_FACTORY (Or_AST, OR);
 
+
+class Break_AST : public AST_Tree{
+protected:
+
+    NODE_CONSTRUCTORS (Break_AST, AST_Tree);
+
+    void innerCodeGen(ostream& out, int depth) {
+        out << "break";
+    }
+    void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
+    }
+};
+
+NODE_FACTORY (Break_AST, BREAK);
 

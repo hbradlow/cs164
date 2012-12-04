@@ -497,7 +497,11 @@ protected:
         else
             out << as_string();
         */
-        out << "void*";
+        out << "Object*";
+    }
+    //hbradlow
+    bool needsCastPointer(){
+        return false;
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
