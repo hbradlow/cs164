@@ -12,6 +12,8 @@
 #include <string>
 #include "horn-common.h"
 
+static std::map<std::string,int> local_counts;
+
 class AST;
 class AST_Token;
 class AST_Tree;
@@ -208,6 +210,10 @@ public:
     //hbradlow
     virtual bool isFunction();
 
+    //hbradlow
+    virtual void setFunctionCalledBefore(bool b);
+    //hbradlow
+    virtual bool functionCalledBefore();
     /** Generate code for me on OUT. */
     //hbradlow
     //outerCodeGen called on statements that are on their own lines

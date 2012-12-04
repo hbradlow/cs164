@@ -6,7 +6,7 @@ def h(x,y,z):
     return (x,y)
 def i(x,y,z):
     return (x,y,z)
-print f(1,"this",True)
+#print f(1,"this",True)
 print g(1,"this",True)
 print h(1,"this",True)
 print i(1,"this",True)

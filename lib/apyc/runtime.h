@@ -22,6 +22,15 @@ using namespace std;
 /** 
  * Kevin 
  */
+class Object{
+public:
+    virtual void print(ostream& out);
+};
+void
+Object::print(ostream& out)
+{
+    out << this; 
+}
 class Frame
 {
 private:
@@ -44,7 +53,7 @@ public:
     std::vector<string> args; 
 };
 
-class Bool{
+class Bool : public Object{
 public:
     bool value;
     Bool(bool v){
@@ -55,7 +64,7 @@ public:
     }
 };
 
-class Integer{
+class Integer: public Object{
 public:
     int value;
     Integer(int v){
@@ -70,7 +79,7 @@ public:
     }
 };
 
-class String{
+class String: public Object{
 public:
     string value;
     String(string v){
@@ -102,7 +111,7 @@ public:
 };
 
 template<class K, class V>
-class Dict{
+class Dict: public Object{
 public:
    map<K, V> items;
    ostream& operator<<(ostream& out){
@@ -123,7 +132,7 @@ public:
 };
 
 template<class T>
-class List{
+class List: public Object{
 public:
     vector<T> items;
     ostream& operator<<(ostream& out){
@@ -149,61 +158,32 @@ public:
     }
 };
 
-template<class T>
-class Tuple0{
+class Tuple0: public Object{
 public:
-   ostream& operator<<(ostream& out){
-       out << "()";
-       return out;
-   }
 };
 
 template<class T>
-class Tuple1{
+class Tuple1: public Object{
 public:
-   T item;
-   ostream& operator<<(ostream& out){
-       out << "(";
-       out << item;
-       out << ")";
-       return out;
-   }
-   Tuple1(T t) : item(t){}
+   Object* item;
+   Tuple1(Object* t) : item(t){}
 };
 
 template<class T, class U>
-class Tuple2{
+class Tuple2: public Object{
 public:
-   T item1;
-   U item2;
-   Tuple2(T t, U u) : item1(t), item2(u){}
-   ostream& operator<<(ostream& out){
-        out << "(";
-        out << item1; 
-        out << ",";
-        out << item2;
-        out << ")";
-        return out;
-   }
+   Object* item1;
+   Object* item2;
+   Tuple2(Object* t, Object* u) : item1(t), item2(u){}
 };
 
 template<class T, class U, class V>
-class Tuple3{
+class Tuple3: public Object{
 public:
-   T item1;
-   U item2;
-   V item3;
-   Tuple3(T t, U u, V v) : item1(t), item2(u), item3(v){}
-   ostream& operator<<(ostream& out){
-        out << "(";
-        out << item1; 
-        out << ",";
-        out << item2;
-        out << ",";
-        out << item3;
-        out << ")";
-        return out;
-   }
+   Object* item1;
+   Object* item2;
+   Object* item3;
+   Tuple3(Object* t, Object* u, Object* v) : item1(t), item2(u), item3(v){}
 };
 //------------------------------------------------------------
 // String
@@ -328,6 +308,36 @@ ostream& operator<<(ostream& out, const Bool& b){
     return out;
 }
 //------------------------------------------------------------
-
-
+inline
+ostream& operator<<(ostream& out, const Tuple0& b){
+   out << "()";
+   return out;
+}
+inline
+ostream& operator<<(ostream& out, const Tuple1<Object*>& b){
+   out << "(";
+   b.item->print(out); 
+   out << ")";
+   return out;
+}
+inline
+ostream& operator<<(ostream& out, const Tuple2<Object*,Object*>& b){
+   out << "(";
+   b.item1->print(out); 
+   out << ","; 
+   b.item2->print(out); 
+   out << ")";
+   return out;
+}
+inline
+ostream& operator<<(ostream& out, const Tuple3<Object*,Object*,Object*>& b){
+   out << "(";
+   b.item1->print(out); 
+   out << ","; 
+   b.item2->print(out); 
+   out << ","; 
+   b.item3->print(out); 
+   out << ")";
+   return out;
+}
 #endif
