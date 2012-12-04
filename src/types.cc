@@ -526,6 +526,11 @@ protected:
     int numParams () {
         return child (1)->arity ();
     }
+    
+    //hbradow
+    bool isFunction(){
+        return true;
+    }
 
     Type_Ptr paramType (int k) {
         return child (1)->child (k)->asType ();

@@ -205,6 +205,8 @@ public:
      *  left side of an assignment). Does not modify
      *  defining contexts (which must be caught separately). */
     virtual AST_Ptr convertNone (bool definingContext);
+    //hbradlow
+    virtual bool isFunction();
 
     /** Generate code for me on OUT. */
     //hbradlow
