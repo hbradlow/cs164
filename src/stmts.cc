@@ -48,7 +48,7 @@ protected:
     void innerCodeGen(ostream& out, int depth) {
         child(0)->memCodeGen(out,depth);
         writeIndented(out,depth);
-        out << "if ((";
+        out << "if ((*";
         child(0)->innerCodeGen(out, depth);
         out << ")==true) {" << endl;
         child(1)->outerCodeGen(out, depth);
@@ -131,6 +131,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
+            out << "*";
             c->valueCodeGen(out,i);
             out << " << ";
         } end_for;
@@ -519,9 +520,14 @@ protected:
         out << "Frame* frame;\n";
         writeIndented(out,i+1);
         child(0)->innerCodeGen(out,i);
-        out << "(){\n";
+        out << "(Frame* frame){\n";
         writeIndented(out,i+2);
-        out << "frame = new Frame(NULL);\n";
+        out << "this->frame = new Frame(NULL);\n";
+
+        for_each_child(c,child(2)){
+            c->innerClassCodeGen(out,i,this);
+        } end_for;
+
         writeIndented(out,i+1);
         out << "}\n";
         writeIndented(out,i);
@@ -688,39 +694,22 @@ protected:
         out << "->setVar(";
         child(0)->stringCodeGen(out, i);
         out << ",";
-        out << "&(";
+        out << "(";
         child(1)->valueCodeGen(out,i);
         out << "))";
         out << ";\n";
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
+        child(1)->memCodeGen(out,i);
         writeIndented(out,i);
-        child(1)->getType()->binding()->innerCodeGen(out,i);
-        out << "* ";
-        out << "CLASS_VARIABLE";
-        out << " = ";
+        out << "this->frame";
+        out << "->setVar(";
+        child(0)->stringCodeGen(out, i);
+        out << ",";
         out << "(";
-        child(1)->getType()->binding()->innerCodeGen(out,i);
-        out << "*) ";
-        out << "malloc(sizeof(";
-        child(1)->getType()->binding()->innerCodeGen(out,i);
-        out << "));\n";
-
-        writeIndented(out,i);
-        out << "*CLASS_VARIABLE";
-        out << " = ";
-        child(1)->innerCodeGen(out,i);
-        out << ";\n";
-
-        writeIndented(out,i);
-        out << "classVariables[";
-        out << "\"";
-        c->child(0)->innerCodeGen(out,i);
-        out << ".";
-        child(0)->innerCodeGen(out,i);
-        out << "\"] = ";
-        out << "CLASS_VARIABLE";
+        child(1)->valueCodeGen(out,i);
+        out << "))";
         out << ";\n";
     }
 };

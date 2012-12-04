@@ -656,11 +656,8 @@ protected:
         else if(strcmp(child(0)->as_string().c_str(),"bool")==0){
             return true;
         }
-        else if(strcmp(child(0)->as_string().c_str(),"str")==0){
-            return false;
-        }
         else
-            return false;
+            return true;
     }
 
 };

@@ -227,11 +227,13 @@ protected:
         writeComment(out,i,"Perform the function call");
         writeIndented(out,i);
         this->getType()->binding()->innerCodeGen(out,i);
+        if(this->getType()->binding()->needsPointer())
+            out << "*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
         out << " = ";
-        out << "*(";
+        out << "(";
         this->getType()->binding()->innerCodeGen(out,i);
         out << "*)";
         writeClosure(out,i,child(0));
@@ -245,7 +247,7 @@ protected:
         out << "frame->setVar(\"";
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex() << "\"";
-        out << ",&";
+        out << ",";
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
         out << ");\n";
@@ -260,7 +262,7 @@ protected:
         writeComment(out,i,"Create a temp variable to store the value");
         writeIndented(out,i);
         c->getType()->binding()->innerCodeGen(out,i);
-        if(c->needsPointer())
+        if(c->getType()->binding()->needsPointer())
             out << "*";
         out << " ";
         child(0)->innerCodeGen(out,i);
@@ -275,7 +277,7 @@ protected:
         out << "->frame->setVar(";
         writeClosure(out,i,child(0));
         out << "->args[" << c_i_ << "]";
-        out << ",&";
+        out << ",";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
         out << ");\n";
@@ -300,7 +302,7 @@ protected:
     
     //hbradlow
     void innerCodeGen(ostream& out, int i){
-        out << "(*";
+        out << "(";
         child(0)->innerCodeGen(out,i);
         out << "_0_2" << child(0)->getDecl()->getIndex();
         out << ")";
@@ -340,6 +342,7 @@ protected:
     void valueCodeGen(ostream& out, int i){
         out << "new ";
         child(0)->innerCodeGen(out,i);
+        out << "(frame)";
     }
     //hbradlow
     bool needsPointer(){
@@ -383,7 +386,7 @@ protected:
         /*
         child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex();
-        out << "(&";
+        out << "(";
         child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame";
         out << ")";
@@ -413,6 +416,8 @@ protected:
         writeComment(out,i,"Create first dummy variable");
         writeIndented(out,i);
         child(0)->getType()->binding()->innerCodeGen(out,i);
+        if(child(0)->getType()->binding()->needsPointer())
+            out << "*";
         out << " ";
         child(3)->innerCodeGen(out,i);
         out << "_" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
@@ -435,21 +440,23 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->args";
         out << "[" << "0" << "]";
-        out << ",&";
+        out << ",";
         child(3)->innerCodeGen(out,i);
         out << "_" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << ");\n";
 
+        writeComment(out,i,"Create second dummy variable");
         writeIndented(out,i);
         child(2)->getType()->binding()->innerCodeGen(out,i);
+        if(child(0)->getType()->binding()->needsPointer())
+            out << "*";
         out << " ";
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << " = ";
-        child(2)->innerCodeGen(out,i);
+        child(2)->valueCodeGen(out,i);
         out << ";\n";
 
-        writeComment(out,i,"Create second dummy variable");
         writeIndented(out,i);
         out << "((";
         child(3)->innerCodeGen(out,i);
@@ -465,19 +472,21 @@ protected:
         out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->args";
 
         out << "[" << "1" << "]";
-        out << ",&";
+        out << ",";
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << ");\n";
 
         writeIndented(out,i);
         child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(3)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
         out << " ";
         child(3)->innerCodeGen(out,i);
         out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << " = ";
-        child(3)->innerCodeGen(out,i);
-        out << "__" << child(3)->getDecl()->getIndex() << "(";
+        writeClosure(out,i,child(3));
+        out << "->fp(";
 
         out << "(((";
         child(3)->innerCodeGen(out,i);
@@ -493,6 +502,8 @@ protected:
 
         writeIndented(out,i);
         child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(3)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
         out << " ";
         child(3)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
@@ -768,7 +779,7 @@ protected:
         out << "->";
         child(1)->innerCodeGen(out,i);
         */
-        out << "*(";
+        out << "(";
         child(1)->getType()->binding()->innerCodeGen(out,i);
         out << "*)(((";
         child(0)->getType()->binding()->innerCodeGen(out,i);

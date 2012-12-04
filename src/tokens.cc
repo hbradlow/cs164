@@ -307,6 +307,8 @@ protected:
     void valueCodeGen(ostream& out,int i){
         out << "(";
         getType()->binding()->innerCodeGen(out,i);
+        if(getType()->binding()->needsPointer())
+            out << "*";
         out << ")frame->getVar(\"";
         innerCodeGen(out,i);
         out << "\")";

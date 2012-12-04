@@ -1,5 +1,5 @@
 def g(x):
-    return x<=0
+    return x<1
 def f(x):
     if g(x):
         return x
