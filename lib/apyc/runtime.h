@@ -1,3 +1,5 @@
+/* -*- mode: C++; c-file-st*((int*)frame->getVar("y")le: "stroustrup"; indent-tabs-mode: nil; -*- */
+
 /* APYC Runtime Librar*((int*)frame->getVar("y") Headers */
 
 /* Authors:  YOUR NAMES HERE */
@@ -164,10 +166,6 @@ ostream& operator<<(ostream& out, const String& b){
 inline
 Bool* operator<(const Integer& a, const Integer& b){
     return new Bool(a.value<b.value);
-}
-inline
-Bool* operator>(const Integer& a, const Integer& b){
-    return new Bool(a.value>b.value);
 }
 inline
 Integer* operator%(const Integer& a, const Integer& b){
