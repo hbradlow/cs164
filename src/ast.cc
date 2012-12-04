@@ -297,6 +297,35 @@ AST::convertNone (bool)
 
 //hbradlow
 void 
+AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
+    c->memCodeGen(out,i);
+    writeIndented(out,i);
+    if(strcmp("",lhs.c_str())==0)
+        this->lhsFrameCodeGen(out,i);
+    else
+        out << lhs;
+    out << "->setVar(";
+    this->stringCodeGen(out, i);
+    out << ",";
+    out << "(";
+    c->valueCodeGen(out,i);
+    out << "))";
+    out << ";\n";
+
+    if(c->getType()->binding()->isFunction()){
+        writeIndented(out,i);
+        out << "frame->setVar(\"";
+        this->innerCodeGen(out,i);
+        out << "__" << this->getDecl()->getIndex() << "_closure";
+        out << "\", ";
+        out << "frame->getVar(\"";
+        c->innerCodeGen(out, i);
+        out << "__" << c->getDecl()->getIndex() << "_closure";
+        out << "\"));\n";
+    }
+}
+//hbradlow
+void 
 AST::setFunctionCalledBefore(bool b){
 }
 //hbradlow
@@ -340,10 +369,10 @@ AST::lhsFrameCodeGen (std::ostream& out, int i)
 }
 //hbradlow
 void
-AST::closureCodeGen (ostream& out,int i)
+AST::closureCodeGen (ostream& out,int i,std::string closure)
 {
     for_each_child(c,this){
-        c->closureCodeGen(out,i);
+        c->closureCodeGen(out,i,closure);
     } end_for;
 }
 //hbradlow
@@ -398,6 +427,11 @@ AST::generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c){}
 bool 
 AST::needsPointer(){
     return false;
+}
+//hbradlow
+bool 
+AST::needsCastPointer(){
+    return true;
 }
 //kevin
 void 

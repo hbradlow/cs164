@@ -6,8 +6,8 @@
 
 #define NATIVE__donotcall__
 #define NATIVE__None__              return NULL
-#define NATIVE__truth__             return (*((Integer*)frame->getVar("x")))==Integer(0)
-#define NATIVE__not__               return (*((Integer*)frame->getVar("x")))!=Integer(0)
+#define NATIVE__truth__             return (*((Integer*)frame->getVar("x")))!=Integer(0)
+#define NATIVE__not__               return (*((Integer*)frame->getVar("x")))==Integer(0)
 #define NATIVE__xrange__
 #define NATIVE__len__range__
 #define NATIVE__add__int__          return (*(Integer*)frame->getVar("x"))+(*(Integer*)frame->getVar("y"))
@@ -27,13 +27,13 @@
 #define NATIVE__toint__str__        return (*((String*)frame->getVar("x"))).toInt();
 #define NATIVE__add__str__          return (*((String*)frame->getVar("x")))+(*((String*)frame->getVar("y")))
 #define NATIVE__lmul__str__         std::stringstream ss; \
-                                    for(int i = 0; i<*((int*)frame->getVar("y")); i++) \
-                                        ss << *((string*)frame->getVar("x")); \
+                                    for(int i = 0; i<((Integer*)frame->getVar("y"))->value; i++) \
+                                        ss << ((String*)frame->getVar("x"))->value; \
                                     String* s = new String(ss.str());\
                                     return s
 #define NATIVE__rmul__str__         std::stringstream ss; \
-                                    for(int i = 0; i<*((int*)frame->getVar("x")); i++) \
-                                        ss << *((string*)frame->getVar("y")); \
+                                    for(int i = 0; i<((Integer*)frame->getVar("x"))->value; i++) \
+                                        ss << ((String*)frame->getVar("y"))->value; \
                                     String* s = new String(ss.str());\
                                     return s
 #define NATIVE__lt__str__           return (*((String*)frame->getVar("x")))<(*((String*)frame->getVar("y")))

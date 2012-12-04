@@ -5,6 +5,7 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
+#include <sstream>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -23,13 +24,20 @@ class While_AST : public AST_Tree {
     NODE_CONSTRUCTORS(While_AST, AST_Tree);
     
     void outerCodeGen(ostream& out, int depth) {
-      writeIndented(out, depth);
-      out << "while ";
-      child(0)->outerCodeGen(out, depth);
-      out << " {" << endl;
-      child(1)->outerCodeGen(out, depth);
-      writeIndented(out, depth);
-      out << "}" << endl;
+        writeIndented(out, depth);
+        out << "while(true){\n";
+        child(0)->memCodeGen(out,depth);
+        writeIndented(out, depth);
+        out << "if((*";
+        child(0)->valueCodeGen(out, depth);
+        out << ")==false){" << endl;
+        writeIndented(out, depth);
+        out << "break;" << endl;
+        writeIndented(out, depth+1);
+        out << "}\n";
+        child(1)->outerCodeGen(out, depth);
+        writeIndented(out, depth);
+        out << "}" << endl;
     }
 };
 NODE_FACTORY (While_AST, WHILE);
@@ -119,11 +127,13 @@ protected:
         } end_for;
         writeIndented(out,i);
         for_each_child(c,child(1)){
+            if(c_i_!=0)
+                out << "cout << ' ';";
             out << "(";
             c->valueCodeGen(out,i);
-            out << ")->print(cout);\n";
-            out << "cout << endl;"; 
+            out << ")->print(cout); ";
         } end_for;
+        out << "cout << endl;\n"; 
     }
 
 };
@@ -228,7 +238,7 @@ protected:
     }
 
     //hbradlow
-    void closureCodeGen(ostream& out, int i){
+    void closureCodeGen(ostream& out, int i,string closure){
         writeComment(out,i,"-------------start----------------");
         writeComment(out,i,"Create the closure for a function");
 
@@ -260,14 +270,28 @@ protected:
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE (";
 
-        out << "new Frame(frame),";
+        out << "new Frame(";
+        out << closure;
+        out << "frame),";
         child(0)->innerCodeGen(out, i);
         out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
         addToStaticFrame(out, i);
         writeComment(out,i,"-------------end----------------");
+
+        for_each_child(c,this){
+            stringstream ss;
+            child(0)->innerCodeGen(ss, i); 
+            ss << "__" << child(0)->getDecl()->getIndex();
+            ss << "_closure->";
+            c->closureCodeGen(out,i+1,ss.str());
+        } end_for;
     }
     //hbradlow
     void forwardDefCodeGen(ostream& out,int i){
+        for_each_child(c,this){
+            c->forwardDefCodeGen(out,i);
+        } end_for;
+
         writeIndented(out,i);
         /*getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
@@ -310,6 +334,10 @@ protected:
     }
     //hbradlow
     void defCodeGen(ostream& out,int i){
+        for_each_child(c,this){
+            c->defCodeGen(out,i);
+        } end_for;
+
         writeComment(out,i,"----------------------------start--------------------");
         writeComment(out,i,"Function stuff");
 
@@ -705,41 +733,11 @@ protected:
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        child(1)->memCodeGen(out,i);
-        writeIndented(out,i);
-        child(0)->lhsFrameCodeGen(out,i);
-        out << "->setVar(";
-        child(0)->stringCodeGen(out, i);
-        out << ",";
-        out << "(";
-        child(1)->valueCodeGen(out,i);
-        out << "))";
-        out << ";\n";
-
-        if(child(1)->getType()->binding()->isFunction()){
-            writeIndented(out,i);
-            out << "frame->setVar(\"";
-            child(0)->innerCodeGen(out,i);
-            out << "__" << child(0)->getDecl()->getIndex() << "_closure";
-            out << "\", ";
-            out << "frame->getVar(\"";
-            child(1)->innerCodeGen(out, i);
-            out << "__" << child(1)->getDecl()->getIndex() << "_closure";
-            out << "\"));\n";
-        }
+        child(0)->assignCodeGen(out,i,child(1));
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
-        child(1)->memCodeGen(out,i);
-        writeIndented(out,i);
-        out << "this->frame";
-        out << "->setVar(";
-        child(0)->stringCodeGen(out, i);
-        out << ",";
-        out << "(";
-        child(1)->valueCodeGen(out,i);
-        out << "))";
-        out << ";\n";
+        child(0)->assignCodeGen(out,i,child(1),"this->frame");
     }
 };
 

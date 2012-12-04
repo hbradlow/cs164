@@ -28,6 +28,10 @@ public:
     {
         o << "fuck";
     }
+    virtual void inner_print(ostream& o) const 
+    {
+        print(o);
+    }
 };
 class Frame
 {
@@ -62,7 +66,7 @@ public:
     }
     virtual void print(ostream& o) const 
     {
-        if (!value) 
+        if (value) 
             o << "True"; 
         else 
             o << "False";
@@ -116,6 +120,10 @@ public:
     len()
     {
         return new Integer(value.length());
+    }
+    void inner_print(ostream& o) const 
+    {
+        o << "'" << value << "'";
     }
     void print(ostream& o) const 
     {
@@ -187,8 +195,8 @@ public:
     void print(ostream& o) const
     {
         o << "("; 
-        item->print(o);
-        o << ")";
+        item->inner_print(o);
+        o << ",)";
     }
 };
 
@@ -201,9 +209,9 @@ public:
     void print(ostream& out) const
     {
         out << "(";
-        item1->print(out);
-        out << ",";
-        item2->print(out);
+        item1->inner_print(out);
+        out << ", ";
+        item2->inner_print(out);
         out << ")";
     }
 };
@@ -218,11 +226,11 @@ public:
     void print(ostream& out) const
     {
         out << "(";
-        item1->print(out);
-        out << ",";
-        item2->print(out);
-        out << ",";
-        item3->print(out);
+        item1->inner_print(out);
+        out << ", ";
+        item2->inner_print(out);
+        out << ", ";
+        item3->inner_print(out);
         out << ")";
     }
 };
@@ -329,6 +337,18 @@ Bool* operator==(const Integer& b, bool rhs){
 inline
 bool operator==(const Bool& b, bool rhs){
     return b.value == rhs;
+}
+inline
+bool operator!=(const Bool& b, const Bool& rhs){
+    return b.value != rhs.value;
+}
+inline
+bool operator||(const Bool& b, const Bool& rhs){
+    return b.value || rhs.value;
+}
+inline
+bool operator&&(const Bool& b, const Bool& rhs){
+    return b.value && rhs.value;
 }
 //------------------------------------------------------------
 #endif
