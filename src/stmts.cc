@@ -721,6 +721,16 @@ protected:
         child(1)->valueCodeGen(out,i);
         out << "))";
         out << ";\n";
+
+        writeIndented(out,i);
+        out << "frame->setVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex() << "_closure";
+        out << "\", ";
+        out << "frame->getVar(\"";
+        child(1)->innerCodeGen(out, i);
+        out << "__" << child(0)->getDecl()->getIndex() << "_closure";
+        out << "\"));\n";
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
