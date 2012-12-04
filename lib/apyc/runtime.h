@@ -195,25 +195,35 @@ public:
 template<class T, class U>
 class Tuple2: public Object{
 public:
-   T item1;
-   U item2;
-   Tuple2(T t, U u) : item1(t), item2(u){}
+   Object* item1;
+   Object* item2;
+   Tuple2(void* t, void* u) : item1((Object*)t), item2((Object*)u){}
     void print(ostream& out) const
     {
-        out << "()";
+        out << "(";
+        item1->print(out);
+        out << ",";
+        item2->print(out);
+        out << ")";
     }
 };
 
 template<class T, class U, class V>
 class Tuple3: public Object{
 public:
-   T item1;
-   U item2;
-   V item3;
-   Tuple3(T t, U u, V v) : item1(t), item2(u), item3(v){}
+   Object* item1;
+   Object* item2;
+   Object* item3;
+   Tuple3(void* t, void* u, void* v) : item1((Object*)t), item2((Object*)u), item3((Object*)v){}
     void print(ostream& out) const
     {
-        out << "()";
+        out << "(";
+        item1->print(out);
+        out << ",";
+        item2->print(out);
+        out << ",";
+        item3->print(out);
+        out << ")";
     }
 };
 //------------------------------------------------------------
@@ -256,11 +266,6 @@ inline
 String* operator+(const String& b, const String& c)
 {
     return new String(b.value + c.value);
-}
-inline
-ostream& operator<<(ostream& out, const String& b){
-    out << b.value;
-    return out;
 }
 //------------------------------------------------------------
 
@@ -315,11 +320,6 @@ inline
 Bool* operator==(const Integer& b, bool rhs){
     return new Bool((b.value && rhs) || (!b.value && !rhs));
 }
-inline
-ostream& operator<<(ostream& out, const Integer& b){
-    out << b.value;
-    return out;
-}
 //------------------------------------------------------------
 
 //------------------------------------------------------------
@@ -329,14 +329,6 @@ ostream& operator<<(ostream& out, const Integer& b){
 inline
 bool operator==(const Bool& b, bool rhs){
     return b.value == rhs;
-}
-inline
-ostream& operator<<(ostream& out, const Bool& b){
-    if(b.value)
-        out << "False";
-    else
-        out << "True";
-    return out;
 }
 //------------------------------------------------------------
 #endif

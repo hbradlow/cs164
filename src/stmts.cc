@@ -91,6 +91,7 @@ protected:
         for_each_child(c,child(1)){
             c->valueCodeGen(out,i);
             out << ".print(cout);\n";
+            out << "cout << endl;"; 
         } end_for;
     }
 };
@@ -121,8 +122,8 @@ protected:
             out << "(";
             c->valueCodeGen(out,i);
             out << ")->print(cout);\n";
+            out << "cout << endl;"; 
         } end_for;
-        out << "cout << endl;";
     }
 
 };
