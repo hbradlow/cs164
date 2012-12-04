@@ -113,7 +113,7 @@ protected:
 
     //hbradlow
     void innerCodeGen(ostream& out,int i){
-        out << "Integer(" << value << ")";
+        out << "new Integer(" << value << ")";
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
@@ -412,7 +412,7 @@ private:
 
     //hbradlow
     void innerCodeGen(ostream& out,int i){
-        out << "String(\"" << string_text() << "\")";
+        out << "new String(\"" << string_text() << "\")";
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
