@@ -24,8 +24,7 @@ void
 writeClosure(ostream& out, int i, AST_Ptr c){
     out << "((";
     c->innerCodeGen(out,i);
-    out << "__" << c->getDecl()->getIndex();
-    out << "_CLOSURE";
+    out << "__" << c->getDecl()->getIndex() << "_CLOSURE";
     out << "*)(frame->getVar(\"";
     c->innerCodeGen(out,i);
     out << "__" << c->getDecl()->getIndex();
@@ -90,6 +89,12 @@ AST::print (AST_Ptr tree, std::ostream& out, int indent)
     else
         out << "...";
     tree->unmark ();
+}
+
+//hbradlow
+bool 
+AST::isFunction(){
+    return false;
 }
 
 Type_Ptr

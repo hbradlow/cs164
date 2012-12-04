@@ -305,13 +305,19 @@ protected:
     }
     //hbradlow
     void valueCodeGen(ostream& out,int i){
-        out << "(";
-        getType()->binding()->innerCodeGen(out,i);
-        if(getType()->binding()->needsPointer())
-            out << "*";
-        out << ")frame->getVar(\"";
-        innerCodeGen(out,i);
-        out << "\")";
+        if(getType()->binding()->isFunction())
+        {
+            writeClosure(out,i,this);
+        }
+        else{
+            out << "(";
+            getType()->binding()->innerCodeGen(out,i);
+            if(getType()->binding()->needsPointer())
+                out << "*";
+            out << ")frame->getVar(\"";
+            innerCodeGen(out,i);
+            out << "\")";
+        }
     }
 
 private:
