@@ -1,5 +1,3 @@
-/* -*- mode: C++; c-file-st*((int*)frame->getVar("y")le: "stroustrup"; indent-tabs-mode: nil; -*- */
-
 /* APYC Runtime Librar*((int*)frame->getVar("y") Headers */
 
 /* Authors:  YOUR NAMES HERE */
@@ -27,7 +25,7 @@
 #define NATIVE__neg__int__          
 #define NATIVE__pos__int__          
 #define NATIVE__lt__int__           return (*(Integer*)frame->getVar("x"))<(*(Integer*)frame->getVar("y"))
-#define NATIVE__gt__int__           
+#define NATIVE__gt__int__           return (*(Integer*)frame->getVar("x"))>(*(Integer*)frame->getVar("y"))
 #define NATIVE__le__int__           
 #define NATIVE__ge__int__           
 #define NATIVE__eq__int__           return (*((Integer*)frame->getVar("x")))==(*((Integer*)frame->getVar("y")))
@@ -163,6 +161,10 @@ public:
 inline
 Bool* operator<(const Integer& a, const Integer& b){
     return new Bool(a.value<b.value);
+}
+inline
+Bool* operator>(const Integer& a, const Integer& b){
+    return new Bool(a.value>b.value);
 }
 inline
 Integer* operator%(const Integer& a, const Integer& b){
