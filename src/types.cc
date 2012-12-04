@@ -497,7 +497,7 @@ protected:
         else
             out << as_string();
         */
-        out << "void*";
+        out << "Object*";
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
@@ -521,6 +521,14 @@ int TypeVar_AST::next_uid = 0;
 /***** FUNCTION TYPES *****/
 
 class FunctionType_AST: public Type {
+public:
+    bool _calledBefore;
+    bool functionCalledBefore(){
+        return _calledBefore;
+    }
+    void setFunctionCalledBefore(bool b){
+        _calledBefore = b;
+    }
 protected:
 
     int numParams () {
@@ -630,6 +638,22 @@ protected:
         }
         if(strcmp(child(0)->as_string().c_str(),"str")==0){
             out << "String";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple0")==0){
+            out << "Tuple0";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple1")==0){
+            out << "Tuple1<Object>";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple2")==0){
+            out << "Tuple2<Object,Object>";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple3")==0){
+            out << "Tuple3<Object,Object,Object>";
             return;
         }
         child(0)->innerCodeGen(out,i);

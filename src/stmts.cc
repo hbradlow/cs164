@@ -49,7 +49,7 @@ protected:
         child(0)->memCodeGen(out,depth);
         writeIndented(out,depth);
         out << "if ((*";
-        child(0)->innerCodeGen(out, depth);
+        child(0)->valueCodeGen(out, depth);
         out << ")==true) {" << endl;
         child(1)->outerCodeGen(out, depth);
         writeIndented(out, depth);
@@ -281,9 +281,11 @@ protected:
     //hbradlow
     void forwardDefCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
+        /*getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
             out << "*";
+        */
+        out << "void*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
@@ -314,14 +316,7 @@ protected:
         out << "this->args = args;\n";
         writeIndented(out,i+1);
         out << "}\n";
-        writeIndented(out,i+1);
 
-        getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
-        if(getDecl()->getType()->binding()->child(0)->needsPointer())
-            out << "*";
-        out << " (*fp) (";
-        out << "Frame*";
-        out << ");\n";
         writeIndented(out,i);
         out << "};\n";
     }
@@ -331,9 +326,12 @@ protected:
         writeComment(out,i,"Function stuff");
 
         writeIndented(out,i);
+        /*
         getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
             out << "*";
+        */
+        out << "void*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
@@ -519,6 +517,14 @@ protected:
         if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
         if(strcmp(getDecl()->getName().c_str(),"bool")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple0")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple1")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple2")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple3")==0)
             return;
         if(child(1)->arity()){
             writeIndented(out,i);
@@ -722,15 +728,17 @@ protected:
         out << "))";
         out << ";\n";
 
-        writeIndented(out,i);
-        out << "frame->setVar(\"";
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex() << "_closure";
-        out << "\", ";
-        out << "frame->getVar(\"";
-        child(1)->innerCodeGen(out, i);
-        out << "__" << child(0)->getDecl()->getIndex() << "_closure";
-        out << "\"));\n";
+        if(child(1)->getType()->binding()->isFunction()){
+            writeIndented(out,i);
+            out << "frame->setVar(\"";
+            child(0)->innerCodeGen(out,i);
+            out << "__" << child(0)->getDecl()->getIndex() << "_closure";
+            out << "\", ";
+            out << "frame->getVar(\"";
+            child(1)->innerCodeGen(out, i);
+            out << "__" << child(1)->getDecl()->getIndex() << "_closure";
+            out << "\"));\n";
+        }
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
