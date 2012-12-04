@@ -44,11 +44,14 @@
 #define NATIVE__ne__str__           return (*((String*)frame->getVar("x")))!=(*((String*)frame->getVar("y")))
 #define NATIVE__getitem__str__      return (*((String*)frame->getVar("S"))).getIndex((*((Integer*)frame->getVar("k"))))
 #define NATIVE__getslice__str__     return (*((String*)frame->getVar("S"))).getSlice((*((Integer*)frame->getVar("L"))), (*((Integer*)frame->getVar("U"))))
-#define NATIVE__len__str__
-#define NATIVE__tostr__             
-#define NATIVE__getitem__list__
-#define NATIVE__getslice__list__
-#define NATIVE__len__list__
+#define NATIVE__len__str__          return (*((String*)frame->getVar("x"))).len()
+#define NATIVE__tostr__             std::stringstream ss; \
+                                    ss << *((String*)(frame->getVar("x"))); \
+                                    String* s = new String(ss.str());\
+                                    return s
+#define NATIVE__getitem__list__     //return ((List*)frame->getVar("S"))->getItem(*((Integer*)frame->getVar("k")))
+#define NATIVE__getslice__list__    //return ((List*)frame->getVar("S"))->getSlice(*((Integer*)frame->getVar("k")))
+#define NATIVE__len__list__         //return ((List*)frame->getVar("S"))->len()
 #define NATIVE__argv__
 #define NATIVE__open1__
 #define NATIVE__open2__
@@ -56,10 +59,10 @@
 #define NATIVE__standard_file__
 #define NATIVE__readline__
 #define NATIVE__read__
-#define NATIVE__getitem__dict__
-#define NATIVE__len__dict__
-#define NATIVE__contains__dict__
-#define NATIVE__notcontains__dict__
-#define NATIVE__is__
-#define NATIVE__isnot__
+#define NATIVE__getitem__dict__     //return (((Dict*)frame->getVar("D"))->getItem(*(frame->getVar("x")))
+#define NATIVE__len__dict__         //return (((Dict*)frame->getVar("D"))->len()
+#define NATIVE__contains__dict__    //return (((Dict*)frame->getVar("D"))->contains(*(frame->getVar("x")))
+#define NATIVE__notcontains__dict__ //return (((Dict*)frame->getVar("D"))->notContains(*(frame->getVar("x")))
+#define NATIVE__is__                //return new Bool(frame->getVar("x") == frame->getVar("y"))
+#define NATIVE__isnot__             //return new Bool(frame->getVar("x") != frame->getVar("y"))
 
