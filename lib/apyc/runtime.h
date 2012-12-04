@@ -8,70 +8,12 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <math.h>
 #include <stdint.h>
-
-#define NATIVE__donotcall__
-#define NATIVE__None__              return NULL
-#define NATIVE__truth__             return (*((Integer*)frame->getVar("x")))==Integer(0)
-#define NATIVE__not__               return (*((Integer*)frame->getVar("x")))!=Integer(0)
-#define NATIVE__xrange__
-#define NATIVE__len__range__
-#define NATIVE__add__int__          return (*(Integer*)frame->getVar("x"))+(*(Integer*)frame->getVar("y"))
-#define NATIVE__sub__int__          return (*(Integer*)frame->getVar("x"))-(*(Integer*)frame->getVar("y"))
-#define NATIVE__mul__int__          return (*(Integer*)frame->getVar("x"))*(*(Integer*)frame->getVar("y"))
-#define NATIVE__floordiv__int__     return (*(Integer*)frame->getVar("x"))/(*(Integer*)frame->getVar("y"))
-#define NATIVE__mod__int__          return (*(Integer*)frame->getVar("x"))%(*(Integer*)frame->getVar("y"))
-#define NATIVE__pow__int__
-#define NATIVE__neg__int__          
-#define NATIVE__pos__int__          
-#define NATIVE__lt__int__           return (*(Integer*)frame->getVar("x"))<(*(Integer*)frame->getVar("y"))
-#define NATIVE__gt__int__           return (*(Integer*)frame->getVar("x"))>(*(Integer*)frame->getVar("y"))
-#define NATIVE__le__int__           
-#define NATIVE__ge__int__           
-#define NATIVE__eq__int__           return (*((Integer*)frame->getVar("x")))==(*((Integer*)frame->getVar("y")))
-#define NATIVE__ne__int__           
-#define NATIVE__toint__str__
-#define NATIVE__add__str__
-#define NATIVE__lmul__str__         std::stringstream ss; \
-                                    for(int i = 0; i<*((int*)frame->getVar("y")); i++) \
-                                        ss << *((string*)frame->getVar("x")); \
-                                    String* s = new String(ss.str());\
-                                    return s
-#define NATIVE__rmul__str__         std::stringstream ss; \
-                                    for(int i = 0; i<*((int*)frame->getVar("x")); i++) \
-                                        ss << *((string*)frame->getVar("y")); \
-                                    String* s = new String(ss.str());\
-                                    return s
-#define NATIVE__lt__str__
-#define NATIVE__gt__str__
-#define NATIVE__le__str__
-#define NATIVE__ge__str__
-#define NATIVE__eq__str__
-#define NATIVE__ne__str__
-#define NATIVE__getitem__str__
-#define NATIVE__getslice__str__
-#define NATIVE__len__str__
-#define NATIVE__tostr__
-#define NATIVE__getitem__list__
-#define NATIVE__getslice__list__
-#define NATIVE__len__list__
-#define NATIVE__argv__
-#define NATIVE__open1__
-#define NATIVE__open2__
-#define NATIVE__close__
-#define NATIVE__standard_file__
-#define NATIVE__readline__
-#define NATIVE__read__
-#define NATIVE__getitem__dict__
-#define NATIVE__len__dict__
-#define NATIVE__contains__dict__
-#define NATIVE__notcontains__dict__
-#define NATIVE__is__
-#define NATIVE__isnot__
-
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include "natives.h"
 
 using namespace std;
 
@@ -98,7 +40,6 @@ public:
     void* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
-
 };
 
 class Bool{
@@ -112,18 +53,20 @@ public:
     }
 };
 
-inline
-bool operator==(const Bool& b, bool rhs){
-    return b.value == rhs;
-}
-inline
-ostream& operator<<(ostream& out, const Bool& b){
-    if(b.value)
-        out << "False";
-    else
-        out << "True";
-    return out;
-}
+class Integer{
+public:
+    int value;
+    Integer(int v){
+        value = v;
+    }
+    Integer(void* v){
+        value = ((Integer*)v)->value;
+    }
+    Integer* pow_(Integer i)
+    {
+        return new Integer(pow((double)value, (double)i.value));
+    }
+};
 
 class String{
 public:
@@ -134,30 +77,90 @@ public:
     String(void* v){
         value = ((String*)v)->value;
     }
+    Integer*
+    toInt()
+    {
+        return new Integer(atoi(value.c_str()));
+    }
+    String*
+    getIndex(Integer i)
+    {
+        return new String(new string(&value[i.value]));
+    }
+    String*
+    getSlice(Integer i, Integer j)
+    {
+        return new String(new string(value.substr(i.value, j.value)));
+    }
 };
-inline
-bool operator==(const String& b, const String& rhs){
-    return b.value==rhs.value;
+
+template<class T>
+class List{
+public:
+   vector<T> items;
+   ostream& operator<<(ostream& out){
+       out << "[";
+       for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
+           if(it!=items.begin())
+               out << ",";
+           out << *it;
+       }
+       out << "]";
+       return out;
+   }
+};
+
+//------------------------------------------------------------
+// String
+//------------------------------------------------------------
+inline 
+Bool* operator<(const String& b, const String& rhs)
+{
+    return new Bool(b.value.compare(rhs.value) < 0);
+}
+inline 
+Bool* operator>(const String& b, const String& rhs)
+{
+    return new Bool(b.value.compare(rhs.value) > 0);
+}
+inline 
+Bool* operator<=(const String& b, const String& rhs)
+{
+    return new Bool(b.value.compare(rhs.value) <= 0);
+}
+inline 
+Bool* operator>=(const String& b, const String& rhs)
+{
+    return new Bool(b.value.compare(rhs.value) >= 0);
 }
 inline
-bool operator==(const String& b, bool rhs){
-    return b.value!="";
+Bool* operator==(const String& b, const String& rhs){
+    return new Bool(b.value==rhs.value);
+}
+inline
+Bool* operator==(const String& b, bool rhs){
+    return new Bool(b.value!="");
+}
+inline 
+Bool* operator!=(const String& b, const String& rhs)
+{
+    return new Bool(b.value != rhs.value);
+}
+inline 
+String* operator+(const String& b, const String& c)
+{
+    return new String(b.value + c.value);
 }
 inline
 ostream& operator<<(ostream& out, const String& b){
     out << b.value;
     return out;
 }
-class Integer{
-public:
-    int value;
-    Integer(int v){
-        value = v;
-    }
-    Integer(void* v){
-        value = ((Integer*)v)->value;
-    }
-};
+//------------------------------------------------------------
+
+//------------------------------------------------------------
+// Integer 
+//------------------------------------------------------------
 inline
 Bool* operator<(const Integer& a, const Integer& b){
     return new Bool(a.value<b.value);
@@ -187,6 +190,18 @@ Integer* operator*(const Integer& a, const Integer& b){
     return new Integer(a.value*b.value);
 }
 inline
+Bool* operator>(const Integer& a, const Integer& b){
+    return new Bool(a.value>b.value);
+}
+inline
+Bool* operator>=(const Integer& a, const Integer& b){
+    return new Bool(a.value>=b.value);
+}
+inline
+Bool* operator<=(const Integer& a, const Integer& b){
+    return new Bool(a.value<=b.value);
+}
+inline
 Bool* operator!=(const Integer& b, const Integer& rhs){
     return new Bool(b.value!=rhs.value);
 }
@@ -203,22 +218,25 @@ ostream& operator<<(ostream& out, const Integer& b){
     out << b.value;
     return out;
 }
+//------------------------------------------------------------
 
+//------------------------------------------------------------
+// BOOL
+//------------------------------------------------------------
 
-template<class T>
-class List{
-public:
-   vector<T> items;
-   ostream& operator<<(ostream& out){
-       out << "[";
-       for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
-           if(it!=items.begin())
-               out << ",";
-           out << *it;
-       }
-       out << "]";
-       return out;
-   }
-};
+inline
+bool operator==(const Bool& b, bool rhs){
+    return b.value == rhs;
+}
+inline
+ostream& operator<<(ostream& out, const Bool& b){
+    if(b.value)
+        out << "False";
+    else
+        out << "True";
+    return out;
+}
+//------------------------------------------------------------
+
 
 #endif
