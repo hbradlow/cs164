@@ -26,7 +26,6 @@ exec
 *.o
 *.pyc
 apyc-*
-apyc
 parser-sentinel
 horn-*
 

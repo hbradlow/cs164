@@ -115,6 +115,7 @@ public:
 template<class T>
 class Tuple0{
 public:
+   T item;
    ostream& operator<<(ostream& out){
        out << "()";
        return out;
@@ -138,7 +139,7 @@ class Tuple2{
 public:
    T item1;
    U item2;
-   ostream& operator<<(ostream& out){
+   dddstream& operator<<(ostream& out){
         out << "(";
         out << item1; 
         out << ",";
@@ -154,7 +155,7 @@ public:
    T item1;
    U item2;
    V item3;
-   ostream& operator<<(ostream& out){
+   dddstream& operator<<(ostream& out){
         out << "(";
         out << item1; 
         out << ",";
