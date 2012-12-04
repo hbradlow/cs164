@@ -23,8 +23,11 @@ std::string strReplace(std::string &s,
 void 
 writeClosure(ostream& out, int i, AST_Ptr c){
     out << "((";
+    out << "Closure";
+    /*
     c->innerCodeGen(out,i);
     out << "__" << c->getDecl()->getIndex() << "_CLOSURE";
+    */
     out << "*)(frame->getVar(\"";
     c->innerCodeGen(out,i);
     out << "__" << c->getDecl()->getIndex();
@@ -292,6 +295,15 @@ AST::convertNone (bool)
     return this;
 }
 
+//hbradlow
+void 
+AST::setFunctionCalledBefore(bool b){
+}
+//hbradlow
+bool 
+AST::functionCalledBefore(){
+    return false;
+}
 //hbradlow
 void 
 AST::stringCodeGen (std::ostream& out, int i)

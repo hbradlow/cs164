@@ -5,6 +5,7 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
+#include <sstream>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -212,6 +213,9 @@ protected:
             c->memCodeGen(out,i);
         } end_for;
         local_count = global_count++;
+        stringstream ss;
+        child(0)->print(ss,0);
+        local_counts[ss.str()] = local_count;
 
         writeComment(out,i,"Generate the args");
         for_each_child(c,child(1)){
@@ -304,7 +308,12 @@ protected:
     void innerCodeGen(ostream& out, int i){
         out << "(";
         child(0)->innerCodeGen(out,i);
-        out << "_0_2" << child(0)->getDecl()->getIndex();
+        child(0)->getDecl()->getEnviron()->find(child(0)->as_string());
+
+        stringstream ss;
+        child(0)->print(ss,0);
+
+        out << "_0_" << local_counts.find(ss.str())->second << child(0)->getDecl()->getIndex();
         out << ")";
     }
     //hbradlow
@@ -403,6 +412,9 @@ protected:
         out << "\n";
 
         local_count = global_count++;
+        stringstream ss;
+        child(0)->print(ss,0);
+        local_counts[ss.str()] = local_count;
         generateArgs(out, i, 0, this);
         generateFunctionCall(out, i);
         
@@ -484,7 +496,11 @@ protected:
         out << " ";
         child(3)->innerCodeGen(out,i);
         out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
-        out << " = ";
+        out << " = (";
+        child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(3)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << ")";
         writeClosure(out,i,child(3));
         out << "->fp(";
 
@@ -562,6 +578,9 @@ NODE_FACTORY (LeftCompare_AST, LEFT_COMPARE);
 
 /** A unary operator. */
 class Unop_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 
     NODE_CONSTRUCTORS (Unop_AST, Callable);
 
@@ -580,10 +599,122 @@ class Unop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         replace (2*k + 1, expr);
     }
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(2)->getDecl()->getIndex();
+
+        /*
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex();
+        out << "(";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame";
+        out << ")";
+        */
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        out << "\n";
+
+        local_count = global_count++;
+        stringstream ss;
+        child(1)->print(ss,0);
+        local_counts[ss.str()] = local_count;
+        generateArgs(out, i, 0, this);
+        generateFunctionCall(out, i);
+        
+        out << "\n";
+    }
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
+    {
+        writeComment(out,i,"Generate the arguments to the call");
+        writeComment(out,i,"Unops have two args");
+
+        writeComment(out,i,"Create first dummy variable");
+        writeIndented(out,i);
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        if(child(1)->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(1)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->args";
+        out << "[" << "0" << "]";
+        out << ",";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << ");\n";
+
+        writeIndented(out,i);
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = (";
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << ")";
+        writeClosure(out,i,child(2));
+        out << "->fp(";
+
+        out << "(((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame))";
+        out << ";\n";
+    }
+    void generateFuctionCall(ostream& out, int i)
+    {
+        writeComment(out,i,"Perform Function Call");
+
+        writeIndented(out,i);
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "(";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure->frame)";
+        out << ";\n";
+    }
 
 };    
 
 NODE_FACTORY (Unop_AST, UNOP);
+int Unop_AST::global_count;
 
 
 /***** SUBSCRIPTION *****/
