@@ -94,22 +94,59 @@ public:
     {
         return new String(new string(value.substr(i.value, j.value)));
     }
+    Integer*
+    len()
+    {
+        return new Integer(value.length());
+    }
+};
+
+template<class K, class V>
+class Dict{
+public:
+   map<K, V> items;
+   ostream& operator<<(ostream& out){
+       out << "{";
+       for(std::map<int,int>::iterator it = items.begin() ; it != items.end(); ++it){
+           if(it!=items.begin())
+               out << ",";
+           out << it->first << " : " << it->second;
+       }
+       out << "}";
+       return out;
+   }
+   Dict(map<K, V> _items): items(_items){}
+   Integer* len()
+   {
+        return new Integer(items.size());
+   }
 };
 
 template<class T>
 class List{
 public:
-   vector<T> items;
-   ostream& operator<<(ostream& out){
-       out << "[";
-       for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
-           if(it!=items.begin())
-               out << ",";
-           out << *it;
-       }
-       out << "]";
-       return out;
-   }
+    vector<T> items;
+    ostream& operator<<(ostream& out){
+        out << "[";
+        for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
+            if(it!=items.begin())
+                out << ",";
+            out << *it;
+        }
+        out << "]";
+        return out;
+    }
+    List(vector<T> _items): items(_items){}
+    Integer* 
+    len()
+    {
+         return new Integer(items.size());
+    }
+    T*
+    getItem(Integer i)
+    {
+        return new T(((String)items[i.value]).value);
+    }
 };
 
 template<class T>
