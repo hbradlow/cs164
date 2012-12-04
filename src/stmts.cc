@@ -279,10 +279,7 @@ protected:
         writeComment(out,i,"-------------end----------------");
     }
     //hbradlow
-    void defCodeGen(ostream& out,int i){
-        writeComment(out,i,"----------------------------start--------------------");
-        writeComment(out,i,"Function stuff");
-
+    void forwardDefCodeGen(ostream& out,int i){
         writeIndented(out,i);
         getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
@@ -327,7 +324,12 @@ protected:
         out << ");\n";
         writeIndented(out,i);
         out << "};\n";
-        
+    }
+    //hbradlow
+    void defCodeGen(ostream& out,int i){
+        writeComment(out,i,"----------------------------start--------------------");
+        writeComment(out,i,"Function stuff");
+
         writeIndented(out,i);
         getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
@@ -492,10 +494,29 @@ protected:
         */
     }
     //hbradlow
-    void classCodeGen(ostream& out,int i){
+    void classDefCodeGen(ostream& out,int i){
+        if(child(1)->arity()){
+            writeIndented(out,i);
+            out << "template<";
+            for_each_child(c,child(1)){
+                if(c_i_!=0)
+                    out << ",";
+                out << "typename " << c->as_string();
+            } end_for;
+            out << ">\n";
+        }
         if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
-        if(strcmp(getDecl()->getName().c_str(),"dict")==0)
+        if(strcmp(getDecl()->getName().c_str(),"bool")==0)
+            return;
+        writeIndented(out,i);
+        out << "class ";
+        child(0)->innerCodeGen(out,i);
+        out << ";\n";
+    }
+    //hbradlow
+    void classCodeGen(ostream& out,int i){
+        if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
         if(strcmp(getDecl()->getName().c_str(),"bool")==0)
             return;
@@ -518,6 +539,7 @@ protected:
         out << "public:\n";
         writeIndented(out,i+1);
         out << "Frame* frame;\n";
+
         writeIndented(out,i+1);
         child(0)->innerCodeGen(out,i);
         out << "(Frame* frame){\n";
@@ -530,6 +552,7 @@ protected:
 
         writeIndented(out,i+1);
         out << "}\n";
+
         writeIndented(out,i);
         out << "};\n";
     }
