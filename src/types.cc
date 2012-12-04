@@ -615,12 +615,16 @@ protected:
             out << ">";
             return;
         }
+        if(strcmp(child(0)->as_string().c_str(),"int")==0){
+            out << "Integer";
+            return;
+        }
         if(strcmp(child(0)->as_string().c_str(),"bool")==0){
             out << "Bool";
             return;
         }
         if(strcmp(child(0)->as_string().c_str(),"str")==0){
-            out << "string";
+            out << "String";
             return;
         }
         child(0)->innerCodeGen(out,i);
@@ -644,13 +648,13 @@ protected:
     //hbradlow
     bool needsPointer(){
         if(strcmp(child(0)->as_string().c_str(),"str")==0){
-            return false;
+            return true;
         }
         else if(strcmp(child(0)->as_string().c_str(),"int")==0){
-            return false;
+            return true;
         }
         else if(strcmp(child(0)->as_string().c_str(),"bool")==0){
-            return false;
+            return true;
         }
         else if(strcmp(child(0)->as_string().c_str(),"str")==0){
             return false;

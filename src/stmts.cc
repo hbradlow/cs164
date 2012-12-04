@@ -319,6 +319,8 @@ protected:
         writeIndented(out,i+1);
 
         getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
         out << " (*fp) (";
         out << "Frame*";
         out << ");\n";

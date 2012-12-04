@@ -113,7 +113,7 @@ protected:
 
     //hbradlow
     void innerCodeGen(ostream& out,int i){
-        out << value;
+        out << "Integer(" << value << ")";
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
@@ -305,9 +305,9 @@ protected:
     }
     //hbradlow
     void valueCodeGen(ostream& out,int i){
-        out << "*(";
+        out << "(";
         getType()->binding()->innerCodeGen(out,i);
-        out << "*)frame->getVar(\"";
+        out << ")frame->getVar(\"";
         innerCodeGen(out,i);
         out << "\")";
     }
@@ -412,7 +412,7 @@ private:
 
     //hbradlow
     void innerCodeGen(ostream& out,int i){
-        out << "\"" << string_text() << "\"";
+        out << "String(\"" << string_text() << "\")";
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){

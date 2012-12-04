@@ -231,9 +231,9 @@ protected:
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
         out << " = ";
-        out << "(";
+        out << "*(";
         this->getType()->binding()->innerCodeGen(out,i);
-        out << ")";
+        out << "*)";
         writeClosure(out,i,child(0));
         out << "->fp" << "(";
         writeClosure(out,i,child(0));

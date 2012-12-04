@@ -1,4 +1,5 @@
 def f(x):
     return x
-print f(3)
+print f(True)
+print f(43)
 print f("this")
