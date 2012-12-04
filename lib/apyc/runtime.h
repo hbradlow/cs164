@@ -24,13 +24,11 @@ using namespace std;
  */
 class Object{
 public:
-    virtual void print(ostream& out) const;
+    virtual void print(ostream& o) const 
+    {
+        o << "fuck";
+    }
 };
-void 
-Object::print(ostream& out) const
-{
-    out << "Object";
-}
 class Frame
 {
 private:
@@ -62,6 +60,13 @@ public:
     Bool(void* v){
         value = ((Bool*)v)->value;
     }
+    virtual void print(ostream& o) const 
+    {
+        if (!value) 
+            o << "True"; 
+        else 
+            o << "False";
+    }
 };
 
 class Integer: public Object{
@@ -76,6 +81,10 @@ public:
     Integer* pow_(Integer i)
     {
         return new Integer(pow((double)value, (double)i.value));
+    }
+    void print(ostream& o) const 
+    {
+        o << value;
     }
 };
 
@@ -107,6 +116,10 @@ public:
     len()
     {
         return new Integer(value.length());
+    }
+    void print(ostream& o) const 
+    {
+        o << value;
     }
 };
 
@@ -169,13 +182,13 @@ public:
 template<class T>
 class Tuple1: public Object{
 public:
-   T item;
-   Tuple1(T t) : item(t){}
-    void print(ostream& out) const
+   Object* item;
+   Tuple1(void* t) : item((Object*)t){}
+    void print(ostream& o) const
     {
-        out << "("; 
-        this.item.print(out);
-        out << ")";
+        o << "("; 
+        item->print(o);
+        o << ")";
     }
 };
 
@@ -326,24 +339,4 @@ ostream& operator<<(ostream& out, const Bool& b){
     return out;
 }
 //------------------------------------------------------------
-inline
-ostream& operator<<(ostream& out, const Tuple0& b){
-    b.print(out);
-   return out;
-}
-inline
-ostream& operator<<(ostream& out, const Tuple1<Object>& b){
-    b.print(out);
-   return out;
-}
-inline
-ostream& operator<<(ostream& out, const Tuple2<Object,Object>& b){
-    b.print(out);
-   return out;
-}
-inline
-ostream& operator<<(ostream& out, const Tuple3<Object,Object,Object>& b){
-    b.print(out);
-   return out;
-}
 #endif
