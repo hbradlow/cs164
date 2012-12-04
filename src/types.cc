@@ -521,6 +521,14 @@ int TypeVar_AST::next_uid = 0;
 /***** FUNCTION TYPES *****/
 
 class FunctionType_AST: public Type {
+public:
+    bool _calledBefore;
+    bool functionCalledBefore(){
+        return _calledBefore;
+    }
+    void setFunctionCalledBefore(bool b){
+        _calledBefore = b;
+    }
 protected:
 
     int numParams () {

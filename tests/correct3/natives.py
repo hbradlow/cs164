@@ -20,5 +20,5 @@ print "abc" <= "bcd"
 print "abc" >= "bcd"
 print "ab" == "ab"
 print "ab" != "ab"
-print "abc"[1]
-print "abc"[0:1]
+#print "abc"[1]
+#print "abc"[0:1]
