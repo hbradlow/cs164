@@ -220,10 +220,14 @@ public:
     virtual void memCodeGen(std::ostream& out, int i);
     //hbradlow
     virtual void lhsFrameCodeGen (std::ostream& out, int i);
+    //hbradow
+    virtual void forwardDefCodeGen(std::ostream& out,int i);
     //hbradlow
     virtual void defCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void stringCodeGen (std::ostream& out, int i);
+    //hbradlow
+    virtual void classDefCodeGen(std::ostream& out,int i);
     //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);
     //hbradlow
