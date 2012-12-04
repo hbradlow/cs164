@@ -46,7 +46,7 @@
 #define NATIVE__getslice__str__     return (*((String*)frame->getVar("S"))).getSlice((*((Integer*)frame->getVar("L"))), (*((Integer*)frame->getVar("U"))))
 #define NATIVE__len__str__          return (*((String*)frame->getVar("x"))).len()
 #define NATIVE__tostr__             std::stringstream ss; \
-                                    ss << *((String*)(frame->getVar("x"))); \
+                                    ss << ((String*)(frame->getVar("x")))->value; \
                                     String* s = new String(ss.str());\
                                     return s
 #define NATIVE__getitem__list__     //return ((List*)frame->getVar("S"))->getItem(*((Integer*)frame->getVar("k")))
