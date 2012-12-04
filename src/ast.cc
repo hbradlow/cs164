@@ -287,6 +287,14 @@ AST::convertNone (bool)
     return this;
 }
 
+//hbradlow
+void 
+AST::stringCodeGen (std::ostream& out, int i)
+{
+    out << "\"";
+    innerCodeGen(out,i);
+    out << "\"";
+}
 //outerCodeGen called on statements that are on their own lines
 void
 AST::outerCodeGen (ostream& out,int i)
@@ -306,6 +314,12 @@ void
 AST::valueCodeGen (std::ostream& out,int i)
 {
     innerCodeGen(out,i);
+}
+//hbradlow
+void 
+AST::lhsFrameCodeGen (std::ostream& out, int i)
+{
+    out << "frame";
 }
 //hbradlow
 void

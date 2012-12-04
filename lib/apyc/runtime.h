@@ -13,8 +13,8 @@
 
 #define NATIVE__donotcall__
 #define NATIVE__None__              return NULL
-#define NATIVE__truth__             return *((int*)frame->getVar("x"))==0
-#define NATIVE__not__               return *((int*)frame->getVar("x"))!=0
+#define NATIVE__truth__             return Bool(*((int*)frame->getVar("x"))==0)
+#define NATIVE__not__               return Bool(*((int*)frame->getVar("x"))!=0)
 #define NATIVE__xrange__
 #define NATIVE__len__range__
 #define NATIVE__add__int__          return *((int*)frame->getVar("x"))+*((int*)frame->getVar("y"))
@@ -25,12 +25,12 @@
 #define NATIVE__pow__int__
 #define NATIVE__neg__int__          return -*((int*)frame->getVar("x")) ? *((int*)frame->getVar("x"))>0 : *((int*)frame->getVar("x"))
 #define NATIVE__pos__int__          return -*((int*)frame->getVar("x")) ? *((int*)frame->getVar("x"))<0 : *((int*)frame->getVar("x"))
-#define NATIVE__lt__int__           return *((int*)frame->getVar("x"))<*((int*)frame->getVar("y")) 
-#define NATIVE__gt__int__           return *((int*)frame->getVar("x"))>*((int*)frame->getVar("y"))
-#define NATIVE__le__int__           return *((int*)frame->getVar("x"))<=*((int*)frame->getVar("y"))
-#define NATIVE__ge__int__           return *((int*)frame->getVar("x"))>=*((int*)frame->getVar("y"))
-#define NATIVE__eq__int__           return (*(int*)frame->getVar("x"))==(*(int*)frame->getVar("y"))
-#define NATIVE__ne__int__           return *((int*)frame->getVar("x"))!=*((int*)frame->getVar("y"))
+#define NATIVE__lt__int__           return Bool(*((int*)frame->getVar("x"))<*((int*)frame->getVar("y")))
+#define NATIVE__gt__int__           return Bool(*((int*)frame->getVar("x"))>*((int*)frame->getVar("y")))
+#define NATIVE__le__int__           return Bool(*((int*)frame->getVar("x"))<=*((int*)frame->getVar("y")))
+#define NATIVE__ge__int__           return Bool(*((int*)frame->getVar("x"))>=*((int*)frame->getVar("y")))
+#define NATIVE__eq__int__           return Bool((*(int*)frame->getVar("x"))==(*(int*)frame->getVar("y")))
+#define NATIVE__ne__int__           return Bool(*((int*)frame->getVar("x"))!=*((int*)frame->getVar("y")))
 #define NATIVE__toint__str__
 #define NATIVE__add__str__
 #define NATIVE__lmul__str__         std::stringstream ss; \
@@ -98,6 +98,55 @@ public:
     Frame* frame;
     std::vector<string> args; 
 
+};
+
+class Int{
+public:
+    int value;
+    Int(int v){
+        value = v;
+    }
+    ostream& operator<<(ostream& out){
+        out << value;
+        return out;
+    }
+};
+
+class Bool{
+public:
+    bool value;
+    Bool(bool v){
+        value = v;
+    }
+};
+
+inline
+bool operator==(const Bool& b, bool rhs){
+    return b.value == rhs;
+}
+inline
+ostream& operator<<(ostream& out, const Bool& b){
+    if(b.value)
+        out << "False";
+    else
+        out << "True";
+    return out;
+}
+
+template<class T>
+class List{
+public:
+   vector<T> items;
+   ostream& operator<<(ostream& out){
+       out << "[";
+       for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
+           if(it!=items.begin())
+               out << ",";
+           out << *it;
+       }
+       out << "]";
+       return out;
+   }
 };
 
 #endif

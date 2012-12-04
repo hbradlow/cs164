@@ -201,9 +201,10 @@ protected:
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
-        writeIndented(out,i);
-        innerCodeGen(out,i);
-        out << ";\n";
+        writeComment(out,i,"------------------start------------------");
+        writeComment(out,i,"Bare Call");
+        memCodeGen(out,i);
+        writeComment(out,i,"------------------end------------------");
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
@@ -225,11 +226,14 @@ protected:
         writeComment(out,i,"--------------------start----------------");
         writeComment(out,i,"Perform the function call");
         writeIndented(out,i);
-        child(0)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        this->getType()->binding()->innerCodeGen(out,i);
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
         out << " = ";
+        out << "(";
+        this->getType()->binding()->innerCodeGen(out,i);
+        out << ")";
         writeClosure(out,i,child(0));
         out << "->fp" << "(";
         writeClosure(out,i,child(0));
@@ -341,7 +345,6 @@ protected:
     bool needsPointer(){
         return true;
     }
-
 };
 
 NODE_FACTORY (New_AST, NEW);
@@ -746,6 +749,19 @@ protected:
     }    
 
     //hbradlow
+    void stringCodeGen(ostream& out, int i){
+        out << "\"";
+        child(1)->innerCodeGen(out,i);
+        out << "\"";
+    }
+    void lhsFrameCodeGen (std::ostream& out, int i){
+        out << "((";
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)(frame->getVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "\")))->frame";
+    }
+    //hbradlow
     void innerCodeGen(ostream& out, int i){
         /*
         child(0)->innerCodeGen(out,i);
@@ -754,12 +770,23 @@ protected:
         */
         out << "*(";
         child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)(((";
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)(frame->getVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "\")))->frame->getVar(\"";
+        child(1)->innerCodeGen(out,i);
+        out << "\"))";
+        /*
+        out << "*(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
         out << "*)";
         out << "(classVariables.find(\"";
         child(0)->getType()->binding()->innerCodeGen(out,i);
         out << ".";
         child(1)->innerCodeGen(out,i);
         out << "\")->second)";
+        */
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){

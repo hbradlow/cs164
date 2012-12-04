@@ -48,9 +48,9 @@ protected:
     void innerCodeGen(ostream& out, int depth) {
         child(0)->memCodeGen(out,depth);
         writeIndented(out,depth);
-        out << "if (";
+        out << "if ((";
         child(0)->innerCodeGen(out, depth);
-        out << ") {" << endl;
+        out << ")==true) {" << endl;
         child(1)->outerCodeGen(out, depth);
         writeIndented(out, depth);
         out << "}" << endl;
@@ -131,11 +131,7 @@ protected:
                 out << "\" \" << ";
             }
             first = 0;
-            out << "*(";
-            c->getType()->binding()->innerCodeGen(out,i);
-            out << "*)frame->getVar(\"";
-            c->innerCodeGen(out,i);
-            out << "\")";
+            c->valueCodeGen(out,i);
             out << " << ";
         } end_for;
         out << "endl;\n";
@@ -513,8 +509,20 @@ protected:
         writeIndented(out,i);
         out << "class ";
         child(0)->innerCodeGen(out,i);
+        writeIndented(out,i);
         out << "{\n";
+        writeIndented(out,i);
         out << "public:\n";
+        writeIndented(out,i+1);
+        out << "Frame* frame;\n";
+        writeIndented(out,i+1);
+        child(0)->innerCodeGen(out,i);
+        out << "(){\n";
+        writeIndented(out,i+2);
+        out << "frame = new Frame(NULL);\n";
+        writeIndented(out,i+1);
+        out << "}\n";
+        writeIndented(out,i);
         out << "};\n";
     }
 
@@ -600,6 +608,20 @@ protected:
     }
 
     //hbradlow
+    void stringCodeGen(ostream& out,int i){
+        out << "\"";
+        innerCodeGen(out,i);
+        out << "\"";
+    }
+    //hbradlow
+    void valueCodeGen(ostream& out,int i){
+        out << "*(";
+        getType()->binding()->innerCodeGen(out,i);
+        out << "*)frame->getVar(\"";
+        innerCodeGen(out,i);
+        out << "\")";
+    }
+    //hbradlow
     void innerCodeGen(ostream& out,int i){
         //hbradlow: NOT COMPLETE! I just copied from ID
         child(0)->innerCodeGen(out,i);
@@ -660,12 +682,13 @@ protected:
     void outerCodeGen(ostream& out,int i){
         child(1)->memCodeGen(out,i);
         writeIndented(out,i);
-        out << "frame->setVar(\"";
-        child(0)->innerCodeGen(out, i);
-        out << "\",";
-        out << "&";
-        child(1)->innerCodeGen(out,i);
-        out << ")";
+        child(0)->lhsFrameCodeGen(out,i);
+        out << "->setVar(";
+        child(0)->stringCodeGen(out, i);
+        out << ",";
+        out << "&(";
+        child(1)->valueCodeGen(out,i);
+        out << "))";
         out << ";\n";
     }
     //hbradlow

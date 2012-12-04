@@ -615,6 +615,10 @@ protected:
             out << ">";
             return;
         }
+        if(strcmp(child(0)->as_string().c_str(),"bool")==0){
+            out << "Bool";
+            return;
+        }
         if(strcmp(child(0)->as_string().c_str(),"str")==0){
             out << "string";
             return;
