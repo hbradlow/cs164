@@ -88,17 +88,10 @@ protected:
     //hbradlow
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        out << "cout ";
-        int first = 1;
         for_each_child(c,child(1)){
-            out << " << ";
-            if(!first){
-                out << "\" \" << ";
-            }
-            first = 0;
-            c->innerCodeGen(out,i);
+            c->valueCodeGen(out,i);
+            out << ".print(cout);\n";
         } end_for;
-        out << ";\n";
     }
 };
 NODE_FACTORY (Print_AST, PRINT);
@@ -124,18 +117,12 @@ protected:
             c->memCodeGen(out,i);
         } end_for;
         writeIndented(out,i);
-        out << "cout << ";
-        int first = 1;
         for_each_child(c,child(1)){
-            if(!first){
-                out << "\" \" << ";
-            }
-            first = 0;
-            out << "*";
+            out << "(";
             c->valueCodeGen(out,i);
-            out << " << ";
+            out << ")->print(cout);\n";
         } end_for;
-        out << "endl;\n";
+        out << "cout << endl;";
     }
 
 };
