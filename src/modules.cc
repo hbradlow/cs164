@@ -36,11 +36,36 @@ protected:
 
     /** Top-level code generation routine.  */
     // This is a placeholder!  Replace it.
-    void outerCodeGen (ostream& out) {
-        out << "#include \"runtime.h\"\n"
-            << "int main(int argc, char* argv[]) {\n"
-            << "    cout << \"Hello, world!\" << endl;\n"
-            << "}\n";
+    void outerCodeGen (ostream& out, int i) {
+        out << "#include \"runtime.h\"\n";
+
+        for_each_child(c,this){
+            c->classDefCodeGen(out,i);
+        } end_for;
+        for_each_child(c,this){
+            c->forwardDefCodeGen(out,i);
+        } end_for;
+        for_each_child(c,this){
+            c->classCodeGen(out,i);
+        } end_for;
+        for_each_child(c,this){
+            c->defCodeGen(out,i);
+        } end_for;
+
+        out << "int main(int argc, char* argv[]) {\n";
+        writeIndented(out,i+1);
+        out << "Frame* frame = new Frame(NULL);\n";
+        writeIndented(out,i+1);
+        out << "map<string,void*> classVariables;\n";
+        for_each_child(c,this){
+            c->closureCodeGen(out,i+1);
+        } end_for;
+
+        for_each_child(c,this){
+            c->outerCodeGen(out,i+1);
+        } end_for;
+
+        out << "}\n";
     }
 
     NODE_CONSTRUCTORS (Module_AST, AST_Tree);

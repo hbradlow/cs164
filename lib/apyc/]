@@ -22,17 +22,6 @@ using namespace std;
 /** 
  * Kevin 
  */
-class Object{
-public:
-    virtual void print(ostream& o) const 
-    {
-        o << "fuck";
-    }
-    virtual void inner_print(ostream& o) const 
-    {
-        print(o);
-    }
-};
 class Frame
 {
 private:
@@ -55,7 +44,7 @@ public:
     std::vector<string> args; 
 };
 
-class Bool : public Object{
+class Bool{
 public:
     bool value;
     Bool(bool v){
@@ -64,16 +53,9 @@ public:
     Bool(void* v){
         value = ((Bool*)v)->value;
     }
-    virtual void print(ostream& o) const 
-    {
-        if (value) 
-            o << "True"; 
-        else 
-            o << "False";
-    }
 };
 
-class Integer: public Object{
+class Integer{
 public:
     int value;
     Integer(int v){
@@ -86,13 +68,9 @@ public:
     {
         return new Integer(pow((double)value, (double)i.value));
     }
-    void print(ostream& o) const 
-    {
-        o << value;
-    }
 };
 
-class String: public Object{
+class String{
 public:
     string value;
     String(string v){
@@ -116,123 +94,77 @@ public:
     {
         return new String(new string(value.substr(i.value, j.value)));
     }
-    Integer*
-    len()
-    {
-        return new Integer(value.length());
-    }
-    void inner_print(ostream& o) const 
-    {
-        o << "'" << value << "'";
-    }
-    void print(ostream& o) const 
-    {
-        o << value;
-    }
 };
 
-template<class K, class V>
-class Dict: public Object{
+template<class T>
+class List{
 public:
-   map<K, V> items;
+   vector<T> items;
    ostream& operator<<(ostream& out){
-       out << "{";
-       for(std::map<int,int>::iterator it = items.begin() ; it != items.end(); ++it){
+       out << "[";
+       for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
            if(it!=items.begin())
                out << ",";
-           out << it->first << " : " << it->second;
+           out << *it;
        }
-       out << "}";
+       out << "]";
        return out;
    }
-   Dict(map<K, V> _items): items(_items){}
-   Integer* len()
-   {
-        return new Integer(items.size());
+};
+
+template<class T>
+class Tuple0{
+public:
+   T item;
+   ostream& operator<<(ostream& out){
+       out << "()";
+       return out;
    }
 };
 
 template<class T>
-class List: public Object{
+class Tuple1{
 public:
-    vector<T> items;
-    ostream& operator<<(ostream& out){
-        out << "[";
-        for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
-            if(it!=items.begin())
-                out << ",";
-            out << *it;
-        }
-        out << "]";
-        return out;
-    }
-    List(vector<T> _items): items(_items){}
-    Integer* 
-    len()
-    {
-         return new Integer(items.size());
-    }
-    T*
-    getItem(Integer i)
-    {
-        return new T(((String)items[i.value]).value);
-    }
-};
-
-class Tuple0: public Object{
-public:
-    void print(ostream& out) const
-    {
-        out << "()";
-    }
-};
-
-template<class T>
-class Tuple1: public Object{
-public:
-   Object* item;
-   Tuple1(void* t) : item((Object*)t){}
-    void print(ostream& o) const
-    {
-        o << "("; 
-        item->inner_print(o);
-        o << ",)";
-    }
+   T item;
+   ostream& operator<<(ostream& out){
+       out << "(";
+       out << item;
+       out << ")";
+       return out;
+   }
 };
 
 template<class T, class U>
-class Tuple2: public Object{
+class Tuple2{
 public:
-   Object* item1;
-   Object* item2;
-   Tuple2(void* t, void* u) : item1((Object*)t), item2((Object*)u){}
-    void print(ostream& out) const
-    {
+   T item1;
+   U item2;
+   dddstream& operator<<(ostream& out){
         out << "(";
-        item1->inner_print(out);
-        out << ", ";
-        item2->inner_print(out);
+        out << item1; 
+        out << ",";
+        out << item2;
         out << ")";
-    }
+        return out;
+   }
 };
 
 template<class T, class U, class V>
-class Tuple3: public Object{
+class Tuple3{
 public:
-   Object* item1;
-   Object* item2;
-   Object* item3;
-   Tuple3(void* t, void* u, void* v) : item1((Object*)t), item2((Object*)u), item3((Object*)v){}
-    void print(ostream& out) const
-    {
+   T item1;
+   U item2;
+   V item3;
+   dddstream& operator<<(ostream& out){
         out << "(";
-        item1->inner_print(out);
-        out << ", ";
-        item2->inner_print(out);
-        out << ", ";
-        item3->inner_print(out);
+        out << item1; 
+        out << ",";
+        out << item2;
+        out << ",";
+        out << item3;
         out << ")";
-    }
+        return out;
+   }
 };
 //------------------------------------------------------------
 // String
@@ -274,6 +206,11 @@ inline
 String* operator+(const String& b, const String& c)
 {
     return new String(b.value + c.value);
+}
+inline
+ostream& operator<<(ostream& out, const String& b){
+    out << b.value;
+    return out;
 }
 //------------------------------------------------------------
 
@@ -328,6 +265,11 @@ inline
 Bool* operator==(const Integer& b, bool rhs){
     return new Bool((b.value && rhs) || (!b.value && !rhs));
 }
+inline
+ostream& operator<<(ostream& out, const Integer& b){
+    out << b.value;
+    return out;
+}
 //------------------------------------------------------------
 
 //------------------------------------------------------------
@@ -339,16 +281,14 @@ bool operator==(const Bool& b, bool rhs){
     return b.value == rhs;
 }
 inline
-bool operator!=(const Bool& b, const Bool& rhs){
-    return b.value != rhs.value;
-}
-inline
-bool operator||(const Bool& b, const Bool& rhs){
-    return b.value || rhs.value;
-}
-inline
-bool operator&&(const Bool& b, const Bool& rhs){
-    return b.value && rhs.value;
+ostream& operator<<(ostream& out, const Bool& b){
+    if(b.value)
+        out << "False";
+    else
+        out << "True";
+    return out;
 }
 //------------------------------------------------------------
+
+
 #endif

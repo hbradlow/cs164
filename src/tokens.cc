@@ -113,6 +113,16 @@ protected:
 
     long value;
 
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "new Integer(" << value << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
 };
 
 TOKEN_FACTORY(Int_Token, INT_LITERAL);
@@ -285,6 +295,33 @@ protected:
                              consTree (EXPR_LIST));
     }
 
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << as_string();
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+    //hbradlow
+    void valueCodeGen(ostream& out,int i){
+        if(getType()->binding()->isFunction())
+        {
+            writeClosure(out,i,this);
+        }
+        else{
+            out << "(";
+            getType()->binding()->innerCodeGen(out,i);
+            if(getType()->binding()->needsPointer())
+                out << "*";
+            out << ")frame->getVar(\"";
+            innerCodeGen(out,i);
+            out << "\")";
+        }
+    }
+
 private:
 
     Decl_Vector _me;
@@ -382,6 +419,17 @@ private:
     static const String_Token raw_factory;
 
     string literal_text;
+
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "new String(\"" << string_text() << "\")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
 };
 
 TOKEN_FACTORY(String_Token, STRING);

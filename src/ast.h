@@ -12,6 +12,8 @@
 #include <string>
 #include "horn-common.h"
 
+static std::map<std::string,int> local_counts;
+
 class AST;
 class AST_Token;
 class AST_Tree;
@@ -205,10 +207,58 @@ public:
      *  left side of an assignment). Does not modify
      *  defining contexts (which must be caught separately). */
     virtual AST_Ptr convertNone (bool definingContext);
+    //hbradlow
+    virtual bool isFunction();
 
+    //hbradlow
+    virtual void setFunctionCalledBefore(bool b);
+    //hbradlow
+    virtual bool functionCalledBefore();
     /** Generate code for me on OUT. */
-    virtual void outerCodeGen (std::ostream& out);
+    //hbradlow
+    //outerCodeGen called on statements that are on their own lines
+    virtual void outerCodeGen (std::ostream& out, int i);
+    //hbradlow
+    //innerCodeGen called on statements that are within outer statements
+    //Example:
+    //a = x+2
+    //The assignment is the outer statement, (id a), (binop) etc are inner statements
+    virtual void innerCodeGen (std::ostream& out, int i);
+    //hbradlow
+    virtual void memCodeGen(std::ostream& out, int i);
+    //hbradlow
+    virtual void lhsFrameCodeGen (std::ostream& out, int i);
+    //hbradow
+    virtual void forwardDefCodeGen(std::ostream& out,int i);
+    //hbradlow
+    virtual void defCodeGen (std::ostream& out, int i);
+    //hbradlow
+    virtual void stringCodeGen (std::ostream& out, int i);
+    //hbradlow
+    virtual void classDefCodeGen(std::ostream& out,int i);
+    //hbradlow
+    virtual void classCodeGen (std::ostream& out,int i);
+    //hbradlow
+    virtual void closureCodeGen (std::ostream& out,int i,std::string closure="");
+    //hbradlow
+    virtual void innerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
+    //hbradlow
+    virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
+    //hbradlow
+    virtual void assignCodeGen (std::ostream& out,int i,AST_Ptr c,std::string lhs="");
 
+    virtual void generateFunctionCall(std::ostream& out, int i); 
+    virtual void generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c);
+
+    //hbradlow
+    virtual void valueCodeGen (std::ostream& out,int i);
+
+    //hbradlow
+    virtual bool needsPointer();
+    //hbradlow
+    virtual bool needsCastPointer();
+    //kevin
+    virtual void addToStaticFrame(std::ostream& out, int i);
     /** True if an error has been reported on me. */
     bool errorReported ();
 
@@ -552,6 +602,17 @@ extern AST_Ptr consTree (int syntax, const AST_Ptr& c0, const AST_Ptr& c1,
                          const AST_Ptr& c2);
 extern AST_Ptr consTree (int syntax, const AST_Ptr& c0, const AST_Ptr& c1,
                          const AST_Ptr& c2, const AST_Ptr& c3);
+
+/* Write the line to out, preceded by i tabs.
+ */
+void writeIndented(std::ostream& out, int i);
+//hbradlow
+std::string strReplace(std::string &s,
+                        std::string toReplace,
+                        std::string replaceWith);
+void writeComment(std::ostream& out, int i, std::string c);
+//hbradlow
+void writeClosure(std::ostream& out, int i, AST_Ptr c);
 
 #endif
 

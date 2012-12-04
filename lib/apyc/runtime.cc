@@ -7,7 +7,36 @@
 // OTHERS?
 
 #include "runtime.h"
+#include <vector>
 
 using namespace std;
 
-// FILL IN
+/** 
+ * Kevin 
+ */
+void 
+Frame::setVar(string name, void* value)
+{
+    this->locals[name] = value; 
+}
+
+void* 
+Frame::getVar(string name) const
+{
+    if (this->locals.count(name) == 0) 
+        return enclosing->getVar(name);
+    else
+        return this->locals.find(name)->second;
+}
+Frame::Frame(const Frame* static_link) : enclosing(static_link)
+{
+    this->locals = std::map<string, void*>();
+}
+Frame::Frame(){
+}
+Closure::Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args) : fp(fp), frame(frame), args(args)
+{
+}
+
+Closure::Closure(){
+}

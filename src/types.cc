@@ -437,8 +437,9 @@ protected:
             if (getDecl () != NULL)
                 out << " " << getDecl ()->getIndex ();
             out << ")";
-        } else
+        } else{
             print (me, out, indent);
+        }
     }
 
     string as_string () const {
@@ -487,6 +488,28 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        //hbradlow: not sure what the best way to handle generic types is
+        /*
+        if(as_string().find("#")!=-1)
+            out << "void*";
+        else
+            out << as_string();
+        */
+        out << "Object*";
+    }
+    //hbradlow
+    bool needsCastPointer(){
+        return false;
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
 private:
 
     Decl* _me;
@@ -502,10 +525,23 @@ int TypeVar_AST::next_uid = 0;
 /***** FUNCTION TYPES *****/
 
 class FunctionType_AST: public Type {
+public:
+    bool _calledBefore;
+    bool functionCalledBefore(){
+        return _calledBefore;
+    }
+    void setFunctionCalledBefore(bool b){
+        _calledBefore = b;
+    }
 protected:
 
     int numParams () {
         return child (1)->arity ();
+    }
+    
+    //hbradow
+    bool isFunction(){
+        return true;
     }
 
     Type_Ptr paramType (int k) {
@@ -585,6 +621,77 @@ protected:
             addDecl (decl);
         }
     }        
+
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        if(strcmp(child(0)->as_string().c_str(),"dict")==0){
+            out << "map<";
+            child(1)->child(0)->innerCodeGen(out,i);
+            out << ", ";
+            child(1)->child(1)->innerCodeGen(out,i);
+            out << ">";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"int")==0){
+            out << "Integer";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"bool")==0){
+            out << "Bool";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"str")==0){
+            out << "String";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple0")==0){
+            out << "Tuple0";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple1")==0){
+            out << "Tuple1<Object>";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple2")==0){
+            out << "Tuple2<Object,Object>";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"tuple3")==0){
+            out << "Tuple3<Object,Object,Object>";
+            return;
+        }
+        child(0)->innerCodeGen(out,i);
+        if(child(1)->arity()){
+            out << "<";
+            for_each_child(c,child(1)){
+                if(c_i_!=0)
+                    out << ",";
+                c->innerCodeGen(out,i);
+            } end_for;
+            out << ">";
+        }
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
+    //hbradlow
+    bool needsPointer(){
+        if(strcmp(child(0)->as_string().c_str(),"str")==0){
+            return true;
+        }
+        else if(strcmp(child(0)->as_string().c_str(),"int")==0){
+            return true;
+        }
+        else if(strcmp(child(0)->as_string().c_str(),"bool")==0){
+            return true;
+        }
+        else
+            return true;
+    }
 
 };
 

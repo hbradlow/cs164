@@ -5,7 +5,6 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
-#include <sstream>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -24,20 +23,13 @@ class While_AST : public AST_Tree {
     NODE_CONSTRUCTORS(While_AST, AST_Tree);
     
     void outerCodeGen(ostream& out, int depth) {
-        writeIndented(out, depth);
-        out << "while(true){\n";
-        child(0)->memCodeGen(out,depth);
-        writeIndented(out, depth);
-        out << "if((*";
-        child(0)->valueCodeGen(out, depth);
-        out << ")==false){" << endl;
-        writeIndented(out, depth);
-        out << "break;" << endl;
-        writeIndented(out, depth+1);
-        out << "}\n";
-        child(1)->outerCodeGen(out, depth);
-        writeIndented(out, depth);
-        out << "}" << endl;
+      writeIndented(out, depth);
+      out << "while ";
+      child(0)->outerCodeGen(out, depth);
+      out << " {" << endl;
+      child(1)->outerCodeGen(out, depth);
+      writeIndented(out, depth);
+      out << "}" << endl;
     }
 };
 NODE_FACTORY (While_AST, WHILE);
@@ -56,9 +48,9 @@ protected:
     void innerCodeGen(ostream& out, int depth) {
         child(0)->memCodeGen(out,depth);
         writeIndented(out,depth);
-        out << "if ((*";
-        child(0)->valueCodeGen(out, depth);
-        out << ")==true) {" << endl;
+        out << "if (";
+        child(0)->innerCodeGen(out, depth);
+        out << ") {" << endl;
         child(1)->outerCodeGen(out, depth);
         writeIndented(out, depth);
         out << "}" << endl;
@@ -96,11 +88,17 @@ protected:
     //hbradlow
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
+        out << "cout ";
+        int first = 1;
         for_each_child(c,child(1)){
-            c->valueCodeGen(out,i);
-            out << ".print(cout);\n";
-            out << "cout << endl;"; 
+            out << " << ";
+            if(!first){
+                out << "\" \" << ";
+            }
+            first = 0;
+            c->innerCodeGen(out,i);
         } end_for;
+        out << ";\n";
     }
 };
 NODE_FACTORY (Print_AST, PRINT);
@@ -122,18 +120,22 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        for_each_child(c,child(1)){
-            c->memCodeGen(out,i);
-        } end_for;
         writeIndented(out,i);
+        out << "cout << ";
+        int first = 1;
         for_each_child(c,child(1)){
-            if(c_i_!=0)
-                out << "cout << ' ';";
-            out << "(";
-            c->valueCodeGen(out,i);
-            out << ")->print(cout); ";
+            if(!first){
+                out << "\" \" << ";
+            }
+            first = 0;
+            out << "*(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "*)static_frame.getVar(\"";
+            c->innerCodeGen(out,i);
+            out << "\")";
+            out << " << ";
         } end_for;
-        out << "cout << endl;\n"; 
+        out << "endl;\n";
     }
 
 };
@@ -238,11 +240,7 @@ protected:
     }
 
     //hbradlow
-    void closureCodeGen(ostream& out, int i,string closure){
-        writeComment(out,i,"-------------start----------------");
-        writeComment(out,i,"Create the closure for a function");
-
-        writeComment(out,i,"Create the vector of argument names");
+    void closureCodeGen(ostream& out, int i){
         writeIndented(out,i);
         out << "vector<string> ";
         child(0)->innerCodeGen(out, i); 
@@ -254,10 +252,8 @@ protected:
             c->innerCodeGen(out,i);
             out << "\");\n";
         } end_for;
-
-        writeComment(out,i,"Create the closure");
-
         writeIndented(out,i);
+
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE* ";
@@ -270,40 +266,28 @@ protected:
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE (";
 
-        out << "new Frame(";
-        out << closure;
-        out << "frame),";
+        out << "Frame(static_frame),";
         child(0)->innerCodeGen(out, i);
         out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
         addToStaticFrame(out, i);
-        writeComment(out,i,"-------------end----------------");
-
-        for_each_child(c,this){
-            stringstream ss;
-            child(0)->innerCodeGen(ss, i); 
-            ss << "__" << child(0)->getDecl()->getIndex();
-            ss << "_closure->";
-            c->closureCodeGen(out,i+1,ss.str());
-        } end_for;
     }
     //hbradlow
-    void forwardDefCodeGen(ostream& out,int i){
-        for_each_child(c,this){
-            c->forwardDefCodeGen(out,i);
-        } end_for;
-
+    void defCodeGen(ostream& out,int i){
         writeIndented(out,i);
-        /*getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
+        getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
             out << "*";
-        */
-        out << "void*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "(";
         out << "Frame* frame";
-        out << ");\n";
+        out << "){\n";
+        for_each_child(c,child(3)){
+            c->outerCodeGen(out,i+1);
+        } end_for;
+        writeIndented(out,i);
+        out << "}\n";
 
         writeIndented(out,i);
         out << "class ";
@@ -316,7 +300,7 @@ protected:
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE(";
-        out << "Frame* frame,vector<string> args){\n";
+        out << "Frame frame,vector<string> args){\n";
         writeIndented(out,i+2);
         out << "fp = ";
         child(0)->innerCodeGen(out,i);
@@ -328,39 +312,16 @@ protected:
         out << "this->args = args;\n";
         writeIndented(out,i+1);
         out << "}\n";
-
+        writeIndented(out,i+1);
+        if(child(2)->arity())
+            child(2)->innerCodeGen(out,i);
+        else
+            out << "void*";
+        out << " (*fp) (";
+        out << "Frame*";
+        out << ");\n";
         writeIndented(out,i);
         out << "};\n";
-    }
-    //hbradlow
-    void defCodeGen(ostream& out,int i){
-        for_each_child(c,this){
-            c->defCodeGen(out,i);
-        } end_for;
-
-        writeComment(out,i,"----------------------------start--------------------");
-        writeComment(out,i,"Function stuff");
-
-        writeIndented(out,i);
-        /*
-        getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
-        if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
-            out << "*";
-        */
-        out << "void*";
-        out << " ";
-        child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
-        out << "(";
-        out << "Frame* frame";
-        out << "){\n";
-        for_each_child(c,child(3)){
-            c->outerCodeGen(out,i+1);
-        } end_for;
-        writeIndented(out,i);
-        out << "}\n";
-        writeComment(out,i,"----------------------------end----------------------");
-
     }
 };
 
@@ -508,39 +469,12 @@ protected:
         */
     }
     //hbradlow
-    void classDefCodeGen(ostream& out,int i){
-        if(child(1)->arity()){
-            writeIndented(out,i);
-            out << "template<";
-            for_each_child(c,child(1)){
-                if(c_i_!=0)
-                    out << ",";
-                out << "typename " << c->as_string();
-            } end_for;
-            out << ">\n";
-        }
-        if(strcmp(getDecl()->getName().c_str(),"int")==0)
-            return;
-        if(strcmp(getDecl()->getName().c_str(),"bool")==0)
-            return;
-        writeIndented(out,i);
-        out << "class ";
-        child(0)->innerCodeGen(out,i);
-        out << ";\n";
-    }
-    //hbradlow
     void classCodeGen(ostream& out,int i){
         if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
+        if(strcmp(getDecl()->getName().c_str(),"dict")==0)
+            return;
         if(strcmp(getDecl()->getName().c_str(),"bool")==0)
-            return;
-        if(strcmp(getDecl()->getName().c_str(),"tuple0")==0)
-            return;
-        if(strcmp(getDecl()->getName().c_str(),"tuple1")==0)
-            return;
-        if(strcmp(getDecl()->getName().c_str(),"tuple2")==0)
-            return;
-        if(strcmp(getDecl()->getName().c_str(),"tuple3")==0)
             return;
         if(child(1)->arity()){
             writeIndented(out,i);
@@ -555,27 +489,8 @@ protected:
         writeIndented(out,i);
         out << "class ";
         child(0)->innerCodeGen(out,i);
-        writeIndented(out,i);
         out << "{\n";
-        writeIndented(out,i);
         out << "public:\n";
-        writeIndented(out,i+1);
-        out << "Frame* frame;\n";
-
-        writeIndented(out,i+1);
-        child(0)->innerCodeGen(out,i);
-        out << "(Frame* frame){\n";
-        writeIndented(out,i+2);
-        out << "this->frame = new Frame(NULL);\n";
-
-        for_each_child(c,child(2)){
-            c->innerClassCodeGen(out,i,this);
-        } end_for;
-
-        writeIndented(out,i+1);
-        out << "}\n";
-
-        writeIndented(out,i);
         out << "};\n";
     }
 
@@ -584,7 +499,7 @@ private:
     void addInit () {
         Decl* me = getDecl (0);
         AST_Ptr newDef =
-            consTree (METHOD, make_id ("__init__", loc ()),
+            consTree (DEF, make_id ("__init__", loc ()),
                       consTree (FORMALS_LIST, make_id ("self", loc ())),
                       consTree (EMPTY),
                       consTree (BLOCK));
@@ -661,20 +576,6 @@ protected:
     }
 
     //hbradlow
-    void stringCodeGen(ostream& out,int i){
-        out << "\"";
-        innerCodeGen(out,i);
-        out << "\"";
-    }
-    //hbradlow
-    void valueCodeGen(ostream& out,int i){
-        out << "*(";
-        getType()->binding()->innerCodeGen(out,i);
-        out << "*)frame->getVar(\"";
-        innerCodeGen(out,i);
-        out << "\")";
-    }
-    //hbradlow
     void innerCodeGen(ostream& out,int i){
         //hbradlow: NOT COMPLETE! I just copied from ID
         child(0)->innerCodeGen(out,i);
@@ -733,11 +634,45 @@ protected:
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        child(0)->assignCodeGen(out,i,child(1));
+        child(1)->memCodeGen(out,i);
+        writeIndented(out,i);
+        out << "static_frame.setVar(\"";
+        child(0)->innerCodeGen(out, i);
+        out << "\",";
+        out << "&";
+        child(1)->innerCodeGen(out,i);
+        out << ")";
+        out << ";\n";
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
-        child(0)->assignCodeGen(out,i,child(1),"this->frame");
+        writeIndented(out,i);
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "* ";
+        out << "CLASS_VARIABLE";
+        out << " = ";
+        out << "(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "*) ";
+        out << "malloc(sizeof(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "));\n";
+
+        writeIndented(out,i);
+        out << "*CLASS_VARIABLE";
+        out << " = ";
+        child(1)->innerCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "classVariables[";
+        out << "\"";
+        c->child(0)->innerCodeGen(out,i);
+        out << ".";
+        child(0)->innerCodeGen(out,i);
+        out << "\"] = ";
+        out << "CLASS_VARIABLE";
+        out << ";\n";
     }
 };
 
@@ -838,15 +773,15 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out,int i){
         out << "return ";
-        child(0)->valueCodeGen(out,i);
+        child(0)->innerCodeGen(out,i);
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        child(0)->memCodeGen(out,i);
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";
     }
+
 };
 
 NODE_FACTORY (Return_AST, RETURN);

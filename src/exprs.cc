@@ -5,6 +5,7 @@
 /* Authors:  YOUR NAMES HERE */
 
 #include <iostream>
+#include <sstream>
 #include "apyc.h"
 #include "ast.h"
 #include "apyc-parser.hh"
@@ -52,6 +53,18 @@ protected:
 
     NODE_CONSTRUCTORS (Expr_List_AST, AST_Tree);
 
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->innerCodeGen(out,i);
+        } end_for;
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
 };
 
 NODE_FACTORY (Expr_List_AST, EXPR_LIST);
@@ -122,6 +135,9 @@ public:
 
 /** A function call. */
 class Call_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (Call_AST, Callable);
@@ -171,9 +187,112 @@ protected:
                 ->Callable::resolveTypes (context, resolved, ambiguities);
     }
 
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(0)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
+        /*
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex();
+        out << "(&";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex() << "_closure->frame";
+        out << ")";
+        */
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeComment(out,i,"------------------start------------------");
+        writeComment(out,i,"Bare Call");
+        memCodeGen(out,i);
+        writeComment(out,i,"------------------end------------------");
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
+        local_count = global_count++;
+        stringstream ss;
+        child(0)->print(ss,0);
+        local_counts[ss.str()] = local_count;
+
+        writeComment(out,i,"Generate the args");
+        for_each_child(c,child(1)){
+            generateArgs(out, i, c_i_, c);
+        } end_for;
+        
+        generateFunctionCall(out, i);
+    }
+
+    void generateFunctionCall(ostream& out, int i)
+    {
+        writeComment(out,i,"--------------------start----------------");
+        writeComment(out,i,"Perform the function call");
+        writeIndented(out,i);
+        this->getType()->binding()->innerCodeGen(out,i);
+        if(this->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(0)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << " = ";
+        out << "(";
+        this->getType()->binding()->innerCodeGen(out,i);
+        if(this->getType()->binding()->needsCastPointer())
+            out << "*";
+        out << ")";
+        writeClosure(out,i,child(0));
+        out << "->fp" << "(";
+        writeClosure(out,i,child(0));
+        out << "->frame)";
+        out << ";\n";
+
+        writeComment(out,i,"Add it to the current frame");
+        writeIndented(out,i);
+        out << "frame->setVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex() << "\"";
+        out << ",";
+        child(0)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << ");\n";
+        writeComment(out,i,"--------------------end------------------");
+    }
+
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
+    {
+        writeComment(out,i,"--------------------start----------------");
+        writeComment(out,i,"Generate an argument to the function call");
+
+        writeComment(out,i,"Create a temp variable to store the value");
+        writeIndented(out,i);
+        c->getType()->binding()->innerCodeGen(out,i);
+        if(c->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(0)->innerCodeGen(out,i);
+        out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << " = ";
+        c->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeComment(out,i,"Add it to the closures frame");
+        writeIndented(out,i);
+        writeClosure(out,i,child(0));
+        out << "->frame->setVar(";
+        writeClosure(out,i,child(0));
+        out << "->args[" << c_i_ << "]";
+        out << ",";
+        child(0)->innerCodeGen(out,i);
+        out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
+        out << ");\n";
+        writeComment(out,i,"--------------------end------------------");
+    }
 };
 
 NODE_FACTORY (Call_AST, CALL);
+int Call_AST::global_count;
 
 /***** CALL1 *****/
 
@@ -186,7 +305,30 @@ protected:
     Type_Ptr computeType () {
         return calledExpr ()->getType ()->binding ()->paramType (0);
     }
+    
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        out << "(";
+        child(0)->innerCodeGen(out,i);
+        child(0)->getDecl()->getEnviron()->find(child(0)->as_string());
 
+        stringstream ss;
+        child(0)->print(ss,0);
+
+        out << "_0_" << local_counts.find(ss.str())->second << child(0)->getDecl()->getIndex();
+        out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
+    //hbradlow
+    bool needsPointer(){
+        return true;
+    }
 };
 
 NODE_FACTORY (Call1_AST, CALL1);
@@ -205,7 +347,18 @@ protected:
         }
         return this;
     }
-
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+    }
+    void valueCodeGen(ostream& out, int i){
+        out << "new ";
+        child(0)->innerCodeGen(out,i);
+        out << "(frame)";
+    }
+    //hbradlow
+    bool needsPointer(){
+        return true;
+    }
 };
 
 NODE_FACTORY (New_AST, NEW);
@@ -213,6 +366,9 @@ NODE_FACTORY (New_AST, NEW);
 
 /** A binary operator. */
 class Binop_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (Binop_AST, Callable);
@@ -233,7 +389,152 @@ protected:
         replace (2*k, expr);
     }
 
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
+
+        /*
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex();
+        out << "(";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame";
+        out << ")";
+        */
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        out << "\n";
+
+        local_count = global_count++;
+        stringstream ss;
+        child(0)->print(ss,0);
+        local_counts[ss.str()] = local_count;
+        generateArgs(out, i, 0, this);
+        generateFunctionCall(out, i);
+        
+        out << "\n";
+    }
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
+    {
+        writeComment(out,i,"Generate the arguments to the call");
+        writeComment(out,i,"Binops have two args");
+
+        writeComment(out,i,"Create first dummy variable");
+        writeIndented(out,i);
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        if(child(0)->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
+        child(0)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->args";
+        out << "[" << "0" << "]";
+        out << ",";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << ");\n";
+
+        writeComment(out,i,"Create second dummy variable");
+        writeIndented(out,i);
+        child(2)->getType()->binding()->innerCodeGen(out,i);
+        if(child(0)->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
+        child(2)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        out << "((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->args";
+
+        out << "[" << "1" << "]";
+        out << ",";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << ");\n";
+
+        writeIndented(out,i);
+        child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(3)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(3)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = (";
+        child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(3)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << ")";
+        writeClosure(out,i,child(3));
+        out << "->fp(";
+
+        out << "(((";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure\")))->frame))";
+        out << ";\n";
+    }
+    void generateFuctionCall(ostream& out, int i)
+    {
+        writeComment(out,i,"Perform Function Call");
+
+        writeIndented(out,i);
+        child(3)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(3)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(3)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(3)->getDecl()->getIndex();
+        out << " = ";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "(";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame)";
+        out << ";\n";
+    }
+
 };    
+int Binop_AST::global_count;
 
 NODE_FACTORY (Binop_AST, BINOP);
 
@@ -244,11 +545,16 @@ class Compare_AST : public Binop_AST {
 protected:
 
     NODE_CONSTRUCTORS (Compare_AST, Binop_AST);
-
+/*
+    void outerCodeGeneration(ostream& out, int depth) {
+      out << "(";
+      child(0)->outerCodeGen(out, depth);
+      out << ")";
+    }
+*/
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
-
 };
 
 NODE_FACTORY (Compare_AST, COMPARE);
@@ -274,6 +580,9 @@ NODE_FACTORY (LeftCompare_AST, LEFT_COMPARE);
 
 /** A unary operator. */
 class Unop_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 
     NODE_CONSTRUCTORS (Unop_AST, Callable);
 
@@ -292,10 +601,122 @@ class Unop_AST : public Callable {
     void setActual (int k, AST_Ptr expr) {
         replace (2*k + 1, expr);
     }
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(2)->getDecl()->getIndex();
+
+        /*
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex();
+        out << "(";
+        child(3)->innerCodeGen(out,i);
+        out << "__" << child(3)->getDecl()->getIndex() << "_closure->frame";
+        out << ")";
+        */
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        out << "\n";
+
+        local_count = global_count++;
+        stringstream ss;
+        child(1)->print(ss,0);
+        local_counts[ss.str()] = local_count;
+        generateArgs(out, i, 0, this);
+        generateFunctionCall(out, i);
+        
+        out << "\n";
+    }
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
+    {
+        writeComment(out,i,"Generate the arguments to the call");
+        writeComment(out,i,"Unops have two args");
+
+        writeComment(out,i,"Create first dummy variable");
+        writeIndented(out,i);
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        if(child(1)->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(1)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->args";
+        out << "[" << "0" << "]";
+        out << ",";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << ");\n";
+
+        writeIndented(out,i);
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = (";
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << ")";
+        writeClosure(out,i,child(2));
+        out << "->fp(";
+
+        out << "(((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame))";
+        out << ";\n";
+    }
+    void generateFuctionCall(ostream& out, int i)
+    {
+        writeComment(out,i,"Perform Function Call");
+
+        writeIndented(out,i);
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "(";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure->frame)";
+        out << ";\n";
+    }
 
 };    
 
 NODE_FACTORY (Unop_AST, UNOP);
+int Unop_AST::global_count;
 
 
 /***** SUBSCRIPTION *****/
@@ -471,6 +892,52 @@ protected:
             error (this, "bound method value outside a call");
     }    
 
+    //hbradlow
+    void stringCodeGen(ostream& out, int i){
+        out << "\"";
+        child(1)->innerCodeGen(out,i);
+        out << "\"";
+    }
+    void lhsFrameCodeGen (std::ostream& out, int i){
+        out << "((";
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)(frame->getVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "\")))->frame";
+    }
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        /*
+        child(0)->innerCodeGen(out,i);
+        out << "->";
+        child(1)->innerCodeGen(out,i);
+        */
+        out << "(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)(((";
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)(frame->getVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "\")))->frame->getVar(\"";
+        child(1)->innerCodeGen(out,i);
+        out << "\"))";
+        /*
+        out << "*(";
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        out << "*)";
+        out << "(classVariables.find(\"";
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        out << ".";
+        child(1)->innerCodeGen(out,i);
+        out << "\")->second)";
+        */
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
 };
 
 NODE_FACTORY (AttributeRef_AST, ATTRIBUTEREF);
@@ -497,6 +964,34 @@ protected:
         return this;
     }        
 
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "new Tuple" << arity();
+        if (arity())
+        {
+            out << "<";
+            for_each_child(c,this){
+                if(c_i_!=0)
+                    out << ",";
+                c->getType()->binding()->innerCodeGen(out, i);
+            } end_for;
+            out << ">";
+        }
+        out  << "(";
+        for_each_child(c,this){
+            if(c_i_!=0)
+                out << ",";
+            c->valueCodeGen(out,i);
+        } end_for;
+        out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
 };
 
 NODE_FACTORY (Tuple_AST, TUPLE);
@@ -522,6 +1017,11 @@ protected:
         return this;
     }
 
+    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+        for_each_child(ch,this){
+            ch->assignCodeGen(out,i,c->child(ch_i_),lhs);
+        } end_for;
+    }
 };
 
 NODE_FACTORY (TargetList_AST, TARGET_LIST);
@@ -627,9 +1127,21 @@ protected:
 
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
-};              
-
-
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(0)->innerCodeGen(out,i);
+        out << " ? ";
+        child(1)->innerCodeGen(out,i);
+        out << " : ";
+        child(2)->innerCodeGen(out,i);
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+}; 
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
 
 /***** AND *****/
@@ -637,9 +1149,24 @@ NODE_FACTORY (IfExpr_AST, IF_EXPR);
 /** E1 and E2 */
 class And_AST : public BalancedExpr {
 protected:
-
+    
+    void innerCodeGen(ostream& out, int depth) {
+        child(0)->innerCodeGen(out, depth);
+        out << " && ";
+        child(1)->innerCodeGen(out, depth);
+    }
+    void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
+    }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
-
+    void valueCodeGen(ostream& out, int i){
+        child(0)->valueCodeGen(out, i);
+        out << " && ";
+        child(1)->valueCodeGen(out, i);
+    }
+    
 };
 
 NODE_FACTORY (And_AST, AND);
@@ -652,8 +1179,40 @@ protected:
 
     NODE_CONSTRUCTORS (Or_AST, BalancedExpr);
 
+    void innerCodeGen(ostream& out, int depth) {
+        child(0)->innerCodeGen(out, depth);
+        out << " || ";
+        child(1)->innerCodeGen(out, depth);
+    }
+    void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
+    }
+    void valueCodeGen(ostream& out, int i){
+        child(0)->valueCodeGen(out, i);
+        out << " || ";
+        child(1)->valueCodeGen(out, i);
+    }
 };
 
 NODE_FACTORY (Or_AST, OR);
 
+
+class Break_AST : public AST_Tree{
+protected:
+
+    NODE_CONSTRUCTORS (Break_AST, AST_Tree);
+
+    void innerCodeGen(ostream& out, int depth) {
+        out << "break";
+    }
+    void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
+    }
+};
+
+NODE_FACTORY (Break_AST, BREAK);
 

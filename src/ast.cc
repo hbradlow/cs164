@@ -11,6 +11,48 @@
 
 using namespace std;
 
+//hbradlow
+std::string strReplace(std::string &s,
+                        std::string toReplace,
+                        std::string replaceWith)
+{
+        return(s.replace(s.find(toReplace), toReplace.length(), replaceWith));
+}
+/* Write the line to out, preceded by i tabs.
+ */
+void 
+writeClosure(ostream& out, int i, AST_Ptr c){
+    out << "((";
+    out << "Closure";
+    /*
+    c->innerCodeGen(out,i);
+    out << "__" << c->getDecl()->getIndex() << "_CLOSURE";
+    */
+    out << "*)(frame->getVar(\"";
+    c->innerCodeGen(out,i);
+    out << "__" << c->getDecl()->getIndex();
+    out << "_closure\")))";
+}
+/* Write the line to out, preceded by i tabs.
+ */
+void 
+writeComment(ostream& out, int i, std::string c) {
+  while (i > 0) {
+    out << "    ";
+    i--;
+  }
+  out << "//" << c << "\n";
+}
+/* Write the line to out, preceded by i tabs.
+ */
+void 
+writeIndented(ostream& out, int i) {
+  while (i > 0) {
+    out << "    ";
+    i--;
+  }
+}
+
 /* Definitions of methods in base class AST. */
 
 int AST::current_mark = 0;
@@ -50,6 +92,12 @@ AST::print (AST_Ptr tree, std::ostream& out, int indent)
     else
         out << "...";
     tree->unmark ();
+}
+
+//hbradlow
+bool 
+AST::isFunction(){
+    return false;
 }
 
 Type_Ptr
@@ -247,9 +295,157 @@ AST::convertNone (bool)
     return this;
 }
 
-void
-AST::outerCodeGen (ostream&)
+//hbradlow
+void 
+AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
+    c->memCodeGen(out,i);
+    writeIndented(out,i);
+    if(strcmp("",lhs.c_str())==0)
+        this->lhsFrameCodeGen(out,i);
+    else
+        out << lhs;
+    out << "->setVar(";
+    this->stringCodeGen(out, i);
+    out << ",";
+    out << "(";
+    c->valueCodeGen(out,i);
+    out << "))";
+    out << ";\n";
+
+    if(c->getType()->binding()->isFunction()){
+        writeIndented(out,i);
+        out << "frame->setVar(\"";
+        this->innerCodeGen(out,i);
+        out << "__" << this->getDecl()->getIndex() << "_closure";
+        out << "\", ";
+        out << "frame->getVar(\"";
+        c->innerCodeGen(out, i);
+        out << "__" << c->getDecl()->getIndex() << "_closure";
+        out << "\"));\n";
+    }
+}
+//hbradlow
+void 
+AST::setFunctionCalledBefore(bool b){
+}
+//hbradlow
+bool 
+AST::functionCalledBefore(){
+    return false;
+}
+//hbradlow
+void 
+AST::stringCodeGen (std::ostream& out, int i)
 {
+    out << "\"";
+    innerCodeGen(out,i);
+    out << "\"";
+}
+//outerCodeGen called on statements that are on their own lines
+void
+AST::outerCodeGen (ostream& out,int i)
+{
+}
+//hbradlow
+//innerCodeGen called on statements that are within outer statements
+//Example:
+//a = x+2
+//The assignment is the outer statement, (id a), (binop) etc are inner statements
+void
+AST::innerCodeGen (ostream& out,int i)
+{
+}
+//hbradlow
+void 
+AST::valueCodeGen (std::ostream& out,int i)
+{
+    innerCodeGen(out,i);
+}
+//hbradlow
+void 
+AST::lhsFrameCodeGen (std::ostream& out, int i)
+{
+    out << "frame";
+}
+//hbradlow
+void
+AST::closureCodeGen (ostream& out,int i,std::string closure)
+{
+    for_each_child(c,this){
+        c->closureCodeGen(out,i,closure);
+    } end_for;
+}
+//hbradlow
+void
+AST::memCodeGen (ostream& out,int i)
+{
+    for_each_child(c, this){
+        c->memCodeGen(out,i);
+    } end_for;
+}
+//hbradlow
+void 
+AST::forwardDefCodeGen(std::ostream& out,int i){
+    for_each_child(c,this){
+        c->forwardDefCodeGen(out,i);
+    } end_for;
+}
+//hbradlow
+void
+AST::defCodeGen (ostream& out, int i)
+{
+    for_each_child(c, this){
+        c->defCodeGen(out,i);
+    } end_for;
+}
+//hbradlow
+void
+AST::classDefCodeGen(ostream& out,int i){
+}
+//hbradlow
+void
+AST::classCodeGen (std::ostream& out,int i)
+{
+}
+//hbradlow
+void 
+AST::outerClassCodeGen (std::ostream& out,int i,AST_Ptr c)
+{
+}
+//hbradlow
+void 
+AST::innerClassCodeGen (std::ostream& out,int i,AST_Ptr c)
+{
+}
+
+void 
+AST::generateFunctionCall(std::ostream& out, int i){}
+void 
+AST::generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c){}
+
+//hbradlow
+bool 
+AST::needsPointer(){
+    return false;
+}
+//hbradlow
+bool 
+AST::needsCastPointer(){
+    return true;
+}
+//kevin
+void 
+AST::addToStaticFrame(std::ostream& out, int i)
+{
+    writeIndented(out,i);
+    out << "frame->setVar(\"";
+    child(0)->innerCodeGen(out,i);
+    out << "__" << child(0)->getDecl()->getIndex() << "_closure";
+    out << "\", ";
+    out << "";
+    child(0)->innerCodeGen(out, i);
+    out << "__" << child(0)->getDecl()->getIndex() << "_closure";
+    out << ");\n";
 }
 
 bool
