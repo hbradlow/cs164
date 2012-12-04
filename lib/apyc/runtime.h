@@ -131,6 +131,7 @@ public:
        out << ")";
        return out;
    }
+   Tuple1(T t) : item(t){}
 };
 
 template<class T, class U>
@@ -138,6 +139,7 @@ class Tuple2{
 public:
    T item1;
    U item2;
+   Tuple2(T t, U u) : item1(t), item2(u){}
    ostream& operator<<(ostream& out){
         out << "(";
         out << item1; 
@@ -154,6 +156,7 @@ public:
    T item1;
    U item2;
    V item3;
+   Tuple3(T t, U u, V v) : item1(t), item2(u), item3(v){}
    ostream& operator<<(ostream& out){
         out << "(";
         out << item1; 
