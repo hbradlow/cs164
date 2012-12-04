@@ -24,12 +24,12 @@ using namespace std;
  */
 class Object{
 public:
-    virtual void print(ostream& out);
+    virtual void print(ostream& out) const;
 };
-void
-Object::print(ostream& out)
+void 
+Object::print(ostream& out) const
 {
-    out << this; 
+    out << "Object";
 }
 class Frame
 {
@@ -160,30 +160,48 @@ public:
 
 class Tuple0: public Object{
 public:
+    void print(ostream& out) const
+    {
+        out << "()";
+    }
 };
 
 template<class T>
 class Tuple1: public Object{
 public:
-   Object* item;
-   Tuple1(Object* t) : item(t){}
+   T item;
+   Tuple1(T t) : item(t){}
+    void print(ostream& out) const
+    {
+        out << "("; 
+        this.item.print(out);
+        out << ")";
+    }
 };
 
 template<class T, class U>
 class Tuple2: public Object{
 public:
-   Object* item1;
-   Object* item2;
-   Tuple2(Object* t, Object* u) : item1(t), item2(u){}
+   T item1;
+   U item2;
+   Tuple2(T t, U u) : item1(t), item2(u){}
+    void print(ostream& out) const
+    {
+        out << "()";
+    }
 };
 
 template<class T, class U, class V>
 class Tuple3: public Object{
 public:
-   Object* item1;
-   Object* item2;
-   Object* item3;
-   Tuple3(Object* t, Object* u, Object* v) : item1(t), item2(u), item3(v){}
+   T item1;
+   U item2;
+   V item3;
+   Tuple3(T t, U u, V v) : item1(t), item2(u), item3(v){}
+    void print(ostream& out) const
+    {
+        out << "()";
+    }
 };
 //------------------------------------------------------------
 // String
@@ -310,34 +328,22 @@ ostream& operator<<(ostream& out, const Bool& b){
 //------------------------------------------------------------
 inline
 ostream& operator<<(ostream& out, const Tuple0& b){
-   out << "()";
+    b.print(out);
    return out;
 }
 inline
-ostream& operator<<(ostream& out, const Tuple1<Object*>& b){
-   out << "(";
-   b.item->print(out); 
-   out << ")";
+ostream& operator<<(ostream& out, const Tuple1<Object>& b){
+    b.print(out);
    return out;
 }
 inline
-ostream& operator<<(ostream& out, const Tuple2<Object*,Object*>& b){
-   out << "(";
-   b.item1->print(out); 
-   out << ","; 
-   b.item2->print(out); 
-   out << ")";
+ostream& operator<<(ostream& out, const Tuple2<Object,Object>& b){
+    b.print(out);
    return out;
 }
 inline
-ostream& operator<<(ostream& out, const Tuple3<Object*,Object*,Object*>& b){
-   out << "(";
-   b.item1->print(out); 
-   out << ","; 
-   b.item2->print(out); 
-   out << ","; 
-   b.item3->print(out); 
-   out << ")";
+ostream& operator<<(ostream& out, const Tuple3<Object,Object,Object>& b){
+    b.print(out);
    return out;
 }
 #endif
