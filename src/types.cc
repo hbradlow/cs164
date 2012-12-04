@@ -497,7 +497,7 @@ protected:
         else
             out << as_string();
         */
-        out << "Object*";
+        out << "void*";
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
