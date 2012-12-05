@@ -49,7 +49,7 @@
                                     ss << ((String*)(frame->getVar("x")))->value; \
                                     String* s = new String(ss.str());\
                                     return s
-#define NATIVE__getitem__list__     //return ((List*)frame->getVar("S"))->getItem(*((Integer*)frame->getVar("k")))
+#define NATIVE__getitem__list__     return ((List*)frame->getVar("S"))->items[((Integer*)frame->getVar("k"))->value]
 #define NATIVE__getslice__list__    //return ((List*)frame->getVar("S"))->getSlice(*((Integer*)frame->getVar("k")))
 #define NATIVE__len__list__         //return ((List*)frame->getVar("S"))->len()
 #define NATIVE__argv__
