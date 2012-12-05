@@ -533,6 +533,15 @@ public:
     void setFunctionCalledBefore(bool b){
         _calledBefore = b;
     }
+
+    void innerCodeGen(ostream& out, int i)
+    {
+        out << "Closure"; 
+    }
+    bool needsPointer()
+    {
+        return true;
+    }
 protected:
 
     int numParams () {

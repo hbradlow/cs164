@@ -53,7 +53,7 @@ public:
     void* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
-    void* run(Frame* dynamic_frame)
+    void* call(Frame* dynamic_frame)
     {
        return  fp(dynamic_frame);
     }

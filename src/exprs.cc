@@ -189,8 +189,15 @@ protected:
 
     //hbradlow
     void innerCodeGen(ostream& out, int i){
+        if (!child(0)->isCall())
+        {
         child(0)->innerCodeGen(out,i);
         out << "_PARAM" << 0 << "_" << local_count << child(0)->getDecl()->getIndex();
+        }
+        else 
+        {
+        child(0)->innerCodeGen(out, i);
+        }
         /*
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
@@ -207,22 +214,86 @@ protected:
         memCodeGen(out,i);
         writeComment(out,i,"------------------end------------------");
     }
+    bool isCall()
+    {
+        return true;
+    }
     //hbradlow
     void memCodeGen(ostream& out, int i){
-        for_each_child(c,this){
-            c->memCodeGen(out,i);
-        } end_for;
-        local_count = global_count++;
-        stringstream ss;
-        child(0)->print(ss,0);
-        local_counts[ss.str()] = local_count;
+        if (!child(0)->isCall())
+        {
+            for_each_child(c,this){
+                c->memCodeGen(out,i);
+            } end_for;
+            local_count = global_count++;
+            stringstream ss;
+            child(0)->print(ss,0);
+            local_counts[ss.str()] = local_count;
 
-        writeComment(out,i,"Generate the args");
-        for_each_child(c,child(1)){
-            generateArgs(out, i, c_i_, c);
-        } end_for;
-        
-        generateFunctionCall(out, i);
+            writeComment(out,i,"Generate the args");
+            for_each_child(c,child(1)){
+                generateArgs(out, i, c_i_, c);
+            } end_for;
+            
+            generateFunctionCall(out, i);
+        } else 
+        {
+            ((Call_AST*)child(0))->nestedMemGen(out, i);
+            ((Call_AST*)child(0))->nestedInnerGen(out, i);
+            /*
+            local_count = global_count++;
+            out << "Closure* _glosure = Closure"; 
+            child(0)->memCodeGen(out, i);
+            out << ";";
+            out << ")->call(frame)";
+            */
+        }
+    }
+    void nestedInnerGen(ostream& out, int i)
+    {
+        if(!child(0)->isCall())
+        {
+            writeIndented(out, i);
+            out << "Frame* loc_" << global_count << " = new Frame(";
+            innerCodeGen(out, i);
+            out << "->frame);\n";
+            writeIndented(out, i);
+            innerCodeGen(out, i);
+            out << "->call(loc_" << global_count << ");\n";
+        } 
+        else
+        {
+            ((Call_AST*)child(0))->nestedInnerGen(out, i );
+            writeIndented(out, i);
+            out << "loc_" << global_count << " = new Frame(";
+            child(0)->innerCodeGen(out, i);
+            out << "->frame);\n";
+            writeIndented(out, i);
+            child(0)->innerCodeGen(out, i);
+            out << " = (Closure*)(";
+            child(0)->innerCodeGen(out, i);
+            out << "->call(loc_" << global_count << "));\n";
+        }
+    }
+
+    void nestedMemGen(ostream& out, int i)
+    {
+        if (child(0)->isCall())
+        {
+            ((Call_AST*)child(0))->nestedMemGen(out, i);
+        }
+        else 
+        {
+            memCodeGen(out, i);
+        }
+    }
+
+    void valueCodeGen(ostream& out, int i) 
+    {
+        if (child(0)->isCall())
+            child(0)->innerCodeGen(out, i);
+        else
+            innerCodeGen(out, i);
     }
 
     void generateFunctionCall(ostream& out, int i)
@@ -243,7 +314,7 @@ protected:
             out << "*";
         out << ")";
         writeClosure(out,i,child(0));
-        out << "->fp" << "(";
+        out << "->call" << "(";
         writeClosure(out,i,child(0));
         out << "->frame)";
         out << ";\n";

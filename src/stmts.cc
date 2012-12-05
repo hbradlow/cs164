@@ -97,9 +97,15 @@ protected:
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
         for_each_child(c,child(1)){
+            if (!c->isCall())
+            {
             c->valueCodeGen(out,i);
             out << ".print(cout);\n";
             out << "cout << endl;"; 
+            }else 
+            {
+            c->outerCodeGen(out, i);
+            }
         } end_for;
     }
 };

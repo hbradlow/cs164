@@ -100,6 +100,12 @@ AST::isFunction(){
     return false;
 }
 
+bool
+AST::isCall() 
+{
+    return false;
+}
+
 Type_Ptr
 AST::asType ()
 {

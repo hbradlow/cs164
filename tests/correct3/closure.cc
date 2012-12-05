@@ -653,21 +653,21 @@ public:
         this->args = args;
     }
 };
-class str{
+class str: public Object{
 public:
     Frame* frame;
     str(Frame* frame){
         this->frame = new Frame(NULL);
     }
 };
-class range{
+class range: public Object{
 public:
     Frame* frame;
     range(Frame* frame){
         this->frame = new Frame(NULL);
     }
 };
-class file{
+class file: public Object{
 public:
     Frame* frame;
     file(Frame* frame){
@@ -675,7 +675,7 @@ public:
     }
 };
 template<typename $T>
-class list{
+class list: public Object{
 public:
     Frame* frame;
     list(Frame* frame){
@@ -683,14 +683,14 @@ public:
     }
 };
 template<typename $Key,typename $Value>
-class dict{
+class dict: public Object{
 public:
     Frame* frame;
     dict(Frame* frame){
         this->frame = new Frame(NULL);
     }
 };
-class __sys__{
+class __sys__: public Object{
 public:
     Frame* frame;
     __sys__(Frame* frame){
@@ -1822,11 +1822,11 @@ int main(int argc, char* argv[]) {
     //--------------------end------------------
     //--------------------start----------------
     //Perform the function call
-    Bool* truth_PARAM0_087 = (Bool*)((Closure*)(frame->getVar("truth__87_closure")))->fp(((Closure*)(frame->getVar("truth__87_closure")))->frame);
+    Bool* truth_PARAM0_087 = (Bool*)((Closure*)(frame->getVar("truth__87_closure")))->call(((Closure*)(frame->getVar("truth__87_closure")))->frame);
     //Add it to the current frame
     frame->setVar("truth_PARAM0_087",truth_PARAM0_087);
     //--------------------end------------------
-    frame->setVar("True",(truth_PARAM0_087));
+    frame->setVar("True",());
     //Generate the args
     //--------------------start----------------
     //Generate an argument to the function call
@@ -1837,26 +1837,9 @@ int main(int argc, char* argv[]) {
     //--------------------end------------------
     //--------------------start----------------
     //Perform the function call
-    Bool* truth_PARAM0_187 = (Bool*)((Closure*)(frame->getVar("truth__87_closure")))->fp(((Closure*)(frame->getVar("truth__87_closure")))->frame);
+    Bool* truth_PARAM0_187 = (Bool*)((Closure*)(frame->getVar("truth__87_closure")))->call(((Closure*)(frame->getVar("truth__87_closure")))->frame);
     //Add it to the current frame
     frame->setVar("truth_PARAM0_187",truth_PARAM0_187);
     //--------------------end------------------
-    frame->setVar("False",(truth_PARAM0_187));
-    //Generate the args
-    //--------------------start----------------
-    //Generate an argument to the function call
-    //Create a temp variable to store the value
-    Integer* f_0_2508 = new Integer(2);
-    //Add it to the closures frame
-    ((Closure*)(frame->getVar("f__508_closure")))->frame->setVar(((Closure*)(frame->getVar("f__508_closure")))->args[0],f_0_2508);
-    //--------------------end------------------
-    //--------------------start----------------
-    //Perform the function call
-     f_PARAM0_2508 = (*)((Closure*)(frame->getVar("f__508_closure")))->fp(((Closure*)(frame->getVar("f__508_closure")))->frame);
-    //Add it to the current frame
-    frame->setVar("f_PARAM0_2508",f_PARAM0_2508);
-    //--------------------end------------------
-    //Generate the args
-    //--------------------start----------------
-    //Perform the function call
-    Integer* f_PARAM0_2508_PARAM0_3
+    frame->setVar("False",());
+    (_PARAM0_0
