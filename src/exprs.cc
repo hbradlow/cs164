@@ -257,9 +257,9 @@ protected:
             out << "Frame* loc_" << global_count << " = new Frame(";
             innerCodeGen(out, i);
             out << "->frame);\n";
-            child(0)->innerCodeGen(out, i);
-            out << " = ";
             writeIndented(out, i);
+            innerCodeGen(out, i);
+            out << " = (Closure*)";
             innerCodeGen(out, i);
             out << "->call(loc_" << global_count << ");\n";
         } 
@@ -268,10 +268,10 @@ protected:
             ((Call_AST*)child(0))->nestedInnerGen(out, i );
             writeIndented(out, i);
             out << "loc_" << global_count << " = new Frame(";
-            child(0)->innerCodeGen(out, i);
+            innerCodeGen(out, i);
             out << "->frame);\n";
             writeIndented(out, i);
-            child(0)->innerCodeGen(out, i);
+            innerCodeGen(out, i);
             out << " = (Closure*)(";
             child(0)->innerCodeGen(out, i);
             out << "->call(loc_" << global_count << "));\n";
