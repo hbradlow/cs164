@@ -556,7 +556,7 @@ protected:
         out << "class ";
         child(0)->innerCodeGen(out,i);
         writeIndented(out,i);
-        out << "{\n";
+        out << ": public Object{\n";
         writeIndented(out,i);
         out << "public:\n";
         writeIndented(out,i+1);

@@ -46,13 +46,17 @@ public:
     virtual void* getVar(string name) const;
 };
 
-class Closure {
+class Closure : public Object {
 public:
     Closure();
     Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args);
     void* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
+    void* run(Frame* dynamic_frame)
+    {
+       return  fp(dynamic_frame);
+    }
 };
 
 class Bool : public Object{
