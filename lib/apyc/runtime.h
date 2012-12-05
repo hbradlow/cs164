@@ -57,6 +57,16 @@ public:
     {
        return  fp(dynamic_frame);
     }
+    void print(ostream& out)
+    {
+        for (std::vector<string>::iterator i = args.begin();
+                i != args.end(); 
+                ++i)
+        {
+            out << ",";
+            out << *i << endl;
+        }
+    }
 };
 
 class Bool : public Object{
@@ -139,7 +149,7 @@ template<class K, class V>
 class Dict: public Object{
 public:
    map<K, V> items;
-   ostream& operator<<(ostream& out){
+   void print (ostream& out) {
        out << "{";
        for(std::map<int,int>::iterator it = items.begin() ; it != items.end(); ++it){
            if(it!=items.begin())
@@ -174,6 +184,14 @@ public:
         this->print(o);
     }
     List(vector<Object*> _items): items(_items){}
+    List(Integer* low, Integer* high) 
+    {
+        items = vector<Object*>();
+        for (int j = low->value; j < high->value; j++)
+        {
+            items.push_back(new Integer(j));
+        }
+    }
     Integer* 
     len()
     {
@@ -183,6 +201,11 @@ public:
     getItem(Integer i)
     {
         return items[i.value];
+    }
+    List*
+    xrange(Integer i)
+    {
+    
     }
 };
 

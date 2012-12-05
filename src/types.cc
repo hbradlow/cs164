@@ -645,6 +645,10 @@ protected:
             out << "List";
             return;
         }
+        if(strcmp(child(0)->as_string().c_str(),"range")==0){
+            out << "List";
+            return;
+        }
         if(strcmp(child(0)->as_string().c_str(),"int")==0){
             out << "Integer";
             return;

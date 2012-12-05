@@ -12,6 +12,7 @@
 
 using namespace std;
 
+static int inner_closure_index = 0;
 /*****   Typed_Tree   *****/
 
 Type_Ptr
@@ -254,10 +255,12 @@ protected:
         if(!child(0)->isCall())
         {
             writeIndented(out, i);
-            out << "Frame* loc_" << global_count << " = new Frame(";
-            innerCodeGen(out, i);
-            out << "->frame);\n";
+            out << "dyn_frame =";
+            writeClosure(out,i,child(0));
+            out << "->frame;\n";
             writeIndented(out, i);
+            out << "Frame *loc_" << global_count << " = new Frame(dyn_frame);\n";
+            writeIndented(out, i); 
             innerCodeGen(out, i);
             out << " = (Closure*)";
             innerCodeGen(out, i);
@@ -267,9 +270,15 @@ protected:
         {
             ((Call_AST*)child(0))->nestedInnerGen(out, i );
             writeIndented(out, i);
-            out << "loc_" << global_count << " = new Frame(";
-            innerCodeGen(out, i);
+            out << "dyn_frame = new Frame(";
+            out << "loc_" << global_count;
             out << "->frame);\n";
+            out << "loc_" << global_count << " = new Frame(dyn_frame);\n";
+            writeIndented(out, i); 
+            for_each_child(c, child(1))
+            {
+                innerArgGen(out, i, c_i_, c);
+            } end_for;
             writeIndented(out, i);
             innerCodeGen(out, i);
             out << " = (Closure*)(";
@@ -278,6 +287,36 @@ protected:
         }
     }
 
+    void innerArgGen(ostream& out, int i, int c_i_, AST_Ptr c)
+    {
+        writeComment(out,i,"Create a temp variable to store the value");
+        writeIndented(out,i);
+        c->getType()->binding()->innerCodeGen(out,i);
+        if(c->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(0)->innerCodeGen(out,i);
+        out << "_" << c_i_ << "_" << local_count << inner_closure_index;
+        out << " = ";
+        c->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeComment(out,i,"Add it to the closures frame");
+        writeIndented(out, i);
+        innerCodeGen(out ,i);
+        out << "->print(cout);";
+        writeIndented(out,i);
+         
+        out << "loc_" << global_count << "->setVar(";
+        innerCodeGen(out ,i);
+        out << "->args[" << c_i_ << "]";
+        out << ",";
+        child(0)->innerCodeGen(out,i);
+        out << "_" << c_i_ << "_" << local_count << inner_closure_index; 
+        out << ");\n";
+        inner_closure_index++;
+        writeComment(out,i,"--------------------end------------------");
+    }
     void nestedMemGen(ostream& out, int i)
     {
         if (child(0)->isCall())
