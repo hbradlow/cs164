@@ -9,7 +9,7 @@
 #define NATIVE__truth__             return (*((Integer*)frame->getVar("x")))!=Integer(0)
 #define NATIVE__not__               return (*((Integer*)frame->getVar("x")))==Integer(0)
 #define NATIVE__xrange__            return new List((Integer*)frame->getVar("low"), (Integer*)frame->getVar("high"))
-#define NATIVE__len__range__
+#define NATIVE__len__range__        return ((List*)frame->getVar("r"))->len(); 
 #define NATIVE__add__int__          return (*(Integer*)frame->getVar("x"))+(*(Integer*)frame->getVar("y"))
 #define NATIVE__sub__int__          return (*(Integer*)frame->getVar("x"))-(*(Integer*)frame->getVar("y"))
 #define NATIVE__mul__int__          return (*(Integer*)frame->getVar("x"))*(*(Integer*)frame->getVar("y"))
