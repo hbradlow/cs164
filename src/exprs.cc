@@ -564,6 +564,17 @@ protected:
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
+
+    /*
+    //hbradlow
+    void valueCodeGen(ostream& out, int i){
+        out << "new Bool(";
+        child(0)->innerCodeGen(out,i);
+        out << "&&";
+        innerCodeGen(out,i);
+        out << ")";
+    }
+    */
 };
 
 NODE_FACTORY (Compare_AST, COMPARE);
@@ -582,6 +593,10 @@ protected:
         return actualParam (1)->getType ();
     }
 
+    //hbradlow
+    void valueCodeGen(ostream& out, int i){
+        child(2)->valueCodeGen(out,i);
+    }
 };
 
 NODE_FACTORY (LeftCompare_AST, LEFT_COMPARE);
