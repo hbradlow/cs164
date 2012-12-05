@@ -212,10 +212,16 @@ protected:
         for_each_child(c,this){
             c->memCodeGen(out,i);
         } end_for;
+
         local_count = global_count++;
         stringstream ss;
         child(0)->print(ss,0);
         local_counts[ss.str()] = local_count;
+
+        out << "Frame* frame_CALL_" << local_count;
+        out << " = new Frame(";
+        writeClosure(out,i,child(0));
+        out << "->frame);";
 
         writeComment(out,i,"Generate the args");
         for_each_child(c,child(1)){
@@ -244,8 +250,8 @@ protected:
         out << ")";
         writeClosure(out,i,child(0));
         out << "->fp" << "(";
-        writeClosure(out,i,child(0));
-        out << "->frame)";
+        out << "frame_CALL_" << local_count;
+        out << ")";
         out << ";\n";
 
         writeComment(out,i,"Add it to the current frame");
@@ -279,8 +285,8 @@ protected:
 
         writeComment(out,i,"Add it to the closures frame");
         writeIndented(out,i);
-        writeClosure(out,i,child(0));
-        out << "->frame->setVar(";
+        out << "frame_CALL_" << local_count;
+        out << "->setVar(";
         writeClosure(out,i,child(0));
         out << "->args[" << c_i_ << "]";
         out << ",";
@@ -411,6 +417,9 @@ protected:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
         out << "\n";
 
         local_count = global_count++;
@@ -623,6 +632,10 @@ public:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
+
         out << "\n";
 
         local_count = global_count++;
@@ -903,7 +916,7 @@ protected:
         child(0)->getType()->binding()->innerCodeGen(out,i);
         out << "*)(frame->getVar(\"";
         child(0)->innerCodeGen(out,i);
-        out << "\")))->frame";
+        out << "\")))";
     }
     //hbradlow
     void innerCodeGen(ostream& out, int i){
@@ -1123,17 +1136,61 @@ protected:
 
 /**  E1 if Cond else E2  */
 class IfExpr_AST : public BalancedExpr {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
     //hbradlow
+    void defCodeGen(ostream& out,int i){
+        local_count = global_count++;
+        writeComment(out,i,"----------------------------start--------------------");
+        writeComment(out,i,"IFEXPR Function stuff");
+
+        writeIndented(out,i);
+        out << "void*";
+        out << " IFEXPR1_" << local_count;
+        out << "(";
+        out << "Frame* frame";
+        out << "){\n";
+        child(1)->memCodeGen(out,i+1);
+        writeIndented(out,i+1);
+        out << "return ";
+        child(1)->innerCodeGen(out,i+1);
+        out << ";\n";
+        writeIndented(out,i);
+        out << "}\n";
+
+        writeIndented(out,i);
+        out << "void*";
+        out << " IFEXPR2_" << local_count;
+        out << "(";
+        out << "Frame* frame";
+        out << "){";
+        child(2)->memCodeGen(out,i+1);
+        writeIndented(out,i+1);
+        out << "return ";
+        child(2)->innerCodeGen(out,i+1);
+        out << ";\n";
+        out << "}\n";
+        writeComment(out,i,"----------------------------end----------------------");
+
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        child(0)->memCodeGen(out,i);
+    }
+    //hbradlow
     void innerCodeGen(ostream& out, int i){
-        child(0)->innerCodeGen(out,i);
-        out << " ? ";
-        child(1)->innerCodeGen(out,i);
+        out << "(Object*)(((*";
+        child(0)->valueCodeGen(out,i);
+        out << ")==true) ? ";
+        out << "IFEXPR1_" << local_count << "(frame)";
         out << " : ";
-        child(2)->innerCodeGen(out,i);
+        out << "IFEXPR2_" << local_count << "(frame)";
+        out << ")";
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
@@ -1143,6 +1200,7 @@ protected:
     }
 }; 
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
+int IfExpr_AST::global_count;
 
 /***** AND *****/
 

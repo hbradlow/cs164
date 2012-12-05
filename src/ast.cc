@@ -304,7 +304,7 @@ AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
         this->lhsFrameCodeGen(out,i);
     else
         out << lhs;
-    out << "->setVar(";
+    out << "->frame->setVar(";
     this->stringCodeGen(out, i);
     out << ",";
     out << "(";
@@ -314,7 +314,7 @@ AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
 
     if(c->getType()->binding()->isFunction()){
         writeIndented(out,i);
-        out << "frame->setVar(\"";
+        out << "frame->frame->setVar(\"";
         this->innerCodeGen(out,i);
         out << "__" << this->getDecl()->getIndex() << "_closure";
         out << "\", ";
@@ -438,7 +438,7 @@ void
 AST::addToStaticFrame(std::ostream& out, int i)
 {
     writeIndented(out,i);
-    out << "frame->setVar(\"";
+    out << "frame->frame->setVar(\"";
     child(0)->innerCodeGen(out,i);
     out << "__" << child(0)->getDecl()->getIndex() << "_closure";
     out << "\", ";

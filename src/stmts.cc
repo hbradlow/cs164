@@ -737,7 +737,7 @@ protected:
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
-        child(0)->assignCodeGen(out,i,child(1),"this->frame");
+        child(0)->assignCodeGen(out,i,child(1),"this");
     }
 };
 
