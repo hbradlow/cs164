@@ -309,8 +309,8 @@ Bool* operator==(const String& b, const String& rhs){
     return new Bool(b.value==rhs.value);
 }
 inline
-Bool* operator==(const String& b, bool rhs){
-    return new Bool(b.value!="");
+bool operator==(const String& b, bool rhs){
+    return (b.value!="");
 }
 inline 
 Bool* operator!=(const String& b, const String& rhs)
@@ -386,8 +386,8 @@ Bool* operator==(const Integer& b, const Integer& rhs){
     return new Bool(b.value==rhs.value); 
 }
 inline
-Bool* operator==(const Integer& b, bool rhs){
-    return new Bool((b.value && rhs) || (!b.value && !rhs));
+bool operator==(const Integer& b, bool rhs){
+    return ((b.value && rhs) || (!b.value && !rhs));
 }
 //------------------------------------------------------------
 

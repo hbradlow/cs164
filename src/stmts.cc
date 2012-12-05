@@ -140,7 +140,9 @@ protected:
             {
             out << "(";
             c->getType()->binding()->innerCodeGen(out,i);
-            out << "*)";
+            if(c->getType()->binding()->needsPointer())
+                out << "*";
+            out << ")";
             }
             c->valueCodeGen(out,i);
             out << ")->print(cout); ";
