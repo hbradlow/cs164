@@ -58,6 +58,8 @@ protected:
         writeIndented(out,i+1);
         out << "Frame* frame = new Frame(frame_upper);\n";
         writeIndented(out,i+1);
+        out << "Frame* dyn_frame = new Frame(NULL);\n";
+        writeIndented(out,i+1);
         out << "map<string,void*> classVariables;\n";
         for_each_child(c,this){
             c->closureCodeGen(out,i+1);

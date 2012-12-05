@@ -255,15 +255,12 @@ protected:
         if(!child(0)->isCall())
         {
             writeIndented(out, i);
-            out << "Frame* loc_" << global_count << " = new Frame(";
-            innerCodeGen(out, i);
-            out << "->frame);\n";
-            writeIndented(out, i); 
-            for_each_child(c, child(1))
-            {
-                innerArgGen(out, i, c_i_, c);
-            } end_for;
+            out << "dyn_frame =";
+            writeClosure(out,i,child(0));
+            out << "->frame;\n";
             writeIndented(out, i);
+            out << "Frame *loc_" << global_count << " = new Frame(dyn_frame);\n";
+            writeIndented(out, i); 
             innerCodeGen(out, i);
             out << " = (Closure*)";
             innerCodeGen(out, i);
@@ -273,9 +270,10 @@ protected:
         {
             ((Call_AST*)child(0))->nestedInnerGen(out, i );
             writeIndented(out, i);
-            out << "loc_" << global_count << " = new Frame(";
-            innerCodeGen(out, i);
+            out << "dyn_frame = new Frame(";
+            out << "loc_" << global_count;
             out << "->frame);\n";
+            out << "loc_" << global_count << " = new Frame(dyn_frame);\n";
             writeIndented(out, i); 
             for_each_child(c, child(1))
             {
@@ -304,9 +302,12 @@ protected:
         out << ";\n";
 
         writeComment(out,i,"Add it to the closures frame");
+        writeIndented(out, i);
+        innerCodeGen(out ,i);
+        out << "->print(cout);";
         writeIndented(out,i);
-        out << "loc_" << global_count;
-        out << "->frame->setVar(";
+         
+        out << "loc_" << global_count << "->setVar(";
         innerCodeGen(out ,i);
         out << "->args[" << c_i_ << "]";
         out << ",";
@@ -522,6 +523,9 @@ protected:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
         out << "\n";
 
         local_count = global_count++;
@@ -666,6 +670,17 @@ protected:
     Type_Ptr computeType () {
         return boolDecl->asType ();
     }
+
+    /*
+    //hbradlow
+    void valueCodeGen(ostream& out, int i){
+        out << "new Bool(";
+        child(0)->innerCodeGen(out,i);
+        out << "&&";
+        innerCodeGen(out,i);
+        out << ")";
+    }
+    */
 };
 
 NODE_FACTORY (Compare_AST, COMPARE);
@@ -684,6 +699,10 @@ protected:
         return actualParam (1)->getType ();
     }
 
+    //hbradlow
+    void valueCodeGen(ostream& out, int i){
+        child(2)->valueCodeGen(out,i);
+    }
 };
 
 NODE_FACTORY (LeftCompare_AST, LEFT_COMPARE);
@@ -1269,17 +1288,60 @@ protected:
 
 /**  E1 if Cond else E2  */
 class IfExpr_AST : public BalancedExpr {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (IfExpr_AST, BalancedExpr);
 
+    void defCodeGen(ostream& out,int i){
+        local_count = global_count++;
+        writeComment(out,i,"----------------------------start--------------------");
+        writeComment(out,i,"IFEXPR Function stuff");
+
+        writeIndented(out,i);
+        out << "void*";
+        out << " IFEXPR1_" << local_count;
+        out << "(";
+        out << "Frame* frame";
+        out << "){\n";
+        child(1)->memCodeGen(out,i+1);
+        writeIndented(out,i+1);
+        out << "return ";
+        child(1)->innerCodeGen(out,i+1);
+        out << ";\n";
+        writeIndented(out,i);
+        out << "}\n";
+
+        writeIndented(out,i);
+        out << "void*";
+        out << " IFEXPR2_" << local_count;
+        out << "(";
+        out << "Frame* frame";
+        out << "){";
+        child(2)->memCodeGen(out,i+1);
+        writeIndented(out,i+1);
+        out << "return ";
+        child(2)->innerCodeGen(out,i+1);
+        out << ";\n";
+        out << "}\n";
+        writeComment(out,i,"----------------------------end----------------------");
+
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        child(0)->memCodeGen(out,i);
+    }
     //hbradlow
     void innerCodeGen(ostream& out, int i){
-        child(0)->innerCodeGen(out,i);
-        out << " ? ";
-        child(1)->innerCodeGen(out,i);
+        out << "(Object*)(((*";
+        child(0)->valueCodeGen(out,i);
+        out << ")==true) ? ";
+        out << "IFEXPR1_" << local_count << "(frame)";
         out << " : ";
-        child(2)->innerCodeGen(out,i);
+        out << "IFEXPR2_" << local_count << "(frame)";
+        out << ")";
     }
     //hbradlow
     void outerCodeGen(ostream& out, int i){
@@ -1289,6 +1351,7 @@ protected:
     }
 }; 
 NODE_FACTORY (IfExpr_AST, IF_EXPR);
+int IfExpr_AST::global_count;
 
 /***** AND *****/
 

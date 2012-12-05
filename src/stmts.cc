@@ -258,7 +258,7 @@ protected:
         writeIndented(out,i);
         out << "vector<string> ";
         child(0)->innerCodeGen(out, i); 
-        out << child(0)->getDecl()->getIndex() << "__VECTOR;\n";
+        out << child(0)->getDecl()->getIndex() << "__VECTOR = vector<string>();\n";
         for_each_child(c,child(1)){
             writeIndented(out,i);
             child(0)->innerCodeGen(out, i); 
