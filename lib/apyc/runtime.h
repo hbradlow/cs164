@@ -197,7 +197,6 @@ public:
     {
          return new Integer(items.size());
     }
-=======
     Object*
     getItem(Integer i)
     {
