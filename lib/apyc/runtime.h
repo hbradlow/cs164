@@ -37,22 +37,26 @@ class Frame
 {
 private:
     map<string, void*> locals;
+    const Frame* enclosing;
 
 public:
-    Frame* frame;
-    Frame(Frame* static_link);
+    Frame(const Frame* static_link);
     Frame();
     virtual void setVar(string name, void* value);
-    virtual void* getVar(string name);
+    virtual void* getVar(string name) const;
 };
 
-class Closure {
+class Closure : public Object {
 public:
     Closure();
     Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args);
     void* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
+    void* call(Frame* dynamic_frame)
+    {
+       return  fp(dynamic_frame);
+    }
 };
 
 class Bool : public Object{

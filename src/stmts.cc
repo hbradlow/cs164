@@ -97,9 +97,15 @@ protected:
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
         for_each_child(c,child(1)){
+            if (!c->isCall())
+            {
             c->valueCodeGen(out,i);
             out << ".print(cout);\n";
             out << "cout << endl;"; 
+            }else 
+            {
+            c->outerCodeGen(out, i);
+            }
         } end_for;
     }
 };
@@ -130,6 +136,12 @@ protected:
             if(c_i_!=0)
                 out << "cout << ' ';";
             out << "(";
+            if (c->isCall())
+            {
+            out << "(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "*)";
+            }
             c->valueCodeGen(out,i);
             out << ")->print(cout); ";
         } end_for;
@@ -556,7 +568,7 @@ protected:
         out << "class ";
         child(0)->innerCodeGen(out,i);
         writeIndented(out,i);
-        out << "{\n";
+        out << ": public Object{\n";
         writeIndented(out,i);
         out << "public:\n";
         writeIndented(out,i+1);
@@ -737,7 +749,7 @@ protected:
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
-        child(0)->assignCodeGen(out,i,child(1),"this");
+        child(0)->assignCodeGen(out,i,child(1),"this->frame");
     }
 };
 
