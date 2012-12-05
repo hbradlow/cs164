@@ -632,6 +632,10 @@ protected:
             out << ">";
             return;
         }
+        if(strcmp(child(0)->as_string().c_str(),"list")==0){
+            out << "List";
+            return;
+        }
         if(strcmp(child(0)->as_string().c_str(),"int")==0){
             out << "Integer";
             return;

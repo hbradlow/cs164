@@ -1044,6 +1044,9 @@ NODE_FACTORY (TargetList_AST, TARGET_LIST);
 
 /** [E1, ...]  */
 class ListDisplay_AST : public Typed_Tree {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (ListDisplay_AST, Typed_Tree);
@@ -1066,10 +1069,42 @@ protected:
             error (this, "type mismatch on list display");
         return this;
     }    
+    //hbradlow
+    void memCodeGen(ostream& out,int i){
+        local_count = global_count++;
+
+        writeIndented(out,i);
+        out << "vector";
+        out << "<";
+        out << "Object*";
+        out << "> ";
+        out << "list_vector" << local_count << ";\n";
+
+        for_each_child(c,this){
+            writeIndented(out,i);
+            out << "list_vector" << local_count << ".push_back(";
+            c->valueCodeGen(out,i);
+            out << ");\n";
+        } end_for;
+    }
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "new List";
+        out  << "(";
+        out << "list_vector" << local_count;
+        out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
 
 };
 
 NODE_FACTORY (ListDisplay_AST, LIST_DISPLAY);
+int ListDisplay_AST::global_count;
 
 
 /***** DICT_DISPLAY *****/
