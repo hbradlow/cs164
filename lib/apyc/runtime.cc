@@ -21,14 +21,14 @@ Frame::setVar(string name, void* value)
 }
 
 void* 
-Frame::getVar(string name) const
+Frame::getVar(string name)
 {
     if (this->locals.count(name) == 0) 
-        return enclosing->getVar(name);
+        return frame->getVar(name);
     else
         return this->locals.find(name)->second;
 }
-Frame::Frame(const Frame* static_link) : enclosing(static_link)
+Frame::Frame(Frame* static_link) : frame(static_link)
 {
     this->locals = std::map<string, void*>();
 }

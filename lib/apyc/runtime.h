@@ -37,13 +37,13 @@ class Frame
 {
 private:
     map<string, void*> locals;
-    const Frame* enclosing;
 
 public:
-    Frame(const Frame* static_link);
+    Frame* frame;
+    Frame(Frame* static_link);
     Frame();
     virtual void setVar(string name, void* value);
-    virtual void* getVar(string name) const;
+    virtual void* getVar(string name);
 };
 
 class Closure : public Object {
