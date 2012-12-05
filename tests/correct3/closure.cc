@@ -653,21 +653,21 @@ public:
         this->args = args;
     }
 };
-class str{
+class str: public Object{
 public:
     Frame* frame;
     str(Frame* frame){
         this->frame = new Frame(NULL);
     }
 };
-class range{
+class range: public Object{
 public:
     Frame* frame;
     range(Frame* frame){
         this->frame = new Frame(NULL);
     }
 };
-class file{
+class file: public Object{
 public:
     Frame* frame;
     file(Frame* frame){
@@ -675,7 +675,7 @@ public:
     }
 };
 template<typename $T>
-class list{
+class list: public Object{
 public:
     Frame* frame;
     list(Frame* frame){
@@ -683,14 +683,14 @@ public:
     }
 };
 template<typename $Key,typename $Value>
-class dict{
+class dict: public Object{
 public:
     Frame* frame;
     dict(Frame* frame){
         this->frame = new Frame(NULL);
     }
 };
-class __sys__{
+class __sys__: public Object{
 public:
     Frame* frame;
     __sys__(Frame* frame){
@@ -1122,7 +1122,7 @@ void* g__512(Frame* frame){
     //Create second dummy variable
     Integer* __add___1_0115 = new Integer(3);
     ((__add____115_CLOSURE*)(frame->getVar("__add____115_closure")))->frame->setVar(((__add____115_CLOSURE*)(frame->getVar("__add____115_closure")))->args[1],__add___1_0115);
-    Integer* __add___2_0115 = (Integer*)((Closure*)(frame->getVar("__add____115_closure")))->fp((((__add____115_CLOSURE*)(frame->getVar("__add____115_closure")))->frame));
+    Integer* __add___2_0115 = (Integer*)((Closure*)(frame->getVar("__add____0_closure")))->fp((((__add____115_CLOSURE*)(frame->getVar("__add____115_closure")))->frame));
 
     return __add___2_0115;
 }
@@ -1130,11 +1130,12 @@ void* g__512(Frame* frame){
 //----------------------------start--------------------
 //Function stuff
 void* f__508(Frame* frame){
-    return ((Closure*)(frame->getVar("g__512_closure")));
+    return ((Closure*)(frame->getVar("g__0_closure")));
 }
 //----------------------------end----------------------
 int main(int argc, char* argv[]) {
-    Frame* frame = new Frame(NULL);
+    Frame* frame_upper = new Frame(NULL);
+Frame* frame = new Frame(frame_upper);
     map<string,void*> classVariables;
     //-------------start----------------
     //Create the closure for a function
@@ -1143,7 +1144,7 @@ int main(int argc, char* argv[]) {
     __init__3__VECTOR.push_back("self");
     //Create the closure
     __init____3_CLOSURE* __init____3_closure = new __init____3_CLOSURE (new Frame(frame),__init__3__VECTOR);
-    frame->setVar("__init____3_closure", __init____3_closure);
+    frame->frame->setVar("__init____3_closure", __init____3_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1152,7 +1153,7 @@ int main(int argc, char* argv[]) {
     __init__8__VECTOR.push_back("self");
     //Create the closure
     __init____8_CLOSURE* __init____8_closure = new __init____8_CLOSURE (new Frame(frame),__init__8__VECTOR);
-    frame->setVar("__init____8_closure", __init____8_closure);
+    frame->frame->setVar("__init____8_closure", __init____8_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1161,7 +1162,7 @@ int main(int argc, char* argv[]) {
     __init__13__VECTOR.push_back("self");
     //Create the closure
     __init____13_CLOSURE* __init____13_closure = new __init____13_CLOSURE (new Frame(frame),__init__13__VECTOR);
-    frame->setVar("__init____13_closure", __init____13_closure);
+    frame->frame->setVar("__init____13_closure", __init____13_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1170,7 +1171,7 @@ int main(int argc, char* argv[]) {
     __init__18__VECTOR.push_back("self");
     //Create the closure
     __init____18_CLOSURE* __init____18_closure = new __init____18_CLOSURE (new Frame(frame),__init__18__VECTOR);
-    frame->setVar("__init____18_closure", __init____18_closure);
+    frame->frame->setVar("__init____18_closure", __init____18_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1179,7 +1180,7 @@ int main(int argc, char* argv[]) {
     __init__23__VECTOR.push_back("self");
     //Create the closure
     __init____23_CLOSURE* __init____23_closure = new __init____23_CLOSURE (new Frame(frame),__init__23__VECTOR);
-    frame->setVar("__init____23_closure", __init____23_closure);
+    frame->frame->setVar("__init____23_closure", __init____23_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1188,7 +1189,7 @@ int main(int argc, char* argv[]) {
     __init__30__VECTOR.push_back("self");
     //Create the closure
     __init____30_CLOSURE* __init____30_closure = new __init____30_CLOSURE (new Frame(frame),__init__30__VECTOR);
-    frame->setVar("__init____30_closure", __init____30_closure);
+    frame->frame->setVar("__init____30_closure", __init____30_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1197,7 +1198,7 @@ int main(int argc, char* argv[]) {
     __init__40__VECTOR.push_back("self");
     //Create the closure
     __init____40_CLOSURE* __init____40_closure = new __init____40_CLOSURE (new Frame(frame),__init__40__VECTOR);
-    frame->setVar("__init____40_closure", __init____40_closure);
+    frame->frame->setVar("__init____40_closure", __init____40_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1206,7 +1207,7 @@ int main(int argc, char* argv[]) {
     __init__47__VECTOR.push_back("self");
     //Create the closure
     __init____47_CLOSURE* __init____47_closure = new __init____47_CLOSURE (new Frame(frame),__init__47__VECTOR);
-    frame->setVar("__init____47_closure", __init____47_closure);
+    frame->frame->setVar("__init____47_closure", __init____47_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1215,7 +1216,7 @@ int main(int argc, char* argv[]) {
     __init__54__VECTOR.push_back("self");
     //Create the closure
     __init____54_CLOSURE* __init____54_closure = new __init____54_CLOSURE (new Frame(frame),__init__54__VECTOR);
-    frame->setVar("__init____54_closure", __init____54_closure);
+    frame->frame->setVar("__init____54_closure", __init____54_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1224,7 +1225,7 @@ int main(int argc, char* argv[]) {
     __init__64__VECTOR.push_back("self");
     //Create the closure
     __init____64_CLOSURE* __init____64_closure = new __init____64_CLOSURE (new Frame(frame),__init__64__VECTOR);
-    frame->setVar("__init____64_closure", __init____64_closure);
+    frame->frame->setVar("__init____64_closure", __init____64_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1233,7 +1234,7 @@ int main(int argc, char* argv[]) {
     __init__77__VECTOR.push_back("self");
     //Create the closure
     __init____77_CLOSURE* __init____77_closure = new __init____77_CLOSURE (new Frame(frame),__init__77__VECTOR);
-    frame->setVar("__init____77_closure", __init____77_closure);
+    frame->frame->setVar("__init____77_closure", __init____77_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1241,7 +1242,7 @@ int main(int argc, char* argv[]) {
     vector<string> __None__84__VECTOR;
     //Create the closure
     __None____84_CLOSURE* __None____84_closure = new __None____84_CLOSURE (new Frame(frame),__None__84__VECTOR);
-    frame->setVar("__None____84_closure", __None____84_closure);
+    frame->frame->setVar("__None____84_closure", __None____84_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1250,7 +1251,7 @@ int main(int argc, char* argv[]) {
     truth87__VECTOR.push_back("x");
     //Create the closure
     truth__87_CLOSURE* truth__87_closure = new truth__87_CLOSURE (new Frame(frame),truth87__VECTOR);
-    frame->setVar("truth__87_closure", truth__87_closure);
+    frame->frame->setVar("truth__87_closure", truth__87_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1259,7 +1260,7 @@ int main(int argc, char* argv[]) {
     __not__92__VECTOR.push_back("x");
     //Create the closure
     __not____92_CLOSURE* __not____92_closure = new __not____92_CLOSURE (new Frame(frame),__not__92__VECTOR);
-    frame->setVar("__not____92_closure", __not____92_closure);
+    frame->frame->setVar("__not____92_closure", __not____92_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1269,7 +1270,7 @@ int main(int argc, char* argv[]) {
     xrange102__VECTOR.push_back("high");
     //Create the closure
     xrange__102_CLOSURE* xrange__102_closure = new xrange__102_CLOSURE (new Frame(frame),xrange102__VECTOR);
-    frame->setVar("xrange__102_closure", xrange__102_closure);
+    frame->frame->setVar("xrange__102_closure", xrange__102_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1278,7 +1279,7 @@ int main(int argc, char* argv[]) {
     len109__VECTOR.push_back("r");
     //Create the closure
     len__109_CLOSURE* len__109_closure = new len__109_CLOSURE (new Frame(frame),len109__VECTOR);
-    frame->setVar("len__109_closure", len__109_closure);
+    frame->frame->setVar("len__109_closure", len__109_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1288,7 +1289,7 @@ int main(int argc, char* argv[]) {
     __add__115__VECTOR.push_back("y");
     //Create the closure
     __add____115_CLOSURE* __add____115_closure = new __add____115_CLOSURE (new Frame(frame),__add__115__VECTOR);
-    frame->setVar("__add____115_closure", __add____115_closure);
+    frame->frame->setVar("__add____115_closure", __add____115_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1298,7 +1299,7 @@ int main(int argc, char* argv[]) {
     __sub__123__VECTOR.push_back("y");
     //Create the closure
     __sub____123_CLOSURE* __sub____123_closure = new __sub____123_CLOSURE (new Frame(frame),__sub__123__VECTOR);
-    frame->setVar("__sub____123_closure", __sub____123_closure);
+    frame->frame->setVar("__sub____123_closure", __sub____123_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1308,7 +1309,7 @@ int main(int argc, char* argv[]) {
     __mul__131__VECTOR.push_back("y");
     //Create the closure
     __mul____131_CLOSURE* __mul____131_closure = new __mul____131_CLOSURE (new Frame(frame),__mul__131__VECTOR);
-    frame->setVar("__mul____131_closure", __mul____131_closure);
+    frame->frame->setVar("__mul____131_closure", __mul____131_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1318,7 +1319,7 @@ int main(int argc, char* argv[]) {
     __floordiv__139__VECTOR.push_back("y");
     //Create the closure
     __floordiv____139_CLOSURE* __floordiv____139_closure = new __floordiv____139_CLOSURE (new Frame(frame),__floordiv__139__VECTOR);
-    frame->setVar("__floordiv____139_closure", __floordiv____139_closure);
+    frame->frame->setVar("__floordiv____139_closure", __floordiv____139_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1328,7 +1329,7 @@ int main(int argc, char* argv[]) {
     __mod__147__VECTOR.push_back("y");
     //Create the closure
     __mod____147_CLOSURE* __mod____147_closure = new __mod____147_CLOSURE (new Frame(frame),__mod__147__VECTOR);
-    frame->setVar("__mod____147_closure", __mod____147_closure);
+    frame->frame->setVar("__mod____147_closure", __mod____147_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1338,7 +1339,7 @@ int main(int argc, char* argv[]) {
     __pow__155__VECTOR.push_back("y");
     //Create the closure
     __pow____155_CLOSURE* __pow____155_closure = new __pow____155_CLOSURE (new Frame(frame),__pow__155__VECTOR);
-    frame->setVar("__pow____155_closure", __pow____155_closure);
+    frame->frame->setVar("__pow____155_closure", __pow____155_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1347,7 +1348,7 @@ int main(int argc, char* argv[]) {
     __neg__162__VECTOR.push_back("x");
     //Create the closure
     __neg____162_CLOSURE* __neg____162_closure = new __neg____162_CLOSURE (new Frame(frame),__neg__162__VECTOR);
-    frame->setVar("__neg____162_closure", __neg____162_closure);
+    frame->frame->setVar("__neg____162_closure", __neg____162_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1356,7 +1357,7 @@ int main(int argc, char* argv[]) {
     __pos__167__VECTOR.push_back("x");
     //Create the closure
     __pos____167_CLOSURE* __pos____167_closure = new __pos____167_CLOSURE (new Frame(frame),__pos__167__VECTOR);
-    frame->setVar("__pos____167_closure", __pos____167_closure);
+    frame->frame->setVar("__pos____167_closure", __pos____167_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1366,7 +1367,7 @@ int main(int argc, char* argv[]) {
     __lt__173__VECTOR.push_back("y");
     //Create the closure
     __lt____173_CLOSURE* __lt____173_closure = new __lt____173_CLOSURE (new Frame(frame),__lt__173__VECTOR);
-    frame->setVar("__lt____173_closure", __lt____173_closure);
+    frame->frame->setVar("__lt____173_closure", __lt____173_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1376,7 +1377,7 @@ int main(int argc, char* argv[]) {
     __gt__181__VECTOR.push_back("y");
     //Create the closure
     __gt____181_CLOSURE* __gt____181_closure = new __gt____181_CLOSURE (new Frame(frame),__gt__181__VECTOR);
-    frame->setVar("__gt____181_closure", __gt____181_closure);
+    frame->frame->setVar("__gt____181_closure", __gt____181_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1386,7 +1387,7 @@ int main(int argc, char* argv[]) {
     __le__189__VECTOR.push_back("y");
     //Create the closure
     __le____189_CLOSURE* __le____189_closure = new __le____189_CLOSURE (new Frame(frame),__le__189__VECTOR);
-    frame->setVar("__le____189_closure", __le____189_closure);
+    frame->frame->setVar("__le____189_closure", __le____189_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1396,7 +1397,7 @@ int main(int argc, char* argv[]) {
     __ge__197__VECTOR.push_back("y");
     //Create the closure
     __ge____197_CLOSURE* __ge____197_closure = new __ge____197_CLOSURE (new Frame(frame),__ge__197__VECTOR);
-    frame->setVar("__ge____197_closure", __ge____197_closure);
+    frame->frame->setVar("__ge____197_closure", __ge____197_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1406,7 +1407,7 @@ int main(int argc, char* argv[]) {
     __eq__205__VECTOR.push_back("y");
     //Create the closure
     __eq____205_CLOSURE* __eq____205_closure = new __eq____205_CLOSURE (new Frame(frame),__eq__205__VECTOR);
-    frame->setVar("__eq____205_closure", __eq____205_closure);
+    frame->frame->setVar("__eq____205_closure", __eq____205_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1416,7 +1417,7 @@ int main(int argc, char* argv[]) {
     __ne__213__VECTOR.push_back("y");
     //Create the closure
     __ne____213_CLOSURE* __ne____213_closure = new __ne____213_CLOSURE (new Frame(frame),__ne__213__VECTOR);
-    frame->setVar("__ne____213_closure", __ne____213_closure);
+    frame->frame->setVar("__ne____213_closure", __ne____213_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1425,7 +1426,7 @@ int main(int argc, char* argv[]) {
     toint220__VECTOR.push_back("x");
     //Create the closure
     toint__220_CLOSURE* toint__220_closure = new toint__220_CLOSURE (new Frame(frame),toint220__VECTOR);
-    frame->setVar("toint__220_closure", toint__220_closure);
+    frame->frame->setVar("toint__220_closure", toint__220_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1435,7 +1436,7 @@ int main(int argc, char* argv[]) {
     __add__226__VECTOR.push_back("y");
     //Create the closure
     __add____226_CLOSURE* __add____226_closure = new __add____226_CLOSURE (new Frame(frame),__add__226__VECTOR);
-    frame->setVar("__add____226_closure", __add____226_closure);
+    frame->frame->setVar("__add____226_closure", __add____226_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1445,7 +1446,7 @@ int main(int argc, char* argv[]) {
     __mul__234__VECTOR.push_back("y");
     //Create the closure
     __mul____234_CLOSURE* __mul____234_closure = new __mul____234_CLOSURE (new Frame(frame),__mul__234__VECTOR);
-    frame->setVar("__mul____234_closure", __mul____234_closure);
+    frame->frame->setVar("__mul____234_closure", __mul____234_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1455,7 +1456,7 @@ int main(int argc, char* argv[]) {
     __mul__242__VECTOR.push_back("y");
     //Create the closure
     __mul____242_CLOSURE* __mul____242_closure = new __mul____242_CLOSURE (new Frame(frame),__mul__242__VECTOR);
-    frame->setVar("__mul____242_closure", __mul____242_closure);
+    frame->frame->setVar("__mul____242_closure", __mul____242_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1465,7 +1466,7 @@ int main(int argc, char* argv[]) {
     __lt__250__VECTOR.push_back("y");
     //Create the closure
     __lt____250_CLOSURE* __lt____250_closure = new __lt____250_CLOSURE (new Frame(frame),__lt__250__VECTOR);
-    frame->setVar("__lt____250_closure", __lt____250_closure);
+    frame->frame->setVar("__lt____250_closure", __lt____250_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1475,7 +1476,7 @@ int main(int argc, char* argv[]) {
     __gt__258__VECTOR.push_back("y");
     //Create the closure
     __gt____258_CLOSURE* __gt____258_closure = new __gt____258_CLOSURE (new Frame(frame),__gt__258__VECTOR);
-    frame->setVar("__gt____258_closure", __gt____258_closure);
+    frame->frame->setVar("__gt____258_closure", __gt____258_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1485,7 +1486,7 @@ int main(int argc, char* argv[]) {
     __le__266__VECTOR.push_back("y");
     //Create the closure
     __le____266_CLOSURE* __le____266_closure = new __le____266_CLOSURE (new Frame(frame),__le__266__VECTOR);
-    frame->setVar("__le____266_closure", __le____266_closure);
+    frame->frame->setVar("__le____266_closure", __le____266_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1495,7 +1496,7 @@ int main(int argc, char* argv[]) {
     __ge__274__VECTOR.push_back("y");
     //Create the closure
     __ge____274_CLOSURE* __ge____274_closure = new __ge____274_CLOSURE (new Frame(frame),__ge__274__VECTOR);
-    frame->setVar("__ge____274_closure", __ge____274_closure);
+    frame->frame->setVar("__ge____274_closure", __ge____274_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1505,7 +1506,7 @@ int main(int argc, char* argv[]) {
     __eq__282__VECTOR.push_back("y");
     //Create the closure
     __eq____282_CLOSURE* __eq____282_closure = new __eq____282_CLOSURE (new Frame(frame),__eq__282__VECTOR);
-    frame->setVar("__eq____282_closure", __eq____282_closure);
+    frame->frame->setVar("__eq____282_closure", __eq____282_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1515,7 +1516,7 @@ int main(int argc, char* argv[]) {
     __ne__290__VECTOR.push_back("y");
     //Create the closure
     __ne____290_CLOSURE* __ne____290_closure = new __ne____290_CLOSURE (new Frame(frame),__ne__290__VECTOR);
-    frame->setVar("__ne____290_closure", __ne____290_closure);
+    frame->frame->setVar("__ne____290_closure", __ne____290_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1525,7 +1526,7 @@ int main(int argc, char* argv[]) {
     __getitem__298__VECTOR.push_back("k");
     //Create the closure
     __getitem____298_CLOSURE* __getitem____298_closure = new __getitem____298_CLOSURE (new Frame(frame),__getitem__298__VECTOR);
-    frame->setVar("__getitem____298_closure", __getitem____298_closure);
+    frame->frame->setVar("__getitem____298_closure", __getitem____298_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1536,7 +1537,7 @@ int main(int argc, char* argv[]) {
     __getslice__307__VECTOR.push_back("U");
     //Create the closure
     __getslice____307_CLOSURE* __getslice____307_closure = new __getslice____307_CLOSURE (new Frame(frame),__getslice__307__VECTOR);
-    frame->setVar("__getslice____307_closure", __getslice____307_closure);
+    frame->frame->setVar("__getslice____307_closure", __getslice____307_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1545,7 +1546,7 @@ int main(int argc, char* argv[]) {
     len316__VECTOR.push_back("S");
     //Create the closure
     len__316_CLOSURE* len__316_closure = new len__316_CLOSURE (new Frame(frame),len316__VECTOR);
-    frame->setVar("len__316_closure", len__316_closure);
+    frame->frame->setVar("len__316_closure", len__316_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1554,7 +1555,7 @@ int main(int argc, char* argv[]) {
     tostr321__VECTOR.push_back("x");
     //Create the closure
     tostr__321_CLOSURE* tostr__321_closure = new tostr__321_CLOSURE (new Frame(frame),tostr321__VECTOR);
-    frame->setVar("tostr__321_closure", tostr__321_closure);
+    frame->frame->setVar("tostr__321_closure", tostr__321_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1564,7 +1565,7 @@ int main(int argc, char* argv[]) {
     __getitem__327__VECTOR.push_back("k");
     //Create the closure
     __getitem____327_CLOSURE* __getitem____327_closure = new __getitem____327_CLOSURE (new Frame(frame),__getitem__327__VECTOR);
-    frame->setVar("__getitem____327_closure", __getitem____327_closure);
+    frame->frame->setVar("__getitem____327_closure", __getitem____327_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1575,7 +1576,7 @@ int main(int argc, char* argv[]) {
     __getslice__337__VECTOR.push_back("U");
     //Create the closure
     __getslice____337_CLOSURE* __getslice____337_closure = new __getslice____337_CLOSURE (new Frame(frame),__getslice__337__VECTOR);
-    frame->setVar("__getslice____337_closure", __getslice____337_closure);
+    frame->frame->setVar("__getslice____337_closure", __getslice____337_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1584,7 +1585,7 @@ int main(int argc, char* argv[]) {
     len347__VECTOR.push_back("S");
     //Create the closure
     len__347_CLOSURE* len__347_closure = new len__347_CLOSURE (new Frame(frame),len347__VECTOR);
-    frame->setVar("len__347_closure", len__347_closure);
+    frame->frame->setVar("len__347_closure", len__347_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1592,7 +1593,7 @@ int main(int argc, char* argv[]) {
     vector<string> __argv__352__VECTOR;
     //Create the closure
     __argv____352_CLOSURE* __argv____352_closure = new __argv____352_CLOSURE (new Frame(frame),__argv__352__VECTOR);
-    frame->setVar("__argv____352_closure", __argv____352_closure);
+    frame->frame->setVar("__argv____352_closure", __argv____352_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1601,7 +1602,7 @@ int main(int argc, char* argv[]) {
     open355__VECTOR.push_back("name");
     //Create the closure
     open__355_CLOSURE* open__355_closure = new open__355_CLOSURE (new Frame(frame),open355__VECTOR);
-    frame->setVar("open__355_closure", open__355_closure);
+    frame->frame->setVar("open__355_closure", open__355_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1611,7 +1612,7 @@ int main(int argc, char* argv[]) {
     open361__VECTOR.push_back("mode");
     //Create the closure
     open__361_CLOSURE* open__361_closure = new open__361_CLOSURE (new Frame(frame),open361__VECTOR);
-    frame->setVar("open__361_closure", open__361_closure);
+    frame->frame->setVar("open__361_closure", open__361_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1620,7 +1621,7 @@ int main(int argc, char* argv[]) {
     close368__VECTOR.push_back("f");
     //Create the closure
     close__368_CLOSURE* close__368_closure = new close__368_CLOSURE (new Frame(frame),close368__VECTOR);
-    frame->setVar("close__368_closure", close__368_closure);
+    frame->frame->setVar("close__368_closure", close__368_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1629,7 +1630,7 @@ int main(int argc, char* argv[]) {
     __standard_file__373__VECTOR.push_back("k");
     //Create the closure
     __standard_file____373_CLOSURE* __standard_file____373_closure = new __standard_file____373_CLOSURE (new Frame(frame),__standard_file__373__VECTOR);
-    frame->setVar("__standard_file____373_closure", __standard_file____373_closure);
+    frame->frame->setVar("__standard_file____373_closure", __standard_file____373_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1638,7 +1639,7 @@ int main(int argc, char* argv[]) {
     readline378__VECTOR.push_back("f");
     //Create the closure
     readline__378_CLOSURE* readline__378_closure = new readline__378_CLOSURE (new Frame(frame),readline378__VECTOR);
-    frame->setVar("readline__378_closure", readline__378_closure);
+    frame->frame->setVar("readline__378_closure", readline__378_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1647,7 +1648,7 @@ int main(int argc, char* argv[]) {
     read383__VECTOR.push_back("f");
     //Create the closure
     read__383_CLOSURE* read__383_closure = new read__383_CLOSURE (new Frame(frame),read383__VECTOR);
-    frame->setVar("read__383_closure", read__383_closure);
+    frame->frame->setVar("read__383_closure", read__383_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1656,7 +1657,7 @@ int main(int argc, char* argv[]) {
     __init__388__VECTOR.push_back("self");
     //Create the closure
     __init____388_CLOSURE* __init____388_closure = new __init____388_CLOSURE (new Frame(frame),__init__388__VECTOR);
-    frame->setVar("__init____388_closure", __init____388_closure);
+    frame->frame->setVar("__init____388_closure", __init____388_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1666,7 +1667,7 @@ int main(int argc, char* argv[]) {
     __getitem__394__VECTOR.push_back("x");
     //Create the closure
     __getitem____394_CLOSURE* __getitem____394_closure = new __getitem____394_CLOSURE (new Frame(frame),__getitem__394__VECTOR);
-    frame->setVar("__getitem____394_closure", __getitem____394_closure);
+    frame->frame->setVar("__getitem____394_closure", __getitem____394_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1676,7 +1677,7 @@ int main(int argc, char* argv[]) {
     __getitem__403__VECTOR.push_back("x");
     //Create the closure
     __getitem____403_CLOSURE* __getitem____403_closure = new __getitem____403_CLOSURE (new Frame(frame),__getitem__403__VECTOR);
-    frame->setVar("__getitem____403_closure", __getitem____403_closure);
+    frame->frame->setVar("__getitem____403_closure", __getitem____403_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1686,7 +1687,7 @@ int main(int argc, char* argv[]) {
     __getitem__412__VECTOR.push_back("x");
     //Create the closure
     __getitem____412_CLOSURE* __getitem____412_closure = new __getitem____412_CLOSURE (new Frame(frame),__getitem__412__VECTOR);
-    frame->setVar("__getitem____412_closure", __getitem____412_closure);
+    frame->frame->setVar("__getitem____412_closure", __getitem____412_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1695,7 +1696,7 @@ int main(int argc, char* argv[]) {
     len420__VECTOR.push_back("D");
     //Create the closure
     len__420_CLOSURE* len__420_closure = new len__420_CLOSURE (new Frame(frame),len420__VECTOR);
-    frame->setVar("len__420_closure", len__420_closure);
+    frame->frame->setVar("len__420_closure", len__420_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1704,7 +1705,7 @@ int main(int argc, char* argv[]) {
     len426__VECTOR.push_back("D");
     //Create the closure
     len__426_CLOSURE* len__426_closure = new len__426_CLOSURE (new Frame(frame),len426__VECTOR);
-    frame->setVar("len__426_closure", len__426_closure);
+    frame->frame->setVar("len__426_closure", len__426_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1713,7 +1714,7 @@ int main(int argc, char* argv[]) {
     len432__VECTOR.push_back("D");
     //Create the closure
     len__432_CLOSURE* len__432_closure = new len__432_CLOSURE (new Frame(frame),len432__VECTOR);
-    frame->setVar("len__432_closure", len__432_closure);
+    frame->frame->setVar("len__432_closure", len__432_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1723,7 +1724,7 @@ int main(int argc, char* argv[]) {
     __contains__439__VECTOR.push_back("D");
     //Create the closure
     __contains____439_CLOSURE* __contains____439_closure = new __contains____439_CLOSURE (new Frame(frame),__contains__439__VECTOR);
-    frame->setVar("__contains____439_closure", __contains____439_closure);
+    frame->frame->setVar("__contains____439_closure", __contains____439_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1733,7 +1734,7 @@ int main(int argc, char* argv[]) {
     __contains__448__VECTOR.push_back("D");
     //Create the closure
     __contains____448_CLOSURE* __contains____448_closure = new __contains____448_CLOSURE (new Frame(frame),__contains__448__VECTOR);
-    frame->setVar("__contains____448_closure", __contains____448_closure);
+    frame->frame->setVar("__contains____448_closure", __contains____448_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1743,7 +1744,7 @@ int main(int argc, char* argv[]) {
     __contains__457__VECTOR.push_back("D");
     //Create the closure
     __contains____457_CLOSURE* __contains____457_closure = new __contains____457_CLOSURE (new Frame(frame),__contains__457__VECTOR);
-    frame->setVar("__contains____457_closure", __contains____457_closure);
+    frame->frame->setVar("__contains____457_closure", __contains____457_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1753,7 +1754,7 @@ int main(int argc, char* argv[]) {
     __notcontains__466__VECTOR.push_back("D");
     //Create the closure
     __notcontains____466_CLOSURE* __notcontains____466_closure = new __notcontains____466_CLOSURE (new Frame(frame),__notcontains__466__VECTOR);
-    frame->setVar("__notcontains____466_closure", __notcontains____466_closure);
+    frame->frame->setVar("__notcontains____466_closure", __notcontains____466_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1763,7 +1764,7 @@ int main(int argc, char* argv[]) {
     __notcontains__475__VECTOR.push_back("D");
     //Create the closure
     __notcontains____475_CLOSURE* __notcontains____475_closure = new __notcontains____475_CLOSURE (new Frame(frame),__notcontains__475__VECTOR);
-    frame->setVar("__notcontains____475_closure", __notcontains____475_closure);
+    frame->frame->setVar("__notcontains____475_closure", __notcontains____475_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1773,7 +1774,7 @@ int main(int argc, char* argv[]) {
     __notcontains__484__VECTOR.push_back("D");
     //Create the closure
     __notcontains____484_CLOSURE* __notcontains____484_closure = new __notcontains____484_CLOSURE (new Frame(frame),__notcontains__484__VECTOR);
-    frame->setVar("__notcontains____484_closure", __notcontains____484_closure);
+    frame->frame->setVar("__notcontains____484_closure", __notcontains____484_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1783,7 +1784,7 @@ int main(int argc, char* argv[]) {
     __is__493__VECTOR.push_back("y");
     //Create the closure
     __is____493_CLOSURE* __is____493_closure = new __is____493_CLOSURE (new Frame(frame),__is__493__VECTOR);
-    frame->setVar("__is____493_closure", __is____493_closure);
+    frame->frame->setVar("__is____493_closure", __is____493_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1793,7 +1794,7 @@ int main(int argc, char* argv[]) {
     __isnot__501__VECTOR.push_back("y");
     //Create the closure
     __isnot____501_CLOSURE* __isnot____501_closure = new __isnot____501_CLOSURE (new Frame(frame),__isnot__501__VECTOR);
-    frame->setVar("__isnot____501_closure", __isnot____501_closure);
+    frame->frame->setVar("__isnot____501_closure", __isnot____501_closure);
     //-------------end----------------
     //-------------start----------------
     //Create the closure for a function
@@ -1802,7 +1803,7 @@ int main(int argc, char* argv[]) {
     f508__VECTOR.push_back("x");
     //Create the closure
     f__508_CLOSURE* f__508_closure = new f__508_CLOSURE (new Frame(frame),f508__VECTOR);
-    frame->setVar("f__508_closure", f__508_closure);
+    frame->frame->setVar("f__508_closure", f__508_closure);
     //-------------end----------------
         //-------------start----------------
         //Create the closure for a function
@@ -1810,53 +1811,43 @@ int main(int argc, char* argv[]) {
         vector<string> g512__VECTOR;
         //Create the closure
         g__512_CLOSURE* g__512_closure = new g__512_CLOSURE (new Frame(f__508_closure->frame),g512__VECTOR);
-        frame->setVar("g__512_closure", g__512_closure);
+        frame->frame->setVar("g__512_closure", g__512_closure);
         //-------------end----------------
-    //Generate the args
+Frame* frame_CALL_0 = new Frame(((Closure*)(frame->getVar("truth__0_closure")))->frame);    //Generate the args
     //--------------------start----------------
     //Generate an argument to the function call
     //Create a temp variable to store the value
     Integer* truth_0_087 = new Integer(1);
     //Add it to the closures frame
-    ((Closure*)(frame->getVar("truth__87_closure")))->frame->setVar(((Closure*)(frame->getVar("truth__87_closure")))->args[0],truth_0_087);
+    frame_CALL_0->setVar(((Closure*)(frame->getVar("truth__0_closure")))->args[0],truth_0_087);
     //--------------------end------------------
     //--------------------start----------------
     //Perform the function call
-    Bool* truth_PARAM0_087 = (Bool*)((Closure*)(frame->getVar("truth__87_closure")))->fp(((Closure*)(frame->getVar("truth__87_closure")))->frame);
+    Bool* truth_PARAM0_00 = (Bool*)((Closure*)(frame->getVar("truth__0_closure")))->call(frame_CALL_0);
     //Add it to the current frame
-    frame->setVar("truth_PARAM0_087",truth_PARAM0_087);
+    frame->setVar("truth_PARAM0_00",truth_PARAM0_00);
     //--------------------end------------------
-    frame->setVar("True",(truth_PARAM0_087));
-    //Generate the args
+    frame->frame->setVar("True",(truth_PARAM0_087));
+Frame* frame_CALL_1 = new Frame(((Closure*)(frame->getVar("truth__0_closure")))->frame);    //Generate the args
     //--------------------start----------------
     //Generate an argument to the function call
     //Create a temp variable to store the value
     Integer* truth_0_187 = new Integer(0);
     //Add it to the closures frame
-    ((Closure*)(frame->getVar("truth__87_closure")))->frame->setVar(((Closure*)(frame->getVar("truth__87_closure")))->args[0],truth_0_187);
+    frame_CALL_1->setVar(((Closure*)(frame->getVar("truth__0_closure")))->args[0],truth_0_187);
     //--------------------end------------------
     //--------------------start----------------
     //Perform the function call
-    Bool* truth_PARAM0_187 = (Bool*)((Closure*)(frame->getVar("truth__87_closure")))->fp(((Closure*)(frame->getVar("truth__87_closure")))->frame);
+    Bool* truth_PARAM0_10 = (Bool*)((Closure*)(frame->getVar("truth__0_closure")))->call(frame_CALL_1);
     //Add it to the current frame
-    frame->setVar("truth_PARAM0_187",truth_PARAM0_187);
+    frame->setVar("truth_PARAM0_10",truth_PARAM0_10);
     //--------------------end------------------
-    frame->setVar("False",(truth_PARAM0_187));
-    //Generate the args
-    //--------------------start----------------
-    //Generate an argument to the function call
-    //Create a temp variable to store the value
-    Integer* f_0_2508 = new Integer(2);
-    //Add it to the closures frame
-    ((Closure*)(frame->getVar("f__508_closure")))->frame->setVar(((Closure*)(frame->getVar("f__508_closure")))->args[0],f_0_2508);
-    //--------------------end------------------
+    frame->frame->setVar("False",(truth_PARAM0_187));
+Frame* frame_CALL_2 = new Frame(((Closure*)(frame->getVar("f_PARAM0_0508__0_closure")))->frame);    //Generate the args
     //--------------------start----------------
     //Perform the function call
-     f_PARAM0_2508 = (*)((Closure*)(frame->getVar("f__508_closure")))->fp(((Closure*)(frame->getVar("f__508_closure")))->frame);
+    Integer* f_PARAM0_0508_PARAM0_20 = (Integer*)((Closure*)(frame->getVar("f_PARAM0_0508__0_closure")))->call(frame_CALL_2);
     //Add it to the current frame
-    frame->setVar("f_PARAM0_2508",f_PARAM0_2508);
+    frame->setVar("f_PARAM0_0508_PARAM0_20",f_PARAM0_0508_PARAM0_20);
     //--------------------end------------------
-    //Generate the args
-    //--------------------start----------------
-    //Perform the function call
-    Integer* f_PARAM0_2508_PARAM0_3
+    (f_PARAM0_0508_PARAM0_2

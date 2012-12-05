@@ -246,11 +246,11 @@ protected:
         writeIndented(out,i);
         out << "vector<string> ";
         child(0)->innerCodeGen(out, i); 
-        out << child(0)->getDecl()->getIndex() << "__VECTOR;\n";
+        out << global_closure_counter << "__VECTOR;\n";
         for_each_child(c,child(1)){
             writeIndented(out,i);
             child(0)->innerCodeGen(out, i); 
-            out << child(0)->getDecl()->getIndex() << "__VECTOR.push_back(\"";
+            out << global_closure_counter << "__VECTOR.push_back(\"";
             c->innerCodeGen(out,i);
             out << "\");\n";
         } end_for;
@@ -259,29 +259,29 @@ protected:
 
         writeIndented(out,i);
         child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
+        out << "__" << global_closure_counter; 
         out << "_CLOSURE* ";
 
         child(0)->innerCodeGen(out, i); 
-        out << "__" << child(0)->getDecl()->getIndex();
+        out << "__" << global_closure_counter; 
         out << "_closure = new ";
 
         child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
+        out << "__" << global_closure_counter; 
         out << "_CLOSURE (";
 
         out << "new Frame(";
         out << closure;
         out << "frame),";
         child(0)->innerCodeGen(out, i);
-        out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
+        out << global_closure_counter << "__VECTOR," << global_closure_counter << ");\n";
         addToStaticFrame(out, i);
         writeComment(out,i,"-------------end----------------");
 
         for_each_child(c,this){
             stringstream ss;
             child(0)->innerCodeGen(ss, i); 
-            ss << "__" << child(0)->getDecl()->getIndex();
+            ss << "__" << global_closure_counter; 
             ss << "_closure->";
             c->closureCodeGen(out,i+1,ss.str());
         } end_for;
@@ -293,14 +293,10 @@ protected:
         } end_for;
 
         writeIndented(out,i);
-        /*getDecl()->getType()->child(0)->asType()->binding()->innerCodeGen(out,i);
-        if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
-            out << "*";
-        */
         out << "void*";
         out << " ";
         child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
+        out << "__" << global_closure_counter; 
         out << "(";
         out << "Frame* frame";
         out << ");\n";
@@ -308,19 +304,17 @@ protected:
         writeIndented(out,i);
         out << "class ";
         child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE : public Closure{\n";
         writeIndented(out,i);
         out << "public:\n";
         writeIndented(out,i+1);
         child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE(";
-        out << "Frame* frame,vector<string> args){\n";
+        out << "Frame* frame,vector<string> args, int decl_i){\n";
         writeIndented(out,i+2);
         out << "fp = ";
         child(0)->innerCodeGen(out,i);
-        out << "__" << child(0)->getDecl()->getIndex();
+        out << "__" << global_closure_counter; 
         out << ";\n";
         writeIndented(out,i+2);
         out << "this->frame = frame;\n";
@@ -331,6 +325,7 @@ protected:
 
         writeIndented(out,i);
         out << "};\n";
+        global_closure_counter++;
     }
     //hbradlow
     void defCodeGen(ostream& out,int i){
@@ -737,7 +732,7 @@ protected:
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
-        child(0)->assignCodeGen(out,i,child(1),"this->frame");
+        child(0)->assignCodeGen(out,i,child(1),"this");
     }
 };
 

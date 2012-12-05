@@ -26,7 +26,7 @@ class Object{
 public:
     virtual void print(ostream& o) const 
     {
-        o << "fuck";
+        o << "Object"
     }
     virtual void inner_print(ostream& o) const 
     {
@@ -37,23 +37,24 @@ class Frame
 {
 private:
     map<string, void*> locals;
-    const Frame* enclosing;
 
 public:
-    Frame(const Frame* static_link);
+    Frame* frame;
+    Frame(Frame* static_link);
     Frame();
     virtual void setVar(string name, void* value);
-    virtual void* getVar(string name) const;
+    virtual void* getVar(string name);
 };
 
 class Closure : public Object {
 public:
+    static int declaration_index;
     Closure();
-    Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args);
+    Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args, int decl_i);
     void* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
-    void* run(Frame* dynamic_frame)
+    void* call(Frame* dynamic_frame)
     {
        return  fp(dynamic_frame);
     }

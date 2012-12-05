@@ -21,6 +21,7 @@ class Type;
 class Decl;
 class Environ;
 
+static int global_closure_counter = 0;
 /* The Horn framework uses reference-counting to reclaim space.  The
  * type Pointer<T> is a reference-counted pointer to type T.  It acts
  * like a T* (so -> and * work), and there is an implicit coercion
@@ -97,6 +98,9 @@ public:
     /** True if I represent a "bound method" (i.e., OBJ.ID where OBJ
      *  is a value of type C and ID is a method defined in C.). */
     virtual bool isBoundMethod ();
+
+    /** klindkvist: Is true iff I am a function call */
+    virtual bool isCall();
 
     /** Do outer-level semantic analysis on me---all scope and type
      *  analysis that applies to definitions and statements that are
