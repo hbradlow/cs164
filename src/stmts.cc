@@ -136,6 +136,12 @@ protected:
             if(c_i_!=0)
                 out << "cout << ' ';";
             out << "(";
+            if (c->isCall())
+            {
+            out << "(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "*)";
+            }
             c->valueCodeGen(out,i);
             out << ")->print(cout); ";
         } end_for;

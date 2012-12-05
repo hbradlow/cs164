@@ -257,6 +257,8 @@ protected:
             out << "Frame* loc_" << global_count << " = new Frame(";
             innerCodeGen(out, i);
             out << "->frame);\n";
+            child(0)->innerCodeGen(out, i);
+            out << " = ";
             writeIndented(out, i);
             innerCodeGen(out, i);
             out << "->call(loc_" << global_count << ");\n";
