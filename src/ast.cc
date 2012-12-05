@@ -30,7 +30,7 @@ writeClosure(ostream& out, int i, AST_Ptr c){
     */
     out << "*)(frame->getVar(\"";
     c->innerCodeGen(out,i);
-    out << "__" <<  global_closure_counter; 
+    out << "__" << c->getDecl()->getIndex();
     out << "_closure\")))";
 }
 /* Write the line to out, preceded by i tabs.
@@ -162,12 +162,6 @@ AST::isMissing ()
 
 bool
 AST::isBoundMethod ()
-{
-    return false;
-}
-
-bool
-AST::isCall()
 {
     return false;
 }
@@ -310,7 +304,7 @@ AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
         this->lhsFrameCodeGen(out,i);
     else
         out << lhs;
-    out << "->frame->setVar(";
+    out << "->setVar(";
     this->stringCodeGen(out, i);
     out << ",";
     out << "(";
@@ -320,7 +314,7 @@ AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
 
     if(c->getType()->binding()->isFunction()){
         writeIndented(out,i);
-        out << "frame->frame->setVar(\"";
+        out << "frame->setVar(\"";
         this->innerCodeGen(out,i);
         out << "__" << this->getDecl()->getIndex() << "_closure";
         out << "\", ";
@@ -444,7 +438,7 @@ void
 AST::addToStaticFrame(std::ostream& out, int i)
 {
     writeIndented(out,i);
-    out << "frame->frame->setVar(\"";
+    out << "frame->setVar(\"";
     child(0)->innerCodeGen(out,i);
     out << "__" << child(0)->getDecl()->getIndex() << "_closure";
     out << "\", ";
