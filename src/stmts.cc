@@ -97,9 +97,15 @@ protected:
     void outerCodeGen(ostream& out,int i){
         writeIndented(out,i);
         for_each_child(c,child(1)){
+            if (!c->isCall())
+            {
             c->valueCodeGen(out,i);
             out << ".print(cout);\n";
             out << "cout << endl;"; 
+            }else 
+            {
+            c->outerCodeGen(out, i);
+            }
         } end_for;
     }
 };
@@ -130,6 +136,12 @@ protected:
             if(c_i_!=0)
                 out << "cout << ' ';";
             out << "(";
+            if (c->isCall())
+            {
+            out << "(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            out << "*)";
+            }
             c->valueCodeGen(out,i);
             out << ")->print(cout); ";
         } end_for;
@@ -246,7 +258,7 @@ protected:
         writeIndented(out,i);
         out << "vector<string> ";
         child(0)->innerCodeGen(out, i); 
-        out << child(0)->getDecl()->getIndex() << "__VECTOR;\n";
+        out << child(0)->getDecl()->getIndex() << "__VECTOR = vector<string>();\n";
         for_each_child(c,child(1)){
             writeIndented(out,i);
             child(0)->innerCodeGen(out, i); 
@@ -556,7 +568,7 @@ protected:
         out << "class ";
         child(0)->innerCodeGen(out,i);
         writeIndented(out,i);
-        out << "{\n";
+        out << ": public Object{\n";
         writeIndented(out,i);
         out << "public:\n";
         writeIndented(out,i+1);
@@ -747,32 +759,37 @@ NODE_FACTORY (Assign_AST, ASSIGN);
 
 /**  for target in exprs: body [ else: body ]     */
 class For_AST : public AST_Tree {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (For_AST, AST_Tree);
 
     //wskinner
     void outerCodeGen(ostream& out, int depth) {
-      /* First construct an array out of exprs, and retrieve the length.
-       * Then iterate over the array using a regular C-style for loop.
-       * This is not at all efficient but it is correct.
-       *
-      AST_Ptr exprsarray = child(1)->asList();
-      string target = child(0)->asStr();
-      string arrname = getNewId();
-      string type = exprsarray->getType();
-      string newid = getNewId();
-      int length = exprsarray->getLength();
-
-      out << type << " " << target << endl;
-      out << type << "[] " << newid << " = ";
-      exprsarray->genInitialize(arrname);
-      string iter = getNewId();
-      out << "for (int " << iter << " = 0; " << iter << " < " << itoa(length)
-          << "; " << iter << "++) {" << endl;
-      out << target << " = " << arrname << "[" << iter << "]" << endl;
-      child(2)->outerCodeGen(out, depth+1);
-      out << "}" << endl;*/
+        local_count = global_count++;
+        writeIndented(out,depth);
+        child(1)->memCodeGen(out,0);
+        out << "List* for_list" << local_count;
+        out << " = ";
+        child(1)->valueCodeGen(out,0);
+        out << ";\n";
+        writeIndented(out,depth);
+        out << "for(vector<Object*>::iterator it = ";
+        out << "for_list" << local_count;
+        out << "->items.begin() ; it != ";
+        out << "for_list" << local_count;
+        out << "->items.end(); ++it){\n";
+        writeIndented(out,depth+1);
+        out << "frame->frame->setVar(\"";
+        child(0)->innerCodeGen(out,0);
+        out << "\",*it);\n";
+        for_each_child(c,child(2)){
+            c->outerCodeGen(out,depth+1);
+        } end_for;
+        writeIndented(out,depth);
+        out << "}\n";
     }
 
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
@@ -814,6 +831,7 @@ protected:
 };
 
 NODE_FACTORY (For_AST, FOR);
+int For_AST::global_count;
 
 
 /***** RETURN *****/

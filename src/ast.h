@@ -98,6 +98,8 @@ public:
      *  is a value of type C and ID is a method defined in C.). */
     virtual bool isBoundMethod ();
 
+    virtual bool isCall();
+
     /** Do outer-level semantic analysis on me---all scope and type
      *  analysis that applies to definitions and statements that are
      *  not nested inside classes or function definitions.  Modifies 
@@ -209,6 +211,8 @@ public:
     virtual AST_Ptr convertNone (bool definingContext);
     //hbradlow
     virtual bool isFunction();
+    //hbradlow
+    virtual bool isLeftCompare();
 
     //hbradlow
     virtual void setFunctionCalledBefore(bool b);

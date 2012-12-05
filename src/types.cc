@@ -533,6 +533,15 @@ public:
     void setFunctionCalledBefore(bool b){
         _calledBefore = b;
     }
+
+    void innerCodeGen(ostream& out, int i)
+    {
+        out << "Closure"; 
+    }
+    bool needsPointer()
+    {
+        return true;
+    }
 protected:
 
     int numParams () {
@@ -630,6 +639,14 @@ protected:
             out << ", ";
             child(1)->child(1)->innerCodeGen(out,i);
             out << ">";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"list")==0){
+            out << "List";
+            return;
+        }
+        if(strcmp(child(0)->as_string().c_str(),"range")==0){
+            out << "List";
             return;
         }
         if(strcmp(child(0)->as_string().c_str(),"int")==0){

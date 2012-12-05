@@ -24,11 +24,11 @@ using namespace std;
  */
 class Object{
 public:
-    virtual void print(ostream& o) const 
+    virtual void print(ostream& o) 
     {
         o << "fuck";
     }
-    virtual void inner_print(ostream& o) const 
+    virtual void inner_print(ostream& o) 
     {
         print(o);
     }
@@ -37,22 +37,36 @@ class Frame
 {
 private:
     map<string, void*> locals;
-    const Frame* enclosing;
 
 public:
-    Frame(const Frame* static_link);
+    Frame* frame;
+    Frame(Frame* static_link);
     Frame();
     virtual void setVar(string name, void* value);
-    virtual void* getVar(string name) const;
+    virtual void* getVar(string name);
 };
 
-class Closure {
+class Closure : public Object {
 public:
     Closure();
     Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args);
     void* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
+    void* call(Frame* dynamic_frame)
+    {
+       return  fp(dynamic_frame);
+    }
+    void print(ostream& out)
+    {
+        for (std::vector<string>::iterator i = args.begin();
+                i != args.end(); 
+                ++i)
+        {
+            out << ",";
+            out << *i << endl;
+        }
+    }
 };
 
 class Bool : public Object{
@@ -64,7 +78,7 @@ public:
     Bool(void* v){
         value = ((Bool*)v)->value;
     }
-    virtual void print(ostream& o) const 
+    virtual void print(ostream& o) 
     {
         if (value) 
             o << "True"; 
@@ -86,7 +100,7 @@ public:
     {
         return new Integer(pow((double)value, (double)i.value));
     }
-    void print(ostream& o) const 
+    void print(ostream& o) 
     {
         o << value;
     }
@@ -121,11 +135,11 @@ public:
     {
         return new Integer(value.length());
     }
-    void inner_print(ostream& o) const 
+    void inner_print(ostream& o) 
     {
         o << "'" << value << "'";
     }
-    void print(ostream& o) const 
+    void print(ostream& o) 
     {
         o << value;
     }
@@ -135,7 +149,7 @@ template<class K, class V>
 class Dict: public Object{
 public:
    map<K, V> items;
-   ostream& operator<<(ostream& out){
+   void print (ostream& out) {
        out << "{";
        for(std::map<int,int>::iterator it = items.begin() ; it != items.end(); ++it){
            if(it!=items.begin())
@@ -152,36 +166,53 @@ public:
    }
 };
 
-template<class T>
 class List: public Object{
 public:
-    vector<T> items;
-    ostream& operator<<(ostream& out){
+    vector<Object*> items;
+    virtual void print(ostream& out)
+    {
         out << "[";
-        for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
+        for(std::vector<Object*>::iterator it = items.begin() ; it != items.end(); ++it){
             if(it!=items.begin())
-                out << ",";
-            out << *it;
+                out << ", ";
+            (*it)->print(out);
         }
         out << "]";
-        return out;
     }
-    List(vector<T> _items): items(_items){}
+    virtual void inner_print(ostream& o)
+    {
+        this->print(o);
+    }
+    List(vector<Object*> _items): items(_items){}
+    List(Integer* low, Integer* high) 
+    {
+        items = vector<Object*>();
+        for (int j = low->value; j < high->value; j++)
+        {
+            items.push_back(new Integer(j));
+        }
+    }
     Integer* 
     len()
     {
          return new Integer(items.size());
     }
-    T*
+=======
+    Object*
     getItem(Integer i)
     {
-        return new T(((String)items[i.value]).value);
+        return items[i.value];
+    }
+    List*
+    xrange(Integer i)
+    {
+    
     }
 };
 
 class Tuple0: public Object{
 public:
-    void print(ostream& out) const
+    void print(ostream& out) 
     {
         out << "()";
     }
@@ -192,7 +223,7 @@ class Tuple1: public Object{
 public:
    Object* item;
    Tuple1(void* t) : item((Object*)t){}
-    void print(ostream& o) const
+    void print(ostream& o) 
     {
         o << "("; 
         item->inner_print(o);
@@ -206,7 +237,7 @@ public:
    Object* item1;
    Object* item2;
    Tuple2(void* t, void* u) : item1((Object*)t), item2((Object*)u){}
-    void print(ostream& out) const
+    void print(ostream& out) 
     {
         out << "(";
         item1->inner_print(out);
@@ -223,7 +254,7 @@ public:
    Object* item2;
    Object* item3;
    Tuple3(void* t, void* u, void* v) : item1((Object*)t), item2((Object*)u), item3((Object*)v){}
-    void print(ostream& out) const
+    void print(ostream& out) 
     {
         out << "(";
         item1->inner_print(out);
@@ -234,6 +265,23 @@ public:
         out << ")";
     }
 };
+//------------------------------------------------------------
+// List
+//------------------------------------------------------------
+inline
+Object* operator||(const List& b, const List& rhs){
+    if(b.items.size())
+        return new List(b.items);
+    else
+        return new List(rhs.items);
+}
+inline
+Object* operator&&(const List& b, const List& rhs){
+    if(b.items.size())
+        return new List(rhs.items);
+    else
+        return new List(b.items);
+}
 //------------------------------------------------------------
 // String
 //------------------------------------------------------------
@@ -280,6 +328,20 @@ String* operator+(const String& b, const String& c)
 //------------------------------------------------------------
 // Integer 
 //------------------------------------------------------------
+inline
+Object* operator||(const Integer& b, const Integer& rhs){
+    if(b.value)
+        return new Integer(b.value);
+    else
+        return new Integer(rhs.value);
+}
+inline
+Object* operator&&(const Integer& b, const Integer& rhs){
+    if(b.value)
+        return new Integer(rhs.value);
+    else
+        return new Integer(b.value);
+}
 inline
 Bool* operator<(const Integer& a, const Integer& b){
     return new Bool(a.value<b.value);
@@ -347,8 +409,8 @@ bool operator||(const Bool& b, const Bool& rhs){
     return b.value || rhs.value;
 }
 inline
-bool operator&&(const Bool& b, const Bool& rhs){
-    return b.value && rhs.value;
+Bool* operator&&(const Bool& b, const Bool& rhs){
+    return new Bool(b.value && rhs.value);
 }
 //------------------------------------------------------------
 #endif
