@@ -156,30 +156,28 @@ public:
    }
 };
 
-template<class T>
 class List: public Object{
 public:
-    vector<T> items;
-    ostream& operator<<(ostream& out){
+    vector<Object*> items;
+    void print(ostream& out){
         out << "[";
-        for(std::vector<int>::iterator it = items.begin() ; it != items.end(); ++it){
+        for(std::vector<Object*>::iterator it = items.begin() ; it != items.end(); ++it){
             if(it!=items.begin())
-                out << ",";
-            out << *it;
+                out << ", ";
+            (*it)->print(out);
         }
         out << "]";
-        return out;
     }
-    List(vector<T> _items): items(_items){}
+    List(vector<Object*> _items): items(_items){}
     Integer* 
     len()
     {
          return new Integer(items.size());
     }
-    T*
+    Object*
     getItem(Integer i)
     {
-        return new T(((String)items[i.value]).value);
+        return items[i.value];
     }
 };
 
