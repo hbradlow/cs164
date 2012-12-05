@@ -24,11 +24,11 @@ using namespace std;
  */
 class Object{
 public:
-    virtual void print(ostream& o) const 
+    virtual void print(ostream& o) 
     {
         o << "fuck";
     }
-    virtual void inner_print(ostream& o) const 
+    virtual void inner_print(ostream& o) 
     {
         print(o);
     }
@@ -68,7 +68,7 @@ public:
     Bool(void* v){
         value = ((Bool*)v)->value;
     }
-    virtual void print(ostream& o) const 
+    virtual void print(ostream& o) 
     {
         if (value) 
             o << "True"; 
@@ -90,7 +90,7 @@ public:
     {
         return new Integer(pow((double)value, (double)i.value));
     }
-    void print(ostream& o) const 
+    void print(ostream& o) 
     {
         o << value;
     }
@@ -125,11 +125,11 @@ public:
     {
         return new Integer(value.length());
     }
-    void inner_print(ostream& o) const 
+    void inner_print(ostream& o) 
     {
         o << "'" << value << "'";
     }
-    void print(ostream& o) const 
+    void print(ostream& o) 
     {
         o << value;
     }
@@ -159,7 +159,8 @@ public:
 class List: public Object{
 public:
     vector<Object*> items;
-    void print(ostream& out){
+    virtual void print(ostream& out)
+    {
         out << "[";
         for(std::vector<Object*>::iterator it = items.begin() ; it != items.end(); ++it){
             if(it!=items.begin())
@@ -167,6 +168,10 @@ public:
             (*it)->print(out);
         }
         out << "]";
+    }
+    virtual void inner_print(ostream& o)
+    {
+        this->print(o);
     }
     List(vector<Object*> _items): items(_items){}
     Integer* 
@@ -183,7 +188,7 @@ public:
 
 class Tuple0: public Object{
 public:
-    void print(ostream& out) const
+    void print(ostream& out) 
     {
         out << "()";
     }
@@ -194,7 +199,7 @@ class Tuple1: public Object{
 public:
    Object* item;
    Tuple1(void* t) : item((Object*)t){}
-    void print(ostream& o) const
+    void print(ostream& o) 
     {
         o << "("; 
         item->inner_print(o);
@@ -208,7 +213,7 @@ public:
    Object* item1;
    Object* item2;
    Tuple2(void* t, void* u) : item1((Object*)t), item2((Object*)u){}
-    void print(ostream& out) const
+    void print(ostream& out) 
     {
         out << "(";
         item1->inner_print(out);
@@ -225,7 +230,7 @@ public:
    Object* item2;
    Object* item3;
    Tuple3(void* t, void* u, void* v) : item1((Object*)t), item2((Object*)u), item3((Object*)v){}
-    void print(ostream& out) const
+    void print(ostream& out) 
     {
         out << "(";
         item1->inner_print(out);
@@ -236,6 +241,23 @@ public:
         out << ")";
     }
 };
+//------------------------------------------------------------
+// List
+//------------------------------------------------------------
+inline
+Object* operator||(const List& b, const List& rhs){
+    if(b.items.size())
+        return new List(b.items);
+    else
+        return new List(rhs.items);
+}
+inline
+Object* operator&&(const List& b, const List& rhs){
+    if(b.items.size())
+        return new List(rhs.items);
+    else
+        return new List(b.items);
+}
 //------------------------------------------------------------
 // String
 //------------------------------------------------------------
@@ -282,6 +304,20 @@ String* operator+(const String& b, const String& c)
 //------------------------------------------------------------
 // Integer 
 //------------------------------------------------------------
+inline
+Object* operator||(const Integer& b, const Integer& rhs){
+    if(b.value)
+        return new Integer(b.value);
+    else
+        return new Integer(rhs.value);
+}
+inline
+Object* operator&&(const Integer& b, const Integer& rhs){
+    if(b.value)
+        return new Integer(rhs.value);
+    else
+        return new Integer(b.value);
+}
 inline
 Bool* operator<(const Integer& a, const Integer& b){
     return new Bool(a.value<b.value);
@@ -349,8 +385,8 @@ bool operator||(const Bool& b, const Bool& rhs){
     return b.value || rhs.value;
 }
 inline
-bool operator&&(const Bool& b, const Bool& rhs){
-    return b.value && rhs.value;
+Bool* operator&&(const Bool& b, const Bool& rhs){
+    return new Bool(b.value && rhs.value);
 }
 //------------------------------------------------------------
 #endif

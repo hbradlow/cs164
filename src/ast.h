@@ -211,6 +211,8 @@ public:
     virtual AST_Ptr convertNone (bool definingContext);
     //hbradlow
     virtual bool isFunction();
+    //hbradlow
+    virtual bool isLeftCompare();
 
     //hbradlow
     virtual void setFunctionCalledBefore(bool b);

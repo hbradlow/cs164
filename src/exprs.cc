@@ -632,16 +632,20 @@ protected:
         return boolDecl->asType ();
     }
 
-    /*
     //hbradlow
     void valueCodeGen(ostream& out, int i){
-        out << "new Bool(";
-        child(0)->innerCodeGen(out,i);
-        out << "&&";
-        innerCodeGen(out,i);
-        out << ")";
+        if( child(0)->isLeftCompare())
+        {
+            out << "((*(";
+            child(0)->innerCodeGen(out,i);
+            out << "))&&(*(";
+            innerCodeGen(out,i);
+            out << ")))";
+        }
+        else{
+            innerCodeGen(out,i);
+        }
     }
-    */
 };
 
 NODE_FACTORY (Compare_AST, COMPARE);
@@ -660,6 +664,10 @@ protected:
         return actualParam (1)->getType ();
     }
 
+    //hbradlow
+    bool isLeftCompare(){
+        return true;
+    }
     //hbradlow
     void valueCodeGen(ostream& out, int i){
         child(2)->valueCodeGen(out,i);
@@ -1332,9 +1340,13 @@ protected:
     }
     NODE_CONSTRUCTORS (And_AST, BalancedExpr);
     void valueCodeGen(ostream& out, int i){
+        out << "(*(";
         child(0)->valueCodeGen(out, i);
+        out << ")";
         out << " && ";
+        out << "*(";
         child(1)->valueCodeGen(out, i);
+        out << "))";
     }
     
 };
@@ -1360,9 +1372,13 @@ protected:
         out << ";\n";
     }
     void valueCodeGen(ostream& out, int i){
+        out << "(*(";
         child(0)->valueCodeGen(out, i);
+        out << ")";
         out << " || ";
+        out << "*(";
         child(1)->valueCodeGen(out, i);
+        out << "))";
     }
 };
 

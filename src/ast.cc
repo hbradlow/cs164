@@ -96,6 +96,11 @@ AST::print (AST_Ptr tree, std::ostream& out, int indent)
 
 //hbradlow
 bool 
+AST::isLeftCompare(){
+    return false;
+}
+//hbradlow
+bool 
 AST::isFunction(){
     return false;
 }
