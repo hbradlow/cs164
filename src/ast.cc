@@ -12,11 +12,15 @@
 using namespace std;
 
 //hbradlow
-std::string strReplace(std::string &s,
-                        std::string toReplace,
-                        std::string replaceWith)
-{
-        return(s.replace(s.find(toReplace), toReplace.length(), replaceWith));
+std::string strReplace(std::string str, std::string from, std::string to) {
+    if(from.empty())
+        return str;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+    return str;
 }
 /* Write the line to out, preceded by i tabs.
  */

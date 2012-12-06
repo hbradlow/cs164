@@ -143,7 +143,8 @@ protected:
         for_each_child(c,child(1)){
             c->memCodeGen(out,i);
         } end_for;
-        print_online=false;
+        if(print_online && child(1)->arity())
+            out << "cout << ' ';";
         writeIndented(out,i);
         for_each_child(c,child(1)){
             if(c_i_!=0)
@@ -160,6 +161,7 @@ protected:
             c->valueCodeGen(out,i);
             out << ")->print(cout); ";
         } end_for;
+        print_online=false;
         out << "cout << endl;\n"; 
     }
 
