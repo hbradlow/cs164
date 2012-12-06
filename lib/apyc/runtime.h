@@ -168,7 +168,7 @@ public:
     String*
     getSlice(Integer i, Integer j)
     {
-        return new String(new string(value.substr(i.value, j.value)));
+        return new String(new string(value.substr(i.value, j.value-1)));
     }
     Integer*
     len()
