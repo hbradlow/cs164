@@ -111,6 +111,16 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        if (!child(0)->isMissing())
+        {
+           writeIndented(out, i);
+           out << "std::streambuf *backup" << ++counter << " = cout.rdbuf();\n";
+           out << "std::ofstream fi" << counter <<";\n";
+           out << "fi" << counter <<".open(\"" << child(0)->as_string() << "\");\n";
+           out << "backup" << counter << " = cout.rdbuf();\n";
+           out << "streambuf *psbuf" << counter << " = fi"<<counter<<".rdbuf();\n";
+           out << "cout.rdbuf(psbuf"<<counter<<");\n"; 
+        }
         for_each_child(c,child(1)){
             c->memCodeGen(out,i);
         } end_for;
@@ -134,6 +144,11 @@ protected:
         } end_for;
         out << "\n"; 
         print_online = true;
+    }
+    if (!child(0)->isMissing()) 
+    {
+        out << "cout.rdbuf(backup"<<counter<<");\n";
+        out << "fi"<<counter<<".close();\n";
     }
 };
 NODE_FACTORY (Print_AST, PRINT);
