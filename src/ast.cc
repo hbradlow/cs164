@@ -110,6 +110,12 @@ AST::isFunction(){
 }
 
 bool
+AST::isClass()
+{
+    return false;
+}
+
+bool
 AST::isCall() 
 {
     return false;
@@ -433,6 +439,10 @@ AST::defCodeGen (ostream& out, int i)
 void
 AST::classDefCodeGen(ostream& out,int i){
 }
+
+void
+AST::generateInitialDef(ostream& out, int i)
+{}
 //hbradlow
 void 
 AST::staticClassCodeGen(ostream& out, int i){
