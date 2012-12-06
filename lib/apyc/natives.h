@@ -52,13 +52,17 @@
 #define NATIVE__getitem__list__     return ((List*)frame->getVar("S"))->items[((Integer*)frame->getVar("k"))->value]
 #define NATIVE__getslice__list__    return ((List*)frame->getVar("S"))->getSlice((*((Integer*)frame->getVar("L"))),(*((Integer*)frame->getVar("U"))))
 #define NATIVE__len__list__         return ((List*)frame->getVar("S"))->len()
+
+//files
 #define NATIVE__argv__
-#define NATIVE__open1__
-#define NATIVE__open2__
-#define NATIVE__close__
+#define NATIVE__open1__             return ((File*)frame->getVar("name"))->open(new String("r"))
+#define NATIVE__open2__             return ((File*)frame->getVar("name"))->open(((String*)frame->getVar("mode")))
+#define NATIVE__close__             ((File*)frame->getVar("f"))->close()
 #define NATIVE__standard_file__
-#define NATIVE__readline__
-#define NATIVE__read__
+#define NATIVE__readline__          return ((File*)frame->getVar("f"))->readline()
+#define NATIVE__read__              return ((File*)frame->getVar("f"))->read()
+
+
 #define NATIVE__getitem__dict__     return ((Dict*)frame->getVar("D"))->getItem(frame->getVar("x"))
 #define NATIVE__len__dict__         return ((Dict*)frame->getVar("D"))->len()
 #define NATIVE__contains__dict__    return ((Dict*)frame->getVar("D"))->contains(((String*)frame->getVar("x")))

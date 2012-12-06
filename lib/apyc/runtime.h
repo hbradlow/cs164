@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include "natives.h"
 
@@ -358,6 +359,50 @@ public:
             return item3;
         return new None();
     }
+};
+
+class File: public Object{
+public:
+    fstream file;
+    string mode;
+    string name;
+    File(String* name) : name(name->value), mode(""){
+        open(mode);
+    }
+    void print(ostream& out) {
+        
+    }
+    void write(String input) {
+        if (file.is_open()) {
+            file << input.value;
+        }
+    }
+    String* read() {
+        string output;
+        while (file.is_open() && !file.eof()) {
+            file >> output;
+        }
+        return new String(output);
+    }
+    String* readline() {
+        string output;
+        while(file.is_open() && !file.eof()) {
+            //doesn't work
+            file >> output;
+        }
+        return new String(output);
+    }
+    File* open(String mode) {
+        char* name_st = (char*)name.c_str();
+        file.open(name_st);
+        mode = mode.value;
+        return this;
+    }
+    void close() {
+        file.close();
+        //mode = "x";
+    }
+
 };
 //------------------------------------------------------------
 // List

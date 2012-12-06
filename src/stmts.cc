@@ -141,30 +141,35 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        for_each_child(c,child(1)){
-            c->memCodeGen(out,i);
-        } end_for;
-        if(print_online && child(1)->arity())
-            out << "cout << ' ';";
-        writeIndented(out,i);
-        for_each_child(c,child(1)){
-            if(c_i_!=0)
-                out << "cout << ' ';";
-            out << "(";
-            if (c->isCall())
-            {
-            out << "(";
-            c->getType()->binding()->innerCodeGen(out,i);
-            if(c->getType()->binding()->needsPointer())
-                out << "*";
-            out << ")";
-            }
-            c->valueCodeGen(out,i);
-            out << ")->print(cout); ";
-        } end_for;
-        print_online=false;
-        out << "cout << endl;\n"; 
-    }
+        //wskinner
+        if (child(0)->isMissing()) {
+            for_each_child(c,child(1)){
+                    c->memCodeGen(out,i);
+                } end_for;
+                if(print_online && child(1)->arity())
+                    out << "cout << ' ';";
+                writeIndented(out,i);
+                for_each_child(c,child(1)){
+                    if(c_i_!=0)
+                        out << "cout << ' ';";
+                    out << "(";
+                    if (c->isCall())
+                    {
+                    out << "(";
+                    c->getType()->binding()->innerCodeGen(out,i);
+                    if(c->getType()->binding()->needsPointer())
+                        out << "*";
+                    out << ")";
+                    }
+                    c->valueCodeGen(out,i);
+                    out << ")->print(cout); ";
+                } end_for;
+                print_online=false;
+                out << "cout << endl;\n"; 
+        }
+        else {
+        }
+   }
 
 };
 
