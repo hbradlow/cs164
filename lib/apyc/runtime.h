@@ -33,27 +33,38 @@ public:
         print(o);
     }
 };
+class None: public Object{
+public:
+    virtual void print(ostream& o) 
+    {
+        o << "None";
+    }
+    virtual void inner_print(ostream& o) 
+    {
+        print(o);
+    }
+};
 class Frame
 {
 private:
-    map<string, void*> locals;
+    map<string, Object*> locals;
 
 public:
     Frame* frame;
     Frame(Frame* static_link);
     Frame();
-    virtual void setVar(string name, void* value);
-    virtual void* getVar(string name);
+    virtual void setVar(string name, Object* value);
+    virtual Object* getVar(string name);
 };
 
 class Closure : public Object {
 public:
     Closure();
-    Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args);
-    void* (*fp) (Frame*);
+    Closure(Object* (*fp) (Frame*), Frame* frame, std::vector<string> args);
+    Object* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
-    void* call(Frame* dynamic_frame)
+    Object* call(Frame* dynamic_frame)
     {
        return  fp(dynamic_frame);
     }
@@ -75,7 +86,7 @@ public:
     Bool(bool v){
         value = v;
     }
-    Bool(void* v){
+    Bool(Object* v){
         value = ((Bool*)v)->value;
     }
     virtual void print(ostream& o) 
@@ -93,7 +104,7 @@ public:
     Integer(int v){
         value = v;
     }
-    Integer(void* v){
+    Integer(Object* v){
         value = ((Integer*)v)->value;
     }
     Integer* pow_(Integer i)
@@ -112,7 +123,10 @@ public:
     String(string v){
         value = v;
     }
-    String(void* v){
+    String(string* v){
+        value = *v;
+    }
+    String(Object* v){
         value = ((String*)v)->value;
     }
     Integer*
@@ -145,24 +159,27 @@ public:
     }
 };
 
-template<class K, class V>
 class Dict: public Object{
 public:
-   map<K, V> items;
+   map<Object*, Object*> items;
    void print (ostream& out) {
        out << "{";
-       for(std::map<int,int>::iterator it = items.begin() ; it != items.end(); ++it){
+       for(std::map<Object*,Object*>::iterator it = items.begin() ; it != items.end(); ++it){
            if(it!=items.begin())
-               out << ",";
-           out << it->first << " : " << it->second;
+               out << ", ";
+           it->first->print(out);
+           out << ": ";
+           it->second->print(out);
        }
        out << "}";
-       return out;
    }
-   Dict(map<K, V> _items): items(_items){}
+   Dict(map<Object*, Object*> _items): items(_items){}
    Integer* len()
    {
         return new Integer(items.size());
+   }
+   Object* getItem(Object* x){
+        return items.find(x)->second;
    }
 };
 
@@ -221,7 +238,7 @@ template<class T>
 class Tuple1: public Object{
 public:
    Object* item;
-   Tuple1(void* t) : item((Object*)t){}
+   Tuple1(Object* t) : item((Object*)t){}
     void print(ostream& o) 
     {
         o << "("; 
@@ -235,7 +252,7 @@ class Tuple2: public Object{
 public:
    Object* item1;
    Object* item2;
-   Tuple2(void* t, void* u) : item1((Object*)t), item2((Object*)u){}
+   Tuple2(Object* t, Object* u) : item1((Object*)t), item2((Object*)u){}
     void print(ostream& out) 
     {
         out << "(";
@@ -252,7 +269,7 @@ public:
    Object* item1;
    Object* item2;
    Object* item3;
-   Tuple3(void* t, void* u, void* v) : item1((Object*)t), item2((Object*)u), item3((Object*)v){}
+   Tuple3(Object* t, Object* u, Object* v) : item1((Object*)t), item2((Object*)u), item3((Object*)v){}
     void print(ostream& out) 
     {
         out << "(";

@@ -311,7 +311,7 @@ protected:
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
             out << "*";
         */
-        out << "void*";
+        out << "Object*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
@@ -361,7 +361,7 @@ protected:
         if(getDecl()->getType()->child(0)->asType()->binding()->needsPointer())
             out << "*";
         */
-        out << "void*";
+        out << "Object*";
         out << " ";
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
@@ -371,6 +371,8 @@ protected:
         for_each_child(c,child(3)){
             c->outerCodeGen(out,i+1);
         } end_for;
+        writeIndented(out,i+1);
+        out << "return new None();\n";
         writeIndented(out,i);
         out << "}\n";
         writeComment(out,i,"----------------------------end----------------------");

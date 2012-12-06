@@ -634,11 +634,7 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out,int i){
         if(strcmp(child(0)->as_string().c_str(),"dict")==0){
-            out << "map<";
-            child(1)->child(0)->innerCodeGen(out,i);
-            out << ", ";
-            child(1)->child(1)->innerCodeGen(out,i);
-            out << ">";
+            out << "Dict";
             return;
         }
         if(strcmp(child(0)->as_string().c_str(),"list")==0){

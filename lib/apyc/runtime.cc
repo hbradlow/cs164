@@ -15,12 +15,12 @@ using namespace std;
  * Kevin 
  */
 void 
-Frame::setVar(string name, void* value)
+Frame::setVar(string name, Object* value)
 {
     this->locals[name] = value; 
 }
 
-void* 
+Object* 
 Frame::getVar(string name)
 {
     if (this->locals.count(name) == 0) 
@@ -30,11 +30,11 @@ Frame::getVar(string name)
 }
 Frame::Frame(Frame* static_link) : frame(static_link)
 {
-    this->locals = std::map<string, void*>();
+    this->locals = std::map<string, Object*>();
 }
 Frame::Frame(){
 }
-Closure::Closure(void* (*fp) (Frame*), Frame* frame, std::vector<string> args) : fp(fp), frame(frame), args(args)
+Closure::Closure(Object* (*fp) (Frame*), Frame* frame, std::vector<string> args) : fp(fp), frame(frame), args(args)
 {
 }
 

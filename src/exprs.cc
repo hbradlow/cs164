@@ -1373,6 +1373,9 @@ int ListDisplay_AST::global_count;
 
 /**       */
 class DictDisplay_AST : public Typed_Tree {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (DictDisplay_AST, Typed_Tree);
@@ -1404,9 +1407,45 @@ protected:
         return this;
     }
 
+    //hbradlow
+    void memCodeGen(ostream& out,int i){
+        local_count = global_count++;
+
+        writeIndented(out,i);
+        out << "map";
+        out << "<";
+        out << "Object*";
+        out << ",Object*";
+        out << "> ";
+        out << "dict_map" << local_count << ";\n";
+
+        for_each_child(c,this){
+            writeIndented(out,i);
+            out << "dict_map" << local_count << "[";
+            c->child(0)->valueCodeGen(out,i);
+            out << "] = ";
+            c->child(1)->valueCodeGen(out,i);
+            out << ";\n";
+        } end_for;
+    }
+    //hbradlow
+    void innerCodeGen(ostream& out,int i){
+        out << "new Dict";
+        out  << "(";
+        out << "dict_map" << local_count;
+        out << ")";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out,int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+
 };
 
 NODE_FACTORY (DictDisplay_AST, DICT_DISPLAY);
+int DictDisplay_AST::global_count;
 
 
 
