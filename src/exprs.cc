@@ -1179,7 +1179,7 @@ protected:
         child(0)->getType()->binding()->innerCodeGen(out,i);
         out << "*)(frame->getVar(\"";
         child(0)->innerCodeGen(out,i);
-        out << "\")))->frame";
+        out << "\")))";
     }
     //hbradlow
     void innerCodeGen(ostream& out, int i){
