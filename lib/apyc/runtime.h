@@ -20,12 +20,14 @@
 using namespace std;
 
 class None;
+class Frame;
 
 /** 
  * Kevin 
  */
 class Object{
 public:
+    Frame* frame;
     virtual void print(ostream& o) 
     {
         o << "fuck";

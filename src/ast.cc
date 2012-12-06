@@ -434,6 +434,10 @@ void
 AST::classDefCodeGen(ostream& out,int i){
 }
 //hbradlow
+void 
+AST::staticClassCodeGen(ostream& out, int i){
+}
+//hbradlow
 void
 AST::classCodeGen (std::ostream& out,int i)
 {

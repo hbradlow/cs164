@@ -241,6 +241,8 @@ public:
     //hbradlow
     virtual void classDefCodeGen(std::ostream& out,int i);
     //hbradlow
+    virtual void staticClassCodeGen(std::ostream& out, int i);
+    //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);
     //hbradlow
     virtual void closureCodeGen (std::ostream& out,int i,std::string closure="");
