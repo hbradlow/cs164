@@ -268,7 +268,13 @@ public:
     Object*
     getItem(Integer* i)
     {
+        if (i->value >= 0)
         return items[i->value];
+        else 
+        {
+        int neg = items.size()+i->value;
+        return items[neg]; 
+        }
     }
     List*
     xrange(Integer i)

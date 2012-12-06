@@ -53,6 +53,10 @@ protected:
         } end_for;
 
         out << "int main(int argc, char* argv[]) {\n";
+        for_each_child(c, this)
+        {
+            c->generateInitialDef(out, i);
+        }end_for;
         writeIndented(out,i+1);
         out << "Frame* frame_upper = new Frame(NULL);\n";
         writeIndented(out,i+1);

@@ -228,6 +228,7 @@ public:
     //a = x+2
     //The assignment is the outer statement, (id a), (binop) etc are inner statements
     virtual void innerCodeGen (std::ostream& out, int i);
+    virtual void generateInitialDef(std::ostream& out, int i);
     //hbradlow
     virtual void memCodeGen(std::ostream& out, int i);
     //hbradlow

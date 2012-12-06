@@ -433,6 +433,10 @@ AST::defCodeGen (ostream& out, int i)
 void
 AST::classDefCodeGen(ostream& out,int i){
 }
+
+void
+AST::generateInitialDef(ostream& out, int i)
+{}
 //hbradlow
 void
 AST::classCodeGen (std::ostream& out,int i)
