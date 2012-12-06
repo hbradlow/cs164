@@ -61,6 +61,26 @@ protected:
         out << "Frame* frame_upper = new Frame(NULL);\n";
         writeIndented(out,i+1);
         out << "Frame* frame = new Frame(frame_upper);\n";
+
+        writeIndented(out,i+1);
+        out << "frame->setVar(\"argc\", new Integer(argc));\n";
+
+        writeIndented(out,i+1);
+        out << "vector<Object*> argv_vector;\n";
+        writeIndented(out,i+1);
+        out << "for(int i = 0; i< argc; i++){\n";
+        writeIndented(out,i+2);
+        out << "stringstream argv_ss;\n";
+        writeIndented(out,i+2);
+        out << "argv_ss << argv[i];\n";
+        writeIndented(out,i+2);
+        out << "argv_vector.push_back(new String(argv_ss.str()));\n";
+        writeIndented(out,i+1);
+        out << "}\n";
+
+        writeIndented(out,i+1);
+        out << "frame->setVar(\"argv\", new List(argv_vector));\n";
+
         writeIndented(out,i+1);
         out << "Frame* dyn_frame = new Frame(NULL);\n";
         for_each_child(c,this){

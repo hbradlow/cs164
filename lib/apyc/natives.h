@@ -52,7 +52,7 @@
 #define NATIVE__getitem__list__     return ((List*)frame->getVar("S"))->getIndex(((Integer*)frame->getVar("k"))->value)
 #define NATIVE__getslice__list__    return ((List*)frame->getVar("S"))->getSlice((*((Integer*)frame->getVar("L"))),(*((Integer*)frame->getVar("U"))))
 #define NATIVE__len__list__         return ((List*)frame->getVar("S"))->len()
-#define NATIVE__argv__
+#define NATIVE__argv__              return ((List*)frame->getVar("argv"))
 #define NATIVE__open1__
 #define NATIVE__open2__
 #define NATIVE__close__
