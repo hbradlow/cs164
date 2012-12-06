@@ -33,6 +33,7 @@ else:
     print "No5"
 
 if xrange(0,0):
+    print xrange(0,0)
     print "No6"
 elif xrange(0,1):
     print "Yes6"

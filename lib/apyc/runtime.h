@@ -554,6 +554,13 @@ Object* operator&&(const List& b, const List& rhs){
 }
 inline
 bool operator==(const List& b, bool rhs){
+    if(b.items.size()==1)
+    {
+        if(strcmp("0",b.items[0]->getValue().c_str())==0)
+        {
+            return !rhs;
+        }
+    }
     return ((b.items.size() && rhs) || (!b.items.size() && !rhs));
 }
 //------------------------------------------------------------
