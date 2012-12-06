@@ -403,6 +403,10 @@ Object* operator&&(const List& b, const List& rhs){
     else
         return new List(b.items);
 }
+inline
+bool operator==(const List& b, bool rhs){
+    return ((b.items.size() && rhs) || (!b.items.size() && !rhs));
+}
 //------------------------------------------------------------
 // String
 //------------------------------------------------------------
