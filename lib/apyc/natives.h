@@ -60,9 +60,9 @@
 #define NATIVE__readline__
 #define NATIVE__read__
 #define NATIVE__getitem__dict__     return ((Dict*)frame->getVar("D"))->getItem(frame->getVar("x"))
-#define NATIVE__len__dict__         //return (((Dict*)frame->getVar("D"))->len()
-#define NATIVE__contains__dict__    //return (((Dict*)frame->getVar("D"))->contains(*(frame->getVar("x")))
-#define NATIVE__notcontains__dict__ //return (((Dict*)frame->getVar("D"))->notContains(*(frame->getVar("x")))
+#define NATIVE__len__dict__         return ((Dict*)frame->getVar("D"))->len()
+#define NATIVE__contains__dict__    return ((Dict*)frame->getVar("D"))->contains(((String*)frame->getVar("x")))
+#define NATIVE__notcontains__dict__ return ((Dict*)frame->getVar("D"))->notContains(((String*)frame->getVar("x")))
 #define NATIVE__is__                //return new Bool(frame->getVar("x") == frame->getVar("y"))
 #define NATIVE__isnot__             //return new Bool(frame->getVar("x") != frame->getVar("y"))
 

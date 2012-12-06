@@ -207,6 +207,22 @@ public:
    {
         return new Integer(items.size());
    }
+   Bool* contains(Object* x) {
+       if (items.count(((String)x).value) == 0) {
+           return new Bool(false);
+       }
+       else {
+           return new Bool(true);
+       }
+   }
+   Bool* notContains(Object* x) {
+       if (items.count(((String)x).value) == 0) {
+           return new Bool(true);
+       }
+       else {
+           return new Bool(false);
+       }
+   }
    Object* getItem(Object* x){
         return items.find(x->getValue())->second;
    }
