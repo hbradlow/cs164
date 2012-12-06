@@ -1260,6 +1260,21 @@ protected:
         out << ";\n";
     }
 
+    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+        child(1)->memCodeGen(out,i);
+        c->memCodeGen(out,i);
+        writeIndented(out,i);
+        out << "(";
+        child(0)->valueCodeGen(out,i);
+        out << ")->setItemList(new Integer(";
+        child(1)->valueCodeGen(out,i);
+        out << "), new Integer(";
+        child(2)->valueCodeGen(out,i);
+        out << "), ";
+        c->valueCodeGen(out,i);
+        out << ");\n";
+    }
+
 };
 
 NODE_FACTORY (Slicing_AST, SLICING);
@@ -1535,6 +1550,9 @@ protected:
     }    
     //hbradlow
     void memCodeGen(ostream& out,int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
         local_count = global_count++;
 
         writeIndented(out,i);
