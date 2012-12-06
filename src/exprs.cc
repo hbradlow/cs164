@@ -478,7 +478,11 @@ protected:
     void valueCodeGen(ostream& out, int i){
         out << "new ";
         child(0)->innerCodeGen(out,i);
-        out << "(frame)";
+        out << "(((";
+        child(0)->innerCodeGen(out,i);
+        out << "*)frame->getVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "_static_class\"))->frame)";
     }
     //hbradlow
     bool needsPointer(){
