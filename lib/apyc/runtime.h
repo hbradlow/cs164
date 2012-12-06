@@ -197,7 +197,7 @@ public:
             start = 0;
         if(j.value==-1)
             end = value.length();
-        return new String(new string(value.substr(start, end-1)));
+        return new String(new string(value.substr(start, end-start)));
     }
     Integer*
     len()
@@ -260,21 +260,53 @@ public:
 class List: public Object{
 public:
     vector<Object*> items;
+    bool xrange;
     virtual void print(ostream& out)
     {
-        out << "[";
+        if(this->xrange)
+            out << "xrange(";
+        else
+            out << "[";
         for(std::vector<Object*>::iterator it = items.begin() ; it != items.end(); ++it){
             if(it!=items.begin())
                 out << ", ";
             (*it)->print(out);
         }
-        out << "]";
+        if(this->xrange)
+            out << ")";
+        else
+            out << "]";
     }
     virtual void inner_print(ostream& o)
     {
         this->print(o);
     }
+    List(String* s){
+        vector<Object*> i;
+        this->items = i;
+        string::iterator it;
+        for (it = s->value.begin(); it < s->value.end(); it++) 
+        {
+            stringstream ss;
+            ss << *it;
+            this->items.push_back(new String(ss.str()));
+        }
+        this->xrange = false;
+    }
+    List(List* l){
+        this->items = l->items;
+        this->xrange = l->xrange;
+    }
     List(vector<Object*> _items): items(_items){}
+    List(Integer* low, Integer* high,bool xrange) 
+    {
+        this->xrange = xrange;
+        items = vector<Object*>();
+        for (int j = low->value; j < high->value+1; j++)
+        {
+            items.push_back(new Integer(j));
+        }
+    }
     List(Integer* low, Integer* high) 
     {
         items = vector<Object*>();
@@ -315,10 +347,6 @@ public:
         int neg = items.size()+i->value;
         return items[neg]; 
         }
-    }
-    List*
-    xrange(Integer i)
-    {
     }
     List*
     getSlice(Integer i, Integer j) {

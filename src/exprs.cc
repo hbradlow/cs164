@@ -606,7 +606,11 @@ protected:
         out << " ";
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
-        out << " = ";
+        out << " = (";
+        child(2)->getType()->binding()->innerCodeGen(out,i);
+        if(child(0)->getType()->binding()->needsPointer())
+            out << "*";
+        out << ")";
         child(2)->valueCodeGen(out,i);
         out << ";\n";
 
@@ -1486,6 +1490,15 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
+    virtual void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+    }
+    virtual void assignCodeGen(ostream& out, int i, string c,string lhs){
+        for_each_child(ch,this){
+            stringstream ss;
+            ss << "(Object*)(" << c << ")->getItem(new Integer(" << ch_i_ << "))";
+            ch->assignCodeGen(out,i,ss.str(),lhs);
+        } end_for;
+    }
 
 };
 
@@ -1512,7 +1525,7 @@ protected:
         return this;
     }
 
-    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+    virtual void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
         for_each_child(ch,this){
             stringstream ss;
             ss << "(";

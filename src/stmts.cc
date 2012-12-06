@@ -37,6 +37,7 @@ public:
         out << "if((*";
         child(0)->valueCodeGen(out, depth);
         out << ")==false){" << endl;
+        child(2)->outerCodeGen(out, depth);
         writeIndented(out, depth);
         out << "break;" << endl;
         writeIndented(out, depth+1);
@@ -46,10 +47,12 @@ public:
         writeIndented(out, depth);
         out << "}" << endl;
         writeIndented(out, depth);
+        /*
         out << "if(!while_flag_" << local_count << "){\n";
         child(2)->outerCodeGen(out, depth);
         writeIndented(out, depth);
         out << "}\n";
+        */
     }
 };
 NODE_FACTORY (While_AST, WHILE);
@@ -875,25 +878,29 @@ protected:
         writeIndented(out,depth);
         child(1)->memCodeGen(out,0);
         out << "List* for_list" << local_count;
-        out << " = ";
+        out << " = new List(";
         child(1)->valueCodeGen(out,0);
-        out << ";\n";
+        out << ");\n";
         writeIndented(out,depth);
-        out << "for(vector<Object*>::iterator it = ";
+        out << "vector<Object*>::iterator for_it_" << local_count << " = for_list" << local_count << "->items.begin();\n";
+        out << "for(for_it_" << local_count << " = ";
         out << "for_list" << local_count;
-        out << "->items.begin() ; it != ";
+        out << "->items.begin() ; for_it_" << local_count << " != ";
         out << "for_list" << local_count;
-        out << "->items.end(); ++it){\n";
+        out << "->items.end(); ++for_it_" << local_count << "){\n";
         writeIndented(out,depth+1);
-        out << "frame->frame->setVar(\"";
-        child(0)->innerCodeGen(out,0);
-        out << "\",*it);\n";
+        stringstream lhs_string;
+        lhs_string << "*for_it_" << local_count;
+        child(0)->assignCodeGen(out,depth+1,lhs_string.str(),"");
         for_each_child(c,child(2)){
             c->outerCodeGen(out,depth+1);
         } end_for;
         writeIndented(out,depth);
         out << "}\n";
-        child(3)->outerCodeGen(out, depth);
+        writeIndented(out,depth);
+        out << "if(for_it_" << local_count << " == for_list" << local_count << "->items.end()){\n";
+        child(3)->outerCodeGen(out, depth+1);
+        out << "}\n";
     }
 
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
