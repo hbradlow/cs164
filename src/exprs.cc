@@ -241,13 +241,6 @@ protected:
         {
             ((Call_AST*)child(0))->nestedMemGen(out, i);
             ((Call_AST*)child(0))->nestedInnerGen(out, i);
-            /*
-            local_count = global_count++;
-            out << "Closure* _glosure = Closure"; 
-            child(0)->memCodeGen(out, i);
-            out << ";";
-            out << ")->call(frame)";
-            */
         }
     }
     void nestedInnerGen(ostream& out, int i)
@@ -356,8 +349,9 @@ protected:
         out << ")";
         writeClosure(out,i,child(0));
         out << "->call" << "(";
-        writeClosure(out,i,child(0));
-        out << "->frame)";
+        child(0)->innerCodeGen(out,i);
+        out << "_dyn_" << local_count << child(0)->getDecl()->getIndex();
+        out << ")";
         out << ";\n";
 
         writeComment(out,i,"Add it to the current frame");
@@ -375,6 +369,14 @@ protected:
     void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
     {
         writeComment(out,i,"--------------------start----------------");
+        writeComment(out, i, "Generate the dynamic frame");
+        writeIndented(out, i);
+        out << "Frame* "; 
+        child(0)->innerCodeGen(out,i);
+        out << "_dyn_" << local_count << child(0)->getDecl()->getIndex();
+        out << " = new Frame(";
+        writeClosure(out,i,child(0));
+        out << "->frame);\n";
         writeComment(out,i,"Generate an argument to the function call");
 
         writeComment(out,i,"Create a temp variable to store the value");
@@ -391,8 +393,9 @@ protected:
 
         writeComment(out,i,"Add it to the closures frame");
         writeIndented(out,i);
-        writeClosure(out,i,child(0));
-        out << "->frame->setVar(";
+        child(0)->innerCodeGen(out,i);
+        out << "_dyn_" << local_count << child(0)->getDecl()->getIndex();
+        out << "->setVar(";
         writeClosure(out,i,child(0));
         out << "->args[" << c_i_ << "]";
         out << ",";
