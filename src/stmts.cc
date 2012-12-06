@@ -12,6 +12,7 @@
 
 using namespace std;
 
+static bool print_online = false;
 
 
 /***** WHILE ******/
@@ -95,18 +96,29 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        writeIndented(out,i);
         for_each_child(c,child(1)){
-            if (!c->isCall())
-            {
-            c->valueCodeGen(out,i);
-            out << ".print(cout);\n";
-            out << "cout << endl;"; 
-            }else 
-            {
-            c->outerCodeGen(out, i);
-            }
+            c->memCodeGen(out,i);
         } end_for;
+        writeIndented(out,i);
+        if(print_online)
+            out << "cout << ' ';";
+        for_each_child(c,child(1)){
+            if(c_i_!=0)
+                out << "cout << ' ';";
+            out << "(";
+            if (c->isCall())
+            {
+            out << "(";
+            c->getType()->binding()->innerCodeGen(out,i);
+            if(c->getType()->binding()->needsPointer())
+                out << "*";
+            out << ")";
+            }
+            c->valueCodeGen(out,i);
+            out << ")->print(cout); ";
+        } end_for;
+        out << "\n"; 
+        print_online = true;
     }
 };
 NODE_FACTORY (Print_AST, PRINT);
@@ -131,6 +143,7 @@ protected:
         for_each_child(c,child(1)){
             c->memCodeGen(out,i);
         } end_for;
+        print_online=false;
         writeIndented(out,i);
         for_each_child(c,child(1)){
             if(c_i_!=0)

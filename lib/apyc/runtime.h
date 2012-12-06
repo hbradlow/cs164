@@ -32,6 +32,9 @@ public:
     {
         print(o);
     }
+    virtual string getValue(){
+        return "";
+    }
 };
 class None: public Object{
 public:
@@ -96,6 +99,14 @@ public:
         else 
             o << "False";
     }
+    virtual string getValue(){
+        std::stringstream ss;
+        if (value) 
+            ss << "True"; 
+        else 
+            ss << "False";
+        return ss.str();
+    }
 };
 
 class Integer: public Object{
@@ -114,6 +125,11 @@ public:
     void print(ostream& o) 
     {
         o << value;
+    }
+    virtual string getValue(){
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
     }
 };
 
@@ -157,29 +173,32 @@ public:
     {
         o << value;
     }
+    string getValue(){
+        return value;
+    }
 };
 
 class Dict: public Object{
 public:
-   map<Object*, Object*> items;
+   map<string, Object*> items;
    void print (ostream& out) {
        out << "{";
-       for(std::map<Object*,Object*>::iterator it = items.begin() ; it != items.end(); ++it){
+       for(std::map<string,Object*>::iterator it = items.begin() ; it != items.end(); ++it){
            if(it!=items.begin())
                out << ", ";
-           it->first->print(out);
+           out << it->first;
            out << ": ";
            it->second->print(out);
        }
        out << "}";
    }
-   Dict(map<Object*, Object*> _items): items(_items){}
+   Dict(map<string, Object*> _items): items(_items){}
    Integer* len()
    {
         return new Integer(items.size());
    }
    Object* getItem(Object* x){
-        return items.find(x)->second;
+        return items.find(x->getValue())->second;
    }
 };
 

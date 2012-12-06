@@ -1418,16 +1418,16 @@ protected:
         writeIndented(out,i);
         out << "map";
         out << "<";
-        out << "Object*";
+        out << "string";
         out << ",Object*";
         out << "> ";
         out << "dict_map" << local_count << ";\n";
 
         for_each_child(c,this){
             writeIndented(out,i);
-            out << "dict_map" << local_count << "[";
+            out << "dict_map" << local_count << "[(";
             c->child(0)->valueCodeGen(out,i);
-            out << "] = ";
+            out << ")->getValue()] = ";
             c->child(1)->valueCodeGen(out,i);
             out << ";\n";
         } end_for;

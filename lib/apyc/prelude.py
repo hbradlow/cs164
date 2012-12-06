@@ -207,14 +207,14 @@ def read(f::file)::str:
 # of module members.)
 
 class __sys__:
-    #stdin::file = __standard_file__(0)
-    #stdout::file = __standard_file__(1)
-    #stderr::file = __standard_file__(2)
+    stdin::file = __standard_file__(0)
+    stdout::file = __standard_file__(1)
+    stderr::file = __standard_file__(2)
 
-    #argv::list of str = __argv__()
+    argv::list of str = __argv__()
     pass
 
-#sys::__sys__ = __sys__()
+sys::__sys__ = __sys__()
 
 # Type dict
 
