@@ -85,6 +85,7 @@ public:
     Object* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
+    std::vector<string> decls;
     Object* call(Frame* dynamic_frame)
     {
        return  fp(dynamic_frame);
