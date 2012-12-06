@@ -308,6 +308,22 @@ AST::convertNone (bool)
 
 //hbradlow
 void 
+AST::assignCodeGen (std::ostream& out,int i,string c, std::string lhs){
+    writeIndented(out,i);
+    if(strcmp("",lhs.c_str())==0)
+        this->lhsFrameCodeGen(out,i);
+    else
+        out << lhs;
+    out << "->frame->setVar(";
+    this->stringCodeGen(out, i);
+    out << ",";
+    out << "(";
+    out << c;
+    out << "))";
+    out << ";\n";
+}
+//hbradlow
+void 
 AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
     c->memCodeGen(out,i);
     writeIndented(out,i);
@@ -315,7 +331,7 @@ AST::assignCodeGen (std::ostream& out,int i,AST_Ptr c, std::string lhs){
         this->lhsFrameCodeGen(out,i);
     else
         out << lhs;
-    out << "->setVar(";
+    out << "->frame->setVar(";
     this->stringCodeGen(out, i);
     out << ",";
     out << "(";

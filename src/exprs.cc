@@ -1295,7 +1295,11 @@ protected:
 
     void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
         for_each_child(ch,this){
-            ch->assignCodeGen(out,i,c->child(ch_i_),lhs);
+            stringstream ss;
+            ss << "(";
+            c->valueCodeGen(ss,i);
+            ss << ")->getItem(new Integer(" << ch_i_ << "))";
+            ch->assignCodeGen(out,i,ss.str(),lhs);
         } end_for;
     }
 };

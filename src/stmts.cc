@@ -364,9 +364,11 @@ protected:
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE* copy, Frame* cframe){\n";
         writeIndented(out,i+2);
-        out << "frame = frame;\n";
+        out << "frame = cframe;\n";
         writeIndented(out,i+2);
         out << "fp = copy->fp;\n";
+        writeIndented(out,i+2);
+        out << "args = copy->args;\n";
         writeIndented(out, i+1);
         out << "}\n";
 
@@ -780,7 +782,7 @@ protected:
     }
     //hbradlow
     void innerClassCodeGen(ostream& out,int i, AST_Ptr c){
-        child(0)->assignCodeGen(out,i,child(1),"this->frame");
+        child(0)->assignCodeGen(out,i,child(1),"this");
     }
 };
 

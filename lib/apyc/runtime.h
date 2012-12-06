@@ -19,6 +19,8 @@
 
 using namespace std;
 
+class None;
+
 /** 
  * Kevin 
  */
@@ -34,6 +36,9 @@ public:
     }
     virtual string getValue(){
         return "";
+    }
+    virtual Object* getItem(Object* o){
+        return new Object();
     }
 };
 class None: public Object{
@@ -193,7 +198,7 @@ public:
                out << ", ";
            out << it->first;
            out << ": ";
-           it->second->print(out);
+           it->second->inner_print(out);
        }
        out << "}";
    }
@@ -239,9 +244,9 @@ public:
          return new Integer(items.size());
     }
     Object*
-    getItem(Integer i)
+    getItem(Integer* i)
     {
-        return items[i.value];
+        return items[i->value];
     }
     List*
     xrange(Integer i)
@@ -256,6 +261,9 @@ public:
     {
         out << "()";
     }
+    Object* getItem(Object* o){
+        return new None();
+    }
 };
 
 template<class T>
@@ -268,6 +276,9 @@ public:
         o << "("; 
         item->inner_print(o);
         o << ",)";
+    }
+    Object* getItem(Object* o){
+        return item;
     }
 };
 
@@ -284,6 +295,13 @@ public:
         out << ", ";
         item2->inner_print(out);
         out << ")";
+    }
+    Object* getItem(Integer* o){
+        if(o->value==0)
+            return item1;
+        if(o->value==1)
+            return item2;
+        return new None();
     }
 };
 
@@ -303,6 +321,15 @@ public:
         out << ", ";
         item3->inner_print(out);
         out << ")";
+    }
+    Object* getItem(Integer* o){
+        if(o->value==0)
+            return item1;
+        if(o->value==1)
+            return item2;
+        if(o->value==2)
+            return item3;
+        return new None();
     }
 };
 //------------------------------------------------------------

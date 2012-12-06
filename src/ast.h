@@ -250,6 +250,8 @@ public:
     virtual void outerClassCodeGen (std::ostream& out,int i,AST_Ptr c);
     //hbradlow
     virtual void assignCodeGen (std::ostream& out,int i,AST_Ptr c,std::string lhs="");
+    //hbradlow
+    virtual void assignCodeGen (std::ostream& out,int i,std::string c,std::string lhs="");
 
     virtual void generateFunctionCall(std::ostream& out, int i); 
     virtual void generateArgs(std::ostream& out, int i, int c_i_, AST_Ptr c);
