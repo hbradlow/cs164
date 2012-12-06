@@ -309,7 +309,14 @@ protected:
     void valueCodeGen(ostream& out,int i){
         if(getType()->binding()->isFunction())
         {
-            writeClosure(out,i,this);
+            out << "new ";
+            innerCodeGen(out,i);
+            out << "__" << getDecl()->getIndex() << "_CLOSURE((";
+            innerCodeGen(out, i); 
+            out << "__" << getDecl()->getIndex() << "_CLOSURE*)(frame->getVar(\"";
+            innerCodeGen(out, i);
+            out << "__" << getDecl()->getIndex() << "_closure\"))";
+            out << ", frame)";
         }
         else{
             out << "(";

@@ -356,6 +356,20 @@ protected:
         writeIndented(out,i+1);
         out << "}\n";
 
+        writeIndented(out,i+1);
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex();
+        out << "_CLOSURE(";
+        child(0)->innerCodeGen(out,i);
+        out << "__" << child(0)->getDecl()->getIndex();
+        out << "_CLOSURE* copy, Frame* cframe){\n";
+        writeIndented(out,i+2);
+        out << "frame = frame;\n";
+        writeIndented(out,i+2);
+        out << "fp = copy->fp;\n";
+        writeIndented(out, i+1);
+        out << "}\n";
+
         writeIndented(out,i);
         out << "};\n";
     }

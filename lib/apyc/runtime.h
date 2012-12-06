@@ -64,6 +64,11 @@ class Closure : public Object {
 public:
     Closure();
     Closure(Object* (*fp) (Frame*), Frame* frame, std::vector<string> args);
+    Closure(const Closure& copy)
+    {
+        fp = copy.fp; 
+        frame = copy.frame;
+    }
     Object* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 

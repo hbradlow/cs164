@@ -258,11 +258,9 @@ protected:
         if(!child(0)->isCall())
         {
             writeIndented(out, i);
-            out << "dyn_frame =";
-            writeClosure(out,i,child(0));
-            out << "->frame;\n";
-            writeIndented(out, i);
-            out << "Frame *loc_" << global_count << " = new Frame(dyn_frame);\n";
+            out << "Frame *loc_" << global_count << " = new Frame(";
+            innerCodeGen(out, i);
+            out << "->frame);\n";
             writeIndented(out, i); 
             innerCodeGen(out, i);
             out << " = (Closure*)";
@@ -273,10 +271,9 @@ protected:
         {
             ((Call_AST*)child(0))->nestedInnerGen(out, i );
             writeIndented(out, i);
-            out << "dyn_frame = new Frame(";
-            out << "loc_" << global_count;
+            out << "Frame *loc_" << global_count << " = new Frame(";
+            innerCodeGen(out, i);
             out << "->frame);\n";
-            out << "loc_" << global_count << " = new Frame(dyn_frame);\n";
             writeIndented(out, i); 
             for_each_child(c, child(1))
             {
