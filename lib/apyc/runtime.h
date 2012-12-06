@@ -163,7 +163,13 @@ public:
     String*
     getIndex(Integer i)
     {
-        return new String(new string(&value[i.value]));
+        if (i.value >= 0)
+        return new String(new string(value.substr(i.value,1)));
+        else 
+        {
+        int neg = value.length()+i.value;
+        return new String(new string(value.substr(neg, 1)));
+        }
     }
     String*
     getSlice(Integer i, Integer j)
