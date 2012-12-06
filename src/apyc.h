@@ -77,6 +77,11 @@ public:
     /** Print THIS on the standard output. */
     virtual void print () const;
 
+    virtual bool isClass()
+    {
+        return false;
+    }
+
     /** Get my container (null if none). */
     virtual Decl* getContainer () const { return _container; }
 

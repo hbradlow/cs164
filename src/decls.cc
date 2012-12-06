@@ -519,6 +519,10 @@ public:
         : Decl (name, NULL, new Environ (outerEnviron)), _params (params) {
     }
 
+    bool isClass()
+    {
+        return true;
+    }
 protected:
 
     bool isType () const {

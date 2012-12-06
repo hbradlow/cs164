@@ -22,6 +22,7 @@ using namespace std;
 
 class None;
 class Frame;
+class Integer;
 
 /** 
  * Kevin 
@@ -42,6 +43,8 @@ public:
     }
     virtual Object* getItem(Object* o){
         return new Object();
+    }
+    virtual void setItem(Integer* i, Object* o){
     }
 };
 class None: public Object{
@@ -80,6 +83,7 @@ public:
     Object* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
+    std::vector<string> decls;
     Object* call(Frame* dynamic_frame)
     {
        return  fp(dynamic_frame);
@@ -166,12 +170,30 @@ public:
     String*
     getIndex(Integer i)
     {
-        return new String(new string(&value[i.value]));
+        if (i.value >= 0)
+        {
+            std::stringstream ss;
+            ss << value[i.value];
+            return new String(ss.str());
+        }
+        else 
+        {
+            int neg = value.length()+i.value;
+            std::stringstream ss;
+            ss << value[neg];
+            return new String(ss.str());
+        }
     }
     String*
     getSlice(Integer i, Integer j)
     {
-        return new String(new string(value.substr(i.value, j.value-1)));
+        int start = i.value;
+        int end = j.value;
+        if(i.value==-1)
+            start = 0;
+        if(j.value==-1)
+            end = value.length();
+        return new String(new string(value.substr(start, end-1)));
     }
     Integer*
     len()
@@ -263,9 +285,28 @@ public:
          return new Integer(items.size());
     }
     Object*
+    getIndex(Integer i)
+    {
+        if (i.value >= 0)
+        {
+            return items[i.value];
+        }
+        else 
+        {
+            int neg = items.size()+i.value;
+            return items[neg];
+        }
+    }
+    Object*
     getItem(Integer* i)
     {
+        if (i->value >= 0)
         return items[i->value];
+        else 
+        {
+        int neg = items.size()+i->value;
+        return items[neg]; 
+        }
     }
     List*
     xrange(Integer i)
@@ -273,12 +314,29 @@ public:
     }
     List*
     getSlice(Integer i, Integer j) {
+        int start = i.value;
+        int end = j.value;
+        if(i.value==-1)
+            start = 0;
+        if(j.value==-1)
+            end = items.size();
         vector<Object*> result;
-        for (int k = i.value; k<j.value; ++k) {
+        for (int k = start; k<end; ++k) {
             result.push_back(items[k]);
         }
         List * resultlist = new List(result);
         return resultlist;
+    }
+    void setItem(Integer* i,Object* o){
+        if (i->value >= 0)
+        {
+            items[i->value] = o;
+        }
+        else 
+        {
+            int neg = items.size()+i->value;
+            items[neg] = o;
+        }
     }
 };
 
@@ -293,7 +351,6 @@ public:
     }
 };
 
-template<class T>
 class Tuple1: public Object{
 public:
    Object* item;
@@ -309,7 +366,6 @@ public:
     }
 };
 
-template<class T, class U>
 class Tuple2: public Object{
 public:
    Object* item1;
@@ -333,7 +389,6 @@ public:
     }
 };
 
-template<class T, class U, class V>
 class Tuple3: public Object{
 public:
    Object* item1;
@@ -405,6 +460,62 @@ public:
 
 };
 //------------------------------------------------------------
+// Tuple0
+//------------------------------------------------------------
+inline
+bool operator==(const Tuple0& b, bool rhs){
+    return false;
+}
+//------------------------------------------------------------
+// Tuple1
+//------------------------------------------------------------
+inline
+bool operator==(const Tuple1& b, bool rhs){
+    return true;
+}
+//------------------------------------------------------------
+// Tuple2
+//------------------------------------------------------------
+inline
+bool operator==(const Tuple2& b, bool rhs){
+    return true;
+}
+//------------------------------------------------------------
+// Tuple3
+//------------------------------------------------------------
+inline
+bool operator==(const Tuple3& b, bool rhs){
+    return true;
+}
+//------------------------------------------------------------
+// Object
+//------------------------------------------------------------
+inline
+bool operator==(const Object& b, bool rhs){
+    return false;
+}
+//------------------------------------------------------------
+// Dict
+//------------------------------------------------------------
+inline
+Object* operator||(const Dict& b, const Dict& rhs){
+    if(b.items.size())
+        return new Dict(b.items);
+    else
+        return new Dict(rhs.items);
+}
+inline
+Object* operator&&(const Dict& b, const Dict& rhs){
+    if(b.items.size())
+        return new Dict(rhs.items);
+    else
+        return new Dict(b.items);
+}
+inline
+bool operator==(const Dict& b, bool rhs){
+    return ((b.items.size() && rhs) || (!b.items.size() && !rhs));
+}
+//------------------------------------------------------------
 // List
 //------------------------------------------------------------
 inline
@@ -420,6 +531,10 @@ Object* operator&&(const List& b, const List& rhs){
         return new List(rhs.items);
     else
         return new List(b.items);
+}
+inline
+bool operator==(const List& b, bool rhs){
+    return ((b.items.size() && rhs) || (!b.items.size() && !rhs));
 }
 //------------------------------------------------------------
 // String

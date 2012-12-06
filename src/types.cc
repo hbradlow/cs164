@@ -662,27 +662,18 @@ protected:
             return;
         }
         if(strcmp(child(0)->as_string().c_str(),"tuple1")==0){
-            out << "Tuple1<Object>";
+            out << "Tuple1";
             return;
         }
         if(strcmp(child(0)->as_string().c_str(),"tuple2")==0){
-            out << "Tuple2<Object,Object>";
+            out << "Tuple2";
             return;
         }
         if(strcmp(child(0)->as_string().c_str(),"tuple3")==0){
-            out << "Tuple3<Object,Object,Object>";
+            out << "Tuple3";
             return;
         }
         child(0)->innerCodeGen(out,i);
-        if(child(1)->arity()){
-            out << "<";
-            for_each_child(c,child(1)){
-                if(c_i_!=0)
-                    out << ",";
-                c->innerCodeGen(out,i);
-            } end_for;
-            out << ">";
-        }
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){

@@ -396,6 +396,13 @@ protected:
         out << "->setVar(";
         writeClosure(out,i,child(0));
         out << "->args[" << c_i_ << "]";
+        if (c->getType()->binding()->isFunction())
+        {
+            out << "+ \"__\" + ";
+            writeClosure(out,i,child(0));
+            out << "->decls[" << c_i_ << "]";
+            out << "+\"_closure\"";
+        }
         out << ",";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
@@ -1038,6 +1045,17 @@ protected:
         out << ";\n";
     }
 
+    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+        child(1)->memCodeGen(out,i);
+        writeIndented(out,i);
+        out << "(";
+        child(0)->valueCodeGen(out,i);
+        out << ")->setItem(new Integer(";
+        child(1)->valueCodeGen(out,i);
+        out << "), ";
+        c->valueCodeGen(out,i);
+        out << ");\n";
+    }
 };
 
 NODE_FACTORY (Subscription_AST, SUBSCRIPTION);
@@ -1083,6 +1101,17 @@ protected:
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";
+    }
+    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+        child(1)->memCodeGen(out,i);
+        writeIndented(out,i);
+        out << "(";
+        child(0)->valueCodeGen(out,i);
+        out << ")->setItem(new Integer(";
+        child(1)->valueCodeGen(out,i);
+        out << "), ";
+        c->valueCodeGen(out,i);
+        out << ");\n";
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
@@ -1142,7 +1171,12 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << " = ";
-        child(1)->valueCodeGen(out,i);
+        if(child(1)->isMissing())
+        {
+            out << "new Integer(-1)";
+        }
+        else
+            child(1)->valueCodeGen(out,i);
         out << ";\n";
 
         writeIndented(out,i);
@@ -1174,7 +1208,12 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << " = ";
-        child(2)->valueCodeGen(out,i);
+        if(child(2)->isMissing())
+        {
+            out << "new Integer(-1)";
+        }
+        else
+            child(2)->valueCodeGen(out,i);
         out << ";\n";
 
         writeIndented(out,i);
@@ -1429,16 +1468,6 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out,int i){
         out << "new Tuple" << arity();
-        if (arity())
-        {
-            out << "<";
-            for_each_child(c,this){
-                if(c_i_!=0)
-                    out << ",";
-                c->getType()->binding()->innerCodeGen(out, i);
-            } end_for;
-            out << ">";
-        }
         out  << "(";
         for_each_child(c,this){
             if(c_i_!=0)
@@ -1763,9 +1792,6 @@ protected:
         child(1)->valueCodeGen(out,i+1);
         out << ";\n";
 
-        writeIndented(out,i+1);
-        out << "return new Bool(true);\n";
-
         writeIndented(out,i);
         out << "}\n";
 
@@ -1794,14 +1820,47 @@ int And_AST::global_count;
 
 /** E1 or E2 */
 class Or_AST : public BalancedExpr {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (Or_AST, BalancedExpr);
 
+    void defCodeGen(ostream& out,int i){
+        local_count = global_count++;
+        writeComment(out,i,"----------------------------start--------------------");
+        writeComment(out,i,"OR Function stuff");
+
+        writeIndented(out,i);
+        out << "Object*";
+        out << " OR_" << local_count;
+        out << "(";
+        out << "Frame* frame";
+        out << "){\n";
+
+        child(0)->memCodeGen(out,i+1);
+        writeIndented(out,i+1);
+        out << "if((*(";
+        child(0)->valueCodeGen(out,i+1);
+        out << "))==true) return ";
+        child(0)->valueCodeGen(out,i+1);
+        out << ";\n";
+
+        child(1)->memCodeGen(out,i+1);
+        writeIndented(out,i+1);
+        out << "return ";
+        child(1)->valueCodeGen(out,i+1);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "}\n";
+
+        writeComment(out,i,"----------------------------end----------------------");
+
+    }
     void innerCodeGen(ostream& out, int depth) {
-        child(0)->innerCodeGen(out, depth);
-        out << " || ";
-        child(1)->innerCodeGen(out, depth);
+        out << "OR_" << local_count << "(frame)";
     }
     void outerCodeGen(ostream& out, int depth) {
         writeIndented(out,depth);
@@ -1809,18 +1868,12 @@ protected:
         out << ";\n";
     }
     void valueCodeGen(ostream& out, int i){
-        out << "(*(";
-        child(0)->valueCodeGen(out, i);
-        out << ")";
-        out << " || ";
-        out << "*(";
-        child(1)->valueCodeGen(out, i);
-        out << "))";
+        out << "OR_" << local_count << "(frame)";
     }
 };
 
 NODE_FACTORY (Or_AST, OR);
-
+int Or_AST::global_count;
 
 class Break_AST : public AST_Tree{
 protected:

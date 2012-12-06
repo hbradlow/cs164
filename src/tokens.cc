@@ -305,6 +305,16 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
+    void lhsFrameCodeGen(ostream& out, int i)
+    {
+        if (getDecl()->getContainer()->isClass())
+        {
+        out << getDecl()->getContainer()->getName();
+        out << "_static_class";
+        }
+        else 
+            out << "frame";
+    }
     //hbradlow
     void valueCodeGen(ostream& out,int i){
         if(getType()->binding()->isFunction())
@@ -317,6 +327,18 @@ protected:
             innerCodeGen(out, i);
             out << "__" << getDecl()->getIndex() << "_closure\"))";
             out << ", frame)";
+        }
+        else if (getDecl()->getContainer()->isClass())
+        {
+            out << "(";
+            getType()->binding()->innerCodeGen(out,i);
+            if(getType()->binding()->needsPointer())
+                out << "*)";
+            out << getDecl()->getContainer()->getName();
+            out << "_static_class->";
+            out << "frame->getVar(\"";
+            innerCodeGen(out,i);
+            out << "\")";
         }
         else{
             out << "(";
