@@ -38,6 +38,8 @@ protected:
     // This is a placeholder!  Replace it.
     void outerCodeGen (ostream& out, int i) {
         out << "#include \"runtime.h\"\n";
+        out << "#include <fstream>\n";
+        out << "#include <iostream>\n";
 
         for_each_child(c,this){
             c->classDefCodeGen(out,i);

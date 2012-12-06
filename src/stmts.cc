@@ -131,8 +131,9 @@ NODE_FACTORY (Print_AST, PRINT);
 
 /** A print statement without trailing comma. */
 class Println_AST : public Print_AST {
+public: 
+    static int counter;
 protected:
-
     NODE_CONSTRUCTORS (Println_AST, Print_AST);
 
     const char* externalName () {
@@ -141,33 +142,48 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
-        for_each_child(c,child(1)){
-            c->memCodeGen(out,i);
-        } end_for;
-        if(print_online && child(1)->arity())
-            out << "cout << ' ';";
-        writeIndented(out,i);
-        for_each_child(c,child(1)){
-            if(c_i_!=0)
+        if (!child(0)->isMissing())
+        {
+           writeIndented(out, i);
+           out << "std::streambuf *backup" << ++counter << " = cout.rdbuf();\n";
+           out << "std::ofstream fi" << counter <<";\n";
+           out << "fi" << counter <<".open(\"" << child(0)->as_string() << "\");\n";
+           out << "backup" << counter << " = cout.rdbuf();\n";
+           out << "streambuf *psbuf" << counter << " = fi"<<counter<<".rdbuf();\n";
+           out << "cout.rdbuf(psbuf"<<counter<<");\n"; 
+        }
+            for_each_child(c,child(1)){
+                c->memCodeGen(out,i);
+            } end_for;
+            if(print_online && child(1)->arity())
                 out << "cout << ' ';";
-            out << "(";
-            if (c->isCall())
-            {
-            out << "(";
-            c->getType()->binding()->innerCodeGen(out,i);
-            if(c->getType()->binding()->needsPointer())
-                out << "*";
-            out << ")";
-            }
-            c->valueCodeGen(out,i);
-            out << ")->print(cout); ";
-        } end_for;
-        print_online=false;
-        out << "cout << endl;\n"; 
+            writeIndented(out,i);
+            for_each_child(c,child(1)){
+                if(c_i_!=0)
+                    out << "cout << ' ';";
+                out << "(";
+                if (c->isCall())
+                {
+                out << "(";
+                c->getType()->binding()->innerCodeGen(out,i);
+                if(c->getType()->binding()->needsPointer())
+                    out << "*";
+                out << ")";
+                }
+                c->valueCodeGen(out,i);
+                out << ")->print(cout); ";
+            } end_for;
+            print_online=false;
+            out << "cout << endl;\n"; 
+        if (!child(0)->isMissing()) 
+        {
+            out << "cout.rdbuf(backup"<<counter<<");\n";
+            out << "fi"<<counter<<".close();\n";
+        }
     }
 
 };
-
+int Println_AST::counter = 0;
 NODE_FACTORY (Println_AST, PRINTLN);
 
 /***** STMT_LIST *****/
