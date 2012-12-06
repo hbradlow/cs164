@@ -1754,7 +1754,9 @@ protected:
 
         child(1)->memCodeGen(out,i+1);
         writeIndented(out,i+1);
-        out << "return ";
+        out << "if((*(";
+        child(1)->valueCodeGen(out,i+1);
+        out << "))==false) return ";
         child(1)->valueCodeGen(out,i+1);
         out << ";\n";
 

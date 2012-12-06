@@ -163,7 +163,9 @@ public:
     String*
     getIndex(Integer i)
     {
-        return new String(new string(&value[i.value]));
+        stringstream ss;
+        ss << value[i.value];
+        return new String(ss.str());
     }
     String*
     getSlice(Integer i, Integer j)
@@ -373,6 +375,14 @@ Object* operator&&(const List& b, const List& rhs){
     else
         return new List(b.items);
 }
+inline
+bool operator==(const List& b, bool rhs){
+    if(b.items.size() && rhs)
+        return true;
+    if(!b.items.size() && !rhs)
+        return true;
+    return false;
+}
 //------------------------------------------------------------
 // String
 //------------------------------------------------------------
@@ -486,6 +496,11 @@ bool operator==(const Integer& b, bool rhs){
 //------------------------------------------------------------
 // BOOL
 //------------------------------------------------------------
+
+inline
+bool operator==(const Object& b, bool rhs){
+    return false;
+}
 
 inline
 bool operator==(const Bool& b, bool rhs){
