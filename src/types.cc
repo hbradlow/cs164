@@ -673,6 +673,10 @@ protected:
             out << "Tuple3";
             return;
         }
+        if(strcmp(child(0)->as_string().c_str(),"file")==0){
+            out << "file";
+            return;
+        }
         child(0)->innerCodeGen(out,i);
     }
     //hbradlow

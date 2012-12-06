@@ -168,6 +168,21 @@ protected:
                 out << "cout << endl;\n"; 
         }
         else {
+            for_each_child(c,child(1)) {
+                out << "write(" << child(0)->as_string();
+                out << ",";
+                if (c->isCall())
+                {
+                out << "(";
+                c->getType()->binding()->innerCodeGen(out,i);
+                if(c->getType()->binding()->needsPointer())
+                    out << "*";
+                out << ")";
+                }
+                c->valueCodeGen(out,i);
+                out << ")->print(cout); ";
+                out << ")";
+            } end_for;
         }
    }
 
@@ -289,18 +304,7 @@ protected:
             c->innerCodeGen(out,i);
             out << "\");\n";
         } end_for;
-        // Write the decls of the args
-        writeIndented(out,i);
-        out << "vector<string> ";
-        child(0)->innerCodeGen(out, i); 
-        out << child(0)->getDecl()->getIndex() << "__decls = vector<string>();\n";
-        for_each_child(c,child(1)){
-            writeIndented(out,i);
-            child(0)->innerCodeGen(out, i); 
-            out << child(0)->getDecl()->getIndex() << "__decls.push_back(\"";
-            out << c->getDecl()->getIndex();
-            out << "\");\n";
-        } end_for;
+
         writeComment(out,i,"Create the closure");
 
         writeIndented(out,i);
@@ -320,10 +324,7 @@ protected:
         out << closure;
         out << "frame),";
         child(0)->innerCodeGen(out, i);
-        out << child(0)->getDecl()->getIndex() << "__VECTOR,";
-        child(0)->innerCodeGen(out, i); 
-        out << child(0)->getDecl()->getIndex() << "__decls";
-        out << ");\n";
+        out << child(0)->getDecl()->getIndex() << "__VECTOR);\n";
         addToStaticFrame(out, i);
         writeComment(out,i,"-------------end----------------");
 
@@ -365,7 +366,7 @@ protected:
         child(0)->innerCodeGen(out,i);
         out << "__" << child(0)->getDecl()->getIndex();
         out << "_CLOSURE(";
-        out << "Frame* frame,vector<string> args, vector<string> decls){\n";
+        out << "Frame* frame,vector<string> args){\n";
         writeIndented(out,i+2);
         out << "fp = ";
         child(0)->innerCodeGen(out,i);
@@ -375,8 +376,6 @@ protected:
         out << "this->frame = frame;\n";
         writeIndented(out,i+2);
         out << "this->args = args;\n";
-        writeIndented(out,i+2);
-        out << "this->decls = decls;\n";
         writeIndented(out,i+1);
         out << "}\n";
 
@@ -393,8 +392,6 @@ protected:
         out << "fp = copy->fp;\n";
         writeIndented(out,i+2);
         out << "args = copy->args;\n";
-        writeIndented(out,i+2);
-        out << "decls = copy->decls;\n";
         writeIndented(out, i+1);
         out << "}\n";
 

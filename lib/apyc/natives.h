@@ -49,7 +49,7 @@
                                     ss << ((String*)(frame->getVar("x")))->value; \
                                     String* s = new String(ss.str());\
                                     return s
-#define NATIVE__getitem__list__     return ((List*)frame->getVar("S"))->getIndex(((Integer*)frame->getVar("k"))->value)
+#define NATIVE__getitem__list__     return ((List*)frame->getVar("S"))->items[((Integer*)frame->getVar("k"))->value]
 #define NATIVE__getslice__list__    return ((List*)frame->getVar("S"))->getSlice((*((Integer*)frame->getVar("L"))),(*((Integer*)frame->getVar("U"))))
 #define NATIVE__len__list__         return ((List*)frame->getVar("S"))->len()
 
@@ -61,6 +61,7 @@
 #define NATIVE__standard_file__
 #define NATIVE__readline__          return ((File*)frame->getVar("f"))->readline()
 #define NATIVE__read__              return ((File*)frame->getVar("f"))->read()
+#define NATIVE__write__             ((File*)frame->getVar("f"))->write(((String*)frame->getVar("input")))
 
 
 #define NATIVE__getitem__dict__     return ((Dict*)frame->getVar("D"))->getItem(frame->getVar("x"))

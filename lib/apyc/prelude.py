@@ -202,6 +202,9 @@ def readline(f::file)::str:
 def read(f::file)::str:
     native "__read__"
 
+def write(f::file, input::str):
+    native "__write__"
+
 # The module sys.
 # (We fake this with an instance of a class, using instance variables instead
 # of module members.)
