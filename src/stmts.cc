@@ -39,6 +39,7 @@ class While_AST : public AST_Tree {
         child(1)->outerCodeGen(out, depth);
         writeIndented(out, depth);
         out << "}" << endl;
+        child(2)->outerCodeGen(out, depth);
     }
 };
 NODE_FACTORY (While_AST, WHILE);

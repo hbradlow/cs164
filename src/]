@@ -918,7 +918,6 @@ protected:
         stringstream ss;
         child(1)->print(ss,0);
         local_counts[ss.str()] = local_count;
-        child(1)->memCodeGen(out, i);
         generateArgs(out, i, 0, this);
         generateFunctionCall(out, i);
         
@@ -1755,7 +1754,9 @@ protected:
 
         child(1)->memCodeGen(out,i+1);
         writeIndented(out,i+1);
-        out << "return ";
+        out << "if((*(";
+        child(1)->valueCodeGen(out,i+1);
+        out << "))==false) return ";
         child(1)->valueCodeGen(out,i+1);
         out << ";\n";
 
