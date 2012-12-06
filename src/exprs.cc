@@ -1417,7 +1417,7 @@ protected:
         writeIndented(out,i);
         out << "map";
         out << "<";
-        out << "Object*";
+        out << "T";
         out << ",Object*";
         out << "> ";
         out << "dict_map" << local_count << ";\n";

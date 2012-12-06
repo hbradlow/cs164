@@ -173,7 +173,7 @@ public:
        }
        out << "}";
    }
-   Dict(map<Object*, Object*> _items): items(_items){}
+   Dict(map<string, Object*> _items): items(_items){}
    Integer* len()
    {
         return new Integer(items.size());
