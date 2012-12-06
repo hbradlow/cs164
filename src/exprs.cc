@@ -1171,7 +1171,12 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "_" << 1 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << " = ";
-        child(1)->valueCodeGen(out,i);
+        if(child(1)->isMissing())
+        {
+            out << "new Integer(-1)";
+        }
+        else
+            child(1)->valueCodeGen(out,i);
         out << ";\n";
 
         writeIndented(out,i);
@@ -1203,7 +1208,12 @@ protected:
         child(3)->innerCodeGen(out,i);
         out << "_" << 2 << "_" << local_count << child(3)->getDecl()->getIndex();
         out << " = ";
-        child(2)->valueCodeGen(out,i);
+        if(child(2)->isMissing())
+        {
+            out << "new Integer(-1)";
+        }
+        else
+            child(2)->valueCodeGen(out,i);
         out << ";\n";
 
         writeIndented(out,i);
@@ -1458,16 +1468,6 @@ protected:
     //hbradlow
     void innerCodeGen(ostream& out,int i){
         out << "new Tuple" << arity();
-        if (arity())
-        {
-            out << "<";
-            for_each_child(c,this){
-                if(c_i_!=0)
-                    out << ",";
-                c->getType()->binding()->innerCodeGen(out, i);
-            } end_for;
-            out << ">";
-        }
         out  << "(";
         for_each_child(c,this){
             if(c_i_!=0)
