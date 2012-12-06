@@ -22,6 +22,11 @@ using namespace std;
 
 class None;
 class Frame;
+<<<<<<< HEAD
+=======
+class Integer;
+class List;
+>>>>>>> b1cc755421868c55d2ea0414d3e2e0329c7ceee0
 
 /** 
  * Kevin 
@@ -43,6 +48,13 @@ public:
     virtual Object* getItem(Object* o){
         return new Object();
     }
+<<<<<<< HEAD
+=======
+    virtual void setItem(Integer* i, Object* o){
+    }
+    virtual void setItemList(Integer* i,Integer* j, List* o){
+    }
+>>>>>>> b1cc755421868c55d2ea0414d3e2e0329c7ceee0
 };
 class None: public Object{
 public:
@@ -166,7 +178,25 @@ public:
     String*
     getIndex(Integer i)
     {
+<<<<<<< HEAD
         return new String(new string(&value[i.value]));
+=======
+        if(i.value >= value.length())
+            throw 1;
+        if (i.value >= 0)
+        {
+            std::stringstream ss;
+            ss << value[i.value];
+            return new String(ss.str());
+        }
+        else 
+        {
+            int neg = value.length()+i.value;
+            std::stringstream ss;
+            ss << value[neg];
+            return new String(ss.str());
+        }
+>>>>>>> b1cc755421868c55d2ea0414d3e2e0329c7ceee0
     }
     String*
     getSlice(Integer i, Integer j)
@@ -263,6 +293,24 @@ public:
          return new Integer(items.size());
     }
     Object*
+<<<<<<< HEAD
+=======
+    getIndex(Integer i)
+    {
+        if(i.value >= items.size())
+            throw 1;
+        if (i.value >= 0)
+        {
+            return items[i.value];
+        }
+        else 
+        {
+            int neg = items.size()+i.value;
+            return items[neg];
+        }
+    }
+    Object*
+>>>>>>> b1cc755421868c55d2ea0414d3e2e0329c7ceee0
     getItem(Integer* i)
     {
         return items[i->value];
@@ -280,6 +328,48 @@ public:
         List * resultlist = new List(result);
         return resultlist;
     }
+<<<<<<< HEAD
+=======
+    void setItemList(Integer* i,Integer* j, List* o){
+        int start = i->value;
+        int end = j->value;
+        int index;
+        if(i->value>=items.size())
+        {
+            for(int index = 0; index< o->items.size(); index++){
+                items.push_back(o->items[index]);
+            }
+        }
+        else
+        {
+            for(index = start; index< end; index++){
+                if(index<items.size())
+                    if(index-start>=o->items.size())
+                        items.erase(items.begin()+index);
+                    else
+                        items[index] = o->items[index];
+                else
+                    items.push_back(o->items[index]);
+            }
+            while(index<o->items.size())
+            {
+                items.insert(items.begin()+end,o->items[index-start]);
+                index ++;
+            }
+        }
+    }
+    void setItem(Integer* i,Object* o){
+        if (i->value >= 0)
+        {
+            items[i->value] = o;
+        }
+        else 
+        {
+            int neg = items.size()+i->value;
+            items[neg] = o;
+        }
+    }
+>>>>>>> b1cc755421868c55d2ea0414d3e2e0329c7ceee0
 };
 
 class Tuple0: public Object{
