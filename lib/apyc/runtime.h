@@ -163,19 +163,7 @@ public:
     String*
     getIndex(Integer i)
     {
-        if (i.value >= 0)
-        {
-            stringstream ss;
-            ss << value[i.value];
-            return new String(ss.str());
-        }
-        else 
-        {
-            int neg = value.length()+i.value;
-            stringstream ss;
-            ss << value[neg];
-            return new String(ss.str());
-        }
+        return new String(new string(&value[i.value]));
     }
     String*
     getSlice(Integer i, Integer j)
@@ -324,6 +312,7 @@ public:
    Object* item1;
    Object* item2;
    Tuple2(Object* t, Object* u) : item1((Object*)t), item2((Object*)u){}
+   Tuple2(Integer* t, Integer* u) : item1((Object*)t), item2((Object*)u){}
     void print(ostream& out) 
     {
         out << "(";
@@ -384,14 +373,6 @@ Object* operator&&(const List& b, const List& rhs){
         return new List(rhs.items);
     else
         return new List(b.items);
-}
-inline
-bool operator==(const List& b, bool rhs){
-    if(b.items.size() && rhs)
-        return true;
-    if(!b.items.size() && !rhs)
-        return true;
-    return false;
 }
 //------------------------------------------------------------
 // String
@@ -506,11 +487,6 @@ bool operator==(const Integer& b, bool rhs){
 //------------------------------------------------------------
 // BOOL
 //------------------------------------------------------------
-
-inline
-bool operator==(const Object& b, bool rhs){
-    return false;
-}
 
 inline
 bool operator==(const Bool& b, bool rhs){
