@@ -231,6 +231,16 @@ protected:
             child(0)->print(ss,0);
             local_counts[ss.str()] = local_count;
 
+            writeComment(out, i, "Generate the dynamic frame");
+            writeIndented(out, i);
+            out << "Frame* "; 
+            child(0)->innerCodeGen(out,i);
+            out << "_dyn_" << local_count << child(0)->getDecl()->getIndex();
+            out << " = new Frame(";
+            writeClosure(out,i,child(0));
+            out << "->frame);\n";
+            writeComment(out,i,"Generate an argument to the function call");
+
             writeComment(out,i,"Generate the args");
             for_each_child(c,child(1)){
                 generateArgs(out, i, c_i_, c);
@@ -369,15 +379,6 @@ protected:
     void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
     {
         writeComment(out,i,"--------------------start----------------");
-        writeComment(out, i, "Generate the dynamic frame");
-        writeIndented(out, i);
-        out << "Frame* "; 
-        child(0)->innerCodeGen(out,i);
-        out << "_dyn_" << local_count << child(0)->getDecl()->getIndex();
-        out << " = new Frame(";
-        writeClosure(out,i,child(0));
-        out << "->frame);\n";
-        writeComment(out,i,"Generate an argument to the function call");
 
         writeComment(out,i,"Create a temp variable to store the value");
         writeIndented(out,i);
