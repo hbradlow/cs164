@@ -172,6 +172,8 @@ public:
     String*
     getIndex(Integer i)
     {
+        if(i.value >= value.length())
+            throw 1;
         if (i.value >= 0)
         {
             std::stringstream ss;
@@ -289,6 +291,8 @@ public:
     Object*
     getIndex(Integer i)
     {
+        if(i.value >= items.size())
+            throw 1;
         if (i.value >= 0)
         {
             return items[i.value];

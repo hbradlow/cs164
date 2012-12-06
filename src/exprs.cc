@@ -1102,17 +1102,6 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
-    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
-        child(1)->memCodeGen(out,i);
-        writeIndented(out,i);
-        out << "(";
-        child(0)->valueCodeGen(out,i);
-        out << ")->setItem(new Integer(";
-        child(1)->valueCodeGen(out,i);
-        out << "), ";
-        c->valueCodeGen(out,i);
-        out << ");\n";
-    }
     //hbradlow
     void memCodeGen(ostream& out, int i){
         out << "\n";
@@ -1910,3 +1899,19 @@ protected:
 
 NODE_FACTORY (Break_AST, BREAK);
 
+class Continue_AST : public AST_Tree{
+protected:
+
+    NODE_CONSTRUCTORS (Continue_AST, AST_Tree);
+
+    void innerCodeGen(ostream& out, int depth) {
+        out << "continue";
+    }
+    void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out,depth);
+        innerCodeGen(out,depth);
+        out << ";\n";
+    }
+};
+
+NODE_FACTORY (Continue_AST, CONTINUE);
