@@ -20,11 +20,16 @@ static bool print_online = false;
  */
 //wskinner
 class While_AST : public AST_Tree {
+public:
+    static int global_count;
+    int local_count;
   protected:
   
     NODE_CONSTRUCTORS(While_AST, AST_Tree);
     
     void outerCodeGen(ostream& out, int depth) {
+        writeIndented(out, depth);
+        out << "bool while_flag_" << local_count << " = false;\n";
         writeIndented(out, depth);
         out << "while(true){\n";
         child(0)->memCodeGen(out,depth);
@@ -36,13 +41,19 @@ class While_AST : public AST_Tree {
         out << "break;" << endl;
         writeIndented(out, depth+1);
         out << "}\n";
+        out << "else{ while_flag_" << local_count << " = true;}\n";
         child(1)->outerCodeGen(out, depth);
         writeIndented(out, depth);
         out << "}" << endl;
+        writeIndented(out, depth);
+        out << "if(!while_flag_" << local_count << "){\n";
         child(2)->outerCodeGen(out, depth);
+        writeIndented(out, depth);
+        out << "}\n";
     }
 };
 NODE_FACTORY (While_AST, WHILE);
+int While_AST::global_count;
 
 /***** IF *****/
 
