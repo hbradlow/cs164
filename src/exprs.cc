@@ -918,6 +918,7 @@ protected:
         stringstream ss;
         child(1)->print(ss,0);
         local_counts[ss.str()] = local_count;
+        child(1)->memCodeGen(out, i);
         generateArgs(out, i, 0, this);
         generateFunctionCall(out, i);
         

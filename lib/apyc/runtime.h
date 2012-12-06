@@ -163,9 +163,19 @@ public:
     String*
     getIndex(Integer i)
     {
-        stringstream ss;
-        ss << value[i.value];
-        return new String(ss.str());
+        if (i.value >= 0)
+        {
+            stringstream ss;
+            ss << value[i.value];
+            return new String(ss.str());
+        }
+        else 
+        {
+            int neg = value.length()+i.value;
+            stringstream ss;
+            ss << value[neg];
+            return new String(ss.str());
+        }
     }
     String*
     getSlice(Integer i, Integer j)
