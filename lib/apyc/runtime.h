@@ -21,6 +21,7 @@ using namespace std;
 
 class None;
 class Frame;
+class Integer;
 
 /** 
  * Kevin 
@@ -41,6 +42,8 @@ public:
     }
     virtual Object* getItem(Object* o){
         return new Object();
+    }
+    virtual void setItem(Integer* i, Object* o){
     }
 };
 class None: public Object{
@@ -165,19 +168,7 @@ public:
     String*
     getIndex(Integer i)
     {
-        if (i.value >= 0)
-        {
-            stringstream ss;
-            ss << value[i.value];
-            return new String(ss.str());
-        }
-        else 
-        {
-            int neg = value.length()+i.value;
-            stringstream ss;
-            ss << value[neg];
-            return new String(ss.str());
-        }
+        return new String(new string(&value[i.value]));
     }
     String*
     getSlice(Integer i, Integer j)
@@ -274,6 +265,19 @@ public:
          return new Integer(items.size());
     }
     Object*
+    getIndex(Integer i)
+    {
+        if (i.value >= 0)
+        {
+            return items[i.value];
+        }
+        else 
+        {
+            int neg = items.size()+i.value;
+            return items[neg];
+        }
+    }
+    Object*
     getItem(Integer* i)
     {
         if (i->value >= 0)
@@ -296,6 +300,17 @@ public:
         }
         List * resultlist = new List(result);
         return resultlist;
+    }
+    void setItem(Integer* i,Object* o){
+        if (i->value >= 0)
+        {
+            items[i->value] = o;
+        }
+        else 
+        {
+            int neg = items.size()+i->value;
+            items[neg] = o;
+        }
     }
 };
 
@@ -332,6 +347,7 @@ public:
    Object* item1;
    Object* item2;
    Tuple2(Object* t, Object* u) : item1((Object*)t), item2((Object*)u){}
+   Tuple2(Integer* t, Integer* u) : item1((Object*)t), item2((Object*)u){}
     void print(ostream& out) 
     {
         out << "(";
@@ -392,14 +408,6 @@ Object* operator&&(const List& b, const List& rhs){
         return new List(rhs.items);
     else
         return new List(b.items);
-}
-inline
-bool operator==(const List& b, bool rhs){
-    if(b.items.size() && rhs)
-        return true;
-    if(!b.items.size() && !rhs)
-        return true;
-    return false;
 }
 //------------------------------------------------------------
 // String
@@ -514,11 +522,6 @@ bool operator==(const Integer& b, bool rhs){
 //------------------------------------------------------------
 // BOOL
 //------------------------------------------------------------
-
-inline
-bool operator==(const Object& b, bool rhs){
-    return false;
-}
 
 inline
 bool operator==(const Bool& b, bool rhs){

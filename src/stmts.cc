@@ -848,6 +848,7 @@ protected:
         } end_for;
         writeIndented(out,depth);
         out << "}\n";
+        child(3)->outerCodeGen(out, depth);
     }
 
     AST_Ptr resolveTypes (Decl* context, int& resolved, int& ambiguities) {
