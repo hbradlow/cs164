@@ -211,6 +211,7 @@ public:
     virtual AST_Ptr convertNone (bool definingContext);
     //hbradlow
     virtual bool isFunction();
+    virtual bool isClass();
     //hbradlow
     virtual bool isLeftCompare();
 
@@ -241,6 +242,8 @@ public:
     virtual void stringCodeGen (std::ostream& out, int i);
     //hbradlow
     virtual void classDefCodeGen(std::ostream& out,int i);
+    //hbradlow
+    virtual void staticClassCodeGen(std::ostream& out, int i);
     //hbradlow
     virtual void classCodeGen (std::ostream& out,int i);
     //hbradlow

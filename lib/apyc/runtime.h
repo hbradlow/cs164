@@ -20,12 +20,14 @@
 using namespace std;
 
 class None;
+class Frame;
 
 /** 
  * Kevin 
  */
 class Object{
 public:
+    Frame* frame;
     virtual void print(ostream& o) 
     {
         o << "fuck";
@@ -164,11 +166,17 @@ public:
     getIndex(Integer i)
     {
         if (i.value >= 0)
-        return new String(new string(value.substr(i.value,1)));
+        {
+            stringstream ss;
+            ss << value[i.value];
+            return new String(ss.str());
+        }
         else 
         {
-        int neg = value.length()+i.value;
-        return new String(new string(value.substr(neg, 1)));
+            int neg = value.length()+i.value;
+            stringstream ss;
+            ss << value[neg];
+            return new String(ss.str());
         }
     }
     String*
@@ -385,6 +393,14 @@ Object* operator&&(const List& b, const List& rhs){
     else
         return new List(b.items);
 }
+inline
+bool operator==(const List& b, bool rhs){
+    if(b.items.size() && rhs)
+        return true;
+    if(!b.items.size() && !rhs)
+        return true;
+    return false;
+}
 //------------------------------------------------------------
 // String
 //------------------------------------------------------------
@@ -498,6 +514,11 @@ bool operator==(const Integer& b, bool rhs){
 //------------------------------------------------------------
 // BOOL
 //------------------------------------------------------------
+
+inline
+bool operator==(const Object& b, bool rhs){
+    return false;
+}
 
 inline
 bool operator==(const Bool& b, bool rhs){

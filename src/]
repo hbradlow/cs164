@@ -478,11 +478,7 @@ protected:
     void valueCodeGen(ostream& out, int i){
         out << "new ";
         child(0)->innerCodeGen(out,i);
-        out << "(((";
-        child(0)->innerCodeGen(out,i);
-        out << "*)frame->getVar(\"";
-        child(0)->innerCodeGen(out,i);
-        out << "_static_class\"))->frame)";
+        out << "(frame)";
     }
     //hbradlow
     bool needsPointer(){
@@ -922,7 +918,6 @@ protected:
         stringstream ss;
         child(1)->print(ss,0);
         local_counts[ss.str()] = local_count;
-        child(1)->memCodeGen(out, i);
         generateArgs(out, i, 0, this);
         generateFunctionCall(out, i);
         
@@ -1759,7 +1754,9 @@ protected:
 
         child(1)->memCodeGen(out,i+1);
         writeIndented(out,i+1);
-        out << "return ";
+        out << "if((*(";
+        child(1)->valueCodeGen(out,i+1);
+        out << "))==false) return ";
         child(1)->valueCodeGen(out,i+1);
         out << ";\n";
 

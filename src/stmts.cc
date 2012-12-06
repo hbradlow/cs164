@@ -557,16 +557,6 @@ protected:
     }
     //hbradlow
     void classDefCodeGen(ostream& out,int i){
-        if(child(1)->arity()){
-            writeIndented(out,i);
-            out << "template<";
-            for_each_child(c,child(1)){
-                if(c_i_!=0)
-                    out << ",";
-                out << "typename " << c->as_string();
-            } end_for;
-            out << ">\n";
-        }
         if(strcmp(getDecl()->getName().c_str(),"int")==0)
             return;
         if(strcmp(getDecl()->getName().c_str(),"bool")==0)
@@ -575,6 +565,39 @@ protected:
         out << "class ";
         child(0)->innerCodeGen(out,i);
         out << ";\n";
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        staticClassCodeGen(out,i);
+    }
+    //hbradlow
+    void staticClassCodeGen(ostream& out, int i){
+        if(strcmp(getDecl()->getName().c_str(),"int")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"bool")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple0")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple1")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple2")==0)
+            return;
+        if(strcmp(getDecl()->getName().c_str(),"tuple3")==0)
+            return;
+        writeIndented(out,i);
+        child(0)->innerCodeGen(out,i);
+        out << "* ";
+        child(0)->innerCodeGen(out,i);
+        out << "_static_class = new ";
+        child(0)->innerCodeGen(out,i);
+        out << "(frame,0);\n";
+        
+        writeIndented(out,i);
+        out << "frame->setVar(\"";
+        child(0)->innerCodeGen(out,i);
+        out << "_static_class\",";
+        child(0)->innerCodeGen(out,i);
+        out << "_static_class);\n";
     }
     //hbradlow
     void classCodeGen(ostream& out,int i){
@@ -590,16 +613,6 @@ protected:
             return;
         if(strcmp(getDecl()->getName().c_str(),"tuple3")==0)
             return;
-        if(child(1)->arity()){
-            writeIndented(out,i);
-            out << "template<";
-            for_each_child(c,child(1)){
-                if(c_i_!=0)
-                    out << ",";
-                out << "typename " << c->as_string();
-            } end_for;
-            out << ">\n";
-        }
         writeIndented(out,i);
         out << "class ";
         child(0)->innerCodeGen(out,i);
@@ -612,13 +625,22 @@ protected:
 
         writeIndented(out,i+1);
         child(0)->innerCodeGen(out,i);
-        out << "(Frame* frame){\n";
+        out << "(Frame* frame, int i){\n";
         writeIndented(out,i+2);
         out << "this->frame = new Frame(NULL);\n";
 
         for_each_child(c,child(2)){
-            c->innerClassCodeGen(out,i,this);
+            c->innerClassCodeGen(out,i+2,this);
         } end_for;
+
+        writeIndented(out,i+1);
+        out << "}\n";
+
+        writeIndented(out,i+1);
+        child(0)->innerCodeGen(out,i);
+        out << "(Frame* frame){\n";
+        writeIndented(out,i+2);
+        out << "this->frame = new Frame(frame);\n";
 
         writeIndented(out,i+1);
         out << "}\n";
