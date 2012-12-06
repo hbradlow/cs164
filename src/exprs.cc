@@ -396,6 +396,13 @@ protected:
         out << "->setVar(";
         writeClosure(out,i,child(0));
         out << "->args[" << c_i_ << "]";
+        if (c->getType()->binding()->isFunction())
+        {
+            out << "+ \"__\" + ";
+            writeClosure(out,i,child(0));
+            out << "->decls[" << c_i_ << "]";
+            out << "+\"_closure\"";
+        }
         out << ",";
         child(0)->innerCodeGen(out,i);
         out << "_" << c_i_ << "_" << local_count << child(0)->getDecl()->getIndex();
@@ -1094,6 +1101,17 @@ protected:
         writeIndented(out,i);
         innerCodeGen(out,i);
         out << ";\n";
+    }
+    void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
+        child(1)->memCodeGen(out,i);
+        writeIndented(out,i);
+        out << "(";
+        child(0)->valueCodeGen(out,i);
+        out << ")->setItem(new Integer(";
+        child(1)->valueCodeGen(out,i);
+        out << "), ";
+        c->valueCodeGen(out,i);
+        out << ");\n";
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
