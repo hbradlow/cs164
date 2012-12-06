@@ -61,6 +61,11 @@ class Closure : public Object {
 public:
     Closure();
     Closure(Object* (*fp) (Frame*), Frame* frame, std::vector<string> args);
+    Closure(const Closure& copy)
+    {
+        fp = copy.fp; 
+        frame = copy.frame;
+    }
     Object* (*fp) (Frame*);
     Frame* frame;
     std::vector<string> args; 
@@ -173,7 +178,7 @@ public:
        }
        out << "}";
    }
-   Dict(map<string, Object*> _items): items(_items){}
+   Dict(map<Object*, Object*> _items): items(_items){}
    Integer* len()
    {
         return new Integer(items.size());
