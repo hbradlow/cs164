@@ -1031,6 +1031,9 @@ int Subscription_AST::global_count;
 
 /** E1[E2:E3] */
 class Slicing_AST : public Callable {
+public:
+    static int global_count;
+    int local_count;
 protected:
 
     NODE_CONSTRUCTORS (Slicing_AST, Callable);
@@ -1053,10 +1056,144 @@ protected:
 
     void addTargetDecls (Decl* enclosing) {
     }
+    //hbradlow
+    void innerCodeGen(ostream& out, int i){
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(2)->getDecl()->getIndex();
+    }
+    //hbradlow
+    void outerCodeGen(ostream& out, int i){
+        writeIndented(out,i);
+        innerCodeGen(out,i);
+        out << ";\n";
+    }
+    //hbradlow
+    void memCodeGen(ostream& out, int i){
+        out << "\n";
+
+        local_count = global_count++;
+        stringstream ss;
+        child(1)->print(ss,0);
+        local_counts[ss.str()] = local_count;
+        generateArgs(out, i, 0, this);
+        generateFunctionCall(out, i);
+        
+        out << "\n";
+    }
+    void generateArgs(ostream& out, int i, int c_i_, AST_Ptr c)
+    {
+        writeComment(out,i,"Generate the arguments to the call");
+
+        writeComment(out,i,"Create first dummy variable");
+        writeIndented(out,i);
+        child(0)->getType()->binding()->innerCodeGen(out,i);
+        if(child(0)->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(0)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->args";
+        out << "[" << "0" << "]";
+        out << ",";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << ");\n";
+
+        writeComment(out,i,"Create first dummy variable");
+        writeIndented(out,i);
+        child(1)->getType()->binding()->innerCodeGen(out,i);
+        if(child(1)->getType()->binding()->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 1 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(1)->valueCodeGen(out,i);
+        out << ";\n";
+
+        writeIndented(out,i);
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame->setVar(";
+        
+        out << "((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->args";
+        out << "[" << "1" << "]";
+        out << ",";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 1 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << ");\n";
+
+        writeIndented(out,i);
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_" << 2 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = (";
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << ")";
+        writeClosure(out,i,child(2));
+        out << "->fp(";
+
+        out << "(((";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_CLOSURE*)";
+        out << "(frame->getVar(\"";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure\")))->frame))";
+        out << ";\n";
+    }
+    void generateFuctionCall(ostream& out, int i)
+    {
+        writeComment(out,i,"Perform Function Call");
+
+        writeIndented(out,i);
+        child(2)->getDecl()->getType()->binding()->child(0)->innerCodeGen(out,i);
+        if(child(2)->getDecl()->getType()->binding()->child(0)->needsPointer())
+            out << "*";
+        out << " ";
+        child(2)->innerCodeGen(out,i);
+        out << "_PARAM" << 0 << "_" << local_count << child(2)->getDecl()->getIndex();
+        out << " = ";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "(";
+        child(2)->innerCodeGen(out,i);
+        out << "__" << child(2)->getDecl()->getIndex() << "_closure->frame)";
+        out << ";\n";
+    }
 
 };
 
 NODE_FACTORY (Slicing_AST, SLICING);
+int Slicing_AST::global_count;
     
 
 /***** EMPTY_INTEGER *****/

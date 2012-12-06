@@ -251,7 +251,15 @@ public:
     List*
     xrange(Integer i)
     {
-    
+    }
+    List*
+    getSlice(Integer i, Integer j) {
+        vector<Object*> result;
+        for (int k = i.value; k<j.value; ++k) {
+            result.push_back(items[k]);
+        }
+        List * resultlist = new List(result);
+        return resultlist;
     }
 };
 

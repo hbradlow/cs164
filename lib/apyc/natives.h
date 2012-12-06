@@ -43,15 +43,15 @@
 #define NATIVE__eq__str__           return (*((String*)frame->getVar("x")))==(*((String*)frame->getVar("y")))
 #define NATIVE__ne__str__           return (*((String*)frame->getVar("x")))!=(*((String*)frame->getVar("y")))
 #define NATIVE__getitem__str__      return (*((String*)frame->getVar("S"))).getIndex((*((Integer*)frame->getVar("k"))))
-#define NATIVE__getslice__str__     return (*((String*)frame->getVar("S"))).getSlice((*((Integer*)frame->getVar("L"))), (*((Integer*)frame->getVar("U"))))
+#define NATIVE__getslice__str__     return ((String*)frame->getVar("S"))->getSlice((*((Integer*)frame->getVar("L"))), (*((Integer*)frame->getVar("U"))))
 #define NATIVE__len__str__          return (*((String*)frame->getVar("x"))).len()
 #define NATIVE__tostr__             std::stringstream ss; \
                                     ss << ((String*)(frame->getVar("x")))->value; \
                                     String* s = new String(ss.str());\
                                     return s
 #define NATIVE__getitem__list__     return ((List*)frame->getVar("S"))->items[((Integer*)frame->getVar("k"))->value]
-#define NATIVE__getslice__list__    //return ((List*)frame->getVar("S"))->getSlice(*((Integer*)frame->getVar("k")))
-#define NATIVE__len__list__         //return ((List*)frame->getVar("S"))->len()
+#define NATIVE__getslice__list__    return ((List*)frame->getVar("S"))->getSlice((*((Integer*)frame->getVar("U"))),(*((Integer*)frame->getVar("L"))))
+#define NATIVE__len__list__         return ((List*)frame->getVar("S"))->len()
 #define NATIVE__argv__
 #define NATIVE__open1__
 #define NATIVE__open2__
