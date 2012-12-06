@@ -21,6 +21,7 @@ using namespace std;
 
 class None;
 class Frame;
+class Integer;
 
 /** 
  * Kevin 
@@ -41,6 +42,8 @@ public:
     }
     virtual Object* getItem(Object* o){
         return new Object();
+    }
+    virtual void setItem(Integer* i, Object* o){
     }
 };
 class None: public Object{
@@ -274,6 +277,19 @@ public:
          return new Integer(items.size());
     }
     Object*
+    getIndex(Integer i)
+    {
+        if (i.value >= 0)
+        {
+            return items[i.value];
+        }
+        else 
+        {
+            int neg = items.size()+i.value;
+            return items[neg];
+        }
+    }
+    Object*
     getItem(Integer* i)
     {
         return items[i->value];
@@ -290,6 +306,17 @@ public:
         }
         List * resultlist = new List(result);
         return resultlist;
+    }
+    void setItem(Integer* i,Object* o){
+        if (i->value >= 0)
+        {
+            items[i->value] = o;
+        }
+        else 
+        {
+            int neg = items.size()+i->value;
+            items[neg] = o;
+        }
     }
 };
 
