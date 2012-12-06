@@ -102,7 +102,10 @@ protected:
         writeIndented(out,i+2);
         out << "cout << \"ERROR\" << endl;\n";
         writeIndented(out,i+1);
+        out << "exit(1);\n";
+        writeIndented(out,i+1);
         out << "}\n";
+        writeIndented(out,i);
         out << "}\n";
     }
 

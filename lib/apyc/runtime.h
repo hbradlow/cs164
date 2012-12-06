@@ -59,6 +59,9 @@ public:
     {
         print(o);
     }
+    virtual string getValue(){
+        return "None";
+    }
 };
 class Frame
 {
@@ -261,21 +264,22 @@ class List: public Object{
 public:
     vector<Object*> items;
     bool xrange;
+    int low;
+    int high;
     virtual void print(ostream& out)
     {
         if(this->xrange)
-            out << "xrange(";
+            out << "xrange(" << low << ", " << high << ")";
         else
+        {
             out << "[";
-        for(std::vector<Object*>::iterator it = items.begin() ; it != items.end(); ++it){
-            if(it!=items.begin())
-                out << ", ";
-            (*it)->print(out);
-        }
-        if(this->xrange)
-            out << ")";
-        else
+            for(std::vector<Object*>::iterator it = items.begin() ; it != items.end(); ++it){
+                if(it!=items.begin())
+                    out << ", ";
+                (*it)->print(out);
+            }
             out << "]";
+        }
     }
     virtual void inner_print(ostream& o)
     {
@@ -294,15 +298,22 @@ public:
         this->xrange = false;
     }
     List(List* l){
-        this->items = l->items;
+        vector<Object*> i;
+        this->items = i;
+        for(int i = 0; i< l->items.size(); i++)
+        {
+            this->items.push_back(l->items[i]);
+        }
         this->xrange = l->xrange;
     }
     List(vector<Object*> _items): items(_items){}
     List(Integer* low, Integer* high,bool xrange) 
     {
         this->xrange = xrange;
+        this->low = low->value;
+        this->high = high->value;
         items = vector<Object*>();
-        for (int j = low->value; j < high->value+1; j++)
+        for (int j = low->value; j < high->value; j++)
         {
             items.push_back(new Integer(j));
         }
@@ -554,13 +565,6 @@ Object* operator&&(const List& b, const List& rhs){
 }
 inline
 bool operator==(const List& b, bool rhs){
-    if(b.items.size()==1)
-    {
-        if(strcmp("0",b.items[0]->getValue().c_str())==0)
-        {
-            return !rhs;
-        }
-    }
     return ((b.items.size() && rhs) || (!b.items.size() && !rhs));
 }
 //------------------------------------------------------------

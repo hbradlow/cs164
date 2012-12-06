@@ -789,6 +789,9 @@ public:
     }
     //hbradlow
     void memCodeGen(ostream& out, int i){
+        for_each_child(c,this){
+            c->memCodeGen(out,i);
+        } end_for;
         out << "\n";
 
         local_count = global_count++;
@@ -1496,7 +1499,7 @@ protected:
         for_each_child(ch,this){
             stringstream ss;
             ss << "(Object*)(" << c << ")->getItem(new Integer(" << ch_i_ << "))";
-            ch->assignCodeGen(out,i,ss.str(),lhs);
+            ch->assignCodeGen(out,i,ss.str(),"");
         } end_for;
     }
 
