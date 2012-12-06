@@ -429,7 +429,7 @@ private:
 
     //hbradlow
     void innerCodeGen(ostream& out,int i){
-        out << "new String(\"" << string_text() << "\")";
+        out << "new String(\"" << strReplace(string_text(),"\n","\\n") << "\")";
     }
     //hbradlow
     void outerCodeGen(ostream& out,int i){

@@ -496,8 +496,8 @@ bool operator!=(const Bool& b, const Bool& rhs){
     return b.value != rhs.value;
 }
 inline
-bool operator||(const Bool& b, const Bool& rhs){
-    return b.value || rhs.value;
+Bool* operator||(const Bool& b, const Bool& rhs){
+    return new Bool(b.value || rhs.value);
 }
 inline
 Bool* operator&&(const Bool& b, const Bool& rhs){
