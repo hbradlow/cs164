@@ -53,10 +53,15 @@
 #define NATIVE__getslice__list__    return ((List*)frame->getVar("S"))->getSlice((*((Integer*)frame->getVar("L"))),(*((Integer*)frame->getVar("U"))))
 #define NATIVE__len__list__         return ((List*)frame->getVar("S"))->len()
 #define NATIVE__argv__              return ((List*)frame->getVar("argv"))
-#define NATIVE__open1__
-#define NATIVE__open2__
+#define NATIVE__open1__             return new File(((String*)frame->getVar("name"))->value)
+#define NATIVE__open2__             return new File(((String*)frame->getVar("name"))->value)
 #define NATIVE__close__
-#define NATIVE__standard_file__
+#define NATIVE__standard_file__     if(((Integer*)(frame->getVar("k")))->value == 0) \
+                                        return new File(cout);\
+                                    else if(((Integer*)(frame->getVar("k")))->value == 1) \
+                                        return new File(cout);\
+                                    else \
+                                        return new File(cerr)
 #define NATIVE__readline__
 #define NATIVE__read__
 #define NATIVE__getitem__dict__     return ((Dict*)frame->getVar("D"))->getItem(frame->getVar("x"))

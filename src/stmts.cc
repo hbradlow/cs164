@@ -95,6 +95,8 @@ NODE_FACTORY (If_AST, IF);
 
 /**********/
 class Print_AST : public AST_Tree {
+public: 
+    static int counter;
 protected:
 
     NODE_CONSTRUCTORS (Print_AST, AST_Tree);
@@ -111,25 +113,27 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        child(0)->memCodeGen(out,i);
+        counter++;
+        writeIndented(out,i);
         if (!child(0)->isMissing())
         {
            writeIndented(out, i);
-           out << "std::streambuf *backup" << ++counter << " = cout.rdbuf();\n";
-           out << "std::ofstream fi" << counter <<";\n";
-           out << "fi" << counter <<".open(\"" << child(0)->as_string() << "\");\n";
-           out << "backup" << counter << " = cout.rdbuf();\n";
-           out << "streambuf *psbuf" << counter << " = fi"<<counter<<".rdbuf();\n";
-           out << "cout.rdbuf(psbuf"<<counter<<");\n"; 
+           out << "std::ostream& print_stream_" << counter << " = *(";
+               child(0)->valueCodeGen(out,0);
+            out << ")->getO();\n";
         }
+        else
+           out << "std::ostream& print_stream_" << counter << " = cout;\n";
         for_each_child(c,child(1)){
             c->memCodeGen(out,i);
         } end_for;
         writeIndented(out,i);
         if(print_online)
-            out << "cout << ' ';";
+            out << "print_stream_" << counter << " << ' ';";
         for_each_child(c,child(1)){
             if(c_i_!=0)
-                out << "cout << ' ';";
+                out << "print_stream_" << counter << " << ' ';";
             out << "(";
             if (c->isCall())
             {
@@ -140,18 +144,18 @@ protected:
             out << ")";
             }
             c->valueCodeGen(out,i);
-            out << ")->print(cout); ";
+            out << ")->print(print_stream_" << counter << "); ";
         } end_for;
         out << "\n"; 
         print_online = true;
-    }
     if (!child(0)->isMissing()) 
     {
-        out << "cout.rdbuf(backup"<<counter<<");\n";
-        out << "fi"<<counter<<".close();\n";
+       // out << "print_stream_"<<counter<<".close();\n";
+    }
     }
 };
 NODE_FACTORY (Print_AST, PRINT);
+int Print_AST::counter = 0;
 
 
 
@@ -171,25 +175,28 @@ protected:
 
     //hbradlow
     void outerCodeGen(ostream& out,int i){
+        child(0)->memCodeGen(out,i);
+        counter++;
+        writeIndented(out,i);
         if (!child(0)->isMissing())
         {
+           out << "std::ostream& println_stream_" << counter << " = *(";
+               child(0)->valueCodeGen(out,0);
+            out << ")->getO();\n";
            writeIndented(out, i);
-           out << "std::streambuf *backup" << ++counter << " = cout.rdbuf();\n";
-           out << "std::ofstream fi" << counter <<";\n";
-           out << "fi" << counter <<".open(\"" << child(0)->as_string() << "\");\n";
-           out << "backup" << counter << " = cout.rdbuf();\n";
-           out << "streambuf *psbuf" << counter << " = fi"<<counter<<".rdbuf();\n";
-           out << "cout.rdbuf(psbuf"<<counter<<");\n"; 
         }
+        else
+           out << "std::ostream& println_stream_" << counter << " = cout;\n";
+
             for_each_child(c,child(1)){
                 c->memCodeGen(out,i);
             } end_for;
             if(print_online && child(1)->arity())
-                out << "cout << ' ';";
+                out << "println_stream_" << counter << " << ' ';";
             writeIndented(out,i);
             for_each_child(c,child(1)){
                 if(c_i_!=0)
-                    out << "cout << ' ';";
+                    out << "println_stream_" << counter << "<< ' ';";
                 out << "(";
                 if (c->isCall())
                 {
@@ -200,14 +207,13 @@ protected:
                 out << ")";
                 }
                 c->valueCodeGen(out,i);
-                out << ")->print(cout); ";
+                out << ")->print(println_stream_" << counter << "); ";
             } end_for;
             print_online=false;
-            out << "cout << endl;\n"; 
+            out << "println_stream_" << counter << " << endl;\n"; 
         if (!child(0)->isMissing()) 
         {
-            out << "cout.rdbuf(backup"<<counter<<");\n";
-            out << "fi"<<counter<<".close();\n";
+            //out << "println_stream_"<<counter<<".close();\n";
         }
     }
 

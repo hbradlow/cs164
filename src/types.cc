@@ -653,6 +653,10 @@ protected:
             out << "Bool";
             return;
         }
+        if(strcmp(child(0)->as_string().c_str(),"file")==0){
+            out << "File";
+            return;
+        }
         if(strcmp(child(0)->as_string().c_str(),"str")==0){
             out << "String";
             return;

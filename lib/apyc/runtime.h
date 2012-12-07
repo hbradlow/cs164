@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include "natives.h"
 
@@ -48,6 +49,20 @@ public:
     }
     virtual void setItemList(Integer* i,Integer* j, List* o){
     }
+};
+class File: public Object{
+public:
+    File(ostream& o): o(&o){
+    }
+    File(string s){
+        std::ofstream* ofs = new std::ofstream(s.c_str(),ios::out);
+        o = ofs;
+    }
+    ostream* getO(){
+        return o;
+    }
+protected:
+    ostream* o;
 };
 class None: public Object{
 public:
@@ -240,7 +255,7 @@ public:
         return new Integer(items.size());
    }
    Bool* contains(Object* x) {
-       if (items.count(((String)x).value) == 0) {
+       if (items.count(((String*)x)->value) == 0) {
            return new Bool(false);
        }
        else {
@@ -248,7 +263,7 @@ public:
        }
    }
    Bool* notContains(Object* x) {
-       if (items.count(((String)x).value) == 0) {
+       if (items.count(((String*)x)->value) == 0) {
            return new Bool(true);
        }
        else {
@@ -256,6 +271,10 @@ public:
        }
    }
    Object* getItem(Object* x){
+       stringstream ss;
+       x->print(ss);
+       if (items.count(ss.str()) == 0)
+            throw 1;
         return items.find(x->getValue())->second;
    }
 };
