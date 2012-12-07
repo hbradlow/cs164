@@ -50,20 +50,6 @@ public:
     virtual void setItemList(Integer* i,Integer* j, List* o){
     }
 };
-class File: public Object{
-public:
-    File(ostream& o): o(&o){
-    }
-    File(string s){
-        std::ofstream* ofs = new std::ofstream(s.c_str(),ios::out);
-        o = ofs;
-    }
-    ostream* getO(){
-        return o;
-    }
-protected:
-    ostream* o;
-};
 class None: public Object{
 public:
     virtual void print(ostream& o) 
@@ -233,6 +219,63 @@ public:
     string getValue(){
         return value;
     }
+};
+
+class File: public Object{
+public:
+    File(ofstream& o): of(&o){
+    }
+    File(ostream& o): of(&o){
+    }
+    File(istream& i): is(&i){}
+    File(string s){
+        std::ofstream* ofs = new std::ofstream(s.c_str(),ios::out);
+        of = ofs;
+    }
+    File(string s, string mode)
+    {
+        if (strcmp(mode.c_str(), "r") == 0)
+        {
+            std::ifstream* ifs = new std::ifstream(s.c_str(), ios::in);
+            i = ifs;
+        }
+        else if (strcmp(mode.c_str(), "w") == 0)
+        {
+        std::ofstream* ofs = new std::ofstream(s.c_str(),ios::out);
+        of = ofs;
+        }
+        else 
+        {
+        std::ofstream* ofs = new std::ofstream(s.c_str(),ios::app);
+        of = ofs;
+        }
+
+    }
+    String* readline()
+    {
+        string buff;
+        getline(*i, buff);
+        return new String(buff);
+    }
+    String* read()
+    {
+        stringstream buff;
+        buff << i;
+        return new String(buff.str());
+    }
+    ofstream* getO(){
+        return of;
+    }
+    void close()
+    {
+        i->close();
+        of->close();
+    }
+protected:
+    ostream* o;
+    ofstream* of;
+    ifstream* i;
+    istream* is;
 };
 
 class Dict: public Object{

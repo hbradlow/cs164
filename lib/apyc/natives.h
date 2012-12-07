@@ -54,16 +54,16 @@
 #define NATIVE__len__list__         return ((List*)frame->getVar("S"))->len()
 #define NATIVE__argv__              return ((List*)frame->getVar("argv"))
 #define NATIVE__open1__             return new File(((String*)frame->getVar("name"))->value)
-#define NATIVE__open2__             return new File(((String*)frame->getVar("name"))->value)
+#define NATIVE__open2__             return new File(((String*)frame->getVar("name"))->value, (((String*)frame->getVar("mode"))->value))
 #define NATIVE__close__
 #define NATIVE__standard_file__     if(((Integer*)(frame->getVar("k")))->value == 0) \
-                                        return new File(cout);\
+                                        return new File(cin);\
                                     else if(((Integer*)(frame->getVar("k")))->value == 1) \
                                         return new File(cout);\
                                     else \
                                         return new File(cerr)
-#define NATIVE__readline__
-#define NATIVE__read__
+#define NATIVE__readline__          return ((File*)frame->getVar("f"))->readline()  
+#define NATIVE__read__              return ((File*)frame->getVar("f"))->readline()
 #define NATIVE__getitem__dict__     return ((Dict*)frame->getVar("D"))->getItem(frame->getVar("x"))
 #define NATIVE__len__dict__         return ((Dict*)frame->getVar("D"))->len()
 #define NATIVE__contains__dict__    return ((Dict*)frame->getVar("D"))->contains(((String*)frame->getVar("x")))

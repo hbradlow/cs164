@@ -120,9 +120,9 @@ protected:
         if (!child(0)->isMissing())
         {
            writeIndented(out, i);
-           out << "std::ostream& print_stream_" << counter << " = *(";
+           out << "std::ofstream& print_stream_" << counter << " = *((";
                child(0)->valueCodeGen(out,0);
-            out << ")->getO();\n";
+            out << ")->getO());\n";
         }
         else
            out << "std::ostream& print_stream_" << counter << " = cout;\n";
@@ -181,9 +181,9 @@ protected:
         writeIndented(out,i);
         if (!child(0)->isMissing())
         {
-           out << "std::ostream& println_stream_" << counter << " = *(";
+           out << "std::ofstream& println_stream_" << counter << " = *((";
                child(0)->valueCodeGen(out,0);
-            out << ")->getO();\n";
+            out << ")->getO());\n";
            writeIndented(out, i);
         }
         else
