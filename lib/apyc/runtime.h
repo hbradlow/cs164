@@ -17,6 +17,7 @@
 #include <fstream>
 #include <map>
 #include "natives.h"
+#include <string.h>
 
 using namespace std;
 
@@ -49,20 +50,6 @@ public:
     }
     virtual void setItemList(Integer* i,Integer* j, List* o){
     }
-};
-class File: public Object{
-public:
-    File(ostream& o): o(&o){
-    }
-    File(string s){
-        std::ofstream* ofs = new std::ofstream(s.c_str(),ios::out);
-        o = ofs;
-    }
-    ostream* getO(){
-        return o;
-    }
-protected:
-    ostream* o;
 };
 class None: public Object{
 public:
@@ -235,6 +222,57 @@ public:
     }
 };
 
+class File: public Object{
+public:
+    File(fstream& o): o(&o){
+    }
+    File(string s){
+        std::fstream* ofs; 
+        ofs->open(s.c_str(),ios::in);
+        o = ofs;
+    }
+    File(string s, string mode){
+        fstream* ofs;
+        if (strcmp(mode.c_str(), "r"))
+        {
+        ofs->open(s.c_str(),ios::in);
+        o = ofs;
+        }
+        if (strcmp(mode.c_str(), "w"))
+        {
+        ofs->open(s.c_str(),ios::out);
+        o = ofs;
+        }
+        else 
+        {
+        ofs->open(s.c_str(),ios::app);
+        o = ofs;
+        }
+    }
+    ostream* getO(){
+        return o;
+    }
+
+    void close()
+    {
+        o->close();
+    }
+
+    String* readline()
+    {
+        string IN; 
+        std::getline(o->rdbuf(), IN);
+        return new String(IN);
+    }
+    String* read()
+    {
+        sstream buff; 
+        buff << o->rdbuf();
+        return new String(buff.str());
+    }
+protected:
+    fstream* o;
+};
 class Dict: public Object{
 public:
    map<string, Object*> items;
