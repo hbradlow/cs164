@@ -345,9 +345,9 @@ protected:
             getType()->binding()->innerCodeGen(out,i);
             if(getType()->binding()->needsPointer())
                 out << "*";
-            out << ")frame->getVar(\"";
+            out << ")(frame->getVar(\"";
             innerCodeGen(out,i);
-            out << "\")";
+            out << "\"))";
         }
     }
 

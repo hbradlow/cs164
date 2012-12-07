@@ -899,17 +899,17 @@ protected:
         local_count = global_count++;
         writeIndented(out,depth);
         child(1)->memCodeGen(out,0);
-        out << "List* for_list" << local_count;
-        out << " = new List(";
+        out << "List for_list" << local_count;
+        out << " = (";
         child(1)->valueCodeGen(out,0);
         out << ");\n";
         writeIndented(out,depth);
-        out << "vector<Object*>::iterator for_it_" << local_count << " = for_list" << local_count << "->items.begin();\n";
+        out << "vector<Object*>::iterator for_it_" << local_count << " = for_list" << local_count << ".items.begin();\n";
         out << "for(for_it_" << local_count << " = ";
         out << "for_list" << local_count;
-        out << "->items.begin() ; for_it_" << local_count << " != ";
+        out << ".items.begin() ; for_it_" << local_count << " != ";
         out << "for_list" << local_count;
-        out << "->items.end(); ++for_it_" << local_count << "){\n";
+        out << ".items.end(); ++for_it_" << local_count << "){\n";
         writeIndented(out,depth+1);
         stringstream lhs_string;
         lhs_string << "*for_it_" << local_count;
@@ -920,7 +920,7 @@ protected:
         writeIndented(out,depth);
         out << "}\n";
         writeIndented(out,depth);
-        out << "if(for_it_" << local_count << " == for_list" << local_count << "->items.end()){\n";
+        out << "if(for_it_" << local_count << " == for_list" << local_count << ".items.end()){\n";
         child(3)->outerCodeGen(out, depth+1);
         out << "}\n";
     }

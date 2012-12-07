@@ -277,6 +277,9 @@ public:
             throw 1;
         return items.find(x->getValue())->second;
    }
+    void setItem(String* s,Object* o){
+        items[s->value] = o;
+    }
 };
 
 class List: public Object{

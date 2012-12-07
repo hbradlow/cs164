@@ -1057,7 +1057,7 @@ protected:
         writeIndented(out,i);
         out << "(";
         child(0)->valueCodeGen(out,i);
-        out << ")->setItem(new Integer(";
+        out << ")->setItem((";
         child(1)->valueCodeGen(out,i);
         out << "), ";
         c->valueCodeGen(out,i);
@@ -1493,15 +1493,6 @@ protected:
         innerCodeGen(out,i);
         out << ";\n";
     }
-    virtual void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){
-    }
-    virtual void assignCodeGen(ostream& out, int i, string c,string lhs){
-        for_each_child(ch,this){
-            stringstream ss;
-            ss << "(Object*)(" << c << ")->getItem(new Integer(" << ch_i_ << "))";
-            ch->assignCodeGen(out,i,ss.str(),"");
-        } end_for;
-    }
 
 };
 
@@ -1526,6 +1517,14 @@ protected:
             c = c->convertNone (true);
         } end_for;
         return this;
+    }
+
+    virtual void assignCodeGen(ostream& out, int i, string c,string lhs){
+        for_each_child(ch,this){
+            stringstream ss;
+            ss << "((Tuple" << arity() << "*)(" << c << "))->getItem(new Integer(" << ch_i_ << "))";
+            ch->assignCodeGen(out,i,ss.str(),"");
+        } end_for;
     }
 
     virtual void assignCodeGen(ostream& out, int i, AST_Ptr c,string lhs){

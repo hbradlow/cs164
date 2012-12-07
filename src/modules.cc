@@ -55,8 +55,10 @@ protected:
         } end_for;
 
         out << "int main(int argc, char* argv[]) {\n";
+        /*
         writeIndented(out,i+1);
         out << "try{\n";
+        */
         for_each_child(c, this)
         {
             c->generateInitialDef(out, i);
@@ -95,6 +97,7 @@ protected:
             c->outerCodeGen(out,i+1);
         } end_for;
 
+        /*
         writeIndented(out,i+1);
         out << "}\n";
         writeIndented(out,i+1);
@@ -105,6 +108,7 @@ protected:
         out << "exit(1);\n";
         writeIndented(out,i+1);
         out << "}\n";
+        */
         writeIndented(out,i);
         out << "}\n";
     }
