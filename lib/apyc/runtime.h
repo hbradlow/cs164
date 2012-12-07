@@ -308,6 +308,7 @@ public:
         this->print(o);
     }
     List(String* s){
+        this->xrange = false;
         vector<Object*> i;
         this->items = i;
         string::iterator it;
@@ -320,6 +321,7 @@ public:
         this->xrange = false;
     }
     List(List* l){
+        this->xrange = false;
         vector<Object*> i;
         this->items = i;
         for(int i = 0; i< l->items.size(); i++)
@@ -328,7 +330,9 @@ public:
         }
         this->xrange = l->xrange;
     }
-    List(vector<Object*> _items): items(_items){}
+    List(vector<Object*> _items): items(_items){
+        this->xrange = false;
+    }
     List(Integer* low, Integer* high,bool xrange) 
     {
         this->xrange = xrange;
@@ -342,6 +346,7 @@ public:
     }
     List(Integer* low, Integer* high) 
     {
+        this->xrange = false;
         items = vector<Object*>();
         for (int j = low->value; j < high->value; j++)
         {
