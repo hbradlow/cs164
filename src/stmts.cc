@@ -28,6 +28,7 @@ public:
     NODE_CONSTRUCTORS(While_AST, AST_Tree);
     
     void outerCodeGen(ostream& out, int depth) {
+        local_count = global_count++;
         writeIndented(out, depth);
         out << "bool while_flag_" << local_count << " = false;\n";
         writeIndented(out, depth);
