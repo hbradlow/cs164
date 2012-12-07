@@ -223,21 +223,21 @@ public:
 
 class File: public Object{
 public:
-    File(ofstream& o): of(&o){
+    File(ostream& o): o(&o), isFile(false){
     }
-    File(ostream& o): of(&o){
-    }
-    File(istream& i): is(&i){}
+    File(istream& i): i(&i), isFile(false){}
     File(string s){
+        isFile = true;
         std::ofstream* ofs = new std::ofstream(s.c_str(),ios::out);
         of = ofs;
     }
     File(string s, string mode)
     {
+        isFile = true;
         if (strcmp(mode.c_str(), "r") == 0)
         {
             std::ifstream* ifs = new std::ifstream(s.c_str(), ios::in);
-            i = ifs;
+            ifi = ifs;
         }
         else if (strcmp(mode.c_str(), "w") == 0)
         {
@@ -254,28 +254,38 @@ public:
     String* readline()
     {
         string buff;
+        if (isFile)
+        getline(*ifi, buff);
+        else 
         getline(*i, buff);
         return new String(buff);
     }
     String* read()
     {
         stringstream buff;
+        if (isFile)
+        buff << ifi;
+        else 
         buff << i;
         return new String(buff.str());
     }
-    ofstream* getO(){
+    ostream* getO(){
+        if (isFile)
         return of;
+        else 
+        return o;
     }
     void close()
     {
-        i->close();
+        ifi->close();
         of->close();
     }
 protected:
-    ostream* o;
     ofstream* of;
-    ifstream* i;
-    istream* is;
+    ifstream* ifi;
+    ostream *o; 
+    istream *i;
+    bool isFile;
 };
 
 class Dict: public Object{
